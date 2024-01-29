@@ -1,0 +1,7 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+set -e  # die on error
+
+yarn pretty-quick --staged
+yarn turbo run extract-translations

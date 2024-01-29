@@ -1,0 +1,46 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.wrapper {
+  display: flex;
+}
+
+.divider {
+  background: colors.$gray-20;
+  height: 12rem;
+  margin: 2rem;
+  width: 1px;
+}
+
+.paymentContainer {
+  margin: layout.$layout-01 0;
+  padding: layout.$layout-01;
+  width: 70%;
+}
+
+.paymentButtons {
+  margin: layout.$layout-01 0;
+}
+
+.paymentMethodContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: flex-end;
+  column-gap: 1rem;
+  margin: 0.625rem 0;
+}
+
+.paymentTotals {
+  margin: layout.$spacing-05 0;
+  padding: layout.$spacing-07 layout.$spacing-05;
+}
+
+.processPayments {
+  display: flex;
+  justify-content: flex-end;
+  margin: layout.$spacing-05;
+  padding-top: layout.$spacing-05;
+  column-gap: layout.$spacing-04;
+  border-top: 1px solid colors.$cool-gray-40;
+}

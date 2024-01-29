@@ -1,0 +1,93 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.invoiceContainer {
+  background-color: colors.$gray-10;
+  height: calc(100vh - 3rem);
+}
+
+.errorContainer {
+  margin: layout.$spacing-05;
+}
+
+.loader {
+  display: flex;
+  min-height: layout.$spacing-09;
+  justify-content: center;
+}
+
+.detailsContainer {
+  display: flex;
+}
+
+.details {
+  display: flex;
+  flex: 3;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+  margin: layout.$spacing-05;
+  row-gap: 1.5rem;
+}
+
+.label {
+  @include type.type-style('body-compact-02');
+  color: colors.$gray-70;
+  margin: layout.$spacing-01;
+}
+
+.value {
+  @include type.type-style('heading-03');
+  display: inline-block;
+  margin-top: layout.$spacing-04;
+}
+
+.backButton {
+  margin: layout.$spacing-04;
+
+  button {
+    display: flex;
+    padding-left: 0 !important;
+
+    svg {
+      order: 1;
+      margin-right: layout.$spacing-03;
+      margin-left: 0 !important;
+    }
+
+    span {
+      order: 2;
+    }
+  }
+}
+
+.invoicePaymentsContainer {
+  display: flex;
+  flex-direction: column;
+  margin: layout.$spacing-05;
+}
+
+.paymentSection {
+  display: flex;
+  flex-direction: row;
+}
+
+.billDetail {
+  font-weight: bold;
+  color: colors.$cool-gray-90;
+}
+
+@media screen {
+  .printContainer {
+    background-color: colors.$white;
+    display: none;
+  }
+}
+
+@media print {
+  html,
+  body {
+    background-color: colors.$white !important;
+  }
+}

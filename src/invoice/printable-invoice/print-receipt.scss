@@ -1,0 +1,14 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.configurableLink {
+  color: colors.$white;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+.button {
+  margin-left: layout.$spacing-04;
+}

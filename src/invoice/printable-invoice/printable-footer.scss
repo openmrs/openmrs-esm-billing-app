@@ -1,0 +1,17 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+}
+
+.itemFooter {
+  padding: 1rem;
+  @include type.type-style('body-compact-02');
+  color: colors.$cool-gray-90;
+}

@@ -1,0 +1,20 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.container {
+  border: 1px solid colors.$gray-20;
+  padding: layout.$spacing-05;
+  flex: 1;
+}
+
+.title {
+  @include type.type-style('heading-compact-02');
+}
+
+.count {
+  @include type.type-style('heading-05');
+  display: inline-block;
+  font-weight: 300;
+  margin-top: layout.$spacing-05;
+}
