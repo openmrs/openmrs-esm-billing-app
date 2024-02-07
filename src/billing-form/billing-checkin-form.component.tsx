@@ -22,28 +22,20 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const [paymentMethod, setPaymentMethod] = useState<any>();
   let lineList = [];
 
-  const shouldBillPatient =
-    attributes.find((item) => item.attributeType === 'caf2124f-00a9-4620-a250-efd8535afd6d')?.value ===
-    '1c30ee58-82d4-4ea4-a8c1-4bf2f9dfc8cf';
-
-  const handleCreateBill = useCallback(
-    (createBillPayload) => {
-      shouldBillPatient &&
-        createPatientBill(createBillPayload).then(
-          () => {
-            showSnackbar({ title: 'Patient Bill', subtitle: 'Patient has been billed successfully', kind: 'success' });
-          },
-          (error) => {
-            showSnackbar({
-              title: 'Patient Bill Error',
-              subtitle: 'An error has occurred while creating patient bill',
-              kind: 'error',
-            });
-          },
-        );
-    },
-    [shouldBillPatient],
-  );
+  const handleCreateBill = useCallback((createBillPayload) => {
+    createPatientBill(createBillPayload).then(
+      () => {
+        showSnackbar({ title: 'Patient Bill', subtitle: 'Patient has been billed successfully', kind: 'success' });
+      },
+      (error) => {
+        showSnackbar({
+          title: 'Patient Bill Error',
+          subtitle: 'An error has occurred while creating patient bill',
+          kind: 'error',
+        });
+      },
+    );
+  }, []);
 
   const handleBillingService = ({ selectedItem }) => {
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
@@ -110,7 +102,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   return (
     <section className={styles.sectionContainer}>
       <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
-      {shouldBillPatient && (
+      {
         <>
           <div className={styles.sectionTitle}>{t('billing', 'Billing')}</div>
           <div className={styles.sectionField}></div>
@@ -123,7 +115,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
             titleText={t('billableService', 'Billable service')}
           />
         </>
-      )}
+      }
     </section>
   );
 };
