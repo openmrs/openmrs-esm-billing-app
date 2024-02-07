@@ -11,6 +11,8 @@ import BillingForm from './billing-form/billing-form.component';
 import RequirePaymentModal from './modal/require-payment-modal.component';
 import RootComponent from './root.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
+import BillableServicesDashboard from './billable-services/dashboard/dashboard.component';
+import ServiceMetrics from './billable-services/dashboard/service-metrics.component';
 
 const moduleName = '@openmrs/esm-billing-app';
 
@@ -38,6 +40,11 @@ export const billingSummaryDashboardLink = getSyncLifecycle(
   createDashboardLink({ ...dashboardMeta, moduleName }),
   options,
 );
+
+export const billingServicesTiles = getSyncLifecycle(ServiceMetrics, {
+  featureName: 'billing-home-tiles',
+  moduleName,
+});
 
 export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
 export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);

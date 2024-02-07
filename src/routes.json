@@ -69,6 +69,11 @@
       "component": "visitAttributeTags",
       "slot": "patient-banner-tags-slot",
       "order": 2
+    },
+    {
+      "name": "billing-home-tiles-ext",
+      "slot": "billing-home-tiles-slot",
+      "component": "billingServicesTiles"
     }
   ]
 }
