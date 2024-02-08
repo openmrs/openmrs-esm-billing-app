@@ -5,6 +5,7 @@ import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { useBillableServices } from '../billable-service.resource';
 import Card from '../../metrics-cards/card.component';
 import styles from '../../metrics-cards/metrics-cards.scss';
+import { ExtensionSlot } from '@openmrs/esm-framework';
 
 export default function ServiceMetrics() {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ export default function ServiceMetrics() {
       {cards.map((card) => (
         <Card key={card.title} title={card.title} count={card.count} />
       ))}
+      <ExtensionSlot name="billing-home-tiles-slot" />
     </section>
   );
 }
