@@ -36,7 +36,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
     defaultValues: {},
     resolver: zodResolver(visitAttributesFormSchema),
   });
-  const patientCatergory = useConfig();
+  const { patientCatergory, catergoryConcepts } = useConfig();
   const [paymentDetails, paymentMethods, insuranceSchema, policyNumber, patientCategory] = watch([
     'paymentDetails',
     'paymentMethods',
@@ -57,7 +57,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
       patientCatergory.paymentDetails,
       patientCatergory.paymentMethods,
       patientCatergory.policyNumber,
-      patientCatergory.insuranceSchema,
+      patientCatergory.insuranceScheme,
       patientCatergory.patientCategory,
       patientCatergory.formPayloadPending,
       true,
@@ -93,13 +93,13 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
             orientation="vertical"
             legendText={t('paymentDetails', 'Payment Details')}
             name="payment-details-group">
-            <RadioButton labelText="Paying" value={patientCatergory.payingDetails} id="radio-1" />
-            <RadioButton labelText="Non paying" value={patientCatergory.nonPayingDetails} id="radio-2" />
+            <RadioButton labelText="Paying" value={catergoryConcepts.payingDetails} id="radio-1" />
+            <RadioButton labelText="Non paying" value={catergoryConcepts.nonPayingDetails} id="radio-2" />
           </RadioButtonGroup>
         )}
       />
 
-      {paymentDetails === patientCatergory.payingDetails && (
+      {paymentDetails === catergoryConcepts.payingDetails && (
         <Controller
           control={control}
           name="paymentMethods"
@@ -117,7 +117,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
         />
       )}
 
-      {paymentMethods === patientCatergory.insuranceDetails && paymentDetails === patientCatergory.payingDetails && (
+      {paymentMethods === catergoryConcepts.insuranceDetails && paymentDetails === catergoryConcepts.payingDetails && (
         <>
           <Controller
             control={control}
@@ -149,7 +149,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
         </>
       )}
 
-      {paymentDetails === patientCatergory.nonPayingDetails && (
+      {paymentDetails === catergoryConcepts.nonPayingDetails && (
         <Controller
           control={control}
           name="patientCategory"
@@ -159,8 +159,8 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
               onChange={({ selectedItem }) => field.onChange(selectedItem?.uuid)}
               id="patientCategory"
               items={[
-                { text: 'Child under 5', uuid: patientCatergory.childUnder5 },
-                { text: 'Student', uuid: patientCatergory.student },
+                { text: 'Child under 5', uuid: catergoryConcepts.childUnder5 },
+                { text: 'Student', uuid: catergoryConcepts.student },
               ]}
               itemToString={(item) => (item ? item.text : '')}
               titleText={t('patientCategory', 'Patient category')}
