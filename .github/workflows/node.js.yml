@@ -10,8 +10,8 @@ on:
       - created
 
 env:
-  ESM_NAME: "@openmrs/esm-template-app"
-  JS_NAME: "openmrs-esm-template-app.js"
+  ESM_NAME: "@openmrs/esm-billing-app"
+  JS_NAME: "openmrs-esm-billing-app.js"
 
 jobs:
   build:
@@ -42,28 +42,28 @@ jobs:
 
     steps:
       - run: echo "Uncomment the lines below and delete this one."
-      # - uses: actions/checkout@v2
-      # - name: Download Artifacts
-      #   uses: actions/download-artifact@v3
-      # - name: Use Node.js
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: "18.x"
-      #     registry-url: "https://registry.npmjs.org"
-      # - run: yarn install --immutable
-      # - run: yarn version "$(node -e "console.log(require('semver').inc(require('./package.json').version, 'patch'))")-pre.${{ github.run_number }}"
-      # - run: yarn build
-      # - run: git config user.email "info@openmrs.org" && git config user.name "OpenMRS CI"
-      # - run: git add . && git commit -m "Prerelease version" --no-verify
-      # - run: yarn config set npmAuthToken "${NODE_AUTH_TOKEN}" && yarn npm publish --access public --tag next
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-      # - name: Upload Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: dist
-      #     path: |
-      #       dist
+      - uses: actions/checkout@v2
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          registry-url: "https://registry.npmjs.org"
+      - run: yarn install --immutable
+      - run: yarn version "$(node -e "console.log(require('semver').inc(require('./package.json').version, 'patch'))")-pre.${{ github.run_number }}"
+      - run: yarn build
+      - run: git config user.email "info@openmrs.org" && git config user.name "OpenMRS CI"
+      - run: git add . && git commit -m "Prerelease version" --no-verify
+      - run: yarn config set npmAuthToken "${NODE_AUTH_TOKEN}" && yarn npm publish --access public --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: |
+            dist
 
   release:
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
       - run: yarn config set npmAuthToken "${NODE_AUTH_TOKEN}" &&  yarn npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-  
+
   deploy:
     runs-on: ubuntu-latest
 
