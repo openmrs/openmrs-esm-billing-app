@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import styles from './billing-checkin-form.scss';
@@ -20,11 +20,12 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
   const [attributes, setAttributes] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState<any>();
+  const { patientCatergory, catergoryConcepts } = useConfig();
   let lineList = [];
 
   const shouldBillPatient =
-    attributes.find((item) => item.attributeType === 'caf2124f-00a9-4620-a250-efd8535afd6d')?.value ===
-    '1c30ee58-82d4-4ea4-a8c1-4bf2f9dfc8cf';
+    attributes.find((item) => item.attributeType === patientCatergory.paymentDetails)?.value ===
+    catergoryConcepts.payingDetails;
 
   const handleCreateBill = useCallback(
     (createBillPayload) => {
