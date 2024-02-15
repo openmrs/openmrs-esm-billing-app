@@ -41,8 +41,6 @@ export const billingSummaryDashboardLink = getSyncLifecycle(
   options,
 );
 
-// export const billingServicesTiles = getSyncLifecycle(ServiceMetrics, options);
-
 export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
 export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);
 export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
