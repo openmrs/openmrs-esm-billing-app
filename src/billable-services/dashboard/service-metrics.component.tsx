@@ -36,7 +36,6 @@ export default function ServiceMetrics() {
       {cards.map((card) => (
         <Card key={card.title} title={card.title} count={card.count} />
       ))}
-      <ExtensionSlot name="billing-home-tiles-slot" />
     </section>
   );
 }
