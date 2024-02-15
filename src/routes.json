@@ -73,7 +73,7 @@
     {
       "name": "billing-home-tiles-ext",
       "slot": "billing-home-tiles-slot",
-      "component": "ServiceMetrics"
+      "component": "serviceMetrics"
     }
   ]
 }
