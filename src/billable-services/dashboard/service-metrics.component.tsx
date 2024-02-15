@@ -7,7 +7,7 @@ import Card from '../../metrics-cards/card.component';
 import styles from '../../metrics-cards/metrics-cards.scss';
 import { ExtensionSlot } from '@openmrs/esm-framework';
 
-export default function ServiceMetrics() {
+function ServiceMetrics() {
   const { t } = useTranslation();
   const { isLoading, error } = useBillableServices();
 
@@ -40,3 +40,5 @@ export default function ServiceMetrics() {
     </section>
   );
 }
+
+export default React.memo(ServiceMetrics);

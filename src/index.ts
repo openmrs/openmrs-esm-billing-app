@@ -41,14 +41,12 @@ export const billingSummaryDashboardLink = getSyncLifecycle(
   options,
 );
 
-export const billingServicesTiles = getSyncLifecycle(ServiceMetrics, {
-  featureName: 'billing-home-tiles',
-  moduleName,
-});
+// export const billingServicesTiles = getSyncLifecycle(ServiceMetrics, options);
 
 export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
 export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);
 export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
+export const serviceMetrics = getSyncLifecycle(ServiceMetrics, options);
 export const billingForm = getSyncLifecycle(BillingForm, options);
 export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
 export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
