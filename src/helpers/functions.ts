@@ -1,5 +1,6 @@
 import { type Payment, type LineItem } from '../types';
-import { configSchema } from '../config-schema';
+import {type ConfigObject } from '../config-schema';
+import { useConfig } from '@openmrs/esm-framework';
 
 // amount already paid
 export function calculateTotalAmountTendered(payments: Array<Payment>) {
@@ -34,11 +35,11 @@ export function calculateTotalAmount(lineItems: Array<LineItem>) {
 
 export const convertToCurrency = (amountToConvert: number) => {
   const locale = window.i18next?.language?.substring(0, 2) ?? '';
-  const currencySymbol = configSchema.defaultCurrency._default;
-
+  const { defaultCurrency } = useConfig<ConfigObject>();
+  const currencyCode = defaultCurrency || 'KES';
   const formatter = new Intl.NumberFormat(locale, {
     style: 'currency',
-    currency: currencySymbol,
+    currency: currencyCode,
     minimumFractionDigits: 2,
   });
 
