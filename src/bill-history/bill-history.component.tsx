@@ -18,7 +18,7 @@ import {
   TableRow,
   Tile,
 } from '@carbon/react';
-import { isDesktop, useLayoutType, usePagination } from '@openmrs/esm-framework';
+import { isDesktop, useConfig, useLayoutType, usePagination } from '@openmrs/esm-framework';
 import {
   CardHeader,
   EmptyDataIllustration,
@@ -44,6 +44,8 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const { paginated, goTo, results, currentPage } = usePagination(bills, PAGE_SIZE);
   const { pageSizes } = usePaginationInfo(PAGE_SIZE, bills?.length, currentPage, results?.length);
 
+  const { defaultCurrency } = useConfig();
+
   const headerData = [
     {
       header: t('visitTime', 'Visit time'),
@@ -66,10 +68,21 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const setBilledItems = (bill) =>
     bill.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
 
+  const formatCurrency = (amount) => {
+    const currencyCode = defaultCurrency._default || 'UGX';
+
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   const rowData = results?.map((bill) => ({
     id: bill.uuid,
     uuid: bill.uuid,
-    billTotal: bill.totalAmount,
+    billTotal: formatCurrency(bill.totalAmount),
     visitTime: bill.dateCreated,
     identifier: bill.identifier,
     billedItems: setBilledItems(bill),
