@@ -37,13 +37,12 @@ interface BillHistoryProps {
 }
 
 const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
-  const PAGE_SIZE = 10;
   const { t } = useTranslation();
   const { bills, isLoading, error } = useBills(patientUuid);
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const { paginated, goTo, results, currentPage } = usePagination(bills, PAGE_SIZE);
-  const { pageSizes } = usePaginationInfo(PAGE_SIZE, bills?.length, currentPage, results?.length);
+  const { paginated, goTo, results, currentPage } = usePagination(bills);
+  const { pageSize } = useConfig();
 
   const headerData = [
     {
@@ -180,8 +179,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             forwardText={t('nextPage', 'Next page')}
             backwardText={t('previousPage', 'Previous page')}
             page={currentPage}
-            pageSize={PAGE_SIZE}
-            pageSizes={pageSizes}
+            pageSize={pageSize._default}
             totalItems={bills.length}
             className={styles.pagination}
             size={responsiveSize}

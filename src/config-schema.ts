@@ -33,10 +33,18 @@ export const configSchema = {
     _description: 'The default currency for the application. Specify the currency code (e.g., KES, UGX, GBP).',
     _default: 'KES',
   },
+
+  pageSize: {
+    _type: Type.String,
+    _description: 'The default page size',
+    _default: 10,
+  },
 };
 
 export interface ConfigObject {
   patientCatergory: Object;
   defaultCurrency: string;
   catergoryConcepts: Object;
+  pageSize;
+  object;
 }

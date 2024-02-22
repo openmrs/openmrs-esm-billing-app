@@ -14,9 +14,10 @@ import {
 } from '@carbon/react';
 import styles from './billing-form.scss';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
+import { convertToCurrency } from '../helpers';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -38,26 +39,20 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   };
 
   const calculateTotal = (event, itemName) => {
-    const Qnty = event.target.value;
-    const price = document.getElementById(`${event.target.id}Price`).innerHTML;
-    const total = parseInt(price) * Qnty;
-
+    const quantity = parseInt(event.target.value);
     const updatedItems = billItems.map((item) => {
       if (item.Item.toLowerCase().includes(itemName.toLowerCase())) {
-        item.Qnty = Qnty;
-        item.Total = total;
+        const price = item.Price;
+        const total = price * quantity;
+        return { ...item, Qnty: quantity, Total: total };
       }
       return item;
     });
 
     setBillItems(updatedItems);
 
-    const totals = Array.from(document.querySelectorAll('[id$="Total"]'));
-    let addUpTotals = 0;
-    totals.forEach((tot) => {
-      addUpTotals += parseInt(tot.innerHTML);
-    });
-    setGrandTotal(addUpTotals);
+    const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Total, 0);
+    setGrandTotal(updatedGrandTotal);
   };
 
   const calculateTotalAfterAddBillItem = () => {
@@ -244,7 +239,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             <TableCell></TableCell>
             <TableCell></TableCell>
             <TableCell style={{ fontWeight: 'bold' }}>Grand Total:</TableCell>
-            <TableCell id="GrandTotalSum">{grandTotal}</TableCell>
+            <TableCell id="GrandTotalSum">{convertToCurrency(grandTotal)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
