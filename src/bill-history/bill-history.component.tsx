@@ -30,6 +30,7 @@ import { useBills } from '../billing.resource';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
 import { Add } from '@carbon/react/icons';
+import { convertToCurrency } from '../helpers';
 
 interface BillHistoryProps {
   patientUuid: string;
@@ -43,8 +44,6 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const { paginated, goTo, results, currentPage } = usePagination(bills, PAGE_SIZE);
   const { pageSizes } = usePaginationInfo(PAGE_SIZE, bills?.length, currentPage, results?.length);
-
-  const { defaultCurrency } = useConfig();
 
   const headerData = [
     {
@@ -68,21 +67,10 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const setBilledItems = (bill) =>
     bill.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
 
-  const formatCurrency = (amount) => {
-    const currencyCode = defaultCurrency._default || 'UGX';
-
-    return new Intl.NumberFormat(undefined, {
-      style: 'currency',
-      currency: currencyCode,
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   const rowData = results?.map((bill) => ({
     id: bill.uuid,
     uuid: bill.uuid,
-    billTotal: formatCurrency(bill.totalAmount),
+    billTotal: convertToCurrency(bill.totalAmount),
     visitTime: bill.dateCreated,
     identifier: bill.identifier,
     billedItems: setBilledItems(bill),
