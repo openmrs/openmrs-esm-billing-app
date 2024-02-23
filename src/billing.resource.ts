@@ -118,3 +118,26 @@ export const usePatientPaymentInfo = (patientUuid: string) => {
 
   return paymentInformation;
 };
+
+export function useFetchSearchResults(searchVal, category) {
+  let url = ``;
+  if (category == 'Stock Item') {
+    url = `/ws/rest/v1/stockmanagement/stockitem?v=default&limit=10&q=${searchVal}`;
+  } else {
+    url = `/ws/rest/v1/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
+  }
+  const { data, error, isLoading, isValidating } = useSWR(searchVal ? url : null, openmrsFetch, {});
+
+  return { data: data?.data, error, isLoading: isLoading, isValidating };
+}
+
+export const processBillItems = (payload) => {
+  const url = `/ws/rest/v1/cashier/bill`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
