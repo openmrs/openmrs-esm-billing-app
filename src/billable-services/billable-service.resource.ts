@@ -21,7 +21,7 @@ export const useBillableServices = () => {
 };
 
 export function useServiceTypes() {
-  const url = `/ws/rest/v1/concept/d7bd4cc0-90b1-4f22-90f2-ab7fde936727?v=custom:(setMembers:(uuid,display))`;
+  const url = `/ws/rest/v1/concept/21b8cf43-9f9f-4d02-9f4a-d710ece54261?v=custom:(setMembers:(uuid,display))`;
 
   const { data, error, isLoading } = useSWR<{ data }>(url, openmrsFetch);
 
