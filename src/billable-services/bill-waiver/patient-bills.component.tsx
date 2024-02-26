@@ -44,7 +44,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
     id: `${bill.uuid}`,
     date: bill.dateCreated,
     billableService: bill.billingService,
-    totalAmount: convertToCurrency(bill.totalAmount),
+    totalAmount: convertToCurrency(bill?.totalAmount),
   }));
 
   if (bills.length === 0 && patientUuid !== '') {

@@ -136,7 +136,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         lineItem.billableService = item.uuid;
       }
 
-      bill.lineItems.push(lineItem);
+      bill?.lineItems.push(lineItem);
     });
 
     const url = `/ws/rest/v1/cashier/bill`;
