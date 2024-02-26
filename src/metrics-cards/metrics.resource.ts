@@ -31,12 +31,12 @@ const calculateBillTotals = (bills: Array<MappedBill>) => {
   let cumulativeTotal = 0;
 
   bills.forEach((bill) => {
-    if (bill.status === 'PAID') {
-      paidTotal += bill.totalAmount;
-    } else if (bill.status === 'PENDING') {
-      pendingTotal += bill.totalAmount;
+    if (bill?.status === 'PAID') {
+      paidTotal += bill?.totalAmount;
+    } else if (bill?.status === 'PENDING') {
+      pendingTotal += bill?.totalAmount;
     }
-    cumulativeTotal += bill.totalAmount; // Add to cumulative total regardless of status
+    cumulativeTotal += bill?.totalAmount; // Add to cumulative total regardless of status
   });
 
   return { paidTotal, pendingTotal, cumulativeTotal };

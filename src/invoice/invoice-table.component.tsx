@@ -33,7 +33,7 @@ type InvoiceTableProps = {
 
 const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, isLoadingBill, onSelectItem }) => {
   const { t } = useTranslation();
-  const { lineItems } = bill;
+  const lineItems = bill?.lineItems ?? [];
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const [selectedLineItems, setSelectedLineItems] = useState([]);
@@ -72,14 +72,14 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           no: `${index + 1}`,
           id: `${item.uuid}`,
           billItem: item.item || item.billableService,
-          billCode: bill.receiptNumber,
-          status: bill.status,
+          billCode: bill?.receiptNumber,
+          status: bill?.status,
           quantity: item.quantity,
           price: item.price,
           total: item.price * item.quantity,
         };
       }) ?? [],
-    [bill.receiptNumber, bill.status, filteredLineItems],
+    [bill?.receiptNumber, bill?.status, filteredLineItems],
   );
 
   if (isLoadingBill) {

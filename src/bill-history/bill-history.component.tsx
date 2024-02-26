@@ -64,12 +64,12 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   ];
 
   const setBilledItems = (bill) =>
-    bill.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
+    bill?.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
 
   const rowData = results?.map((bill) => ({
     id: bill.uuid,
     uuid: bill.uuid,
-    billTotal: convertToCurrency(bill.totalAmount),
+    billTotal: convertToCurrency(bill?.totalAmount),
     visitTime: bill.dateCreated,
     identifier: bill.identifier,
     billedItems: setBilledItems(bill),

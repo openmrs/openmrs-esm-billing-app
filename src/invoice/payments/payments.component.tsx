@@ -33,7 +33,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
       .number()
-      .lte(bill.totalAmount - bill.tenderedAmount, { message: 'Amount paid should not be greater than amount due' }),
+      .lte(bill?.totalAmount - bill?.tenderedAmount, { message: 'Amount paid should not be greater than amount due' }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
   });
 
@@ -52,10 +52,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
 
   const hasMoreThanOneLineItem = bill?.lineItems?.length > 1;
 
-  const computedTotal = hasMoreThanOneLineItem ? computeTotalPrice(selectedLineItems) : bill.totalAmount ?? 0;
+  const computedTotal = hasMoreThanOneLineItem ? computeTotalPrice(selectedLineItems) : bill?.totalAmount ?? 0;
 
   const totalAmountTendered = formValues?.reduce((curr: number, prev) => curr + Number(prev.amount) ?? 0, 0) ?? 0;
-  const amountDue = Number(computedTotal) - (Number(bill.tenderedAmount) + Number(totalAmountTendered));
+  const amountDue = Number(computedTotal) - (Number(bill?.tenderedAmount) + Number(totalAmountTendered));
 
   const handleNavigateToBillingDashboard = () =>
     navigate({
@@ -100,7 +100,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
           <InvoiceBreakDown label={t('totalAmount', 'Total Amount')} value={convertToCurrency(computedTotal)} />
           <InvoiceBreakDown
             label={t('totalTendered', 'Total Tendered')}
-            value={convertToCurrency(bill.tenderedAmount + totalAmountTendered ?? 0)}
+            value={convertToCurrency(bill?.tenderedAmount + totalAmountTendered ?? 0)}
           />
           <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
           <InvoiceBreakDown

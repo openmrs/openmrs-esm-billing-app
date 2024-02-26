@@ -9,7 +9,7 @@ type BillWaiverProps = {};
 const BillWaiver: React.FC<BillWaiverProps> = () => {
   const [patientUuid, setPatientUuid] = useState<string>('');
   const { bills } = useBills(patientUuid);
-  const filterBills = bills.filter((bill) => bill.status !== 'PAID' && patientUuid === bill.patientUuid) ?? [];
+  const filterBills = bills.filter((bill) => bill?.status !== 'PAID' && patientUuid === bill.patientUuid) ?? [];
   return (
     <UserHasAccess privilege="coreapps.systemAdministration">
       <div className={styles.billWaiverContainer}>

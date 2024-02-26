@@ -25,15 +25,15 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
     dateCreated: bill?.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
-    lineItems: bill.lineItems,
-    billingService: bill.lineItems.map((bill) => bill.item || bill.billableService || '--').join('  '),
-    payments: bill.payments,
-    display: bill.display,
+    lineItems: bill?.lineItems,
+    billingService: bill?.lineItems.map((bill) => bill?.item || bill?.billableService || '--').join('  '),
+    payments: bill?.payments,
+    display: bill?.display,
     totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
   });
 
   const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
-  const filteredBills = billStatus === '' ? sortedBills : sortedBills?.filter((bill) => bill.status === billStatus);
+  const filteredBills = billStatus === '' ? sortedBills : sortedBills?.filter((bill) => bill?.status === billStatus);
   const mappedResults = filteredBills?.map((bill) => mapBillProperties(bill));
   const filteredResults = mappedResults?.filter((res) => res.patientUuid === patientUuid);
   const formattedBills = isEmpty(patientUuid) ? mappedResults : filteredResults || [];
@@ -67,8 +67,8 @@ export const useBill = (billUuid: string) => {
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
     dateCreated: bill?.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
-    lineItems: bill.lineItems,
-    billingService: bill.lineItems.map((bill) => bill.item).join(' '),
+    lineItems: bill?.lineItems,
+    billingService: bill?.lineItems.map((bill) => bill.item).join(' '),
     payments: bill.payments,
     totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
     tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),

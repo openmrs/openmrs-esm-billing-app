@@ -27,24 +27,21 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     attributes.find((item) => item.attributeType === patientCatergory.paymentDetails)?.value ===
     catergoryConcepts.payingDetails;
 
-  const handleCreateBill = useCallback(
-    (createBillPayload) => {
-      shouldBillPatient &&
-        createPatientBill(createBillPayload).then(
-          () => {
-            showSnackbar({ title: 'Patient Bill', subtitle: 'Patient has been billed successfully', kind: 'success' });
-          },
-          (error) => {
-            showSnackbar({
-              title: 'Patient Bill Error',
-              subtitle: 'An error has occurred while creating patient bill',
-              kind: 'error',
-            });
-          },
-        );
-    },
-    [shouldBillPatient],
-  );
+  const handleCreateBill = useCallback((createBillPayload) => {
+    shouldBillPatient &&
+      createPatientBill(createBillPayload).then(
+        () => {
+          showSnackbar({ title: 'Patient Bill', subtitle: 'Patient has been billed successfully', kind: 'success' });
+        },
+        (error) => {
+          showSnackbar({
+            title: 'Patient Bill Error',
+            subtitle: 'An error has occurred while creating patient bill',
+            kind: 'error',
+          });
+        },
+      );
+  }, []);
 
   const handleBillingService = ({ selectedItem }) => {
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';

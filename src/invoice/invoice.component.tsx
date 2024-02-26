@@ -68,10 +68,12 @@ const Invoice: React.FC = () => {
   const invoiceDetails = {
     'Total Amount': convertToCurrency(bill?.totalAmount),
     'Amount Tendered': convertToCurrency(bill?.tenderedAmount),
-    'Invoice Number': bill.receiptNumber,
+    'Invoice Number': bill?.receiptNumber,
     'Date And Time': bill?.dateCreated,
     'Invoice Status': bill?.status,
   };
+
+  console.log(bill);
 
   if (isLoadingPatient && isLoadingBill) {
     return (
@@ -112,7 +114,7 @@ const Invoice: React.FC = () => {
             size="md">
             {t('printBill', 'Print bill')}
           </Button>
-          {bill.status === 'PAID' ? <PrintReceipt billId={bill?.id} /> : null}
+          {bill?.status === 'PAID' ? <PrintReceipt billId={bill?.id} /> : null}
         </div>
       </div>
 

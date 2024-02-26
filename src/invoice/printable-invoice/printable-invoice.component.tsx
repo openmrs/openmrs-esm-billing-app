@@ -65,9 +65,9 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
   }, [patient, t]);
 
   const invoiceDetails = {
-    'Invoice #': bill.receiptNumber,
+    'Invoice #': bill?.receiptNumber,
     'Invoice date': bill.dateCreated,
-    Status: bill.status,
+    Status: bill?.status,
   };
 
   if (isLoading) {
