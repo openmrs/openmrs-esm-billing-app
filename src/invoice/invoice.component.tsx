@@ -73,8 +73,6 @@ const Invoice: React.FC = () => {
     'Invoice Status': bill?.status,
   };
 
-  console.log(bill);
-
   if (isLoadingPatient && isLoadingBill) {
     return (
       <div className={styles.invoiceContainer}>
