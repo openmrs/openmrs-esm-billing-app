@@ -13,7 +13,7 @@ const swrOption = {
 };
 
 export const usePaymentModes = () => {
-  const url = `/ws/rest/v1/cashier/paymentMode`;
+  const url = `${restBaseUrl}/cashier/paymentMode`;
   const { data, isLoading, error, mutate } = useSWR<{ data: { results: Array<PaymentMethod> } }>(
     url,
     openmrsFetch,

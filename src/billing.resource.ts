@@ -1,11 +1,11 @@
 import useSWR from 'swr';
-import { formatDate, parseDate, openmrsFetch, useSession, useVisit } from '@openmrs/esm-framework';
+import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl } from '@openmrs/esm-framework';
 import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
 import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `/ws/rest/v1/cashier/bill?v=full`;
+  const url = `${restBaseUrl}/cashier/bill?v=full`;
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
     url,
@@ -48,7 +48,7 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
 };
 
 export const useBill = (billUuid: string) => {
-  const url = `/ws/rest/v1/cashier/bill/${billUuid}`;
+  const url = `${restBaseUrl}/cashier/bill/${billUuid}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientInvoice }>(
     billUuid ? url : null,
     openmrsFetch,
@@ -86,7 +86,7 @@ export const useBill = (billUuid: string) => {
 };
 
 export const processBillPayment = (payload, billUuid: string) => {
-  const url = `/ws/rest/v1/cashier/bill/${billUuid}`;
+  const url = `${restBaseUrl}/cashier/bill/${billUuid}`;
 
   return openmrsFetch(url, {
     method: 'POST',
@@ -98,7 +98,7 @@ export const processBillPayment = (payload, billUuid: string) => {
 };
 
 export function useDefaultFacility() {
-  const url = '/ws/rest/v1/kenyaemr/default-facility';
+  const url = `${restBaseUrl}/kenyaemr/default-facility`;
   const { authenticated } = useSession();
 
   const { data, isLoading } = useSWR<{ data: FacilityDetail }>(authenticated ? url : null, openmrsFetch);
@@ -122,9 +122,9 @@ export const usePatientPaymentInfo = (patientUuid: string) => {
 export function useFetchSearchResults(searchVal, category) {
   let url = ``;
   if (category == 'Stock Item') {
-    url = `/ws/rest/v1/stockmanagement/stockitem?v=default&limit=10&q=${searchVal}`;
+    url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${searchVal}`;
   } else {
-    url = `/ws/rest/v1/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
+    url = `${restBaseUrl}/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
   }
   const { data, error, isLoading, isValidating } = useSWR(searchVal ? url : null, openmrsFetch, {});
 
@@ -132,7 +132,7 @@ export function useFetchSearchResults(searchVal, category) {
 }
 
 export const processBillItems = (payload) => {
-  const url = `/ws/rest/v1/cashier/bill`;
+  const url = `${restBaseUrl}/cashier/bill`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,
