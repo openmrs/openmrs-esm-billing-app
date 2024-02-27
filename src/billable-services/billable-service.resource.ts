@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { type OpenmrsResource, openmrsFetch } from '@openmrs/esm-framework';
+import { type OpenmrsResource, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { type ServiceConcept } from '../types';
 
 type ResponseObject = {
@@ -33,7 +33,7 @@ export function useServiceTypes() {
 }
 
 export const usePaymentModes = () => {
-  const url = `/ws/rest/v1/cashier/paymentMode`;
+  const url = `${restBaseUrl}cashier/paymentMode`;
 
   const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 

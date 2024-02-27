@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { type Visit, openmrsFetch } from '@openmrs/esm-framework';
+import { type Visit, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 
 type PaymentMethod = {
   uuid: string;
@@ -33,7 +33,7 @@ export const updateBillVisitAttribute = async (visit: Visit) => {
   const pendingPaymentAtrributeUuid = attributes?.find(
     (attribute) => attribute.attributeType.uuid === '919b51c9-8e2e-468f-8354-181bf3e55786',
   )?.uuid;
-  return openmrsFetch(`/ws/rest/v1/visit/${uuid}/attribute/${pendingPaymentAtrributeUuid}`, {
+  return openmrsFetch(`${restBaseUrl}/visit/${uuid}/attribute/${pendingPaymentAtrributeUuid}`, {
     body: { value: false },
     headers: {
       'Content-Type': 'application/json',

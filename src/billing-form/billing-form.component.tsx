@@ -14,7 +14,7 @@ import {
 } from '@carbon/react';
 import styles from './billing-form.scss';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { restBaseUrl, showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
@@ -139,7 +139,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       bill?.lineItems.push(lineItem);
     });
 
-    const url = `/ws/rest/v1/cashier/bill`;
+    const url = `${restBaseUrl}/cashier/bill`;
     processBillItems(bill).then(
       () => {
         closeWorkspace();

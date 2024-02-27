@@ -1,3 +1,5 @@
+import { restBaseUrl } from '@openmrs/esm-framework';
+
 export const billsSummary = [
   {
     uuid: '65f9f19a-f70e-44f4-9c6c-55b23dab4a3f',
@@ -17,7 +19,7 @@ export const billsSummary = [
         links: [
           {
             rel: 'self',
-            uri: 'http://localhost:8089/openmrs/ws/rest/v1/location/381595a0-2229-4152-9c45-bd3692aac7cc',
+            uri: `http://localhost:8089/openmrs${restBaseUrl}/location/381595a0-2229-4152-9c45-bd3692aac7cc`,
             resourceAlias: 'location',
           },
         ],
@@ -29,7 +31,7 @@ export const billsSummary = [
       links: [
         {
           rel: 'self',
-          uri: 'http://localhost:8089/openmrs/ws/rest/v1/provider/48b55692-e061-4ffa-b1f2-fd4aaf506224',
+          uri: `http://localhost:8089/openmrs${restBaseUrl}/provider/48b55692-e061-4ffa-b1f2-fd4aaf506224`,
           resourceAlias: 'provider',
         },
       ],
@@ -57,7 +59,7 @@ export const billsSummary = [
       links: [
         {
           rel: 'self',
-          uri: 'http://localhost:8089/openmrs/ws/rest/v1/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e',
+          uri: `http://localhost:8089/openmrs${restBaseUrl}/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e`,
           resourceAlias: 'patient',
         },
       ],
@@ -125,7 +127,7 @@ export const billsSummary = [
         links: [
           {
             rel: 'self',
-            uri: 'http://localhost:8089/openmrs/ws/rest/v1/location/381595a0-2229-4152-9c45-bd3692aac7cc',
+            uri: `http://localhost:8089/openmrs${restBaseUrl}/location/381595a0-2229-4152-9c45-bd3692aac7cc`,
             resourceAlias: 'location',
           },
         ],
@@ -137,7 +139,7 @@ export const billsSummary = [
       links: [
         {
           rel: 'self',
-          uri: 'http://localhost:8089/openmrs/ws/rest/v1/provider/48b55692-e061-4ffa-b1f2-fd4aaf506224',
+          uri: `http://localhost:8089/openmrs${restBaseUrl}/provider/48b55692-e061-4ffa-b1f2-fd4aaf506224`,
           resourceAlias: 'provider',
         },
       ],
@@ -165,7 +167,7 @@ export const billsSummary = [
       links: [
         {
           rel: 'self',
-          uri: 'http://localhost:8089/openmrs/ws/rest/v1/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e',
+          uri: `http://localhost:8089/openmrs${restBaseUrl}/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e`,
           resourceAlias: 'patient',
         },
       ],
@@ -234,7 +236,7 @@ export const billsSummary = [
         links: [
           {
             rel: 'self',
-            uri: 'http://localhost:8089/openmrs/ws/rest/v1/location/381595a0-2229-4152-9c45-bd3692aac7cc',
+            uri: `http://localhost:8089/openmrs${restBaseUrl}/location/381595a0-2229-4152-9c45-bd3692aac7cc`,
             resourceAlias: 'location',
           },
         ],
@@ -246,7 +248,7 @@ export const billsSummary = [
       links: [
         {
           rel: 'self',
-          uri: 'http://localhost:8089/openmrs/ws/rest/v1/provider/48b55692-e061-4ffa-b1f2-fd4aaf506224',
+          uri: `http://localhost:8089/openmrs${restBaseUrl}/provider/48b55692-e061-4ffa-b1f2-fd4aaf506224`,
           resourceAlias: 'provider',
         },
       ],
@@ -274,7 +276,7 @@ export const billsSummary = [
       links: [
         {
           rel: 'self',
-          uri: 'http://localhost:8089/openmrs/ws/rest/v1/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e',
+          uri: `http://localhost:8089/openmrs${restBaseUrl}/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e`,
           resourceAlias: 'patient',
         },
       ],
@@ -341,7 +343,7 @@ export const mockBill = {
     links: [
       {
         rel: 'self',
-        uri: 'https://data.kenyahmis.org:8500/openmrs/ws/rest/v1/provider/fe00dd43-4c39-4ce9-9832-bc3620c80c6c',
+        uri: `https://data.kenyahmis.org:8500/openmrs${restBaseUrl}/provider/fe00dd43-4c39-4ce9-9832-bc3620c80c6c`,
         resourceAlias: 'provider',
       },
     ],

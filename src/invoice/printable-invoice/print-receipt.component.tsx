@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@carbon/react';
 import { Printer } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { ConfigurableLink } from '@openmrs/esm-framework';
+import { ConfigurableLink, restBaseUrl } from '@openmrs/esm-framework';
 import styles from './print-receipt.scss';
 
 interface PrintReceiptProps {
@@ -18,7 +18,7 @@ const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
       renderIcon={(props) => <Printer size={24} {...props} />}>
       <ConfigurableLink
         className={styles.configurableLink}
-        to={`\${openmrsBase}/ws/rest/v1/cashier/receipt?billId=${billId}`}>
+        to={`\${openmrsBase}${restBaseUrl}/cashier/receipt?billId=${billId}`}>
         {t('printReceipt', 'Print receipt')}
       </ConfigurableLink>{' '}
     </Button>
