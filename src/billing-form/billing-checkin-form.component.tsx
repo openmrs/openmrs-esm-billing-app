@@ -11,10 +11,10 @@ const PENDING_PAYMENT_STATUS = 'PENDING';
 
 type BillingCheckInFormProps = {
   patientUuid: string;
-  setBillingInfo: (state) => void;
+  setExtraVisitInfo: (state) => void;
 };
 
-const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, setBillingInfo }) => {
+const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, setExtraVisitInfo }) => {
   const { t } = useTranslation();
   const { cashPoints, isLoading: isLoadingCashPoints, error: cashError } = useCashPoint();
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
@@ -22,9 +22,9 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const [paymentMethod, setPaymentMethod] = useState<any>();
   let lineList = [];
 
-  const handleCreateBill = useCallback((createBillPayload) => {
+  const handleCreateExtraVisitInfo = useCallback((createBillPayload) => {
     createPatientBill(createBillPayload).then(
-      () => {
+      (res) => {
         showSnackbar({ title: 'Patient Bill', subtitle: 'Patient has been billed successfully', kind: 'success' });
       },
       (error) => {
@@ -63,7 +63,11 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
       payments: [],
     };
 
-    setBillingInfo({ createBillPayload, handleCreateBill: () => handleCreateBill(createBillPayload), attributes });
+    setExtraVisitInfo({
+      createBillPayload,
+      handleCreateExtraVisitInfo: () => handleCreateExtraVisitInfo(createBillPayload),
+      attributes,
+    });
   };
 
   if (isLoadingLineItems || isLoadingCashPoints) {

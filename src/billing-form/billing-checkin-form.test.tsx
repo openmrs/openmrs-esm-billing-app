@@ -51,7 +51,7 @@ jest.mock('./billing-form.resource', () => ({
   createPatientBill: jest.fn(),
 }));
 
-const testProps = { patientUuid: 'some-patient-uuid', setBillingInfo: jest.fn() };
+const testProps = { patientUuid: 'some-patient-uuid', setExtraVisitInfo: jest.fn() };
 
 xdescribe('BillingCheckInForm', () => {
   beforeEach(() => {
@@ -95,8 +95,8 @@ xdescribe('BillingCheckInForm', () => {
 
     await user.click(screen.getByText('Lab Testing'));
 
-    expect(testProps.setBillingInfo).toHaveBeenCalled();
-    expect(testProps.setBillingInfo).toHaveBeenCalledWith({
+    expect(testProps.setExtraVisitInfo).toHaveBeenCalled();
+    expect(testProps.setExtraVisitInfo).toHaveBeenCalledWith({
       createBillPayload: {
         lineItems: [
           {
@@ -114,7 +114,7 @@ xdescribe('BillingCheckInForm', () => {
         status: 'PENDING',
         payments: [],
       },
-      handleCreateBill: expect.anything(),
+      handleCreateExtraVisitInfo: expect.anything(),
       attributes: [
         {
           attributeType: 'caf2124f-00a9-4620-a250-efd8535afd6d',
