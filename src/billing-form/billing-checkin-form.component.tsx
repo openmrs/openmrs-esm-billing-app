@@ -83,7 +83,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   if (paymentMethod) {
     lineList = [];
     lineList = lineItems.filter((e) =>
-      e.servicePrices.some((p) => p.paymentMode && p.paymentMode.uuid === paymentMethod?.paymentMethods),
+      e.servicePrices.some((p) => p.paymentMode && p.paymentMode.uuid === paymentMethod),
     );
   }
 
