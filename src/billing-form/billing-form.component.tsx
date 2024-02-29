@@ -18,11 +18,24 @@ import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type FieldError, useForm } from 'react-hook-form';
 
 type BillingFormProps = {
   patientUuid: string;
   closeWorkspace: () => void;
 };
+
+interface BillItem {
+  // work
+  uuid: string;
+  Item: string;
+  Qnty: number;
+  Price: number;
+  Total: number;
+  category: string;
+}
 
 const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }) => {
   const { t } = useTranslation();
@@ -37,6 +50,15 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     (document.getElementById('searchField') as HTMLInputElement).disabled = false;
     setCategory(choiceSelected === 'Stock Item' ? 'Stock Item' : 'Service');
   };
+
+  const {
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const billItemSchema = z.object({
+    Qnty: z.number().min(1, t('quantityGreaterThanZero', 'Quantity must be greater than zero')), // zod logic
+  });
 
   const calculateTotal = (event, itemName) => {
     const quantity = parseInt(event.target.value);
@@ -210,7 +232,9 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         <TableBody>
           {billItems && Array.isArray(billItems) ? (
             billItems.map((row) => (
-              <TableRow>
+              <TableRow key={row.uuid}>
+                {' '}
+                {/* Work */}
                 <TableCell>{row.Item}</TableCell>
                 <TableCell>
                   <input
@@ -225,6 +249,10 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                       row.Qnty = e.target.value;
                     }}
                   />
+                  {errors[`Qnty${row.uuid}`] &&
+                    typeof errors[`Qnty${row.uuid}`] === 'object' && ( //not sure sure it works
+                      <p>{(errors[`Qnty${row.uuid}`] as FieldError).message}</p>
+                    )}
                 </TableCell>
                 <TableCell id={row.Item + 'Price'}>{row.Price}</TableCell>
                 <TableCell id={row.Item + 'Total'} className="totalValue">
@@ -248,7 +276,9 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         <Button kind="secondary" onClick={closeWorkspace}>
           Discard
         </Button>
-        <Button kind="primary" onClick={postBillItems}>
+        <Button kind="primary" onClick={handleSubmit(onsubmit)}>
+          {' '}
+          {/* OnClick Doesn't work Work bse of the handleSubmit */}
           Save & Close
         </Button>
       </ButtonSet>
