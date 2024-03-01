@@ -81,6 +81,7 @@
   "printReceipt": "Print receipt",
   "processPayment": "Process Payment",
   "quantity": "Quantity",
+  "quantityGreaterThanZero": "Quantity must be greater than zero",
   "referenceNumber": "Reference number",
   "save": "Save",
   "searchConcepts": "Search associated concept",
