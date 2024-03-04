@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   ButtonSet,
   Button,
@@ -14,10 +14,11 @@ import {
 } from '@carbon/react';
 import styles from './billing-form.scss';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { showSnackbar, showToast, useConfig } from '@openmrs/esm-framework';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
+import { z } from 'zod';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -32,26 +33,46 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [billItems, setBillItems] = useState([]);
   const [searchVal, setSearchVal] = useState('');
   const [category, setCategory] = useState('');
+  const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
 
   const toggleSearch = (choiceSelected) => {
     (document.getElementById('searchField') as HTMLInputElement).disabled = false;
     setCategory(choiceSelected === 'Stock Item' ? 'Stock Item' : 'Service');
   };
 
+  const billItemSchema = z.object({
+    Qnty: z.number().min(1, t('quantityGreaterThanZero', 'Quantity must be at least one for all items.')), // zod logic
+  });
+
   const calculateTotal = (event, itemName) => {
     const quantity = parseInt(event.target.value);
+    let isValid = true;
+
+    try {
+      billItemSchema.parse({ Qnty: quantity });
+    } catch (error) {
+      isValid = false;
+      const parsedErrorMessage = JSON.parse(error.message);
+      showToast({
+        title: t('billItems', 'Save Bill'),
+        kind: 'error',
+        description: parsedErrorMessage[0].message,
+      });
+    }
+
     const updatedItems = billItems.map((item) => {
       if (item.Item.toLowerCase().includes(itemName.toLowerCase())) {
-        const price = item.Price;
-        const total = price * quantity;
-        return { ...item, Qnty: quantity, Total: total };
+        return { ...item, Qnty: quantity, isValid: quantity > 0 };
       }
       return item;
     });
 
-    setBillItems(updatedItems);
+    const anyInvalidQuantity = updatedItems.some((item) => item.Qnty <= 0);
 
-    const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Total, 0);
+    setBillItems(updatedItems);
+    setSaveDisabled(!isValid || anyInvalidQuantity);
+
+    const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Price * item.Qnty, 0);
     setGrandTotal(updatedGrandTotal);
   };
 
@@ -215,7 +236,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                 <TableCell>
                   <input
                     type="number"
-                    className="form-control"
+                    className={`form-control ${row.Qnty <= 0 ? styles.invalidInput : ''}`}
                     id={row.Item}
                     min={0}
                     max={100}
@@ -248,7 +269,12 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         <Button kind="secondary" onClick={closeWorkspace}>
           Discard
         </Button>
-        <Button kind="primary" onClick={postBillItems}>
+        <Button
+          kind="primary"
+          disabled={saveDisabled}
+          onClick={() => {
+            postBillItems();
+          }}>
           Save & Close
         </Button>
       </ButtonSet>
