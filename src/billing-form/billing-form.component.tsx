@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ButtonSet,
   Button,
@@ -19,6 +19,7 @@ import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
 import { z } from 'zod';
+import { TrashCan } from '@carbon/react/icons';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -34,6 +35,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [searchVal, setSearchVal] = useState('');
   const [category, setCategory] = useState('');
   const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
+  const [addedItems, setAddedItems] = useState([]);
 
   const toggleSearch = (choiceSelected) => {
     (document.getElementById('searchField') as HTMLInputElement).disabled = false;
@@ -94,9 +96,22 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     const updatedItems = [...billItems, newItem];
     setBillItems(updatedItems);
 
+    setAddedItems([...addedItems, newItem]);
+
     setSearchOptions([]);
     calculateTotalAfterAddBillItem(updatedItems);
     (document.getElementById('searchField') as HTMLInputElement).value = '';
+  };
+
+  const removeItemFromBill = (uuid) => {
+    const updatedItems = billItems.filter((item) => item.uuid !== uuid);
+    setBillItems(updatedItems);
+
+    // Update the list of added items
+    setAddedItems(addedItems.filter((item) => item.uuid !== uuid));
+
+    const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Total, 0);
+    setGrandTotal(updatedGrandTotal);
   };
 
   const { data, error, isLoading, isValidating } = useFetchSearchResults(searchVal, category);
@@ -108,25 +123,28 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       const res = data as { results: any[] };
 
       const options = res.results.map((o) => {
-        if (o.commonName && o.commonName !== '') {
-          return {
-            uuid: o.uuid || '',
-            Item: o.commonName,
-            Qnty: 1,
-            Price: 10,
-            Total: 10,
-            category: 'StockItem',
-          };
-        } else if (o.name.toLowerCase().includes(val.toLowerCase())) {
-          return {
-            uuid: o.uuid || '',
-            Item: o.name,
-            Qnty: 1,
-            Price: o.servicePrices[0].price,
-            Total: o.servicePrices[0].price,
-            category: 'Service',
-          };
+        if (!addedItems.some((item) => item.uuid === o.uuid)) {
+          if (o.commonName && o.commonName !== '') {
+            return {
+              uuid: o.uuid || '',
+              Item: o.commonName,
+              Qnty: 1,
+              Price: 10,
+              Total: 10,
+              category: 'StockItem',
+            };
+          } else if (o.name.toLowerCase().includes(val.toLowerCase())) {
+            return {
+              uuid: o.uuid || '',
+              Item: o.name,
+              Qnty: 1,
+              Price: o.servicePrices[0].price,
+              Total: o.servicePrices[0].price,
+              category: 'Service',
+            };
+          }
         }
+        return null;
       });
 
       setSearchOptions(options.filter((option) => option)); // Filter out undefined/null values
@@ -228,6 +246,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             <TableHeader>Quantity</TableHeader>
             <TableHeader>Price</TableHeader>
             <TableHeader>Total</TableHeader>
+            <TableHeader>Action</TableHeader>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -253,6 +272,9 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                 <TableCell id={row.Item + 'Total'} className="totalValue">
                   {row.Total}
                 </TableCell>
+                <TableCell>
+                  <TrashCan onClick={() => removeItemFromBill(row.uuid)} className={styles.removeButton} />
+                </TableCell>
               </TableRow>
             ))
           ) : (
@@ -263,6 +285,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             <TableCell></TableCell>
             <TableCell style={{ fontWeight: 'bold' }}>Grand Total:</TableCell>
             <TableCell id="GrandTotalSum">{convertToCurrency(grandTotal)}</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableBody>
       </Table>
