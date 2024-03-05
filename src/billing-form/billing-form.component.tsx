@@ -62,7 +62,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
     const updatedItems = billItems.map((item) => {
       if (item.Item.toLowerCase().includes(itemName.toLowerCase())) {
-        return { ...item, Qnty: quantity, isValid: quantity > 0 };
+        return { ...item, Qnty: quantity, Total: quantity > 0 ? item.Price * quantity : 0 };
       }
       return item;
     });
@@ -72,12 +72,12 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     setBillItems(updatedItems);
     setSaveDisabled(!isValid || anyInvalidQuantity);
 
-    const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Price * item.Qnty, 0);
+    const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Total, 0);
     setGrandTotal(updatedGrandTotal);
   };
 
-  const calculateTotalAfterAddBillItem = () => {
-    const sum = billItems.reduce((acc, item) => acc + item.Price, 0);
+  const calculateTotalAfterAddBillItem = (items) => {
+    const sum = items.reduce((acc, item) => acc + item.Price * item.Qnty, 0);
     setGrandTotal(sum);
   };
 
@@ -91,9 +91,11 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       category: itemcategory,
     };
 
-    setBillItems([...billItems, newItem]);
+    const updatedItems = [...billItems, newItem];
+    setBillItems(updatedItems);
+
     setSearchOptions([]);
-    calculateTotalAfterAddBillItem();
+    calculateTotalAfterAddBillItem(updatedItems);
     (document.getElementById('searchField') as HTMLInputElement).value = '';
   };
 
