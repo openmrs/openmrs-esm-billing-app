@@ -4,7 +4,7 @@ import { Printer } from '@carbon/react/icons';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
-import { ExtensionSlot, usePatient } from '@openmrs/esm-framework';
+import { ExtensionSlot, useConfig, usePatient } from '@openmrs/esm-framework';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { convertToCurrency } from '../helpers';
 import { type LineItem } from '../types';
@@ -32,6 +32,7 @@ const Invoice: React.FC = () => {
   const handleSelectItem = (lineItems: Array<LineItem>) => {
     setSelectedLineItems(lineItems);
   };
+  const { defaultCurrency } = useConfig();
 
   const handleAfterPrint = useCallback(() => {
     onBeforeGetContentResolve.current = null;
@@ -66,8 +67,8 @@ const Invoice: React.FC = () => {
   }, [isPrinting]);
 
   const invoiceDetails = {
-    'Total Amount': convertToCurrency(bill?.totalAmount),
-    'Amount Tendered': convertToCurrency(bill?.tenderedAmount),
+    'Total Amount': convertToCurrency(bill?.totalAmount, defaultCurrency),
+    'Amount Tendered': convertToCurrency(bill?.tenderedAmount, defaultCurrency),
     'Invoice Number': bill?.receiptNumber,
     'Date And Time': bill?.dateCreated,
     'Invoice Status': bill?.status,

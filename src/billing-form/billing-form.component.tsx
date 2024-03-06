@@ -28,6 +28,7 @@ type BillingFormProps = {
 
 const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }) => {
   const { t } = useTranslation();
+  const { defaultCurrency } = useConfig();
 
   const [grandTotal, setGrandTotal] = useState(0);
   const [searchOptions, setSearchOptions] = useState([]);
@@ -284,8 +285,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             <TableCell></TableCell>
             <TableCell></TableCell>
             <TableCell style={{ fontWeight: 'bold' }}>Grand Total:</TableCell>
-            <TableCell id="GrandTotalSum">{convertToCurrency(grandTotal)}</TableCell>
-            <TableCell></TableCell>
+            <TableCell id="GrandTotalSum">{convertToCurrency(grandTotal, defaultCurrency)}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
