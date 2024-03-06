@@ -18,7 +18,8 @@
         "name": "billing",
         "title": "billing",
         "slot": "billing-dashboard-slot"
-      }
+      },
+      "featureFlag": "billing"
     },
     {
       "component": "root",
@@ -44,7 +45,8 @@
         "columnSpan": 1,
         "slot": "patient-chart-billing-dashboard-slot",
         "path": "Billing history"
-      }
+      },
+      "featureFlag": "billing"
     },
     {
       "name": "billing-checkin-form",
