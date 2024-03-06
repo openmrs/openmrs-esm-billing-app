@@ -3,7 +3,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { navigate, showSnackbar, useVisit } from '@openmrs/esm-framework';
+import { navigate, showSnackbar, useConfig, useVisit } from '@openmrs/esm-framework';
 import { Button } from '@carbon/react';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import { type LineItem, type MappedBill } from '../../types';
@@ -29,6 +29,7 @@ export type PaymentFormValue = {
 
 const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
   const { t } = useTranslation();
+  const { defaultCurrency } = useConfig();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
@@ -97,16 +98,19 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
         </div>
         <div className={styles.divider} />
         <div className={styles.paymentTotals}>
-          <InvoiceBreakDown label={t('totalAmount', 'Total Amount')} value={convertToCurrency(computedTotal)} />
+          <InvoiceBreakDown
+            label={t('totalAmount', 'Total Amount')}
+            value={convertToCurrency(computedTotal, defaultCurrency)}
+          />
           <InvoiceBreakDown
             label={t('totalTendered', 'Total Tendered')}
-            value={convertToCurrency(bill?.tenderedAmount + totalAmountTendered ?? 0)}
+            value={convertToCurrency(bill?.tenderedAmount + totalAmountTendered ?? 0, defaultCurrency)}
           />
           <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
           <InvoiceBreakDown
             hasBalance={amountDue < 0 ?? false}
             label={amountDueDisplay(amountDue)}
-            value={convertToCurrency(amountDue ?? 0)}
+            value={convertToCurrency(amountDue ?? 0, defaultCurrency)}
           />
           <div className={styles.processPayments}>
             <Button onClick={handleNavigateToBillingDashboard} kind="secondary">

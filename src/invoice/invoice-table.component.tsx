@@ -20,9 +20,10 @@ import {
   type DataTableHeader,
   type DataTableRow,
 } from '@carbon/react';
-import { isDesktop, useDebounce, useLayoutType } from '@openmrs/esm-framework';
+import { isDesktop, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { type LineItem, type MappedBill } from '../types';
 import styles from './invoice-table.scss';
+import { convertToCurrency } from '../helpers';
 
 type InvoiceTableProps = {
   bill: MappedBill;
@@ -39,6 +40,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   const [selectedLineItems, setSelectedLineItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
+  const { defaultCurrency } = useConfig();
 
   const filteredLineItems = useMemo(() => {
     if (!debouncedSearchTerm) {
@@ -75,8 +77,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           billCode: bill?.receiptNumber,
           status: bill?.status,
           quantity: item.quantity,
-          price: item.price,
-          total: item.price * item.quantity,
+          price: convertToCurrency(item.price, defaultCurrency),
+          total: convertToCurrency(item.price * item.quantity, defaultCurrency),
         };
       }) ?? [],
     [bill?.receiptNumber, bill?.status, filteredLineItems],

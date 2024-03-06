@@ -51,16 +51,14 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
   }, [paymentDetails, paymentMethods, insuranceSchema, policyNumber, patientCategory]);
 
   const createVisitAttributesPayload = () => {
-    const paymentMethods = getValues();
+    const { paymentDetails, paymentMethods, insuranceScheme, policyNumber, patientCategory } = getValues();
     setPaymentMethod(paymentMethods);
     const formPayload = [
-      patientCatergory.paymentDetails,
-      patientCatergory.paymentMethods,
-      patientCatergory.policyNumber,
-      patientCatergory.insuranceScheme,
-      patientCatergory.patientCategory,
-      patientCatergory.formPayloadPending,
-      true,
+      { uuid: patientCatergory.paymentDetails, value: paymentDetails },
+      { uuid: patientCatergory.paymentMethods, value: paymentMethods },
+      { uuid: patientCatergory.insuranceScheme, value: insuranceScheme },
+      { uuid: patientCatergory.policyNumber, value: policyNumber },
+      { uuid: patientCatergory.patientCategory, value: patientCategory },
     ];
     const visitAttributesPayload = formPayload.filter(
       (item) => item.value !== undefined && item.value !== null && item.value !== '',
@@ -92,7 +90,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
             onChange={(selected) => field.onChange(selected)}
             orientation="vertical"
             legendText={t('paymentDetails', 'Payment Details')}
-            name="payment-details-group">
+            name="payment-details">
             <RadioButton labelText="Paying" value={catergoryConcepts.payingDetails} id="radio-1" />
             <RadioButton labelText="Non paying" value={catergoryConcepts.nonPayingDetails} id="radio-2" />
           </RadioButtonGroup>

@@ -23,3 +23,13 @@
   border-bottom-color: silver;
   cursor: pointer;
 }
+
+.invalidInput {
+  border: 2px solid red;
+}
+
+.removeButton {
+  color: #ee0909;
+  right: 20px;
+  cursor: pointer;
+}
