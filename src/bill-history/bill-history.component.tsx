@@ -42,7 +42,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const { paginated, goTo, results, currentPage } = usePagination(bills);
-  const { pageSize } = useConfig();
+  const { pageSize, defaultCurrency } = useConfig();
 
   const headerData = [
     {
@@ -64,12 +64,12 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   ];
 
   const setBilledItems = (bill) =>
-    bill?.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
+    bill?.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item?.billableService || item?.item || ''), '');
 
   const rowData = results?.map((bill) => ({
     id: bill.uuid,
     uuid: bill.uuid,
-    billTotal: convertToCurrency(bill?.totalAmount),
+    billTotal: convertToCurrency(bill?.totalAmount, defaultCurrency),
     visitTime: bill.dateCreated,
     identifier: bill.identifier,
     billedItems: setBilledItems(bill),

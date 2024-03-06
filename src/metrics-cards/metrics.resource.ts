@@ -19,9 +19,9 @@ import { type MappedBill } from '../types';
 export const useBillMetrics = (bills: Array<MappedBill>) => {
   const { paidTotal, pendingTotal, cumulativeTotal } = calculateBillTotals(bills);
   return {
-    cumulativeBills: convertToCurrency(cumulativeTotal),
-    pendingBills: convertToCurrency(pendingTotal),
-    paidBills: convertToCurrency(paidTotal),
+    cumulativeBills: cumulativeTotal,
+    pendingBills: pendingTotal,
+    paidBills: paidTotal,
   };
 };
 
