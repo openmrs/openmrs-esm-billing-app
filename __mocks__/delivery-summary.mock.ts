@@ -1,3 +1,5 @@
+import { restBaseUrl } from '@openmrs/esm-framework';
+
 export const mockLabourAndDeliveryData = {
   data: {
     results: [
@@ -11,7 +13,7 @@ export const mockLabourAndDeliveryData = {
           links: [
             {
               rel: 'self',
-              uri: 'http://backend:8080/openmrs/ws/rest/v1/patient/b835eff8-98c9-4988-887b-d93da7fbd542',
+              uri: `http://backend:8080/openmrs${restBaseUrl}/patient/b835eff8-98c9-4988-887b-d93da7fbd542`,
               resourceAlias: 'patient',
             },
           ],
@@ -23,7 +25,7 @@ export const mockLabourAndDeliveryData = {
           links: [
             {
               rel: 'self',
-              uri: 'http://backend:8080/openmrs/ws/rest/v1/form/9e1a0c68-ca19-3482-9ffb-0a6b4e591c2a',
+              uri: `http://backend:8080/openmrs${restBaseUrl}/form/9e1a0c68-ca19-3482-9ffb-0a6b4e591c2a`,
               resourceAlias: 'form',
             },
           ],
@@ -34,7 +36,7 @@ export const mockLabourAndDeliveryData = {
           links: [
             {
               rel: 'self',
-              uri: 'http://backend:8080/openmrs/ws/rest/v1/encountertype/dd528487-82a5-4082-9c72-ed246bd49591',
+              uri: `http://backend:8080/openmrs${restBaseUrl}/encountertype/dd528487-82a5-4082-9c72-ed246bd49591`,
               resourceAlias: 'encountertype',
             },
           ],
@@ -46,7 +48,7 @@ export const mockLabourAndDeliveryData = {
             links: [
               {
                 rel: 'self',
-                uri: 'http://backend:8080/openmrs/ws/rest/v1/obs/04d7d2a2-8ffd-418c-9a0c-1d20dec50231',
+                uri: `http://backend:8080/openmrs${restBaseUrl}/obs/04d7d2a2-8ffd-418c-9a0c-1d20dec50231`,
                 resourceAlias: 'obs',
               },
             ],
@@ -57,7 +59,7 @@ export const mockLabourAndDeliveryData = {
             links: [
               {
                 rel: 'self',
-                uri: 'http://backend:8080/openmrs/ws/rest/v1/obs/5ca0c815-2c47-4cda-8c46-1e118b593ea8',
+                uri: `http://backend:8080/openmrs${restBaseUrl}/obs/5ca0c815-2c47-4cda-8c46-1e118b593ea8`,
                 resourceAlias: 'obs',
               },
             ],
@@ -71,12 +73,12 @@ export const mockLabourAndDeliveryData = {
         links: [
           {
             rel: 'self',
-            uri: 'http://backend:8080/openmrs/ws/rest/v1/encounter/3b4daf81-7372-475c-ba5d-13c9c21d8ab1',
+            uri: `http://backend:8080/openmrs${restBaseUrl}/encounter/3b4daf81-7372-475c-ba5d-13c9c21d8ab1`,
             resourceAlias: 'encounter',
           },
           {
             rel: 'full',
-            uri: 'http://backend:8080/openmrs/ws/rest/v1/encounter/3b4daf81-7372-475c-ba5d-13c9c21d8ab1?v=full',
+            uri: `http://backend:8080/openmrs${restBaseUrl}/encounter/3b4daf81-7372-475c-ba5d-13c9c21d8ab1?v=full`,
             resourceAlias: 'encounter',
           },
         ],

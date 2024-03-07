@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { type Visit, openmrsFetch } from '@openmrs/esm-framework';
+import { type Visit, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 
 type PaymentMethod = {
   uuid: string;
@@ -13,7 +13,7 @@ const swrOption = {
 };
 
 export const usePaymentModes = () => {
-  const url = `/ws/rest/v1/cashier/paymentMode`;
+  const url = `${restBaseUrl}/cashier/paymentMode`;
   const { data, isLoading, error, mutate } = useSWR<{ data: { results: Array<PaymentMethod> } }>(
     url,
     openmrsFetch,
@@ -33,7 +33,7 @@ export const updateBillVisitAttribute = async (visit: Visit) => {
   const pendingPaymentAtrributeUuid = attributes?.find(
     (attribute) => attribute.attributeType.uuid === '919b51c9-8e2e-468f-8354-181bf3e55786',
   )?.uuid;
-  return openmrsFetch(`/ws/rest/v1/visit/${uuid}/attribute/${pendingPaymentAtrributeUuid}`, {
+  return openmrsFetch(`${restBaseUrl}/visit/${uuid}/attribute/${pendingPaymentAtrributeUuid}`, {
     body: { value: false },
     headers: {
       'Content-Type': 'application/json',

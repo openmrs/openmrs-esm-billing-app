@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { type OpenmrsResource, openmrsFetch } from '@openmrs/esm-framework';
+import { type OpenmrsResource, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { type ServiceConcept } from '../types';
 
 type ResponseObject = {
@@ -7,7 +7,7 @@ type ResponseObject = {
 };
 
 export const useBillableServices = () => {
-  const url = `/ws/rest/v1/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
+  const url = `${restBaseUrl}/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
 
   const { data, isLoading, isValidating, error, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
@@ -21,7 +21,7 @@ export const useBillableServices = () => {
 };
 
 export function useServiceTypes() {
-  const url = `/ws/rest/v1/concept/21b8cf43-9f9f-4d02-9f4a-d710ece54261?v=custom:(setMembers:(uuid,display))`;
+  const url = `${restBaseUrl}/concept/21b8cf43-9f9f-4d02-9f4a-d710ece54261?v=custom:(setMembers:(uuid,display))`;
 
   const { data, error, isLoading } = useSWR<{ data }>(url, openmrsFetch);
 
@@ -33,7 +33,7 @@ export function useServiceTypes() {
 }
 
 export const usePaymentModes = () => {
-  const url = `/ws/rest/v1/cashier/paymentMode`;
+  const url = `${restBaseUrl}/cashier/paymentMode`;
 
   const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
@@ -45,7 +45,7 @@ export const usePaymentModes = () => {
 };
 
 export const createBillableSerice = (payload: any) => {
-  const url = `/ws/rest/v1/cashier/api/billable-service`;
+  const url = `${restBaseUrl}/cashier/api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,
@@ -56,7 +56,7 @@ export const createBillableSerice = (payload: any) => {
 };
 
 export function useConceptsSearch(conceptToLookup: string) {
-  const conditionsSearchUrl = `/ws/rest/v1/conceptsearch?q=${conceptToLookup}`;
+  const conditionsSearchUrl = `${restBaseUrl}/conceptsearch?q=${conceptToLookup}`;
 
   const { data, error, isLoading } = useSWR<{ data: { results: Array<ServiceConcept> } }, Error>(
     conceptToLookup ? conditionsSearchUrl : null,

@@ -3,7 +3,7 @@ import { Form, Stack, FormGroup, Layer, Button, NumberInput } from '@carbon/reac
 import { TaskAdd } from '@carbon/react/icons';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { restBaseUrl, showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { createBillWaiverPayload } from './utils';
 import { convertToCurrency } from '../../helpers';
 import { processBillPayment } from '../../billing.resource';
@@ -47,7 +47,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
           isLowContrast: true,
         });
         setPatientUuid('');
-        mutate((key) => typeof key === 'string' && key.startsWith('/ws/rest/v1/cashier/bill?v=full'), undefined, {
+        mutate((key) => typeof key === 'string' && key.startsWith(`${restBaseUrl}/cashier/bill?v=full`), undefined, {
           revalidate: true,
         });
       },

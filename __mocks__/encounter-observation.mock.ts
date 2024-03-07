@@ -1,3 +1,5 @@
+import { restBaseUrl } from '@openmrs/esm-framework';
+
 export const formConceptMap = {
   '162054AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA': {
     display: 'Admission Number:',
@@ -1679,7 +1681,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/984AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/984AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
               resourceAlias: 'concept',
             },
           ],
@@ -1690,7 +1692,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -1703,7 +1705,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
               resourceAlias: 'obs',
             },
           ],
@@ -1717,7 +1719,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
               resourceAlias: 'location',
             },
           ],
@@ -1729,7 +1731,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
               resourceAlias: 'encounter',
             },
           ],
@@ -1748,12 +1750,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
                 resourceAlias: 'name',
               },
             ],
@@ -1765,7 +1767,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -1776,7 +1778,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -1791,7 +1793,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1802,7 +1804,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1813,7 +1815,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1824,7 +1826,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1835,7 +1837,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1846,7 +1848,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1857,7 +1859,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1868,7 +1870,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1879,7 +1881,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1890,7 +1892,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1901,7 +1903,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1912,7 +1914,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1923,7 +1925,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1934,7 +1936,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1945,7 +1947,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                   resourceAlias: 'name',
                 },
               ],
@@ -1956,7 +1958,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -1967,7 +1969,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -1980,7 +1982,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -1991,7 +1993,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -2004,7 +2006,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2015,7 +2017,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2026,7 +2028,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2037,7 +2039,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2048,7 +2050,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2060,12 +2062,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -2079,12 +2081,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/24954482-57f8-4411-9626-6d06b178a297',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/24954482-57f8-4411-9626-6d06b178a297`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/24954482-57f8-4411-9626-6d06b178a297?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/24954482-57f8-4411-9626-6d06b178a297?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -2099,7 +2101,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/5916AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/5916AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -2110,7 +2112,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -2123,7 +2125,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -2137,7 +2139,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -2149,7 +2151,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -2164,12 +2166,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/af1eed2e-4c64-4d38-8273-a2b685051af4',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/af1eed2e-4c64-4d38-8273-a2b685051af4`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/af1eed2e-4c64-4d38-8273-a2b685051af4?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/af1eed2e-4c64-4d38-8273-a2b685051af4?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -2184,7 +2186,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1282AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1282AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -2195,7 +2197,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -2208,7 +2210,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -2222,7 +2224,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -2234,7 +2236,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -2253,12 +2255,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                 resourceAlias: 'name',
               },
             ],
@@ -2270,7 +2272,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -2281,7 +2283,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d490dfc-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d490dfc-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -2296,7 +2298,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87199BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87199BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2307,7 +2309,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98841BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98841BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2318,7 +2320,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87200BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87200BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2329,7 +2331,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/88823BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/88823BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2340,7 +2342,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87271BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87271BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2351,7 +2353,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87450BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87450BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2362,7 +2364,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98836BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98836BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2373,7 +2375,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/99061BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/99061BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2384,7 +2386,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91262BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91262BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2395,7 +2397,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91397BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91397BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2406,7 +2408,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98840BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98840BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2417,7 +2419,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2428,7 +2430,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98842BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98842BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2439,7 +2441,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98510BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98510BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2450,7 +2452,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98849BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98849BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2461,7 +2463,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/96123BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/96123BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2472,7 +2474,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/97626BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/97626BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2483,7 +2485,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98835BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98835BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2497,7 +2499,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/131860ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/131860ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2508,7 +2510,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/145732ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/145732ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2519,7 +2521,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/177433ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/177433ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2530,7 +2532,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134131ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134131ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2541,7 +2543,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/139333ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/139333ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -2553,12 +2555,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -2572,12 +2574,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/b516c0cd-5539-477f-8e03-a13447946b30',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/b516c0cd-5539-477f-8e03-a13447946b30`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/b516c0cd-5539-477f-8e03-a13447946b30?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/b516c0cd-5539-477f-8e03-a13447946b30?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -2592,7 +2594,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/159604AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/159604AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -2603,7 +2605,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -2616,7 +2618,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -2630,7 +2632,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -2642,7 +2644,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -2657,12 +2659,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/7820cc1f-83f7-44da-8fd4-ddf5f124f3c6',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/7820cc1f-83f7-44da-8fd4-ddf5f124f3c6`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/7820cc1f-83f7-44da-8fd4-ddf5f124f3c6?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/7820cc1f-83f7-44da-8fd4-ddf5f124f3c6?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -2677,7 +2679,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/164122AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/164122AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -2688,7 +2690,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -2701,7 +2703,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -2715,7 +2717,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -2727,7 +2729,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -2746,12 +2748,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                 resourceAlias: 'name',
               },
             ],
@@ -2763,7 +2765,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -2774,7 +2776,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -2789,7 +2791,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139803BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139803BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2800,7 +2802,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2811,7 +2813,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126360BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126360BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2822,7 +2824,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2833,7 +2835,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111196BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111196BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2844,7 +2846,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126357BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126357BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2855,7 +2857,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106917BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106917BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2866,7 +2868,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1139BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1139BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2877,7 +2879,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126358BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126358BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2888,7 +2890,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106308BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106308BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2899,7 +2901,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126362BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126362BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2910,7 +2912,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2921,7 +2923,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2932,7 +2934,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126359BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126359BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2943,7 +2945,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2954,7 +2956,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2965,7 +2967,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126356BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126356BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -2978,7 +2980,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1069FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1069FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -2989,7 +2991,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18159FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18159FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -3002,7 +3004,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143597ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143597ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3013,7 +3015,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144379ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144379ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3024,7 +3026,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134738ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134738ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3035,7 +3037,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171329ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171329ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3046,7 +3048,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133841ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133841ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3058,12 +3060,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -3077,12 +3079,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/e402f16a-38d3-423c-9bc8-d56b45b33ebd',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/e402f16a-38d3-423c-9bc8-d56b45b33ebd`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/e402f16a-38d3-423c-9bc8-d56b45b33ebd?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/e402f16a-38d3-423c-9bc8-d56b45b33ebd?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -3097,7 +3099,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1587AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1587AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -3108,7 +3110,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -3121,7 +3123,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -3135,7 +3137,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -3147,7 +3149,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -3166,12 +3168,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1793BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1793BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1793BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1793BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                 resourceAlias: 'name',
               },
             ],
@@ -3183,7 +3185,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -3194,7 +3196,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -3209,7 +3211,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1794BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1794BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3220,7 +3222,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1793BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1793BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3231,7 +3233,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111257BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111257BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3242,7 +3244,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/94349BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/94349BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3253,7 +3255,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136889BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136889BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3267,7 +3269,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133339ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133339ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3278,7 +3280,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/132703ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/132703ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3289,7 +3291,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171776ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171776ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3301,12 +3303,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -3320,12 +3322,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/75a10d67-723f-40a4-9611-ff93c848ffe4',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/75a10d67-723f-40a4-9611-ff93c848ffe4`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/75a10d67-723f-40a4-9611-ff93c848ffe4?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/75a10d67-723f-40a4-9611-ff93c848ffe4?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -3340,7 +3342,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/159917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/159917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -3351,7 +3353,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -3364,7 +3366,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -3378,7 +3380,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -3390,7 +3392,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -3409,12 +3411,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                 resourceAlias: 'name',
               },
             ],
@@ -3426,7 +3428,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -3437,7 +3439,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d4918b0-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d4918b0-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -3452,7 +3454,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136876BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136876BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3463,7 +3465,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107439BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107439BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3474,7 +3476,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3485,7 +3487,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107438BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107438BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3496,7 +3498,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107440BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107440BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3507,7 +3509,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/86710BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/86710BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3518,7 +3520,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136877BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136877BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3532,7 +3534,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/275493ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/275493ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3543,7 +3545,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276362ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276362ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3554,7 +3556,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276284ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276284ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3565,7 +3567,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/76413ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/76413ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -3577,12 +3579,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -3596,12 +3598,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f040e1dd-c8e7-4a36-bc63-b651d797e253',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f040e1dd-c8e7-4a36-bc63-b651d797e253`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f040e1dd-c8e7-4a36-bc63-b651d797e253?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f040e1dd-c8e7-4a36-bc63-b651d797e253?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -3616,7 +3618,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -3627,7 +3629,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -3640,7 +3642,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -3654,7 +3656,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -3666,7 +3668,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -3681,12 +3683,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/e6cad7cb-ae04-489a-9fbe-9379edcf0045',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/e6cad7cb-ae04-489a-9fbe-9379edcf0045`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/e6cad7cb-ae04-489a-9fbe-9379edcf0045?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/e6cad7cb-ae04-489a-9fbe-9379edcf0045?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -3701,7 +3703,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/159603AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/159603AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -3712,7 +3714,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -3725,7 +3727,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -3739,7 +3741,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -3751,7 +3753,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -3766,12 +3768,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/9fa7ca0a-9af6-451e-930f-5b1287a6625b',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/9fa7ca0a-9af6-451e-930f-5b1287a6625b`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/9fa7ca0a-9af6-451e-930f-5b1287a6625b?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/9fa7ca0a-9af6-451e-930f-5b1287a6625b?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -3786,7 +3788,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/161094AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/161094AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -3797,7 +3799,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -3810,7 +3812,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -3824,7 +3826,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -3836,7 +3838,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -3855,12 +3857,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                 resourceAlias: 'name',
               },
             ],
@@ -3872,7 +3874,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -3883,7 +3885,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -3898,7 +3900,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139803BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139803BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3909,7 +3911,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3920,7 +3922,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126360BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126360BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3931,7 +3933,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3942,7 +3944,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111196BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111196BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3953,7 +3955,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126357BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126357BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3964,7 +3966,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106917BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106917BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3975,7 +3977,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1139BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1139BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3986,7 +3988,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126358BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126358BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -3997,7 +3999,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106308BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106308BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4008,7 +4010,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126362BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126362BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4019,7 +4021,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4030,7 +4032,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4041,7 +4043,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126359BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126359BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4052,7 +4054,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4063,7 +4065,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4074,7 +4076,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126356BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126356BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4087,7 +4089,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1069FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1069FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -4098,7 +4100,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18159FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18159FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -4111,7 +4113,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143597ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143597ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4122,7 +4124,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144379ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144379ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4133,7 +4135,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134738ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134738ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4144,7 +4146,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171329ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171329ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4155,7 +4157,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133841ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133841ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4167,12 +4169,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -4186,12 +4188,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f37d61f2-9820-4d17-9983-b88c91c12072',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f37d61f2-9820-4d17-9983-b88c91c12072`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f37d61f2-9820-4d17-9983-b88c91c12072?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f37d61f2-9820-4d17-9983-b88c91c12072?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -4206,7 +4208,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/161543AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/161543AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -4217,7 +4219,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -4230,7 +4232,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -4244,7 +4246,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -4256,7 +4258,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -4275,12 +4277,12 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                 resourceAlias: 'name',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                 resourceAlias: 'name',
               },
             ],
@@ -4292,7 +4294,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptdatatype',
               },
             ],
@@ -4303,7 +4305,7 @@ export const observationsMockData = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                 resourceAlias: 'conceptclass',
               },
             ],
@@ -4318,7 +4320,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4329,7 +4331,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4340,7 +4342,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4351,7 +4353,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4362,7 +4364,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4373,7 +4375,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4384,7 +4386,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4395,7 +4397,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4406,7 +4408,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4417,7 +4419,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4428,7 +4430,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4439,7 +4441,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4450,7 +4452,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4461,7 +4463,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4472,7 +4474,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4483,7 +4485,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4494,7 +4496,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'name',
                 },
               ],
@@ -4507,7 +4509,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -4518,7 +4520,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                   resourceAlias: 'description',
                 },
               ],
@@ -4531,7 +4533,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4542,7 +4544,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4553,7 +4555,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4564,7 +4566,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4575,7 +4577,7 @@ export const observationsMockData = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                   resourceAlias: 'mapping',
                 },
               ],
@@ -4587,12 +4589,12 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
             {
               rel: 'full',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
               resourceAlias: 'concept',
             },
           ],
@@ -4606,12 +4608,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f3db629f-f76d-46d9-bc40-db7cc2aba30a',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f3db629f-f76d-46d9-bc40-db7cc2aba30a`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f3db629f-f76d-46d9-bc40-db7cc2aba30a?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f3db629f-f76d-46d9-bc40-db7cc2aba30a?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -4626,7 +4628,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/159605AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/159605AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
               resourceAlias: 'concept',
             },
           ],
@@ -4637,7 +4639,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/d8907239-b3a5-4f2f-8ec8-d8b179505101`,
               resourceAlias: 'patient',
             },
           ],
@@ -4650,7 +4652,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/935b9c5d-001d-45a8-b8e4-c80d4a0e5d2e`,
               resourceAlias: 'obs',
             },
           ],
@@ -4664,7 +4666,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
               resourceAlias: 'location',
             },
           ],
@@ -4676,7 +4678,7 @@ export const observationsMockData = [
           links: [
             {
               rel: 'self',
-              uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/4095905d-70fe-4f86-834d-f5096be7f70c',
+              uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/4095905d-70fe-4f86-834d-f5096be7f70c`,
               resourceAlias: 'encounter',
             },
           ],
@@ -4691,12 +4693,12 @@ export const observationsMockData = [
         links: [
           {
             rel: 'self',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/a6fb2623-6d27-4590-8e51-0af08ac498b7',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/a6fb2623-6d27-4590-8e51-0af08ac498b7`,
             resourceAlias: 'obs',
           },
           {
             rel: 'full',
-            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/a6fb2623-6d27-4590-8e51-0af08ac498b7?v=full',
+            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/a6fb2623-6d27-4590-8e51-0af08ac498b7?v=full`,
             resourceAlias: 'obs',
           },
         ],
@@ -5319,7 +5321,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1040AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1040AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                   resourceAlias: 'concept',
                 },
               ],
@@ -5330,7 +5332,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc`,
                   resourceAlias: 'patient',
                 },
               ],
@@ -5343,7 +5345,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4`,
                   resourceAlias: 'obs',
                 },
               ],
@@ -5357,7 +5359,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/f06c0024-f941-4c6b-8358-69290c012e94',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/f06c0024-f941-4c6b-8358-69290c012e94`,
                   resourceAlias: 'location',
                 },
               ],
@@ -5369,7 +5371,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750`,
                   resourceAlias: 'encounter',
                 },
               ],
@@ -5388,12 +5390,12 @@ export const mockTableRows = [
                 links: [
                   {
                     rel: 'self',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                     resourceAlias: 'name',
                   },
                   {
                     rel: 'full',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                     resourceAlias: 'name',
                   },
                 ],
@@ -5405,7 +5407,7 @@ export const mockTableRows = [
                 links: [
                   {
                     rel: 'self',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                     resourceAlias: 'conceptdatatype',
                   },
                 ],
@@ -5416,7 +5418,7 @@ export const mockTableRows = [
                 links: [
                   {
                     rel: 'self',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                     resourceAlias: 'conceptclass',
                   },
                 ],
@@ -5431,7 +5433,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/95210BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/95210BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5442,7 +5444,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5453,7 +5455,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/696BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5464,7 +5466,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/110112BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/110112BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5475,7 +5477,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/697BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/697BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5486,7 +5488,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87074BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87074BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5497,7 +5499,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5508,7 +5510,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108329BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108329BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5519,7 +5521,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5530,7 +5532,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108330BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108330BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5541,7 +5543,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87080BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87080BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5554,7 +5556,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/664FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/664FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                       resourceAlias: 'description',
                     },
                   ],
@@ -5567,7 +5569,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171135ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171135ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'mapping',
                     },
                   ],
@@ -5578,7 +5580,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134375ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134375ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'mapping',
                     },
                   ],
@@ -5589,7 +5591,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133725ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133725ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'mapping',
                     },
                   ],
@@ -5600,7 +5602,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143587ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143587ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'mapping',
                     },
                   ],
@@ -5611,7 +5613,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/137847ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/137847ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'mapping',
                     },
                   ],
@@ -5622,7 +5624,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134376ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134376ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                       resourceAlias: 'mapping',
                     },
                   ],
@@ -5634,12 +5636,12 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                   resourceAlias: 'concept',
                 },
                 {
                   rel: 'full',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/664AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                   resourceAlias: 'concept',
                 },
               ],
@@ -5653,12 +5655,12 @@ export const mockTableRows = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/2c670c37-163f-43bb-ba37-7624129fae86',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/2c670c37-163f-43bb-ba37-7624129fae86`,
                 resourceAlias: 'obs',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/2c670c37-163f-43bb-ba37-7624129fae86?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/2c670c37-163f-43bb-ba37-7624129fae86?v=full`,
                 resourceAlias: 'obs',
               },
             ],
@@ -5673,7 +5675,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/214c83f9-435d-44f5-9ae6-d5757b7b4c7f',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/214c83f9-435d-44f5-9ae6-d5757b7b4c7f`,
                   resourceAlias: 'concept',
                 },
               ],
@@ -5684,7 +5686,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc`,
                   resourceAlias: 'patient',
                 },
               ],
@@ -5697,7 +5699,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4`,
                   resourceAlias: 'obs',
                 },
               ],
@@ -5711,7 +5713,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/f06c0024-f941-4c6b-8358-69290c012e94',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/f06c0024-f941-4c6b-8358-69290c012e94`,
                   resourceAlias: 'location',
                 },
               ],
@@ -5723,7 +5725,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750`,
                   resourceAlias: 'encounter',
                 },
               ],
@@ -5742,12 +5744,12 @@ export const mockTableRows = [
                 links: [
                   {
                     rel: 'self',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/33658957-0aaa-436e-be92-2dcadef719c6',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/33658957-0aaa-436e-be92-2dcadef719c6`,
                     resourceAlias: 'name',
                   },
                   {
                     rel: 'full',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/33658957-0aaa-436e-be92-2dcadef719c6?v=full',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/33658957-0aaa-436e-be92-2dcadef719c6?v=full`,
                     resourceAlias: 'name',
                   },
                 ],
@@ -5759,7 +5761,7 @@ export const mockTableRows = [
                 links: [
                   {
                     rel: 'self',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a48b6-c2cc-11de-8d13-0010c6dffd0f',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a48b6-c2cc-11de-8d13-0010c6dffd0f`,
                     resourceAlias: 'conceptdatatype',
                   },
                 ],
@@ -5770,7 +5772,7 @@ export const mockTableRows = [
                 links: [
                   {
                     rel: 'self',
-                    uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d491e50-c2cc-11de-8d13-0010c6dffd0f',
+                    uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d491e50-c2cc-11de-8d13-0010c6dffd0f`,
                     resourceAlias: 'conceptclass',
                   },
                 ],
@@ -5785,7 +5787,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/1e136157-be42-4555-a803-fa1d6de08a3f',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/1e136157-be42-4555-a803-fa1d6de08a3f`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5796,7 +5798,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/33658957-0aaa-436e-be92-2dcadef719c6',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/name/33658957-0aaa-436e-be92-2dcadef719c6`,
                       resourceAlias: 'name',
                     },
                   ],
@@ -5809,7 +5811,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/description/e6111abc-3edf-4fa3-adfa-e0f2fef2ec61',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2/description/e6111abc-3edf-4fa3-adfa-e0f2fef2ec61`,
                       resourceAlias: 'description',
                     },
                   ],
@@ -5823,7 +5825,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                       resourceAlias: 'concept',
                     },
                   ],
@@ -5834,7 +5836,7 @@ export const mockTableRows = [
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                       resourceAlias: 'concept',
                     },
                   ],
@@ -5845,12 +5847,12 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2`,
                   resourceAlias: 'concept',
                 },
                 {
                   rel: 'full',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/7cf927f8-e734-474f-b71a-1459bb566aa2?v=full',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/7cf927f8-e734-474f-b71a-1459bb566aa2?v=full`,
                   resourceAlias: 'concept',
                 },
               ],
@@ -5864,12 +5866,12 @@ export const mockTableRows = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/8568fde8-ee92-4e3c-99df-ba8c5678992d',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/8568fde8-ee92-4e3c-99df-ba8c5678992d`,
                 resourceAlias: 'obs',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/8568fde8-ee92-4e3c-99df-ba8c5678992d?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/8568fde8-ee92-4e3c-99df-ba8c5678992d?v=full`,
                 resourceAlias: 'obs',
               },
             ],
@@ -5884,7 +5886,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/162502AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/162502AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                   resourceAlias: 'concept',
                 },
               ],
@@ -5895,7 +5897,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc`,
                   resourceAlias: 'patient',
                 },
               ],
@@ -5908,7 +5910,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4`,
                   resourceAlias: 'obs',
                 },
               ],
@@ -5922,7 +5924,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/f06c0024-f941-4c6b-8358-69290c012e94',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/f06c0024-f941-4c6b-8358-69290c012e94`,
                   resourceAlias: 'location',
                 },
               ],
@@ -5934,7 +5936,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750`,
                   resourceAlias: 'encounter',
                 },
               ],
@@ -5949,12 +5951,12 @@ export const mockTableRows = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/c157d865-21fc-4a78-bd2a-00eb10d21b6b',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/c157d865-21fc-4a78-bd2a-00eb10d21b6b`,
                 resourceAlias: 'obs',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/c157d865-21fc-4a78-bd2a-00eb10d21b6b?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/c157d865-21fc-4a78-bd2a-00eb10d21b6b?v=full`,
                 resourceAlias: 'obs',
               },
             ],
@@ -5969,7 +5971,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/3d4f9e8e-46cc-4024-a1c4-d0167f2c84a4',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/3d4f9e8e-46cc-4024-a1c4-d0167f2c84a4`,
                   resourceAlias: 'concept',
                 },
               ],
@@ -5980,7 +5982,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/866b3ed9-c565-431d-a56b-5e1dc5cd0fbc`,
                   resourceAlias: 'patient',
                 },
               ],
@@ -5993,7 +5995,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/abaa7121-74f2-4d51-abe0-6daeb5d6f9e4`,
                   resourceAlias: 'obs',
                 },
               ],
@@ -6007,7 +6009,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/f06c0024-f941-4c6b-8358-69290c012e94',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/f06c0024-f941-4c6b-8358-69290c012e94`,
                   resourceAlias: 'location',
                 },
               ],
@@ -6019,7 +6021,7 @@ export const mockTableRows = [
               links: [
                 {
                   rel: 'self',
-                  uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750',
+                  uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/0c1c70d3-d75f-44bf-be98-ae83d9f4b750`,
                   resourceAlias: 'encounter',
                 },
               ],
@@ -6034,12 +6036,12 @@ export const mockTableRows = [
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/3ad65540-61db-4c20-98bd-aa6ea1ab7f83',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/3ad65540-61db-4c20-98bd-aa6ea1ab7f83`,
                 resourceAlias: 'obs',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/3ad65540-61db-4c20-98bd-aa6ea1ab7f83?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/3ad65540-61db-4c20-98bd-aa6ea1ab7f83?v=full`,
                 resourceAlias: 'obs',
               },
             ],
@@ -6243,12 +6245,12 @@ export const mockEncounterData = {
             links: [
               {
                 rel: 'self',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encountertype/c6d09e05-1f25-4164-8860-9f32c5a02df0',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encountertype/c6d09e05-1f25-4164-8860-9f32c5a02df0`,
                 resourceAlias: 'encountertype',
               },
               {
                 rel: 'full',
-                uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encountertype/c6d09e05-1f25-4164-8860-9f32c5a02df0?v=full',
+                uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encountertype/c6d09e05-1f25-4164-8860-9f32c5a02df0?v=full`,
                 resourceAlias: 'encountertype',
               },
             ],
@@ -7203,7 +7205,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1586AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -7214,7 +7216,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -7227,7 +7229,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -7241,7 +7243,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -7253,7 +7255,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -7268,12 +7270,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/c31d3411-7b49-4fea-b2b0-15c2806bc7f7',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/c31d3411-7b49-4fea-b2b0-15c2806bc7f7`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/c31d3411-7b49-4fea-b2b0-15c2806bc7f7?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/c31d3411-7b49-4fea-b2b0-15c2806bc7f7?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -7288,7 +7290,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/164122AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/164122AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -7299,7 +7301,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -7312,7 +7314,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -7326,7 +7328,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -7338,7 +7340,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -7357,12 +7359,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -7374,7 +7376,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -7385,7 +7387,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -7400,7 +7402,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139803BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139803BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7411,7 +7413,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7422,7 +7424,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126360BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126360BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7433,7 +7435,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7444,7 +7446,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111196BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111196BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7455,7 +7457,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126357BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126357BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7466,7 +7468,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106917BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106917BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7477,7 +7479,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1139BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1139BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7488,7 +7490,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126358BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126358BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7499,7 +7501,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106308BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106308BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7510,7 +7512,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126362BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126362BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7521,7 +7523,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137334BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7532,7 +7534,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1138BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7543,7 +7545,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126359BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126359BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7554,7 +7556,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7565,7 +7567,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126361BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7576,7 +7578,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126356BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126356BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7589,7 +7591,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1069FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1069FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -7600,7 +7602,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18159FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18159FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -7613,7 +7615,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143597ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143597ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7624,7 +7626,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144379ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144379ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7635,7 +7637,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134738ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134738ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7646,7 +7648,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171329ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171329ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7657,7 +7659,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133841ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133841ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7669,12 +7671,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1066AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -7688,12 +7690,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/b44a252e-40a3-49e8-82a4-be8228fb3fa7',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/b44a252e-40a3-49e8-82a4-be8228fb3fa7`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/b44a252e-40a3-49e8-82a4-be8228fb3fa7?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/b44a252e-40a3-49e8-82a4-be8228fb3fa7?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -7708,7 +7710,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/159917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/159917AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -7719,7 +7721,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -7732,7 +7734,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -7746,7 +7748,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -7758,7 +7760,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -7777,12 +7779,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -7794,7 +7796,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -7805,7 +7807,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d4918b0-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d4918b0-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -7820,7 +7822,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136876BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136876BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7831,7 +7833,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107439BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107439BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7842,7 +7844,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/51415BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7853,7 +7855,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107438BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107438BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7864,7 +7866,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107440BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/107440BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7875,7 +7877,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/86710BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/86710BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7886,7 +7888,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136877BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136877BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -7900,7 +7902,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/275493ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/275493ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7911,7 +7913,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276362ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276362ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7922,7 +7924,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276284ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/276284ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7933,7 +7935,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/76413ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/76413ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -7945,12 +7947,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/151849AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -7964,12 +7966,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/01e84886-9f49-4b29-9b0e-ac3b36821b07',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/01e84886-9f49-4b29-9b0e-ac3b36821b07`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/01e84886-9f49-4b29-9b0e-ac3b36821b07?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/01e84886-9f49-4b29-9b0e-ac3b36821b07?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -7984,7 +7986,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1587AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1587AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -7995,7 +7997,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -8008,7 +8010,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -8022,7 +8024,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -8034,7 +8036,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -8053,12 +8055,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1795BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1795BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1795BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1795BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -8070,7 +8072,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -8081,7 +8083,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -8096,7 +8098,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111256BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111256BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8107,7 +8109,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1796BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1796BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8118,7 +8120,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91837BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91837BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8129,7 +8131,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136890BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/136890BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8140,7 +8142,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1795BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1795BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8154,7 +8156,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171777ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171777ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8165,7 +8167,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/132704ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/132704ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8176,7 +8178,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133340ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133340ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8188,12 +8190,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1535AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -8207,12 +8209,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/1acdaefb-5733-400c-8adb-2d45cb2dc32c',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/1acdaefb-5733-400c-8adb-2d45cb2dc32c`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/1acdaefb-5733-400c-8adb-2d45cb2dc32c?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/1acdaefb-5733-400c-8adb-2d45cb2dc32c?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -8227,7 +8229,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1282AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1282AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -8238,7 +8240,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
                         resourceAlias: 'patient',
                       },
                     ],
@@ -8251,7 +8253,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -8265,7 +8267,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -8277,7 +8279,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -8296,12 +8298,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -8313,7 +8315,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -8324,7 +8326,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d490dfc-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d490dfc-c2cc-11de-8d13-0010c6dffd0f',
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -8339,7 +8341,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87199BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87199BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8350,7 +8352,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98841BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98841BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                             resourceAlias: 'name',
                           },
                         ],
@@ -8361,7 +8363,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87200BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87200BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8372,7 +8374,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/88823BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/88823BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                             resourceAlias: 'name',
                           },
                         ],
@@ -8383,7 +8385,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87271BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87271BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8394,7 +8396,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87450BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/87450BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                             resourceAlias: 'name',
                           },
                         ],
@@ -8405,7 +8407,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98836BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98836BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8416,7 +8418,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/99061BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/99061BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                             resourceAlias: 'name',
                           },
                         ],
@@ -8427,7 +8429,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91262BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91262BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8438,7 +8440,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91397BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/91397BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                             resourceAlias: 'name',
                           },
                         ],
@@ -8449,7 +8451,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98840BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98840BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8460,7 +8462,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: 'http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/8292BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
                             resourceAlias: 'name',
                           },
                         ],
@@ -8471,7 +8473,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98842BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98842BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8482,7 +8484,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98510BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98510BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8493,7 +8495,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98849BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98849BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8504,7 +8506,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/96123BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/96123BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8515,7 +8517,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/97626BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/97626BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8526,7 +8528,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98835BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/98835BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8540,7 +8542,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/131860ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/131860ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8551,7 +8553,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/145732ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/145732ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8562,7 +8564,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/177433ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/177433ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8573,7 +8575,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134131ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134131ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8584,7 +8586,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/139333ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/139333ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8596,12 +8598,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/84893AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -8615,12 +8617,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f91eb7ae-b837-4d32-92dd-97bad2f98b72',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f91eb7ae-b837-4d32-92dd-97bad2f98b72`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/f91eb7ae-b837-4d32-92dd-97bad2f98b72?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/f91eb7ae-b837-4d32-92dd-97bad2f98b72?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -8635,7 +8637,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/161543AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/161543AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -8646,7 +8648,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -8659,7 +8661,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -8673,7 +8675,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -8685,7 +8687,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -8704,12 +8706,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -8721,7 +8723,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -8732,7 +8734,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -8747,7 +8749,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8758,7 +8760,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8769,7 +8771,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8780,7 +8782,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8791,7 +8793,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8802,7 +8804,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8813,7 +8815,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8824,7 +8826,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8835,7 +8837,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8846,7 +8848,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8857,7 +8859,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8868,7 +8870,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8879,7 +8881,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8890,7 +8892,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8901,7 +8903,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8912,7 +8914,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8923,7 +8925,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -8936,7 +8938,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -8947,7 +8949,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -8960,7 +8962,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8971,7 +8973,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8982,7 +8984,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -8993,7 +8995,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9004,7 +9006,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9016,12 +9018,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -9035,12 +9037,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/8c06b0e5-f758-468d-a208-3e72c2ac69c4',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/8c06b0e5-f758-468d-a208-3e72c2ac69c4`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/8c06b0e5-f758-468d-a208-3e72c2ac69c4?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/8c06b0e5-f758-468d-a208-3e72c2ac69c4?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -9055,7 +9057,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/984AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/984AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -9066,7 +9068,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -9079,7 +9081,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -9093,7 +9095,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -9105,7 +9107,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -9124,12 +9126,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -9141,7 +9143,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -9152,7 +9154,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -9167,7 +9169,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9178,7 +9180,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9189,7 +9191,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9200,7 +9202,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9211,7 +9213,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9222,7 +9224,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9233,7 +9235,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9244,7 +9246,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9255,7 +9257,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9266,7 +9268,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9277,7 +9279,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9288,7 +9290,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9299,7 +9301,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9310,7 +9312,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9321,7 +9323,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9332,7 +9334,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9343,7 +9345,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9356,7 +9358,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -9367,7 +9369,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -9380,7 +9382,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9391,7 +9393,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9402,7 +9404,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9413,7 +9415,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9424,7 +9426,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9436,12 +9438,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -9455,12 +9457,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/ed2115fe-2dd0-4bf5-a00e-1a3cda54e9e8',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/ed2115fe-2dd0-4bf5-a00e-1a3cda54e9e8`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/ed2115fe-2dd0-4bf5-a00e-1a3cda54e9e8?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/ed2115fe-2dd0-4bf5-a00e-1a3cda54e9e8?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -9475,7 +9477,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/5916AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/5916AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -9486,7 +9488,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -9499,7 +9501,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -9513,7 +9515,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -9525,7 +9527,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -9540,12 +9542,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/abf8b948-9f62-46c6-a77f-9c3b7bc20515',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/abf8b948-9f62-46c6-a77f-9c3b7bc20515`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/abf8b948-9f62-46c6-a77f-9c3b7bc20515?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/abf8b948-9f62-46c6-a77f-9c3b7bc20515?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -9560,7 +9562,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/159604AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/159604AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -9571,7 +9573,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -9584,7 +9586,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -9598,7 +9600,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -9610,7 +9612,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -9625,12 +9627,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/3adec14f-a448-4bb0-8df9-a2362189eb30',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/3adec14f-a448-4bb0-8df9-a2362189eb30`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/3adec14f-a448-4bb0-8df9-a2362189eb30?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/3adec14f-a448-4bb0-8df9-a2362189eb30?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
@@ -9645,7 +9647,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/161094AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/161094AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -9656,7 +9658,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/patient/3cb798ff-e316-425d-9d12-89b026f9bf19',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/patient/3cb798ff-e316-425d-9d12-89b026f9bf19`,
                         resourceAlias: 'patient',
                       },
                     ],
@@ -9669,7 +9671,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/56b24a88-812b-459f-88aa-bfc3b8bb7913`,
                         resourceAlias: 'obs',
                       },
                     ],
@@ -9683,7 +9685,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/location/cdbf35ac-6ff2-43e1-b41a-2fef1294881f`,
                         resourceAlias: 'location',
                       },
                     ],
@@ -9695,7 +9697,7 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/encounter/5cd5f444-af06-470e-8831-43ddec625a9c',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/encounter/5cd5f444-af06-470e-8831-43ddec625a9c`,
                         resourceAlias: 'encounter',
                       },
                     ],
@@ -9714,12 +9716,12 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                           resourceAlias: 'name',
                         },
                         {
                           rel: 'full',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB?v=full`,
                           resourceAlias: 'name',
                         },
                       ],
@@ -9731,7 +9733,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptdatatype/8d4a4c94-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptdatatype',
                         },
                       ],
@@ -9742,7 +9744,7 @@ export const mockEncounterData = {
                       links: [
                         {
                           rel: 'self',
-                          uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f',
+                          uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/conceptclass/8d492774-c2cc-11de-8d13-0010c6dffd0f`,
                           resourceAlias: 'conceptclass',
                         },
                       ],
@@ -9757,7 +9759,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1137BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9768,7 +9770,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/127332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9779,7 +9781,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126316BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9790,7 +9792,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106307BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9801,7 +9803,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126313BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9812,7 +9814,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137332BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9823,7 +9825,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126317BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9834,7 +9836,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/1136BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9845,7 +9847,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/108333BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9856,7 +9858,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126314BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9867,7 +9869,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/137331BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9878,7 +9880,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/111198BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9889,7 +9891,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126315BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9900,7 +9902,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126318BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9911,7 +9913,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/139802BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9922,7 +9924,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/126319BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9933,7 +9935,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/name/106919BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'name',
                           },
                         ],
@@ -9946,7 +9948,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/1068FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -9957,7 +9959,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/description/18158FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`,
                             resourceAlias: 'description',
                           },
                         ],
@@ -9970,7 +9972,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/143596ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9981,7 +9983,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/133840ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -9992,7 +9994,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/144378ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -10003,7 +10005,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/171328ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -10014,7 +10016,7 @@ export const mockEncounterData = {
                         links: [
                           {
                             rel: 'self',
-                            uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB',
+                            uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/mapping/134737ABBBBBBBBBBBBBBBBBBBBBBBBBBBBB`,
                             resourceAlias: 'mapping',
                           },
                         ],
@@ -10026,12 +10028,12 @@ export const mockEncounterData = {
                     links: [
                       {
                         rel: 'self',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`,
                         resourceAlias: 'concept',
                       },
                       {
                         rel: 'full',
-                        uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full',
+                        uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/concept/1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA?v=full`,
                         resourceAlias: 'concept',
                       },
                     ],
@@ -10045,12 +10047,12 @@ export const mockEncounterData = {
                   links: [
                     {
                       rel: 'self',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/cb6393ea-ffc6-4226-93ab-a4f657373427',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/cb6393ea-ffc6-4226-93ab-a4f657373427`,
                       resourceAlias: 'obs',
                     },
                     {
                       rel: 'full',
-                      uri: 'http://dev.kenyahmis.org/openmrs/ws/rest/v1/obs/cb6393ea-ffc6-4226-93ab-a4f657373427?v=full',
+                      uri: `http://dev.kenyahmis.org/openmrs${restBaseUrl}/obs/cb6393ea-ffc6-4226-93ab-a4f657373427?v=full`,
                       resourceAlias: 'obs',
                     },
                   ],
