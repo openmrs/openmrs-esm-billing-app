@@ -8,6 +8,7 @@
   "license": "MPL-2.0",
   "homepage": "https://github.com/openmrs/openmrs-esm-billing-app#readme",
   "scripts": {
+    "start": "openmrs develop",
     "analyze": "webpack --mode=production --env.analyze=true",
     "build": "webpack --mode production",
     "ci:prepublish": "lerna publish from-package --no-git-reset --yes --dist-tag next",
@@ -20,7 +21,6 @@
     "prettier": "prettier --config prettier.config.js --write \"src/**/*.{ts,tsx,css,scss}\" \"e2e/**/*.ts\"",
     "release": "lerna version --no-git-tag-version",
     "serve": "webpack serve --mode=development",
-    "start": "openmrs develop",
     "test-e2e": "playwright test",
     "test": "cross-env TZ=UTC jest --config jest.config.js --verbose false --passWithNoTests",
     "test:watch": "cross-env TZ=UTC jest --watch --config jest.config.js",
