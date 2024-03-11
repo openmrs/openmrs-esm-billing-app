@@ -20,6 +20,7 @@ import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
 import { z } from 'zod';
 import { TrashCan } from '@carbon/react/icons';
+import debounce from 'lodash-es/debounce';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -37,6 +38,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [category, setCategory] = useState('');
   const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
   const [addedItems, setAddedItems] = useState([]);
+  const [noResultsMessage, setNoResultsMessage] = useState('');
 
   const toggleSearch = (choiceSelected) => {
     (document.getElementById('searchField') as HTMLInputElement).disabled = false;
@@ -117,8 +119,9 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
   const { data, error, isLoading, isValidating } = useFetchSearchResults(searchVal, category);
 
-  const filterItems = (val) => {
+  const filterItems = async (val) => {
     setSearchVal(val);
+    setNoResultsMessage('');
 
     if (!isLoading && data) {
       const res = data as { results: any[] };
@@ -134,7 +137,10 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
               Total: 10,
               category: 'StockItem',
             };
-          } else if (o.name.toLowerCase().includes(val.toLowerCase())) {
+          } else if (
+            o.name.toLowerCase().includes(val.toLowerCase()) ||
+            o.name.toLowerCase().startsWith(val.toLowerCase())
+          ) {
             return {
               uuid: o.uuid || '',
               Item: o.name,
@@ -149,8 +155,19 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       });
 
       setSearchOptions(options.filter((option) => option)); // Filter out undefined/null values
+      if (options.length === 0 || error) {
+        setNoResultsMessage('No results found.');
+      } else {
+        setNoResultsMessage('');
+      }
+    } else {
+      setNoResultsMessage('No results found.');
     }
   };
+
+  const debouncedFilterItems = debounce((val) => {
+    filterItems(val);
+  }, 300); // Adjust the delay as needed
 
   const postBillItems = () => {
     const bill = {
@@ -207,22 +224,22 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         defaultSelected="radio-1"
         className={styles.billingItem}
         onChange={toggleSearch}>
-        <RadioButton labelText={t('stockItem', 'Stock Item')} value="Stock Item" id="radio-1" />
-        <RadioButton labelText={t('service', 'Service')} value="Service" id="radio-2" />
+        <RadioButton labelText={t('stockItem', 'Stock Item')} value="Stock Item" id="stockItem" />
+        <RadioButton labelText={t('service', 'Service')} value="Service" id="service" />
       </RadioButtonGroup>
 
       <div>
         <Search
           id="searchField"
           size="lg"
-          placeholder="Find your drugs here..."
+          placeholder="Find your items here..."
           labelText="Search"
           disabled
           closeButtonLabelText="Clear search input"
           onChange={() => {}}
           className={styles.billingItem}
           onKeyUp={(e) => {
-            filterItems(e.target.value);
+            debouncedFilterItems(e.target.value);
           }}
         />
 
@@ -238,6 +255,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             </li>
           ))}
         </ul>
+        {noResultsMessage && <p>{noResultsMessage}</p>}
       </div>
 
       <Table aria-label="sample table" className={styles.billingItem}>
