@@ -3,4 +3,5 @@ export const dashboardMeta = {
   columns: 1,
   title: 'Billing history',
   path: 'Billing history',
+  hideDashboardTitle: true,
 };
