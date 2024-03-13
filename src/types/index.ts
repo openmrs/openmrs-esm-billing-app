@@ -165,3 +165,16 @@ export type ServiceConcept = {
   };
   display: string;
 };
+
+export type BillabeItem = {
+  uuid: string;
+  id?: number;
+  name?: string;
+  commonName?: string;
+  servicePrices?: ServicePrice[];
+};
+
+export type ServicePrice = {
+  price: string;
+  uuid: string;
+};
