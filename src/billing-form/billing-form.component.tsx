@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ButtonSet,
   Button,
@@ -14,12 +14,14 @@ import {
 } from '@carbon/react';
 import styles from './billing-form.scss';
 import { useTranslation } from 'react-i18next';
-import { restBaseUrl, showSnackbar, showToast, useConfig } from '@openmrs/esm-framework';
+import { restBaseUrl, showSnackbar, showToast, useConfig, useDebounce } from '@openmrs/esm-framework';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
 import { z } from 'zod';
 import { TrashCan } from '@carbon/react/icons';
+import fuzzy from 'fuzzy';
+import { type BillabeItem } from '../types';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -37,6 +39,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [category, setCategory] = useState('');
   const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
   const [addedItems, setAddedItems] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm);
 
   const toggleSearch = (choiceSelected) => {
     (document.getElementById('searchField') as HTMLInputElement).disabled = false;
@@ -115,42 +119,41 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     setGrandTotal(updatedGrandTotal);
   };
 
-  const { data, error, isLoading, isValidating } = useFetchSearchResults(searchVal, category);
+  const { data, error, isLoading, isValidating } = useFetchSearchResults(debouncedSearchTerm, category);
 
-  const filterItems = (val) => {
-    setSearchVal(val);
+  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value);
 
-    if (!isLoading && data) {
-      const res = data as { results: any[] };
-
-      const options = res.results.map((o) => {
-        if (!addedItems.some((item) => item.uuid === o.uuid)) {
-          if (o.commonName && o.commonName !== '') {
-            return {
-              uuid: o.uuid || '',
-              Item: o.commonName,
-              Qnty: 1,
-              Price: 10,
-              Total: 10,
-              category: 'StockItem',
-            };
-          } else if (o.name.toLowerCase().includes(val.toLowerCase())) {
-            return {
-              uuid: o.uuid || '',
-              Item: o.name,
-              Qnty: 1,
-              Price: o.servicePrices[0].price,
-              Total: o.servicePrices[0].price,
-              category: 'Service',
-            };
-          }
-        }
-        return null;
-      });
-
-      setSearchOptions(options.filter((option) => option)); // Filter out undefined/null values
+  const filterItems = useMemo(() => {
+    if (!debouncedSearchTerm || isLoading || error) {
+      return [];
     }
-  };
+
+    const res = data as { results: BillabeItem[] };
+
+    const preprocessedData = res?.results?.map((item) => {
+      return {
+        uuid: item.uuid || '',
+        Item: item.commonName ? item.commonName : item.name,
+        Qnty: 1,
+        Price: item.commonName ? 10 : item.servicePrices[0]?.price,
+        Total: item.commonName ? 10 : item.servicePrices[0]?.price,
+        category: item.commonName ? 'StockItem' : 'Service',
+      };
+    });
+
+    return debouncedSearchTerm
+      ? fuzzy
+          .filter(debouncedSearchTerm, preprocessedData, {
+            extract: (o) => `${o.Item}`,
+          })
+          .sort((r1, r2) => r1.score - r2.score)
+          .map((result) => result.original)
+      : searchOptions;
+  }, [debouncedSearchTerm, data]);
+
+  useEffect(() => {
+    setSearchOptions(filterItems);
+  }, [filterItems]);
 
   const postBillItems = () => {
     const bill = {
@@ -207,36 +210,38 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         defaultSelected="radio-1"
         className={styles.billingItem}
         onChange={toggleSearch}>
-        <RadioButton labelText={t('stockItem', 'Stock Item')} value="Stock Item" id="radio-1" />
-        <RadioButton labelText={t('service', 'Service')} value="Service" id="radio-2" />
+        <RadioButton labelText={t('stockItem', 'Stock Item')} value="Stock Item" id="stockItem" />
+        <RadioButton labelText={t('service', 'Service')} value="Service" id="service" />
       </RadioButtonGroup>
 
       <div>
         <Search
-          id="searchField"
           size="lg"
-          placeholder="Find your drugs here..."
-          labelText="Search"
+          id="searchField"
           disabled
-          closeButtonLabelText="Clear search input"
-          onChange={() => {}}
+          closeButtonLabelText={t('clearSearchInput', 'Clear search input')}
           className={styles.billingItem}
-          onKeyUp={(e) => {
-            filterItems(e.target.value);
-          }}
+          placeholder={t('searchItems', 'Search items and services')}
+          labelText={t('searchItems', 'Search items and services')}
+          onKeyUp={handleSearchTermChange}
         />
 
         <ul className={styles.searchContent}>
-          {searchOptions.map((row) => (
-            <li key={row.uuid} className={styles.searchItem}>
-              <Button
-                id={row.uuid}
-                onClick={(e) => addItemToBill(e, row.uuid, row.Item, row.category, row.Price)}
-                style={{ background: 'inherit', color: 'black' }}>
-                {row.Item} Qnty.{row.Qnty} Ksh.{row.Price}
-              </Button>
-            </li>
-          ))}
+          {searchOptions?.length > 0 &&
+            searchOptions?.map((row) => (
+              <li key={row.uuid} className={styles.searchItem}>
+                <Button
+                  id={row.uuid}
+                  onClick={(e) => addItemToBill(e, row.uuid, row.Item, row.category, row.Price)}
+                  style={{ background: 'inherit', color: 'black' }}>
+                  {row.Item} Qnty.{row.Qnty} Ksh.{row.Price}
+                </Button>
+              </li>
+            ))}
+
+          {searchOptions?.length === 0 && !isLoading && !!debouncedSearchTerm && (
+            <p>{t('noResultsFound', 'No results found')}</p>
+          )}
         </ul>
       </div>
 
@@ -292,7 +297,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
       <ButtonSet className={styles.billingItem}>
         <Button kind="secondary" onClick={closeWorkspace}>
-          Discard
+          {t('discard', 'Discard')}
         </Button>
         <Button
           kind="primary"
@@ -300,7 +305,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           onClick={() => {
             postBillItems();
           }}>
-          Save & Close
+          {t('save', 'Save')}
         </Button>
       </ButtonSet>
     </div>
