@@ -66,6 +66,11 @@ const Invoice: React.FC = () => {
     }
   }, [isPrinting]);
 
+  useEffect(() => {
+    const unPaidLineItems = bill?.lineItems?.filter((item) => item.paymentStatus === 'PENDING') ?? [];
+    setSelectedLineItems(unPaidLineItems);
+  }, [bill?.lineItems]);
+
   const invoiceDetails = {
     'Total Amount': convertToCurrency(bill?.totalAmount, defaultCurrency),
     'Amount Tendered': convertToCurrency(bill?.tenderedAmount, defaultCurrency),

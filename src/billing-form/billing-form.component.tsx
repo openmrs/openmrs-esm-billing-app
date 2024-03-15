@@ -187,7 +187,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
     const url = `${apiBasePath}bill`;
     processBillItems(bill).then(
-      () => {
+      (res) => {
         closeWorkspace();
         mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
         showSnackbar({

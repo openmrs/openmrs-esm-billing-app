@@ -1,6 +1,14 @@
 import { type OpenmrsResource } from '@openmrs/esm-framework';
-import { type MappedBill } from '../../types';
+import { type LineItem, type MappedBill } from '../../types';
 import { type Payment } from './payments.component';
+
+const hasLineItem = (lineItems: Array<LineItem>, item: LineItem) => {
+  if (lineItems?.length === 0) {
+    return false;
+  }
+  const foundItem = lineItems.find((lineItem) => lineItem.uuid === item.uuid);
+  return Boolean(foundItem);
+};
 
 export const createPaymentPayload = (
   bill: MappedBill,
@@ -8,28 +16,48 @@ export const createPaymentPayload = (
   formValues: Array<Payment>,
   amountDue: number,
   billableServices: Array<any>,
+  selectedLineItems: Array<LineItem>,
 ) => {
   const { cashier } = bill;
   const totalAmount = bill?.totalAmount;
-  const paymentStatus = amountDue <= 0 ? 'PAID' : 'PENDING';
+  const totalPaymentStatus = amountDue <= 0 ? 'PAID' : 'PENDING';
+  const previousPayments = bill.payments.map((payment) => ({
+    amount: payment.amount,
+    amountTendered: payment.amountTendered,
+    attributes: [],
+    instanceType: payment.instanceType.uuid,
+  }));
 
-  const billPayment = formValues.map((formValue) => ({
+  const newPayments = formValues.map((formValue) => ({
     amount: parseFloat(totalAmount.toFixed(2)),
     amountTendered: parseFloat(Number(formValue.amount).toFixed(2)),
     attributes: [],
     instanceType: formValue.method,
   }));
+
+  const updatedPayments = newPayments.concat(previousPayments);
+  const totalAmountRendered = updatedPayments.reduce((acc, payment) => acc + payment.amountTendered, 0);
+  const updatedLineItems = bill?.lineItems.map((lineItem) => ({
+    ...lineItem,
+    billableService: getBillableServiceUuid(billableServices, lineItem.billableService),
+    item: lineItem?.item,
+    paymentStatus: hasLineItem(selectedLineItems ?? [], lineItem)
+      ? totalAmountRendered >= lineItem.price * lineItem.quantity
+        ? 'PAID'
+        : 'PENDING'
+      : lineItem.paymentStatus,
+  }));
+
+  const allItemsBillPaymentStatus =
+    updatedLineItems.filter((item) => item.paymentStatus === 'PENDING').length === 0 ? 'PAID' : 'PENDING';
+
   const processedPayment = {
     cashPoint: bill.cashPointUuid,
     cashier: cashier.uuid,
-    lineItems: bill?.lineItems.map((lineItem) => ({
-      ...lineItem,
-      paymentStatus: 'PAID',
-      billableService: getBillableServiceUuid(billableServices, lineItem.billableService),
-    })),
-    payments: [...billPayment],
+    lineItems: updatedLineItems,
+    payments: [...updatedPayments],
     patient: patientUuid,
-    status: paymentStatus,
+    status: selectedLineItems?.length > 0 ? allItemsBillPaymentStatus : totalPaymentStatus,
   };
 
   return processedPayment;

@@ -37,7 +37,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   const lineItems = bill?.lineItems ?? [];
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const [selectedLineItems, setSelectedLineItems] = useState([]);
+  const pendingLineItems = lineItems?.filter((item) => item.paymentStatus === 'PENDING') ?? [];
+  const [selectedLineItems, setSelectedLineItems] = useState(pendingLineItems ?? []);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
   const { defaultCurrency } = useConfig();
@@ -73,15 +74,15 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
         return {
           no: `${index + 1}`,
           id: `${item.uuid}`,
-          billItem: item.item || item.billableService,
+          billItem: item.billableService ? item.billableService : item?.item,
           billCode: bill?.receiptNumber,
-          status: bill?.status,
+          status: item?.paymentStatus,
           quantity: item.quantity,
           price: convertToCurrency(item.price, defaultCurrency),
           total: convertToCurrency(item.price * item.quantity, defaultCurrency),
         };
       }) ?? [],
-    [bill?.receiptNumber, bill?.status, filteredLineItems],
+    [bill?.receiptNumber, filteredLineItems],
   );
 
   if (isLoadingBill) {
@@ -145,7 +146,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
+                {rows.map((row, index) => (
                   <TableRow
                     key={row.id}
                     {...getRowProps({
@@ -156,6 +157,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
                         aria-label="Select row"
                         {...getSelectionProps({ row })}
                         onChange={(checked: boolean) => handleRowSelection(row, checked)}
+                        checked={Boolean(selectedLineItems?.find((item) => item?.uuid === row?.id))}
                       />
                     )}
                     {row.cells.map((cell) => (
