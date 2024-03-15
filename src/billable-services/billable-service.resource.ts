@@ -1,13 +1,14 @@
 import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { type ServiceConcept } from '../types';
+import { apiBasePath } from '../constants';
 
 type ResponseObject = {
   results: Array<OpenmrsResource>;
 };
 
 export const useBillableServices = () => {
-  const url = `${restBaseUrl}/billing/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
+  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
 
   const { data, isLoading, isValidating, error, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
@@ -33,7 +34,7 @@ export function useServiceTypes() {
 }
 
 export const usePaymentModes = () => {
-  const url = `${restBaseUrl}/billing/paymentMode`;
+  const url = `${apiBasePath}paymentMode`;
 
   const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
@@ -45,7 +46,7 @@ export const usePaymentModes = () => {
 };
 
 export const createBillableSerice = (payload: any) => {
-  const url = `${restBaseUrl}/billing/api/billable-service`;
+  const url = `${apiBasePath}api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,

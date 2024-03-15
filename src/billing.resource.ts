@@ -3,9 +3,10 @@ import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl 
 import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
 import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
+import { apiBasePath } from './constants';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `${restBaseUrl}/billing/bill?v=full`;
+  const url = `${apiBasePath}bill?v=full`;
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
     url,
@@ -48,7 +49,7 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
 };
 
 export const useBill = (billUuid: string) => {
-  const url = `${restBaseUrl}/billing/bill/${billUuid}`;
+  const url = `${apiBasePath}bill/${billUuid}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientInvoice }>(
     billUuid ? url : null,
     openmrsFetch,
@@ -86,7 +87,7 @@ export const useBill = (billUuid: string) => {
 };
 
 export const processBillPayment = (payload, billUuid: string) => {
-  const url = `${restBaseUrl}/billing/bill/${billUuid}`;
+  const url = `${apiBasePath}bill/${billUuid}`;
 
   return openmrsFetch(url, {
     method: 'POST',
@@ -124,7 +125,7 @@ export function useFetchSearchResults(searchVal, category) {
   if (category == 'Stock Item') {
     url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${searchVal}`;
   } else {
-    url = `${restBaseUrl}/billing/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
+    url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
   }
   const { data, error, isLoading, isValidating } = useSWR(searchVal ? url : null, openmrsFetch, {});
 
@@ -132,7 +133,7 @@ export function useFetchSearchResults(searchVal, category) {
 }
 
 export const processBillItems = (payload) => {
-  const url = `${restBaseUrl}/billing/bill`;
+  const url = `${apiBasePath}bill`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,

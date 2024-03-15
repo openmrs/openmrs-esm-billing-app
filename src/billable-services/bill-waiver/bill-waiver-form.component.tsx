@@ -10,6 +10,7 @@ import { processBillPayment } from '../../billing.resource';
 import { useBillableItems } from '../../billing-form/billing-form.resource';
 import type { LineItem, MappedBill } from '../../types';
 import styles from './bill-waiver-form.scss';
+import { apiBasePath } from '../../constants';
 
 type BillWaiverFormProps = {
   bill: MappedBill;
@@ -47,7 +48,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
           isLowContrast: true,
         });
         setPatientUuid('');
-        mutate((key) => typeof key === 'string' && key.startsWith(`${restBaseUrl}/billing/bill?v=full`), undefined, {
+        mutate((key) => typeof key === 'string' && key.startsWith(`${apiBasePath}bill?v=full`), undefined, {
           revalidate: true,
         });
       },

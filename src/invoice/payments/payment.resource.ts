@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import { type Visit, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { apiBasePath } from '../../constants';
 
 type PaymentMethod = {
   uuid: string;
@@ -13,7 +14,7 @@ const swrOption = {
 };
 
 export const usePaymentModes = () => {
-  const url = `${restBaseUrl}/billing/paymentMode`;
+  const url = `${apiBasePath}paymentMode`;
   const { data, isLoading, error, mutate } = useSWR<{ data: { results: Array<PaymentMethod> } }>(
     url,
     openmrsFetch,
