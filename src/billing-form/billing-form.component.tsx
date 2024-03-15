@@ -184,7 +184,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       bill?.lineItems.push(lineItem);
     });
 
-    const url = `${restBaseUrl}/cashier/bill`;
+    const url = `${restBaseUrl}/billing/bill`;
     processBillItems(bill).then(
       () => {
         closeWorkspace();

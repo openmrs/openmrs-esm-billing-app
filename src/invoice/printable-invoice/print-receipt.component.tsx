@@ -18,7 +18,7 @@ const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
       renderIcon={(props) => <Printer size={24} {...props} />}>
       <ConfigurableLink
         className={styles.configurableLink}
-        to={`\${openmrsBase}${restBaseUrl}/cashier/receipt?billId=${billId}`}>
+        to={`\${openmrsBase}${restBaseUrl}/billing/receipt?billId=${billId}`}>
         {t('printReceipt', 'Print receipt')}
       </ConfigurableLink>{' '}
     </Button>

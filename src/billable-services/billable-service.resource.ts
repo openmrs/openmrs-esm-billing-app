@@ -7,7 +7,7 @@ type ResponseObject = {
 };
 
 export const useBillableServices = () => {
-  const url = `${restBaseUrl}/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
+  const url = `${restBaseUrl}/billing/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
 
   const { data, isLoading, isValidating, error, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
@@ -33,7 +33,7 @@ export function useServiceTypes() {
 }
 
 export const usePaymentModes = () => {
-  const url = `${restBaseUrl}/cashier/paymentMode`;
+  const url = `${restBaseUrl}/billing/paymentMode`;
 
   const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
@@ -45,7 +45,7 @@ export const usePaymentModes = () => {
 };
 
 export const createBillableSerice = (payload: any) => {
-  const url = `${restBaseUrl}/cashier/api/billable-service`;
+  const url = `${restBaseUrl}/billing/api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,

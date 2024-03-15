@@ -5,7 +5,7 @@ import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `${restBaseUrl}/cashier/bill?v=full`;
+  const url = `${restBaseUrl}/billing/bill?v=full`;
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
     url,
@@ -48,7 +48,7 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
 };
 
 export const useBill = (billUuid: string) => {
-  const url = `${restBaseUrl}/cashier/bill/${billUuid}`;
+  const url = `${restBaseUrl}/billing/bill/${billUuid}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientInvoice }>(
     billUuid ? url : null,
     openmrsFetch,
@@ -86,7 +86,7 @@ export const useBill = (billUuid: string) => {
 };
 
 export const processBillPayment = (payload, billUuid: string) => {
-  const url = `${restBaseUrl}/cashier/bill/${billUuid}`;
+  const url = `${restBaseUrl}/billing/bill/${billUuid}`;
 
   return openmrsFetch(url, {
     method: 'POST',
@@ -124,7 +124,7 @@ export function useFetchSearchResults(searchVal, category) {
   if (category == 'Stock Item') {
     url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${searchVal}`;
   } else {
-    url = `${restBaseUrl}/cashier/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
+    url = `${restBaseUrl}/billing/billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
   }
   const { data, error, isLoading, isValidating } = useSWR(searchVal ? url : null, openmrsFetch, {});
 
@@ -132,7 +132,7 @@ export function useFetchSearchResults(searchVal, category) {
 }
 
 export const processBillItems = (payload) => {
-  const url = `${restBaseUrl}/cashier/bill`;
+  const url = `${restBaseUrl}/billing/bill`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,

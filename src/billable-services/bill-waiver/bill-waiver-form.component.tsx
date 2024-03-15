@@ -47,7 +47,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
           isLowContrast: true,
         });
         setPatientUuid('');
-        mutate((key) => typeof key === 'string' && key.startsWith(`${restBaseUrl}/cashier/bill?v=full`), undefined, {
+        mutate((key) => typeof key === 'string' && key.startsWith(`${restBaseUrl}/billing/bill?v=full`), undefined, {
           revalidate: true,
         });
       },
