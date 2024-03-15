@@ -22,6 +22,7 @@ import { z } from 'zod';
 import { TrashCan } from '@carbon/react/icons';
 import fuzzy from 'fuzzy';
 import { type BillabeItem } from '../types';
+import { apiBasePath } from '../constants';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -184,7 +185,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       bill?.lineItems.push(lineItem);
     });
 
-    const url = `${restBaseUrl}/cashier/bill`;
+    const url = `${apiBasePath}bill`;
     processBillItems(bill).then(
       () => {
         closeWorkspace();
