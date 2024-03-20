@@ -167,7 +167,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     };
 
     billItems.forEach((item) => {
-      const lineItem: any = {
+      let lineItem: any = {
         quantity: parseInt(item.Qnty),
         price: item.Price,
         priceName: 'Default',
@@ -198,7 +198,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         });
       },
       (error) => {
-        showSnackbar({ title: 'Bill processing error', kind: 'error', subtitle: error });
+        showSnackbar({ title: 'Bill processing error', kind: 'error', subtitle: error?.message });
       },
     );
   };

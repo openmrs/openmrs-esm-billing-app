@@ -77,7 +77,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
         handleNavigateToBillingDashboard();
       },
       (error) => {
-        showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error });
+        showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
       },
     );
   };
