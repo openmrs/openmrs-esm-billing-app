@@ -1,3 +1,4 @@
+import { type OpenmrsResource } from '@openmrs/esm-framework';
 import { type MappedBill } from '../../types';
 import { type Payment } from './payments.component';
 
@@ -6,6 +7,7 @@ export const createPaymentPayload = (
   patientUuid: string,
   formValues: Array<Payment>,
   amountDue: number,
+  billableServices: Array<any>,
 ) => {
   const { cashier } = bill;
   const totalAmount = bill?.totalAmount;
@@ -20,11 +22,19 @@ export const createPaymentPayload = (
   const processedPayment = {
     cashPoint: bill.cashPointUuid,
     cashier: cashier.uuid,
-    lineItems: bill?.lineItems.map((lineItem) => ({ ...lineItem, billableService: 'service', paymentStatus: 'PAID' })),
+    lineItems: bill?.lineItems.map((lineItem) => ({
+      ...lineItem,
+      paymentStatus: 'PAID',
+      billableService: getBillableServiceUuid(billableServices, lineItem.billableService),
+    })),
     payments: [...billPayment],
     patient: patientUuid,
     status: paymentStatus,
   };
 
   return processedPayment;
+};
+
+const getBillableServiceUuid = (billableServices: Array<any>, serviceName: string) => {
+  return billableServices.length ? billableServices.find((service) => service.name === serviceName).uuid : null;
 };

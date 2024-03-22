@@ -15,6 +15,7 @@ import PaymentHistory from './payment-history/payment-history.component';
 import PaymentForm from './payment-form/payment-form.component';
 import { updateBillVisitAttribute } from './payment.resource';
 import styles from './payments.scss';
+import { useBillableServices } from '../../billable-services/billable-service.resource';
 
 type PaymentProps = {
   bill: MappedBill;
@@ -30,6 +31,7 @@ export type PaymentFormValue = {
 const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig();
+  const { billableServices, isLoading, isValidating, error, mutate } = useBillableServices();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
@@ -64,7 +66,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
     });
 
   const handleProcessPayment = () => {
-    const paymentPayload = createPaymentPayload(bill, bill.patientUuid, formValues, amountDue);
+    const paymentPayload = createPaymentPayload(bill, bill.patientUuid, formValues, amountDue, billableServices);
     processBillPayment(paymentPayload, bill.uuid).then(
       () => {
         showSnackbar({
@@ -73,7 +75,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
           kind: 'success',
           timeoutInMs: 3000,
         });
-        updateBillVisitAttribute(currentVisit);
+        if (currentVisit) {
+          updateBillVisitAttribute(currentVisit);
+        }
+
         handleNavigateToBillingDashboard();
       },
       (error) => {
