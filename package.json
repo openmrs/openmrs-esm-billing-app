@@ -54,12 +54,13 @@
     "zod": "^3.22.4"
   },
   "peerDependencies": {
-    "@openmrs/esm-framework": "*",
-    "@openmrs/esm-patient-common-lib": "6.x",
+    "@openmrs/esm-framework": "5.x",
+    "@openmrs/esm-patient-common-lib": "7.x",
     "react": "18.x",
     "react-dom": "18.x",
     "react-i18next": "11.x",
-    "rxjs": "6.x"
+    "rxjs": "6.x",
+    "swr": "2.x"
   },
   "devDependencies": {
     "@openmrs/esm-framework": "next",
@@ -118,5 +119,5 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --cache --fix"
   },
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.1.1"
 }
