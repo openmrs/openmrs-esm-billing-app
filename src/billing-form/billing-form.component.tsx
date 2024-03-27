@@ -90,20 +90,31 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   };
 
   const addItemToBill = (event, itemid, itemname, itemcategory, itemPrice) => {
-    const newItem = {
-      uuid: itemid,
-      Item: itemname,
-      Qnty: 1,
-      Price: itemPrice,
-      Total: itemPrice,
-      category: itemcategory,
-    };
+    const existingItemIndex = billItems.findIndex((item) => item.uuid === itemid);
 
-    const updatedItems = [...billItems, newItem];
+    let updatedItems = [];
+    if (existingItemIndex >= 0) {
+      updatedItems = billItems.map((item, index) => {
+        if (index === existingItemIndex) {
+          const updatedQuantity = item.Qnty + 1;
+          return { ...item, Qnty: updatedQuantity, Total: updatedQuantity * item.Price };
+        }
+        return item;
+      });
+    } else {
+      const newItem = {
+        uuid: itemid,
+        Item: itemname,
+        Qnty: 1,
+        Price: itemPrice,
+        Total: itemPrice,
+        category: itemcategory,
+      };
+      updatedItems = [...billItems, newItem];
+      setAddedItems([...addedItems, newItem]);
+    }
+
     setBillItems(updatedItems);
-
-    setAddedItems([...addedItems, newItem]);
-
     setSearchOptions([]);
     calculateTotalAfterAddBillItem(updatedItems);
     (document.getElementById('searchField') as HTMLInputElement).value = '';
@@ -130,17 +141,20 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     }
 
     const res = data as { results: BillabeItem[] };
+    const existingItemUuids = new Set(billItems.map((item) => item.uuid));
 
-    const preprocessedData = res?.results?.map((item) => {
-      return {
-        uuid: item.uuid || '',
-        Item: item.commonName ? item.commonName : item.name,
-        Qnty: 1,
-        Price: item.commonName ? 10 : item.servicePrices[0]?.price,
-        Total: item.commonName ? 10 : item.servicePrices[0]?.price,
-        category: item.commonName ? 'StockItem' : 'Service',
-      };
-    });
+    const preprocessedData = res?.results
+      ?.map((item) => {
+        return {
+          uuid: item.uuid || '',
+          Item: item.commonName ? item.commonName : item.name,
+          Qnty: 1,
+          Price: item.commonName ? 10 : item.servicePrices[0]?.price,
+          Total: item.commonName ? 10 : item.servicePrices[0]?.price,
+          category: item.commonName ? 'StockItem' : 'Service',
+        };
+      })
+      .filter((item) => !existingItemUuids.has(item.uuid));
 
     return debouncedSearchTerm
       ? fuzzy
@@ -150,7 +164,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           .sort((r1, r2) => r1.score - r2.score)
           .map((result) => result.original)
       : searchOptions;
-  }, [debouncedSearchTerm, data]);
+  }, [debouncedSearchTerm, data, billItems]);
 
   useEffect(() => {
     setSearchOptions(filterItems);
