@@ -63,7 +63,7 @@
     "swr": "2.x"
   },
   "devDependencies": {
-    "@openmrs/esm-framework": "next",
+    "@openmrs/esm-framework": "^5.5.1-pre.1659",
     "@openmrs/esm-patient-common-lib": "next",
     "@playwright/test": "^1.41.1",
     "@swc/cli": "^0.3.2",
@@ -99,7 +99,7 @@
     "jest-environment-jsdom": "^29.7.0",
     "lerna": "^8.0.2",
     "lodash": "^4.17.21",
-    "openmrs": "next",
+    "openmrs": "^5.5.1-pre.1659",
     "pinst": "^3.0.0",
     "prettier": "^3.2.4",
     "pretty-quick": "^4.0.0",
