@@ -2,9 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   ButtonSet,
   Button,
+  Form,
+  InlineLoading,
   RadioButtonGroup,
   RadioButton,
   Search,
+  Stack,
   Table,
   TableHead,
   TableBody,
@@ -14,7 +17,7 @@ import {
 } from '@carbon/react';
 import styles from './billing-form.scss';
 import { useTranslation } from 'react-i18next';
-import { restBaseUrl, showSnackbar, showToast, useConfig, useDebounce } from '@openmrs/esm-framework';
+import { restBaseUrl, showSnackbar, showToast, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import { mutate } from 'swr';
 import { convertToCurrency } from '../helpers';
@@ -32,6 +35,7 @@ type BillingFormProps = {
 const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig();
+  const isTablet = useLayoutType() === 'tablet';
 
   const [grandTotal, setGrandTotal] = useState(0);
   const [searchOptions, setSearchOptions] = useState([]);
@@ -39,6 +43,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [searchVal, setSearchVal] = useState('');
   const [category, setCategory] = useState('');
   const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [addedItems, setAddedItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
@@ -157,6 +162,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   }, [filterItems]);
 
   const postBillItems = () => {
+    setIsSubmitting(true);
     const bill = {
       cashPoint: '54065383-b4d4-42d2-af4d-d250a1fd2590',
       cashier: 'f9badd80-ab76-11e2-9e96-0800200c9a66',
@@ -187,7 +193,9 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
     const url = `${apiBasePath}bill`;
     processBillItems(bill).then(
-      (res) => {
+      () => {
+        setIsSubmitting(false);
+
         closeWorkspace();
         mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
         showSnackbar({
@@ -198,118 +206,127 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         });
       },
       (error) => {
+        setIsSubmitting(false);
         showSnackbar({ title: 'Bill processing error', kind: 'error', subtitle: error?.message });
       },
     );
   };
 
   return (
-    <div className={styles.billingFormContainer}>
-      <RadioButtonGroup
-        legendText={t('selectCategory', 'Select category')}
-        name="radio-button-group"
-        defaultSelected="radio-1"
-        className={styles.billingItem}
-        onChange={toggleSearch}>
-        <RadioButton labelText={t('stockItem', 'Stock Item')} value="Stock Item" id="stockItem" />
-        <RadioButton labelText={t('service', 'Service')} value="Service" id="service" />
-      </RadioButtonGroup>
+    <Form className={styles.form}>
+      <div className={styles.grid}>
+        <Stack>
+          <RadioButtonGroup
+            legendText={t('selectCategory', 'Select category')}
+            name="radio-button-group"
+            defaultSelected="radio-1"
+            className={styles.mt2}
+            onChange={toggleSearch}>
+            <RadioButton labelText={t('stockItem', 'Stock Item')} value="Stock Item" id="stockItem" />
+            <RadioButton labelText={t('service', 'Service')} value="Service" id="service" />
+          </RadioButtonGroup>
+        </Stack>
+        <Stack>
+          <Search
+            size="lg"
+            id="searchField"
+            disabled
+            closeButtonLabelText={t('clearSearchInput', 'Clear search input')}
+            className={styles.mt2}
+            placeholder={t('searchItems', 'Search items and services')}
+            labelText={t('searchItems', 'Search items and services')}
+            onKeyUp={handleSearchTermChange}
+          />
+        </Stack>
+        <Stack>
+          <ul className={styles.searchContent}>
+            {searchOptions?.length > 0 &&
+              searchOptions?.map((row) => (
+                <li key={row.uuid} className={styles.searchItem}>
+                  <Button
+                    id={row.uuid}
+                    onClick={(e) => addItemToBill(e, row.uuid, row.Item, row.category, row.Price)}
+                    style={{ background: 'inherit', color: 'black' }}>
+                    {row.Item} Qnty.{row.Qnty} Ksh.{row.Price}
+                  </Button>
+                </li>
+              ))}
 
-      <div>
-        <Search
-          size="lg"
-          id="searchField"
-          disabled
-          closeButtonLabelText={t('clearSearchInput', 'Clear search input')}
-          className={styles.billingItem}
-          placeholder={t('searchItems', 'Search items and services')}
-          labelText={t('searchItems', 'Search items and services')}
-          onKeyUp={handleSearchTermChange}
-        />
-
-        <ul className={styles.searchContent}>
-          {searchOptions?.length > 0 &&
-            searchOptions?.map((row) => (
-              <li key={row.uuid} className={styles.searchItem}>
-                <Button
-                  id={row.uuid}
-                  onClick={(e) => addItemToBill(e, row.uuid, row.Item, row.category, row.Price)}
-                  style={{ background: 'inherit', color: 'black' }}>
-                  {row.Item} Qnty.{row.Qnty} Ksh.{row.Price}
-                </Button>
-              </li>
-            ))}
-
-          {searchOptions?.length === 0 && !isLoading && !!debouncedSearchTerm && (
-            <p>{t('noResultsFound', 'No results found')}</p>
-          )}
-        </ul>
-      </div>
-
-      <Table aria-label="sample table" className={styles.billingItem}>
-        <TableHead>
-          <TableRow>
-            <TableHeader>Item</TableHeader>
-            <TableHeader>Quantity</TableHeader>
-            <TableHeader>Price</TableHeader>
-            <TableHeader>Total</TableHeader>
-            <TableHeader>Action</TableHeader>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {billItems && Array.isArray(billItems) ? (
-            billItems.map((row) => (
+            {searchOptions?.length === 0 && !isLoading && !!debouncedSearchTerm && (
+              <p>{t('noResultsFound', 'No results found')}</p>
+            )}
+          </ul>
+        </Stack>
+        <Stack>
+          <Table aria-label="sample table" className={styles.mt2}>
+            <TableHead>
               <TableRow>
-                <TableCell>{row.Item}</TableCell>
-                <TableCell>
-                  <input
-                    type="number"
-                    className={`form-control ${row.Qnty <= 0 ? styles.invalidInput : ''}`}
-                    id={row.Item}
-                    min={0}
-                    max={100}
-                    value={row.Qnty}
-                    onChange={(e) => {
-                      calculateTotal(e, row.Item);
-                      row.Qnty = e.target.value;
-                    }}
-                  />
-                </TableCell>
-                <TableCell id={row.Item + 'Price'}>{row.Price}</TableCell>
-                <TableCell id={row.Item + 'Total'} className="totalValue">
-                  {row.Total}
-                </TableCell>
-                <TableCell>
-                  <TrashCan onClick={() => removeItemFromBill(row.uuid)} className={styles.removeButton} />
-                </TableCell>
+                <TableHeader>Item</TableHeader>
+                <TableHeader>Quantity</TableHeader>
+                <TableHeader>Price</TableHeader>
+                <TableHeader>Total</TableHeader>
+                <TableHeader>Action</TableHeader>
               </TableRow>
-            ))
-          ) : (
-            <p>Loading...</p>
-          )}
-          <TableRow>
-            <TableCell></TableCell>
-            <TableCell></TableCell>
-            <TableCell style={{ fontWeight: 'bold' }}>Grand Total:</TableCell>
-            <TableCell id="GrandTotalSum">{convertToCurrency(grandTotal, defaultCurrency)}</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+            </TableHead>
+            <TableBody>
+              {billItems && Array.isArray(billItems) ? (
+                billItems.map((row) => (
+                  <TableRow>
+                    <TableCell>{row.Item}</TableCell>
+                    <TableCell>
+                      <input
+                        type="number"
+                        className={`form-control ${row.Qnty <= 0 ? styles.invalidInput : ''}`}
+                        id={row.Item}
+                        min={0}
+                        max={100}
+                        value={row.Qnty}
+                        onChange={(e) => {
+                          calculateTotal(e, row.Item);
+                          row.Qnty = e.target.value;
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell id={row.Item + 'Price'}>{row.Price}</TableCell>
+                    <TableCell id={row.Item + 'Total'} className="totalValue">
+                      {row.Total}
+                    </TableCell>
+                    <TableCell>
+                      <TrashCan onClick={() => removeItemFromBill(row.uuid)} className={styles.removeButton} />
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <p>Loading...</p>
+              )}
+              <TableRow>
+                <TableCell colSpan={3}></TableCell>
+                <TableCell style={{ fontWeight: 'bold' }}>{t('grandTotal', 'Grand total')}:</TableCell>
+                <TableCell id="GrandTotalSum">{convertToCurrency(grandTotal, defaultCurrency)}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Stack>
 
-      <ButtonSet className={styles.billingItem}>
-        <Button kind="secondary" onClick={closeWorkspace}>
-          {t('discard', 'Discard')}
-        </Button>
-        <Button
-          kind="primary"
-          disabled={saveDisabled}
-          onClick={() => {
-            postBillItems();
-          }}>
-          {t('save', 'Save')}
-        </Button>
-      </ButtonSet>
-    </div>
+        <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
+          <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={closeWorkspace}>
+            {t('discard', 'Discard')}
+          </Button>
+          <Button
+            className={styles.button}
+            kind="primary"
+            onClick={postBillItems}
+            disabled={isSubmitting && saveDisabled}
+            type="submit">
+            {isSubmitting ? (
+              <InlineLoading description={t('saving', 'Saving') + '...'} />
+            ) : (
+              t('saveAndClose', 'Save and close')
+            )}
+          </Button>
+        </ButtonSet>
+      </div>
+    </Form>
   );
 };
 

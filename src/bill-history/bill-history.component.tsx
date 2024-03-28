@@ -19,13 +19,7 @@ import {
   Tile,
 } from '@carbon/react';
 import { isDesktop, useConfig, useLayoutType, usePagination } from '@openmrs/esm-framework';
-import {
-  CardHeader,
-  EmptyDataIllustration,
-  ErrorState,
-  launchPatientWorkspace,
-  usePaginationInfo,
-} from '@openmrs/esm-patient-common-lib';
+import { CardHeader, EmptyDataIllustration, ErrorState, launchPatientWorkspace } from '@openmrs/esm-patient-common-lib';
 import { useBills } from '../billing.resource';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
@@ -101,7 +95,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             <EmptyDataIllustration />
           </div>
           <p className={styles.content}>There are no bills to display.</p>
-          <Button onClick={() => launchPatientWorkspace('billing-form')} kind="ghost">
+          <Button onClick={() => launchPatientWorkspace('billing-form-workspace')} kind="ghost">
             {t('launchBillForm', 'Launch bill form')}
           </Button>
         </Tile>
@@ -112,10 +106,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   return (
     <>
       <CardHeader title={t('billingHistory', 'Billing History')}>
-        <Button
-          renderIcon={Add}
-          onClick={() => launchPatientWorkspace('billing-form', { workspaceTitle: 'Billing Form' })}
-          kind="ghost">
+        <Button renderIcon={Add} onClick={() => launchPatientWorkspace('billing-form-workspace', {})} kind="ghost">
           {t('addBill', 'Add bill item(s)')}
         </Button>
       </CardHeader>

@@ -1,13 +1,18 @@
 import { configSchema } from './config-schema';
-import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
+import { createDashboardLink, registerWorkspace } from '@openmrs/esm-patient-common-lib';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
-import { defineConfigSchema, getSyncLifecycle, registerFeatureFlag } from '@openmrs/esm-framework';
+import {
+  defineConfigSchema,
+  getAsyncLifecycle,
+  getSyncLifecycle,
+  registerFeatureFlag,
+  translateFrom,
+} from '@openmrs/esm-framework';
 import BillableServiceHome from './billable-services/billable-services-home.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 import BillHistory from './bill-history/bill-history.component';
 import BillingCheckInForm from './billing-form/billing-checkin-form.component';
-import BillingForm from './billing-form/billing-form.component';
 import RequirePaymentModal from './modal/require-payment-modal.component';
 import RootComponent from './root.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
@@ -40,6 +45,16 @@ export const importTranslation = require.context('../translations', false, /.jso
 
 export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
+
+  // t('billingForm', 'Billing form')
+  registerWorkspace({
+    name: 'billing-form-workspace',
+    title: translateFrom(moduleName, 'billingForm', 'Billing form'),
+    load: getAsyncLifecycle(() => import('./billing-form/billing-form.component'), options),
+    type: 'billing',
+    canHide: false,
+    width: 'wider',
+  });
 }
 
 export const billingSummaryDashboardLink = getSyncLifecycle(
@@ -51,7 +66,6 @@ export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLin
 export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);
 export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
 export const serviceMetrics = getSyncLifecycle(ServiceMetrics, options);
-export const billingForm = getSyncLifecycle(BillingForm, options);
 export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
 export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
 export const root = getSyncLifecycle(RootComponent, options);
