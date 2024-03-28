@@ -54,11 +54,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
   });
 
   const hasMoreThanOneLineItem = bill?.lineItems?.length > 1;
-
   const computedTotal = hasMoreThanOneLineItem ? computeTotalPrice(selectedLineItems) : bill?.totalAmount ?? 0;
-
   const totalAmountTendered = formValues?.reduce((curr: number, prev) => curr + Number(prev.amount) ?? 0, 0) ?? 0;
   const amountDue = Number(computedTotal) - (Number(bill?.tenderedAmount) + Number(totalAmountTendered));
+  const newAmountDue = Number(bill?.totalAmount - bill?.tenderedAmount);
 
   const handleNavigateToBillingDashboard = () =>
     navigate({
@@ -66,9 +65,9 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
     });
 
   const handleProcessPayment = () => {
-    const paymentPayload = createPaymentPayload(bill, bill.patientUuid, formValues, amountDue, billableServices);
+    const paymentPayload = createPaymentPayload(bill, bill.patientUuid, formValues, amountDue, billableServices, selectedLineItems);
     processBillPayment(paymentPayload, bill.uuid).then(
-      () => {
+      (res) => {
         showSnackbar({
           title: t('billPayment', 'Bill payment'),
           subtitle: 'Bill payment processing has been successful',
@@ -78,8 +77,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
         if (currentVisit) {
           updateBillVisitAttribute(currentVisit);
         }
-
-        handleNavigateToBillingDashboard();
+        window.location.reload();
       },
       (error) => {
         showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
@@ -98,24 +96,24 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
           </CardHeader>
           <div>
             {bill && <PaymentHistory bill={bill} />}
-            <PaymentForm disablePayment={amountDue <= 0} amountDue={amountDue} />
+            <PaymentForm disablePayment={computedTotal <= 0} amountDue={amountDue} />
           </div>
         </div>
         <div className={styles.divider} />
         <div className={styles.paymentTotals}>
           <InvoiceBreakDown
             label={t('totalAmount', 'Total Amount')}
-            value={convertToCurrency(computedTotal, defaultCurrency)}
+            value={convertToCurrency(bill?.totalAmount, defaultCurrency)}
           />
           <InvoiceBreakDown
             label={t('totalTendered', 'Total Tendered')}
-            value={convertToCurrency(bill?.tenderedAmount + totalAmountTendered ?? 0, defaultCurrency)}
+            value={convertToCurrency(bill?.tenderedAmount, defaultCurrency)}
           />
           <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
           <InvoiceBreakDown
             hasBalance={amountDue < 0 ?? false}
             label={amountDueDisplay(amountDue)}
-            value={convertToCurrency(amountDue ?? 0, defaultCurrency)}
+            value={convertToCurrency(bill?.totalAmount - bill?.tenderedAmount, defaultCurrency)}
           />
           <div className={styles.processPayments}>
             <Button onClick={handleNavigateToBillingDashboard} kind="secondary">

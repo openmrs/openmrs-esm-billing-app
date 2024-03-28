@@ -195,6 +195,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     processBillItems(bill).then(
       () => {
         setIsSubmitting(false);
+
         closeWorkspace();
         mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
         showSnackbar({
