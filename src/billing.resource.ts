@@ -6,7 +6,7 @@ import sortBy from 'lodash-es/sortBy';
 import { apiBasePath } from './constants';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `${apiBasePath}bill?v=full`;
+  const url = `${apiBasePath}bill?v=full&limit=999`;
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
     url,
