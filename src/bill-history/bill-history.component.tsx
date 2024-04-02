@@ -19,7 +19,13 @@ import {
   Tile,
 } from '@carbon/react';
 import { isDesktop, useConfig, useLayoutType, usePagination } from '@openmrs/esm-framework';
-import { CardHeader, EmptyDataIllustration, ErrorState, launchPatientWorkspace } from '@openmrs/esm-patient-common-lib';
+import {
+  CardHeader,
+  EmptyDataIllustration,
+  ErrorState,
+  launchPatientWorkspace,
+  usePaginationInfo,
+} from '@openmrs/esm-patient-common-lib';
 import { useBills } from '../billing.resource';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
@@ -37,6 +43,8 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const { paginated, goTo, results, currentPage } = usePagination(bills);
   const { pageSize, defaultCurrency } = useConfig();
+  const [currentPageSize, setCurrentPageSize] = React.useState(pageSize);
+  const { pageSizes } = usePaginationInfo(pageSize, bills?.length, currentPage, results?.length);
 
   const headerData = [
     {
@@ -58,7 +66,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   ];
 
   const setBilledItems = (bill) =>
-    bill?.lineItems.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item?.billableService || item?.item || ''), '');
+    bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item?.billableService || item?.item || ''), '');
 
   const rowData = results?.map((bill) => ({
     id: bill.uuid,
@@ -170,14 +178,16 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             forwardText={t('nextPage', 'Next page')}
             backwardText={t('previousPage', 'Previous page')}
             page={currentPage}
-            pageSize={pageSize._default}
+            pageSize={currentPageSize}
+            pageSizes={pageSizes}
             totalItems={bills.length}
             className={styles.pagination}
             size={responsiveSize}
-            onChange={({ page: newPage }) => {
+            onChange={({ page: newPage, pageSize }) => {
               if (newPage !== currentPage) {
                 goTo(newPage);
               }
+              setCurrentPageSize(pageSize);
             }}
           />
         )}
