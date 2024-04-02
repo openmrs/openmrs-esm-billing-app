@@ -330,7 +330,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             className={styles.button}
             kind="primary"
             onClick={postBillItems}
-            disabled={isSubmitting && saveDisabled}
+            disabled={isSubmitting || saveDisabled}
             type="submit">
             {isSubmitting ? (
               <InlineLoading description={t('saving', 'Saving') + '...'} />
