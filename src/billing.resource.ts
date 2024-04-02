@@ -6,10 +6,11 @@ import sortBy from 'lodash-es/sortBy';
 import { apiBasePath } from './constants';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `${apiBasePath}bill?v=full&limit=999`;
+  const url = `${apiBasePath}bill?v=full`;
+  const patientUrl = `${apiBasePath}bill?patientUuid=${patientUuid}&v=full`;
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
-    url,
+    isEmpty(patientUuid) ? url : patientUrl,
     openmrsFetch,
   );
 
@@ -36,11 +37,9 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
   const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
   const filteredBills = billStatus === '' ? sortedBills : sortedBills?.filter((bill) => bill?.status === billStatus);
   const mappedResults = filteredBills?.map((bill) => mapBillProperties(bill));
-  const filteredResults = mappedResults?.filter((res) => res.patientUuid === patientUuid);
-  const formattedBills = isEmpty(patientUuid) ? mappedResults : filteredResults || [];
 
   return {
-    bills: formattedBills,
+    bills: mappedResults,
     error,
     isLoading,
     isValidating,
