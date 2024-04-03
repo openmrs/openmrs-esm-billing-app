@@ -28,13 +28,15 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ bill }) => {
       header: 'Payment method',
     },
   ];
-  const rows = bill?.payments?.map((payment) => ({
-    id: `${payment.uuid}`,
-    dateCreated: formatDate(new Date(payment.dateCreated)),
-    amountTendered: convertToCurrency(payment.amountTendered, defaultCurrency),
-    amount: convertToCurrency(payment.amount, defaultCurrency),
-    paymentMethod: payment.instanceType.name,
-  }));
+  const rows = bill?.payments?.map((payment, index) => {
+    return {
+      id: `${payment.uuid}-${index}`,
+      dateCreated: formatDate(new Date(payment.dateCreated)),
+      amountTendered: convertToCurrency(payment.amountTendered, defaultCurrency),
+      amount: convertToCurrency(payment.amount, defaultCurrency),
+      paymentMethod: payment.instanceType.name,
+    };
+  });
 
   if (Object.values(bill?.payments ?? {}).length === 0) {
     return;
