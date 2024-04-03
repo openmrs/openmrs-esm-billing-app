@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Location, UserFollow } from '@carbon/react/icons';
 import { formatDate, useSession } from '@openmrs/esm-framework';
 import BillingIllustration from './billing-illustration.component';
 import styles from './billing-header.scss';
-
+import SelectedDateContext from '../hooks/selectedDateContext';
+import { omrsDateFormat } from '../constants';
+import { DatePickerInput } from '@carbon/react';
+import { DatePicker } from '@carbon/react';
+import dayjs from 'dayjs';
 interface BillingHeaderProps {
   title: string;
 }
@@ -13,6 +17,7 @@ const BillingHeader: React.FC<BillingHeaderProps> = ({ title }) => {
   const { t } = useTranslation();
   const session = useSession();
   const location = session?.sessionLocation?.display;
+  const { selectedDate, setSelectedDate } = useContext(SelectedDateContext);
 
   return (
     <div className={styles.header} data-testid="billing-header">
@@ -32,8 +37,19 @@ const BillingHeader: React.FC<BillingHeaderProps> = ({ title }) => {
           <Location size={16} />
           <span className={styles.value}>{location}</span>
           <span className={styles.middot}>&middot;</span>
-          <Calendar size={16} />
-          <span className={styles.value}>{formatDate(new Date(), { mode: 'standard' })}</span>
+          <DatePicker
+            onChange={([date]) => setSelectedDate(dayjs(date).startOf('day').format(omrsDateFormat))}
+            value={dayjs(selectedDate).format('DD MMM YYYY')}
+            dateFormat="d-M-Y"
+            datePickerType="single">
+            <DatePickerInput
+              style={{ cursor: 'pointer', backgroundColor: 'transparent', border: 'none', maxWidth: '10rem' }}
+              id="appointment-date-picker"
+              placeholder="DD-MMM-YYYY"
+              labelText=""
+              type="text"
+            />
+          </DatePicker>
         </div>
       </div>
     </div>
