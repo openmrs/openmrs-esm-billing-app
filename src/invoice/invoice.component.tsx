@@ -24,7 +24,7 @@ const Invoice: React.FC = () => {
   const { t } = useTranslation();
   const { billUuid, patientUuid } = useParams();
   const { patient, isLoading: isLoadingPatient } = usePatient(patientUuid);
-  const { bill, isLoading: isLoadingBill, error } = useBill(billUuid);
+  const { bill, isLoading: isLoadingBill, error, mutate } = useBill(billUuid);
   const [isPrinting, setIsPrinting] = useState(false);
   const [selectedLineItems, setSelectedLineItems] = useState([]);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -123,7 +123,7 @@ const Invoice: React.FC = () => {
       </div>
 
       <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onSelectItem={handleSelectItem} />
-      <Payments bill={bill} selectedLineItems={selectedLineItems} />
+      <Payments bill={bill} mutate={mutate} selectedLineItems={selectedLineItems} />
 
       <div className={styles.printContainer} ref={componentRef}>
         {isPrinting && <PrintableInvoice bill={bill} patient={patient} isLoading={isLoadingPatient} />}

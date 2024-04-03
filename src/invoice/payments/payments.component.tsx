@@ -20,6 +20,7 @@ import { useBillableServices } from '../../billable-services/billable-service.re
 type PaymentProps = {
   bill: MappedBill;
   selectedLineItems: Array<LineItem>;
+  mutate: () => void;
 };
 
 export type Payment = { method: string; amount: string | number; referenceCode?: number | string };
@@ -28,10 +29,10 @@ export type PaymentFormValue = {
   payment: Array<Payment>;
 };
 
-const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
+const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig();
-  const { billableServices, isLoading, isValidating, error, mutate } = useBillableServices();
+  const { billableServices, isLoading, isValidating, error } = useBillableServices();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
@@ -44,7 +45,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
   const { currentVisit } = useVisit(bill?.patientUuid);
   const methods = useForm<PaymentFormValue>({
     mode: 'all',
-    defaultValues: {},
+    defaultValues: { payment: [{ method: '', amount: '', referenceCode: '' }] }, // Specify default values
     resolver: zodResolver(paymentFormSchema),
   });
 
@@ -88,7 +89,8 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
         if (currentVisit) {
           updateBillVisitAttribute(currentVisit);
         }
-        window.location.reload(); // Refresh the page after successful payment
+        methods.reset({ payment: [{ method: '', amount: '', referenceCode: '' }] });
+        mutate();
       },
       (error) => {
         showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
