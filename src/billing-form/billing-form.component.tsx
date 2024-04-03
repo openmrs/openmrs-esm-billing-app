@@ -26,6 +26,7 @@ import { TrashCan } from '@carbon/react/icons';
 import fuzzy from 'fuzzy';
 import { type BillabeItem } from '../types';
 import { apiBasePath } from '../constants';
+import isEmpty from 'lodash-es/isEmpty';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -47,9 +48,12 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [addedItems, setAddedItems] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
+  const [disableSearch, setDisableSearch] = useState<boolean>(true);
 
   const toggleSearch = (choiceSelected) => {
-    (document.getElementById('searchField') as HTMLInputElement).disabled = false;
+    if (!isEmpty(choiceSelected)) {
+      setDisableSearch(false);
+    }
     setCategory(choiceSelected === 'Stock Item' ? 'Stock Item' : 'Service');
   };
 
@@ -82,7 +86,6 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
     const anyInvalidQuantity = updatedItems.some((item) => item.Qnty <= 0);
 
-    setBillItems(updatedItems);
     setSaveDisabled(!isValid || anyInvalidQuantity);
 
     const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Total, 0);
@@ -120,7 +123,6 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     }
 
     setBillItems(updatedItems);
-    setSearchOptions([]);
     calculateTotalAfterAddBillItem(updatedItems);
     (document.getElementById('searchField') as HTMLInputElement).value = '';
   };
@@ -226,6 +228,10 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     );
   };
 
+  const handleClearSearchTerm = () => {
+    setSearchOptions([]);
+  };
+
   return (
     <Form className={styles.form}>
       <div className={styles.grid}>
@@ -244,12 +250,13 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           <Search
             size="lg"
             id="searchField"
-            disabled
+            disabled={disableSearch}
             closeButtonLabelText={t('clearSearchInput', 'Clear search input')}
             className={styles.mt2}
             placeholder={t('searchItems', 'Search items and services')}
             labelText={t('searchItems', 'Search items and services')}
             onKeyUp={handleSearchTermChange}
+            onClear={handleClearSearchTerm}
           />
         </Stack>
         <Stack>
