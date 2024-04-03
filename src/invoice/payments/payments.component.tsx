@@ -45,7 +45,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
   const { currentVisit } = useVisit(bill?.patientUuid);
   const methods = useForm<PaymentFormValue>({
     mode: 'all',
-    defaultValues: { payment: [{ method: '', amount: '', referenceCode: '' }] }, // Specify default values
+    defaultValues: {},
     resolver: zodResolver(paymentFormSchema),
   });
 
@@ -89,7 +89,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
         if (currentVisit) {
           updateBillVisitAttribute(currentVisit);
         }
-        methods.reset({ payment: [{ method: '', amount: '', referenceCode: '' }] });
+        methods.reset({ payment: [{ method: '', amount: '0', referenceCode: '' }] });
         mutate();
       },
       (error) => {
