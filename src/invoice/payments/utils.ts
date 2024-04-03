@@ -26,6 +26,7 @@ export const createPaymentPayload = (
     amountTendered: payment.amountTendered,
     attributes: [],
     instanceType: payment.instanceType.uuid,
+    dateCreated: payment.dateCreated,
   }));
 
   const newPayments = formValues.map((formValue) => ({
@@ -33,9 +34,10 @@ export const createPaymentPayload = (
     amountTendered: parseFloat(Number(formValue.amount).toFixed(2)),
     attributes: [],
     instanceType: formValue.method,
+    dateCreated: new Date(),
   }));
 
-  const updatedPayments = newPayments.concat(previousPayments);
+  const updatedPayments = [...newPayments, ...previousPayments];
   const totalAmountRendered = updatedPayments.reduce((acc, payment) => acc + payment.amountTendered, 0);
   const updatedLineItems = bill?.lineItems.map((lineItem) => ({
     ...lineItem,

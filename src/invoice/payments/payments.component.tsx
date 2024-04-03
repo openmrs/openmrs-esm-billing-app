@@ -65,7 +65,18 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
     });
 
   const handleProcessPayment = () => {
-    const paymentPayload = createPaymentPayload(bill, bill.patientUuid, formValues, amountDue, billableServices, selectedLineItems);
+    const paymentPayload = createPaymentPayload(
+      bill,
+      bill.patientUuid,
+      formValues,
+      amountDue,
+      billableServices,
+      selectedLineItems,
+    );
+    paymentPayload.payments.forEach((payment) => {
+      payment.dateCreated = new Date(payment.dateCreated);
+    });
+
     processBillPayment(paymentPayload, bill.uuid).then(
       (res) => {
         showSnackbar({
@@ -77,7 +88,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems }) => {
         if (currentVisit) {
           updateBillVisitAttribute(currentVisit);
         }
-        window.location.reload();
+        window.location.reload(); // Refresh the page after successful payment
       },
       (error) => {
         showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
