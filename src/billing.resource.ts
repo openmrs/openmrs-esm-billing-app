@@ -3,10 +3,16 @@ import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl 
 import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
 import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
-import { apiBasePath } from './constants';
+import { apiBasePath, omrsDateFormat } from './constants';
+import { useContext } from 'react';
+import SelectedDateContext from './hooks/selectedDateContext';
+import dayjs from 'dayjs';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `${apiBasePath}bill?v=full`;
+  const { selectedDate } = useContext(SelectedDateContext);
+  const endDate = dayjs().endOf('day').format(omrsDateFormat);
+  const url = `${apiBasePath}bill?q=&v=full`;
+
   const patientUrl = `${apiBasePath}bill?patientUuid=${patientUuid}&v=full`;
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
