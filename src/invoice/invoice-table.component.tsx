@@ -123,19 +123,13 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
               </span>
             }
             title={t('lineItems', 'Line items')}>
-            <div className={styles.toolbarWrapper}>
-              <TableToolbar {...getToolbarProps()} className={styles.tableToolbar} size={responsiveSize}>
-                <TableToolbarContent className={styles.headerContainer}>
-                  <TableToolbarSearch
-                    className={styles.searchbox}
-                    expanded
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                    placeholder={t('searchThisTable', 'Search this table')}
-                    size={responsiveSize}
-                  />
-                </TableToolbarContent>
-              </TableToolbar>
-            </div>
+            <TableToolbarSearch
+              className={styles.searchbox}
+              expanded
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              placeholder={t('searchThisTable', 'Search this table')}
+              size={responsiveSize}
+            />
             <Table {...getTableProps()} aria-label="Invoice line items" className={styles.table}>
               <TableHead>
                 <TableRow>
