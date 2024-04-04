@@ -1,0 +1,26 @@
+@use '@carbon/styles/scss/spacing';
+@use '@carbon/styles/scss/type';
+@use '@carbon/colors';
+
+.section {
+  margin: spacing.$spacing-03;
+}
+  
+.sectionTitle {
+  @include type.type-style('heading-compact-02');
+  color: colors.$gray-70;
+  margin-bottom: spacing.$spacing-04;
+}
+
+.modalBody {
+  padding-bottom: spacing.$spacing-05;
+}
+
+.label {
+  @include type.type-style('heading-compact-01');
+  margin-bottom: spacing.$spacing-05;
+}
+
+.controlField {
+  margin-bottom: spacing.$spacing-05;
+}
