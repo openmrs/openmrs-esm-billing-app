@@ -59,13 +59,14 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   }, [debouncedSearchTerm, lineItems]);
 
   const tableHeaders: Array<typeof DataTableHeader> = [
-    { header: 'No', key: 'no' },
-    { header: 'Bill item', key: 'billItem' },
-    { header: 'Bill code', key: 'billCode' },
-    { header: 'Status', key: 'status' },
-    { header: 'Quantity', key: 'quantity' },
-    { header: 'Price', key: 'price' },
-    { header: 'Total', key: 'total' },
+    { header: 'No', key: 'no', width: 7 }, // Width as a percentage
+    { header: 'Bill item', key: 'billItem', width: 25 },
+    { header: 'Bill code', key: 'billCode', width: 20 },
+    { header: 'Status', key: 'status', width: 25 },
+    { header: 'Quantity', key: 'quantity', width: 15 },
+    { header: 'Price', key: 'price', width: 24 },
+    { header: 'Total', key: 'total', width: 15 },
+    // { header: '', key: 'checkbox', width: 0 },
   ];
 
   const tableRows: Array<typeof DataTableRow> = useMemo(

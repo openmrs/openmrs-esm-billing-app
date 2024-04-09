@@ -145,7 +145,16 @@
 }
 
 .table {
-  tr[data-child-row] td {
-    padding-left: 2rem !important;
+  width: 100%;
+  table-layout: fixed; // This helps with uniform column sizing
+  border-collapse: collapse;
+
+  th, td {
+    text-align: left;
+    padding: layout.$spacing-03; // Use a variable or a fixed value
+    border-bottom: 1px solid $ui-03;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
