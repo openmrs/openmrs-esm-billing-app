@@ -50,6 +50,14 @@
       "featureFlag": "billing"
     },
     {
+      "name": "billable-services-app-menu-item",
+      "component": "billableServicesAppMenuItem",
+      "slot": "app-menu-item-slot",
+      "meta": {
+        "name": "Billable Services"
+      }
+    },
+    {
       "name": "billing-checkin-form",
       "slot": "extra-visit-attribute-slot",
       "component": "billingCheckInForm"

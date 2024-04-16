@@ -18,6 +18,7 @@ import RootComponent from './root.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 import BillableServicesDashboard from './billable-services/dashboard/dashboard.component';
 import ServiceMetrics from './billable-services/dashboard/service-metrics.component';
+import appMenu from './billable-services/billable-services-menu-item/item.component';
 
 const moduleName = '@openmrs/esm-billing-app';
 
@@ -70,3 +71,4 @@ export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
 export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
 export const root = getSyncLifecycle(RootComponent, options);
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
+export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);
