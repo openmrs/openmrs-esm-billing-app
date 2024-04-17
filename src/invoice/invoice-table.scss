@@ -43,9 +43,9 @@
 }
 
 .table {
-  td {
-    border-bottom: none !important;
-  }
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
 }
 
 .tableDescription {
