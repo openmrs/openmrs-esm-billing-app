@@ -152,3 +152,14 @@ export const processBillItems = (payload) => {
     },
   });
 };
+
+export const updateBillItems = (payload) => {
+  const url = `${apiBasePath}bill/${payload.uuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};

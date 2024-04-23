@@ -153,7 +153,9 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                       <React.Fragment key={row.id}>
                         <TableExpandRow {...getRowProps({ row })}>
                           {row.cells.map((cell) => (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
+                            <TableCell key={cell.id} className={styles.tableCells}>
+                              {cell.value}
+                            </TableCell>
                           ))}
                         </TableExpandRow>
                         {row.isExpanded ? (

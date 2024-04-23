@@ -39,6 +39,12 @@ export const configSchema = {
     _description: 'The default page size',
     _default: 10,
   },
+
+  showEditBillButton: {
+    _type: Type.Boolean,
+    _description: 'Whether to show the edit bill button or not.',
+    _default: false,
+  },
 };
 
 export interface ConfigObject {
@@ -47,4 +53,5 @@ export interface ConfigObject {
   catergoryConcepts: Object;
   pageSize;
   object;
+  showEditBillButton: boolean;
 }

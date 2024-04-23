@@ -20,10 +20,12 @@ import {
   type DataTableHeader,
   type DataTableRow,
 } from '@carbon/react';
-import { isDesktop, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
+import { isDesktop, showModal, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { type LineItem, type MappedBill } from '../types';
 import styles from './invoice-table.scss';
 import { convertToCurrency } from '../helpers';
+import { Edit } from '@carbon/react/icons';
+import { Button } from '@carbon/react';
 
 type InvoiceTableProps = {
   bill: MappedBill;
@@ -41,7 +43,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   const [selectedLineItems, setSelectedLineItems] = useState(pendingLineItems ?? []);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
-  const { defaultCurrency } = useConfig();
+  const { defaultCurrency, showEditBillButton } = useConfig();
 
   const filteredLineItems = useMemo(() => {
     if (!debouncedSearchTerm) {
@@ -66,8 +68,16 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
     { header: 'Quantity', key: 'quantity', width: 15 },
     { header: 'Price', key: 'price', width: 24 },
     { header: 'Total', key: 'total', width: 15 },
-    // { header: '', key: 'checkbox', width: 0 },
+    { header: t('actions', 'Actions'), key: 'actionButton' },
   ];
+
+  const handleSelectBillItem = (row) => {
+    const dispose = showModal('edit-bill-line-item-dialog', {
+      bill,
+      item: row,
+      closeModal: () => dispose(),
+    });
+  };
 
   const tableRows: Array<typeof DataTableRow> = useMemo(
     () =>
@@ -81,6 +91,24 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           quantity: item.quantity,
           price: convertToCurrency(item.price, defaultCurrency),
           total: convertToCurrency(item.price * item.quantity, defaultCurrency),
+          actionButton: {
+            content: (
+              <span>
+                {showEditBillButton ? (
+                  <Button
+                    renderIcon={Edit}
+                    hasIconOnly
+                    kind="ghost"
+                    iconDescription={t('editThisBillItem', 'Edit this bill item')}
+                    tooltipPosition="left"
+                    onClick={() => handleSelectBillItem(item)}
+                  />
+                ) : (
+                  '--'
+                )}
+              </span>
+            ),
+          },
         };
       }) ?? [],
     [bill?.receiptNumber, filteredLineItems],
@@ -156,7 +184,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
                       />
                     )}
                     {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
+                      <TableCell key={cell.id}>{cell.value?.content ?? cell.value}</TableCell>
                     ))}
                   </TableRow>
                 ))}

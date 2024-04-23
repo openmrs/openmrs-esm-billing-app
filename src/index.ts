@@ -72,3 +72,8 @@ export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options
 export const root = getSyncLifecycle(RootComponent, options);
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);
+
+export const editBillLineItemDialog = getAsyncLifecycle(() => import('./bill-item-actions/edit-bill-item.component'), {
+  featureName: 'edit bill line item',
+  moduleName,
+});
