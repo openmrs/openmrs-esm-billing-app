@@ -1,5 +1,5 @@
 import useSWR from 'swr';
-import { type OpenmrsResource, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { type OpenmrsResource, openmrsFetch, restBaseUrl, useConfig } from '@openmrs/esm-framework';
 import { type ServiceConcept } from '../types';
 import { apiBasePath } from '../constants';
 
@@ -22,7 +22,9 @@ export const useBillableServices = () => {
 };
 
 export function useServiceTypes() {
-  const url = `${restBaseUrl}/concept/21b8cf43-9f9f-4d02-9f4a-d710ece54261?v=custom:(setMembers:(uuid,display))`;
+  const config = useConfig();
+  const serviceConceptUuid = config.serviceTypes.billableService;
+  const url = `${restBaseUrl}/concept/${serviceConceptUuid}?v=custom:(setMembers:(uuid,display))`;
 
   const { data, error, isLoading } = useSWR<{ data }>(url, openmrsFetch);
 

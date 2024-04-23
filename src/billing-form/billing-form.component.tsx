@@ -35,7 +35,7 @@ type BillingFormProps = {
 
 const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }) => {
   const { t } = useTranslation();
-  const { defaultCurrency } = useConfig();
+  const { defaultCurrency, postBilledItems } = useConfig();
   const isTablet = useLayoutType() === 'tablet';
 
   const [grandTotal, setGrandTotal] = useState(0);
@@ -180,8 +180,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const postBillItems = () => {
     setIsSubmitting(true);
     const bill = {
-      cashPoint: '54065383-b4d4-42d2-af4d-d250a1fd2590',
-      cashier: 'f9badd80-ab76-11e2-9e96-0800200c9a66',
+      cashPoint: postBilledItems.cashPoint,
+      cashier: postBilledItems.cashier,
       lineItems: [],
       payments: [],
       patient: patientUuid,
@@ -193,7 +193,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         quantity: parseInt(item.Qnty),
         price: item.Price,
         priceName: 'Default',
-        priceUuid: '7b9171ac-d3c1-49b4-beff-c9902aee5245',
+        priceUuid: postBilledItems.priceUuid,
         lineItemOrder: 0,
         paymentStatus: 'PENDING',
       };
