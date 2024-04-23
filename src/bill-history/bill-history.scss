@@ -149,13 +149,15 @@
   table-layout: fixed; // This helps with uniform column sizing
   border-collapse: collapse;
 
-  th, td {
-    text-align: left;
-    padding: layout.$spacing-03; // Use a variable or a fixed value
-    border-bottom: 1px solid $ui-03;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  td:has(:global(.billingTable)) {
+    td{
+      padding: 0.375rem 2rem 0.4375rem !important;
+      white-space:normal;
+      text-overflow: unset;
+    }
+  }
+  :global(tr.cds--parent-row.cds--expandable-row + tr[data-child-row]) td {
+    padding-left: 1rem;
   }
 }
 

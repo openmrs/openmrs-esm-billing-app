@@ -159,7 +159,10 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
               placeholder={t('searchThisTable', 'Search this table')}
               size={responsiveSize}
             />
-            <Table {...getTableProps()} aria-label="Invoice line items" className={styles.table}>
+            <Table
+              {...getTableProps()}
+              aria-label="Invoice line items"
+              className={`${styles.invoiceTable} billingTable`}>
               <TableHead>
                 <TableRow>
                   {rows.length > 1 && isSelectable ? <TableHeader /> : null}
