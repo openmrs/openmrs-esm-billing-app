@@ -28,6 +28,24 @@ export const configSchema = {
     },
   },
 
+  postBilledItems: {
+    _type: Type.Object,
+    _description: 'Post Bill Items such as cashPoints, cashier, priceUUid when submitting a bill',
+    _default: {
+      cashPoint: '54065383-b4d4-42d2-af4d-d250a1fd2590',
+      cashier: 'f9badd80-ab76-11e2-9e96-0800200c9a66',
+      priceUuid: '7b9171ac-d3c1-49b4-beff-c9902aee5245',
+    },
+  },
+
+  serviceTypes: {
+    _type: Type.Object,
+    _description: 'Post Bill Items such as cashPoints, cashier, priceUUid when submitting a bill',
+    _default: {
+      billableService: '21b8cf43-9f9f-4d02-9f4a-d710ece54261',
+    },
+  },
+
   defaultCurrency: {
     _type: Type.String,
     _description: 'The default currency for the application. Specify the currency code (e.g., KES, UGX, GBP).',
@@ -54,4 +72,6 @@ export interface ConfigObject {
   pageSize;
   object;
   showEditBillButton: boolean;
+  postBilledItems: Object;
+  serviceTypes: Object;
 }
