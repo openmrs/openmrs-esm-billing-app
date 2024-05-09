@@ -8,7 +8,9 @@ export default function Card({ count, title }) {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>{title}</h1>
-      <span className={styles.count}>{convertToCurrency(count, defaultCurrency)}</span>
+      <span className={styles.count}>
+        {typeof count === 'number' ? convertToCurrency(count, defaultCurrency) : count}
+      </span>
     </div>
   );
 }
