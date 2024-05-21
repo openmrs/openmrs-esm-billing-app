@@ -1,14 +1,8 @@
 import { configSchema } from './config-schema';
-import { createDashboardLink, registerWorkspace } from '@openmrs/esm-patient-common-lib';
+import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
-import {
-  defineConfigSchema,
-  getAsyncLifecycle,
-  getSyncLifecycle,
-  registerFeatureFlag,
-  translateFrom,
-} from '@openmrs/esm-framework';
+import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle, registerFeatureFlag } from '@openmrs/esm-framework';
 import BillableServiceHome from './billable-services/billable-services-home.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 import BillHistory from './bill-history/bill-history.component';
@@ -16,7 +10,6 @@ import BillingCheckInForm from './billing-form/billing-checkin-form.component';
 import RequirePaymentModal from './modal/require-payment-modal.component';
 import RootComponent from './root.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
-import BillableServicesDashboard from './billable-services/dashboard/dashboard.component';
 import ServiceMetrics from './billable-services/dashboard/service-metrics.component';
 import appMenu from './billable-services/billable-services-menu-item/item.component';
 
@@ -46,16 +39,6 @@ export const importTranslation = require.context('../translations', false, /.jso
 
 export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
-
-  // t('billingForm', 'Billing form')
-  registerWorkspace({
-    name: 'billing-form-workspace',
-    title: translateFrom(moduleName, 'billingForm', 'Billing form'),
-    load: getAsyncLifecycle(() => import('./billing-form/billing-form.component'), options),
-    type: 'billing',
-    canHide: false,
-    width: 'wider',
-  });
 }
 
 export const billingSummaryDashboardLink = getSyncLifecycle(
@@ -77,3 +60,6 @@ export const editBillLineItemDialog = getAsyncLifecycle(() => import('./bill-ite
   featureName: 'edit bill line item',
   moduleName,
 });
+
+// t('billingForm', 'Billing form')
+export const billingFormWorkspace = getAsyncLifecycle(() => import('./billing-form/billing-form.component'), options);
