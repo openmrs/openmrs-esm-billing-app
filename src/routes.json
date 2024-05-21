@@ -88,5 +88,13 @@
       "online": true,
       "offline": true
     }
+  ],
+  "workspaces": [
+    {
+      "name": "billing-form-workspace",
+      "title": "billingForm",
+      "component": "billingFormWorkspace",
+      "type": "form"
+    }
   ]
 }
