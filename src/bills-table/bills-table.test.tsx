@@ -121,12 +121,12 @@ describe('BillsTable', () => {
     // Should filter the table when bill payment status combobox is changed
     const billCategorySelect = screen.getByRole('combobox');
     expect(billCategorySelect).toBeInTheDocument();
-    await user.click(billCategorySelect, { name: 'All bills' });
-    expect(mockbills).toHaveBeenCalledWith('', '');
-
-    await user.click(screen.getByText('Pending bills'));
-    expect(screen.getByText('Pending bills')).toBeInTheDocument();
+    await user.click(billCategorySelect, { name: 'Pending bills' });
     expect(mockbills).toHaveBeenCalledWith('', 'PENDING');
+
+    await user.click(screen.getByText('All bills'));
+    expect(screen.getByText('All bills')).toBeInTheDocument();
+    expect(mockbills).toHaveBeenCalledWith('', '');
   });
 
   test('should show the loading spinner while retrieving data', () => {
