@@ -36,7 +36,7 @@ const BillsTable = () => {
   const config = useConfig();
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const [billPaymentStatus, setBillPaymentStatus] = useState('');
+  const [billPaymentStatus, setBillPaymentStatus] = useState('PENDING');
   const pageSizes = config?.bills?.pageSizes ?? [10, 20, 30, 40, 50];
   const [pageSize, setPageSize] = useState(config?.bills?.pageSize ?? 10);
   const { bills, isLoading, isValidating, error } = useBills('', billPaymentStatus);
@@ -152,7 +152,7 @@ const BillsTable = () => {
           className={styles.filterDropdown}
           direction="bottom"
           id={`filter-${id}`}
-          initialSelectedItem={filterItems[0]}
+          initialSelectedItem={filterItems[1]}
           items={filterItems}
           itemToString={(item) => (item ? item.text : '')}
           label=""
