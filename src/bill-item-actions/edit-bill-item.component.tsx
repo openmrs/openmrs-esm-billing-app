@@ -156,15 +156,14 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
               <Controller
                 name="price"
                 control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { value } }) => (
                   <NumberInput
                     id="priceInput"
-                    label={t('price', 'Price')}
+                    label={t('price', 'Unit Price')}
                     value={value}
-                    onChange={onChange}
+                    readOnly={true}
                     className={styles.controlField}
-                    invalid={errors.price?.message}
-                    invalidText={errors.price?.message}
+                    helperText="This is the unit Price for this item."
                   />
                 )}
               />
