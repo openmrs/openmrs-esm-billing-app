@@ -15,6 +15,7 @@ import { InlineNotification } from '@carbon/react';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { useBillableServices } from '../billable-services/billable-service.resource';
 import { NumberInput } from '@carbon/react';
+import { TextInput } from '@carbon/react';
 
 interface BillLineItemProps {
   bill: MappedBill;
@@ -157,7 +158,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
                 name="price"
                 control={control}
                 render={({ field: { value } }) => (
-                  <NumberInput
+                  <TextInput
                     id="priceInput"
                     label={t('price', 'Unit Price')}
                     value={value}
