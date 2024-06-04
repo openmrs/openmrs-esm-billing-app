@@ -31,7 +31,6 @@ export type PaymentFormValue = {
 
 const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) => {
   const { t } = useTranslation();
-  const { defaultCurrency } = useConfig();
   const { billableServices, isLoading, isValidating, error } = useBillableServices();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
@@ -43,6 +42,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
 
   const paymentFormSchema = z.object({ payment: z.array(paymentSchema) });
   const { currentVisit } = useVisit(bill?.patientUuid);
+  const { defaultCurrency } = useConfig();
   const methods = useForm<PaymentFormValue>({
     mode: 'all',
     defaultValues: {},
@@ -58,7 +58,6 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
   const computedTotal = hasMoreThanOneLineItem ? computeTotalPrice(selectedLineItems) : bill?.totalAmount ?? 0;
   const totalAmountTendered = formValues?.reduce((curr: number, prev) => curr + Number(prev.amount) ?? 0, 0) ?? 0;
   const amountDue = Number(computedTotal) - (Number(bill?.tenderedAmount) + Number(totalAmountTendered));
-  const newAmountDue = Number(bill?.totalAmount - bill?.tenderedAmount);
 
   const handleNavigateToBillingDashboard = () =>
     navigate({
@@ -68,7 +67,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
   const handleProcessPayment = () => {
     const paymentPayload = createPaymentPayload(
       bill,
-      bill.patientUuid,
+      bill?.patientUuid,
       formValues,
       amountDue,
       billableServices,
@@ -109,7 +108,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
           </CardHeader>
           <div>
             {bill && <PaymentHistory bill={bill} />}
-            <PaymentForm disablePayment={computedTotal <= 0} amountDue={amountDue} />
+            <PaymentForm disablePayment={amountDue <= 0} amountDue={amountDue} />
           </div>
         </div>
         <div className={styles.divider} />
