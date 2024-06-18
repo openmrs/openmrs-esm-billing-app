@@ -44,7 +44,9 @@ const servicePriceSchema = z.object({
   ]),
 });
 
-const paymentFormSchema = z.object({ payment: z.array(servicePriceSchema) });
+const paymentFormSchema = z.object({
+  payment: z.array(servicePriceSchema).min(1, 'At least one payment option is required'),
+});
 
 const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
 
@@ -61,7 +63,7 @@ const AddBillableService: React.FC = () => {
     formState: { errors },
   } = useForm<any>({
     mode: 'all',
-    defaultValues: {},
+    defaultValues: { payment: [DEFAULT_PAYMENT_OPTION] },
     resolver: zodResolver(paymentFormSchema),
   });
   const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
@@ -288,7 +290,7 @@ const AddBillableService: React.FC = () => {
                 )}
               />
               <div className={styles.removeButtonContainer}>
-                <TrashCan onClick={handleRemovePaymentMode} className={styles.removeButton} size={20} />
+                <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
               </div>
             </div>
           ))}
