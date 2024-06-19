@@ -60,7 +60,7 @@ const AddBillableService: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<any>({
     mode: 'all',
     defaultValues: { payment: [DEFAULT_PAYMENT_OPTION] },
@@ -309,7 +309,7 @@ const AddBillableService: React.FC = () => {
         <Button kind="secondary" onClick={handleNavigateToServiceDashboard}>
           {t('cancel', 'Cancel')}
         </Button>
-        <Button type="submit" onClick={handleSubmit(onSubmit)}>
+        <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>
           {t('save', 'Save')}
         </Button>
       </section>
