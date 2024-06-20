@@ -129,6 +129,14 @@ const AddBillableService: React.FC = () => {
     );
   };
 
+  const getPaymentErrorMessage = () => {
+    const paymentError = errors.payment;
+    if (paymentError && typeof paymentError.message === 'string') {
+      return paymentError.message;
+    }
+    return null;
+  };
+
   return (
     <Form className={styles.form}>
       <h4>{t('addBillableServices', 'Add Billable Services')}</h4>
@@ -302,6 +310,7 @@ const AddBillableService: React.FC = () => {
             iconDescription="Add">
             {t('addPaymentOptions', 'Add payment option')}
           </Button>
+          {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
         </div>
       </section>
 
