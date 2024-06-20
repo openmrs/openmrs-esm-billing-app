@@ -44,7 +44,9 @@ const servicePriceSchema = z.object({
   ]),
 });
 
-const paymentFormSchema = z.object({ payment: z.array(servicePriceSchema) });
+const paymentFormSchema = z.object({
+  payment: z.array(servicePriceSchema).min(1, 'At least one payment option is required'),
+});
 
 const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
 
@@ -58,10 +60,10 @@ const AddBillableService: React.FC = () => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<any>({
     mode: 'all',
-    defaultValues: {},
+    defaultValues: { payment: [DEFAULT_PAYMENT_OPTION] },
     resolver: zodResolver(paymentFormSchema),
   });
   const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
@@ -125,6 +127,14 @@ const AddBillableService: React.FC = () => {
         showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
       },
     );
+  };
+
+  const getPaymentErrorMessage = () => {
+    const paymentError = errors.payment;
+    if (paymentError && typeof paymentError.message === 'string') {
+      return paymentError.message;
+    }
+    return null;
   };
 
   return (
@@ -288,7 +298,7 @@ const AddBillableService: React.FC = () => {
                 )}
               />
               <div className={styles.removeButtonContainer}>
-                <TrashCan onClick={handleRemovePaymentMode} className={styles.removeButton} size={20} />
+                <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
               </div>
             </div>
           ))}
@@ -300,6 +310,7 @@ const AddBillableService: React.FC = () => {
             iconDescription="Add">
             {t('addPaymentOptions', 'Add payment option')}
           </Button>
+          {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
         </div>
       </section>
 
@@ -307,7 +318,7 @@ const AddBillableService: React.FC = () => {
         <Button kind="secondary" onClick={handleNavigateToServiceDashboard}>
           {t('cancel', 'Cancel')}
         </Button>
-        <Button type="submit" onClick={handleSubmit(onSubmit)}>
+        <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>
           {t('save', 'Save')}
         </Button>
       </section>
