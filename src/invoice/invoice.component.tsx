@@ -26,13 +26,13 @@ const Invoice: React.FC = () => {
   const { patient, isLoading: isLoadingPatient } = usePatient(patientUuid);
   const { bill, isLoading: isLoadingBill, error, mutate } = useBill(billUuid);
   const [isPrinting, setIsPrinting] = useState(false);
-  const [selectedLineItems, setSelectedLineItems] = useState([]);
+  const [selectedLineItems, setSelectedLineItems] = useState<LineItem[]>([]);
   const componentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
-  const handleSelectItem = (lineItems: Array<LineItem>) => {
+  const { defaultCurrency } = useConfig();
+  const handleSelectItem = (lineItems: LineItem[]) => {
     setSelectedLineItems(lineItems);
   };
-  const { defaultCurrency } = useConfig();
 
   const handleAfterPrint = useCallback(() => {
     onBeforeGetContentResolve.current = null;
@@ -52,9 +52,7 @@ const Invoice: React.FC = () => {
 
   const handlePrint = useReactToPrint({
     content: reactToPrintContent,
-    documentTitle: `Invoice ${bill?.receiptNumber} - ${patient?.name?.[0]?.given?.join(' ')} ${
-      patient?.name?.[0].family
-    }`,
+    documentTitle: `Invoice ${bill?.receiptNumber} - ${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
     onBeforeGetContent: handleOnBeforeGetContent,
     onAfterPrint: handleAfterPrint,
     removeAfterPrint: true,
@@ -118,7 +116,7 @@ const Invoice: React.FC = () => {
             size="md">
             {t('printBill', 'Print bill')}
           </Button>
-          {bill?.status === 'PAID' ? <PrintReceipt billId={bill?.id} /> : null}
+          {(bill?.status === 'PAID' || bill?.tenderedAmount > 0) && <PrintReceipt billId={bill?.id} />}
         </div>
       </div>
 

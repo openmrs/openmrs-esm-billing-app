@@ -29,7 +29,7 @@ export type PaymentFormValue = {
   payment: Array<Payment>;
 };
 
-const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) => {
+const Payments: React.FC<PaymentProps> = ({ bill, mutate, selectedLineItems }) => {
   const { t } = useTranslation();
   const { billableServices, isLoading, isValidating, error } = useBillableServices();
   const paymentSchema = z.object({
@@ -45,7 +45,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
   const { defaultCurrency } = useConfig();
   const methods = useForm<PaymentFormValue>({
     mode: 'all',
-    defaultValues: {},
+    defaultValues: { payment: [] },
     resolver: zodResolver(paymentFormSchema),
   });
 
@@ -54,10 +54,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
     control: methods.control,
   });
 
-  const hasMoreThanOneLineItem = bill?.lineItems?.length > 1;
-  const computedTotal = hasMoreThanOneLineItem ? computeTotalPrice(selectedLineItems) : bill?.totalAmount ?? 0;
+  const selectedLineItemsTotal = selectedLineItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const totalAmountTendered = formValues?.reduce((curr: number, prev) => curr + Number(prev.amount) ?? 0, 0) ?? 0;
-  const amountDue = Number(computedTotal) - (Number(bill?.tenderedAmount) + Number(totalAmountTendered));
+  const amountDue = bill ? bill.totalAmount - selectedLineItemsTotal : 0;
+  const clientBalance = bill ? bill.totalAmount - (bill.tenderedAmount + totalAmountTendered) : 0;
 
   const handleNavigateToBillingDashboard = () =>
     navigate({
@@ -65,39 +65,46 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
     });
 
   const handleProcessPayment = () => {
-    const paymentPayload = createPaymentPayload(
-      bill,
-      bill?.patientUuid,
-      formValues,
-      amountDue,
-      billableServices,
-      selectedLineItems,
-    );
-    paymentPayload.payments.forEach((payment) => {
-      payment.dateCreated = new Date(payment.dateCreated);
-    });
+    if (bill) {
+      const paymentPayload = createPaymentPayload(
+        bill,
+        bill?.patientUuid,
+        formValues,
+        amountDue,
+        billableServices,
+        selectedLineItems,
+      );
+      paymentPayload.payments.forEach((payment) => {
+        payment.dateCreated = new Date(payment.dateCreated);
+      });
 
-    processBillPayment(paymentPayload, bill.uuid).then(
-      (res) => {
-        showSnackbar({
-          title: t('billPayment', 'Bill payment'),
-          subtitle: 'Bill payment processing has been successful',
-          kind: 'success',
-          timeoutInMs: 3000,
-        });
-        if (currentVisit) {
-          updateBillVisitAttribute(currentVisit);
-        }
-        methods.reset({ payment: [{ method: '', amount: '0', referenceCode: '' }] });
-        mutate();
-      },
-      (error) => {
-        showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
-      },
-    );
+      processBillPayment(paymentPayload, bill.uuid).then(
+        (res) => {
+          showSnackbar({
+            title: t('billPayment', 'Bill payment'),
+            subtitle: 'Bill payment processing has been successful',
+            kind: 'success',
+            timeoutInMs: 3000,
+          });
+          if (currentVisit) {
+            updateBillVisitAttribute(currentVisit);
+          }
+          methods.reset({ payment: [{ method: '', amount: '0', referenceCode: '' }] });
+          mutate();
+        },
+        (error) => {
+          showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
+        },
+      );
+    }
   };
 
-  const amountDueDisplay = (amount: number) => (amount < 0 ? 'Client balance' : 'Amount Due');
+  if (!bill) {
+    return null;
+  }
+
+  const amountDueLabel = selectedLineItems.length ? t('amountDue', 'Amount Due') : t('clientBalance', 'Client Balance');
+  const amountDueValue = selectedLineItems.length ? amountDue : clientBalance;
 
   return (
     <FormProvider {...methods}>
@@ -108,24 +115,29 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
           </CardHeader>
           <div>
             {bill && <PaymentHistory bill={bill} />}
-            <PaymentForm disablePayment={amountDue <= 0} amountDue={amountDue} />
+            <PaymentForm
+              disablePayment={clientBalance <= 0}
+              clientBalance={clientBalance}
+              isSingleLineItemSelected={selectedLineItems.length > 0}
+              isSingleLineItem={bill.lineItems.length === 1}
+            />
           </div>
         </div>
         <div className={styles.divider} />
         <div className={styles.paymentTotals}>
           <InvoiceBreakDown
             label={t('totalAmount', 'Total Amount')}
-            value={convertToCurrency(bill?.totalAmount, defaultCurrency)}
+            value={convertToCurrency(bill.totalAmount, defaultCurrency)}
           />
           <InvoiceBreakDown
             label={t('totalTendered', 'Total Tendered')}
-            value={convertToCurrency(bill?.tenderedAmount, defaultCurrency)}
+            value={convertToCurrency(bill?.tenderedAmount + totalAmountTendered, defaultCurrency)}
           />
           <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
           <InvoiceBreakDown
-            hasBalance={amountDue < 0 ?? false}
-            label={amountDueDisplay(amountDue)}
-            value={convertToCurrency(bill?.totalAmount - bill?.tenderedAmount, defaultCurrency)}
+            hasBalance={amountDueValue < 0}
+            label={amountDueLabel}
+            value={convertToCurrency(amountDueValue < 0 ? -amountDueValue : amountDueValue, defaultCurrency)}
           />
           <div className={styles.processPayments}>
             <Button onClick={handleNavigateToBillingDashboard} kind="secondary">
@@ -139,21 +151,6 @@ const Payments: React.FC<PaymentProps> = ({ bill, selectedLineItems, mutate }) =
       </div>
     </FormProvider>
   );
-};
-
-const computeTotalPrice = (items) => {
-  if (items && !items.length) {
-    return 0;
-  }
-
-  let totalPrice = 0;
-
-  items?.forEach((item) => {
-    const { price, quantity } = item;
-    totalPrice += price * quantity;
-  });
-
-  return totalPrice;
 };
 
 export default Payments;
