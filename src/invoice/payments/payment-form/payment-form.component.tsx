@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { TrashCan, Add } from '@carbon/react/icons';
@@ -8,11 +8,21 @@ import { type PaymentFormValue } from '../payments.component';
 import { usePaymentModes } from '../payment.resource';
 import styles from './payment-form.scss';
 
-type PaymentFormProps = { disablePayment: boolean; amountDue: number };
+type PaymentFormProps = {
+  disablePayment: boolean;
+  clientBalance: number;
+  isSingleLineItemSelected: boolean;
+  isSingleLineItem: boolean;
+};
 
 const DEFAULT_PAYMENT = { method: '', amount: 0, referenceCode: '' };
 
-const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, amountDue }) => {
+const PaymentForm: React.FC<PaymentFormProps> = ({
+  disablePayment,
+  clientBalance,
+  isSingleLineItemSelected,
+  isSingleLineItem,
+}) => {
   const { t } = useTranslation();
   const {
     control,
@@ -20,7 +30,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, amountDue }) 
   } = useFormContext<PaymentFormValue>();
   const { paymentModes, isLoading, error } = usePaymentModes();
   const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
-  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [isFormVisible, setIsFormVisible] = useState(isSingleLineItem);
+
+  useEffect(() => {
+    if (isSingleLineItem) {
+      setIsFormVisible(true);
+      if (fields.length === 0) {
+        append(DEFAULT_PAYMENT);
+      }
+    }
+  }, [isSingleLineItem, append, fields.length]);
 
   const handleAppendPaymentMode = useCallback(() => {
     setIsFormVisible(true);
@@ -90,12 +109,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, amountDue }) 
               )}
             />
             <div className={styles.removeButtonContainer}>
-              <TrashCan onClick={handleRemovePaymentMode} className={styles.removeButton} size={20} />
+              <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
             </div>
           </div>
         ))}
       <Button
-        disabled={disablePayment}
+        disabled={disablePayment || (!isSingleLineItem && !isSingleLineItemSelected)}
         size="md"
         onClick={handleAppendPaymentMode}
         className={styles.paymentButtons}
