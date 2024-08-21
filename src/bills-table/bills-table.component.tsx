@@ -39,7 +39,7 @@ const BillsTable = () => {
   const [billPaymentStatus, setBillPaymentStatus] = useState('PENDING');
   const pageSizes = config?.bills?.pageSizes ?? [10, 20, 30, 40, 50];
   const [pageSize, setPageSize] = useState(config?.bills?.pageSize ?? 10);
-  const { bills, isLoading, isValidating, error } = useBills('', ''); // Fetch all bills
+  const { bills, isLoading, isValidating, error } = useBills('', '');
   const [searchString, setSearchString] = useState('');
 
   const headerData = [
@@ -65,7 +65,6 @@ const BillsTable = () => {
     if (bills !== undefined && bills.length > 0) {
       const filteredBills = bills
         .map((bill) => {
-          // Example: Check if bill is fully paid based on payments or other logic
           if (bill.payments && bill.payments.length > 0) {
             const totalPaid = bill.payments.reduce((sum, payment) => sum + payment.amountTendered, 0);
             if (totalPaid >= bill.totalAmount) {
@@ -80,7 +79,7 @@ const BillsTable = () => {
           } else if (billPaymentStatus === 'PENDING') {
             return bill.status === 'PENDING';
           } else {
-            return true; // Show all bills
+            return true;
           }
         });
 
