@@ -85,8 +85,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   const tableRows: Array<typeof DataTableRow> = useMemo(
     () =>
       filteredLineItems?.map((item, index) => {
-        console.log(`Line Item ${index + 1} - ${item.item}: Status is ${item.paymentStatus}`);
-
         return {
           no: `${index + 1}`,
           id: `${item.uuid}`,
@@ -137,10 +135,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
 
     if (checked) {
       newSelectedLineItems = [...selectedLineItems, matchingRow];
-      console.log(`Selected Line Item: ${matchingRow.item} (UUID: ${matchingRow.uuid})`);
     } else {
       newSelectedLineItems = selectedLineItems.filter((item) => item.uuid !== row.id);
-      console.log(`Deselected Line Item: ${matchingRow.item} (UUID: ${matchingRow.uuid})`);
     }
     setSelectedLineItems(newSelectedLineItems);
     onSelectItem(newSelectedLineItems);
