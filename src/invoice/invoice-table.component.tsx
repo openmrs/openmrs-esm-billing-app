@@ -34,9 +34,10 @@ type InvoiceTableProps = {
 const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, isLoadingBill, onSelectItem }) => {
   const { t } = useTranslation();
   const lineItems = bill?.lineItems ?? [];
+  const paidLineItems = lineItems?.filter((item) => item.paymentStatus === 'PAID') ?? [];
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const [selectedLineItems, setSelectedLineItems] = useState<LineItem[]>([]);
+  const [selectedLineItems, setSelectedLineItems] = useState(paidLineItems ?? []);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
   const { defaultCurrency, showEditBillButton } = useConfig();
@@ -84,17 +85,17 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   const tableRows: Array<typeof DataTableRow> = useMemo(
     () =>
       filteredLineItems?.map((item, index) => {
-        const itemTotal = item.price * item.quantity;
-        const itemStatus = item.paymentStatus === 'PAID' || bill.tenderedAmount >= itemTotal ? 'PAID' : 'PENDING';
+        console.log(`Line Item ${index + 1} - ${item.item}: Status is ${item.paymentStatus}`);
+
         return {
           no: `${index + 1}`,
           id: `${item.uuid}`,
           billItem: item.billableService ? item.billableService : item?.item,
           billCode: bill?.receiptNumber,
-          status: itemStatus,
+          status: item.paymentStatus,
           quantity: item.quantity,
           price: convertToCurrency(item.price, defaultCurrency),
-          total: convertToCurrency(itemTotal, defaultCurrency),
+          total: item.price * item.quantity,
           actionButton: (
             <span>
               {showEditBillButton ? (
@@ -136,10 +137,13 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
 
     if (checked) {
       newSelectedLineItems = [...selectedLineItems, matchingRow];
+      console.log(`Selected Line Item: ${matchingRow.item} (UUID: ${matchingRow.uuid})`);
     } else {
       newSelectedLineItems = selectedLineItems.filter((item) => item.uuid !== row.id);
+      console.log(`Deselected Line Item: ${matchingRow.item} (UUID: ${matchingRow.uuid})`);
     }
     setSelectedLineItems(newSelectedLineItems);
+    onSelectItem(newSelectedLineItems);
   };
 
   return (
@@ -173,25 +177,31 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    {...getRowProps({
-                      row,
-                    })}>
-                    {rows.length > 1 && isSelectable && (
-                      <TableSelectRow
-                        aria-label="Select row"
-                        {...getSelectionProps({ row })}
-                        onChange={(checked: boolean) => handleRowSelection(row, checked)}
-                        checked={Boolean(selectedLineItems?.find((item) => item?.uuid === row?.id))}
-                      />
-                    )}
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+                {rows.map((row, index) => {
+                  return (
+                    <TableRow
+                      key={row.id}
+                      {...getRowProps({
+                        row,
+                      })}>
+                      {rows.length > 1 && isSelectable && (
+                        <TableSelectRow
+                          aria-label="Select row"
+                          {...getSelectionProps({ row })}
+                          disabled={tableRows[index].status === 'PAID'}
+                          onChange={(checked: boolean) => handleRowSelection(row, checked)}
+                          checked={
+                            tableRows[index].status === 'PAID' ||
+                            Boolean(selectedLineItems?.find((item) => item?.uuid === row?.id))
+                          }
+                        />
+                      )}
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
