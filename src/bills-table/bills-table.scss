@@ -1,9 +1,9 @@
 @use '@carbon/layout';
 @use '@carbon/type';
-@import '~@openmrs/esm-styleguide/src/vars';
+@use '~@openmrs/esm-styleguide/src/vars' as *;
 
 .container {
-  margin: 2rem 0;
+  margin: layout.$spacing-07 0;
 }
 
 .emptyStateContainer,
@@ -63,7 +63,7 @@
   justify-content: space-between;
 
   &:global(.cds--inline-loading) {
-    max-height: 1rem;
+    max-height: layout.$spacing-05;
   }
 }
 
@@ -104,11 +104,11 @@
 }
 
 .expandedActiveVisitRow td {
-  padding: 0 2rem;
+  padding: 0 layout.$spacing-05;
 }
 
 .expandedActiveVisitRow th[colspan] td[colspan] > div:first-child {
-  padding: 0 1rem;
+  padding: 0 layout.$spacing-05;
 }
 
 .action {
@@ -172,7 +172,7 @@
 .filterEmptyStateContent {
   @include type.type-style('heading-compact-02');
   color: $text-02;
-  margin-bottom: 0.5rem;
+  margin-bottom: layout.$spacing-03;
 }
 
 .filterEmptyStateHelper {

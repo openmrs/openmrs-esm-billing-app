@@ -1,7 +1,7 @@
 @use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
-@import '~@openmrs/esm-styleguide/src/vars';
+@use '~@openmrs/esm-styleguide/src/vars' as *;
 
 .form {
   display: flex;
@@ -25,7 +25,7 @@
 }
 
 .container {
-  margin: 1rem;
+  margin: layout.$spacing-05;
 }
 
 .paymentContainer {
@@ -43,7 +43,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(auto, 1fr));
   align-items: flex-start;
-  column-gap: 1rem;
+  column-gap: layout.$spacing-05;
   margin: 0.625rem 0;
   width: 100%;
 }
@@ -76,7 +76,7 @@
 }
 
 .service {
-  padding: 1rem 0.75rem;
+  padding: layout.$spacing-05 layout.$spacing-04;
 }
 
 .conceptsList {
@@ -93,17 +93,17 @@
 .emptyResults {
   @include type.type-style('body-compact-01');
   color: $text-02;
-  min-height: 1rem;
+  min-height: layout.$spacing-05;
   border: 1px solid $ui-03;
 }
 
 .conceptLabel {
   @include type.type-style('label-02');
-  margin: 1rem;
+  margin: layout.$spacing-05;
 }
 
 .errorContainer {
-  margin: 1rem;
+  margin: layout.$spacing-05;
 }
 
 .serviceError {
@@ -126,6 +126,6 @@
 
 .spinner {
   &:global(.cds--inline-loading) {
-    min-height: 1rem;
+    min-height: layout.$spacing-05;
   }
 }
