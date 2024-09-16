@@ -160,7 +160,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
                 render={({ field: { value } }) => (
                   <TextInput
                     id="priceInput"
-                    label={t('price', 'Unit Price')}
+                    labelText={t('price', 'Unit Price')}
                     value={value}
                     readOnly={true}
                     className={styles.controlField}
