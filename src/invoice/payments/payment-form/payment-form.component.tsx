@@ -48,7 +48,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const handleRemovePaymentMode = useCallback((index) => remove(index), [remove]);
 
   if (isLoading) {
-    return <NumberInputSkeleton />;
+    return <NumberInputSkeleton data-testid="number-input-skeleton" />;
   }
 
   if (error) {
@@ -109,7 +109,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               )}
             />
             <div className={styles.removeButtonContainer}>
-              <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
+              <TrashCan
+                onClick={() => handleRemovePaymentMode(index)}
+                className={styles.removeButton}
+                size={20}
+                data-testid="trash-can-icon"
+              />
             </div>
           </div>
         ))}
