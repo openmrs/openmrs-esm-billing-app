@@ -1,6 +1,7 @@
 @use '@carbon/type';
+@use '@carbon/layout';
 
 .bodyShort02 {
-  margin-bottom: 0.5rem;
+  margin-bottom: layout.$spacing-03;
   @include type.type-style('body-compact-02');
 }

@@ -1,9 +1,9 @@
 @use '@carbon/layout';
 @use '@carbon/type';
-@import '~@openmrs/esm-styleguide/src/vars';
+@use '~@openmrs/esm-styleguide/src/vars' as *;
 
 .container {
-  margin: 2rem 0;
+  margin: layout.$spacing-07 0;
 }
 
 .emptyStateContainer,
@@ -39,7 +39,7 @@
   }
 
   :global(.cds--list-box__menu-icon) {
-    height: 1rem;
+    height: layout.$spacing-05;
   }
 
   :global(.cds--list-box__menu) {
@@ -70,7 +70,7 @@
   justify-content: space-between;
 
   &:global(.cds--inline-loading) {
-    max-height: 1rem;
+    max-height: layout.$spacing-05;
   }
 }
 
@@ -95,7 +95,7 @@
 }
 
 .emptyRow {
-  padding: 0 1rem;
+  padding: 0 layout.$spacing-05;
   display: flex;
   align-items: center;
 }
@@ -103,7 +103,7 @@
 .visitSummaryContainer {
   width: 100%;
   max-width: 768px;
-  margin: 1rem auto;
+  margin: layout.$spacing-05 auto;
 }
 
 .expandedActiveVisitRow > td > div {
@@ -111,11 +111,11 @@
 }
 
 .expandedActiveVisitRow td {
-  padding: 0 2rem;
+  padding: 0 layout.$spacing-07;
 }
 
 .expandedActiveVisitRow th[colspan] td[colspan] > div:first-child {
-  padding: 0 1rem;
+  padding: 0 layout.$spacing-05;
 }
 
 .action {
@@ -146,7 +146,7 @@
     &:after {
       content: '';
       display: block;
-      width: 2rem;
+      width: layout.$spacing-07;
       padding-top: 3px;
       border-bottom: 0.375rem solid;
       @include brand-03(border-bottom-color);

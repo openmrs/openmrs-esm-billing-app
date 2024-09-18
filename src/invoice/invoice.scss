@@ -4,7 +4,7 @@
 
 .invoiceContainer {
   background-color: colors.$gray-10;
-  height: calc(100vh - 3rem);
+  height: calc(100vh - layout.$spacing-09);
 }
 
 .errorContainer {
@@ -28,7 +28,7 @@
   align-items: center;
   justify-content: space-between;
   margin: layout.$spacing-05;
-  row-gap: 1.5rem;
+  row-gap: layout.$spacing-06;
 }
 
 .label {
