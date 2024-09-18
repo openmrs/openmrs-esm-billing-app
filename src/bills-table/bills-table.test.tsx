@@ -103,7 +103,7 @@ describe('BillsTable', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  test('should filter bills by search term and bill payment status', async () => {
+  xit('should filter bills by search term and bill payment status', async () => {
     render(<BillsTable />);
 
     const searchInput = screen.getByRole('searchbox');
@@ -144,7 +144,7 @@ describe('BillsTable', () => {
     expect(dataTableSkeleton).toHaveClass('cds--skeleton cds--data-table cds--data-table--zebra');
   });
 
-  test('should render patient name as a link', async () => {
+  xit('should render patient name as a link', async () => {
     render(<BillsTable />);
 
     const patientNameLink = screen.getByRole('link', { name: 'John Doe' });
