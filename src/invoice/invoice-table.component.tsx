@@ -89,7 +89,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           no: `${index + 1}`,
           id: `${item.uuid}`,
           billItem: item.billableService ? item.billableService : item?.item,
-          billCode: bill?.receiptNumber,
+          billCode: <span data-testid={`receipt-number-${index}`}>{bill?.receiptNumber}</span>,
           status: item.paymentStatus,
           quantity: item.quantity,
           price: convertToCurrency(item.price, defaultCurrency),
@@ -98,6 +98,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
             <span>
               {showEditBillButton ? (
                 <Button
+                  data-testid={`edit-button-${item.uuid}`}
                   renderIcon={Edit}
                   hasIconOnly
                   kind="ghost"
@@ -119,6 +120,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
     return (
       <div className={styles.loaderContainer}>
         <DataTableSkeleton
+          data-testid="loader"
           columnCount={tableHeaders.length}
           showHeader={false}
           showToolbar={false}
