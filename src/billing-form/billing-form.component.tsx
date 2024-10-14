@@ -268,7 +268,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                     id={row.uuid}
                     onClick={(e) => addItemToBill(e, row.uuid, row.Item, row.category, row.Price)}
                     style={{ background: 'inherit', color: 'black' }}>
-                    {row.Item} Qnty.{row.Qnty} Ksh.{row.Price}
+                    {row.Item} Qnty.{row.Qnty} {defaultCurrency}.{row.Price}
                   </Button>
                 </li>
               ))}
