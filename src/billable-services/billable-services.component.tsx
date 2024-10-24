@@ -134,10 +134,10 @@ const BillableServices = () => {
         status: service.serviceStatus,
         prices: '--',
         actions: (
-          <TableCell className="cds--table-column-menu">
+          <TableCell>
             <OverflowMenu size="sm" flipped>
               <OverflowMenuItem
-                itemText={t('editBillableService', 'Edit billable service')}
+                itemText={t('editBillableService', 'Edit Billable Service')}
                 onClick={() => handleEditService(service)}
               />
             </OverflowMenu>

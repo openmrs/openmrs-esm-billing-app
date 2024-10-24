@@ -216,3 +216,14 @@
   display: grid;
   grid-template-columns: 16rem 1fr;
 }
+
+.always-visible-overflow-menu {
+  .cds--overflow-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  .cds--overflow-menu-options__btn {
+    display: block !important;
+  }
+}

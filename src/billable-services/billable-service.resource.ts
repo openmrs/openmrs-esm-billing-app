@@ -74,9 +74,9 @@ export function useConceptsSearch(conceptToLookup: string) {
 }
 
 export const updateBillableService = (uuid: string, payload: any) => {
-  const url = `${apiBasePath}/billable-service/${uuid}`;
+  const url = `${apiBasePath}/billableService/${uuid}`;
   return openmrsFetch(url, {
-    method: 'PUT',
+    method: 'POST',
     body: JSON.stringify(payload),
     headers: {
       'Content-Type': 'application/json',

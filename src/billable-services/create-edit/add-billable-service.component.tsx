@@ -110,7 +110,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
       serviceType: billableServicePayload.serviceType.uuid,
       servicePrices: data.payment.map((payment) => ({
         paymentMode: payment.paymentMode,
-        price: payment.price,
+        price: parseFloat(payment.price),
       })),
       serviceStatus: 'ENABLED',
       concept: selectedConcept?.uuid,
