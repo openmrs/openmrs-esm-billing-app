@@ -16,11 +16,15 @@ import {
   TableHeader,
   TableRow,
   Tile,
+  OverflowMenu,
+  OverflowMenuItem,
+  Modal,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import { useLayoutType, isDesktop, useConfig, usePagination, ErrorState, navigate } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { useBillableServices } from './billable-service.resource';
+import AddBillableService from './create-edit/add-billable-service.component';
 import styles from './billable-services.scss';
 
 const BillableServices = () => {
@@ -33,9 +37,8 @@ const BillableServices = () => {
   const pageSizes = config?.billableServices?.pageSizes ?? [10, 20, 30, 40, 50];
   const [pageSize, setPageSize] = useState(config?.billableServices?.pageSize ?? 10);
 
-  //creating service state
   const [showOverlay, setShowOverlay] = useState(false);
-  const [overlayHeader, setOverlayTitle] = useState('');
+  const [editingService, setEditingService] = useState(null);
 
   const headerData = [
     {
@@ -65,7 +68,8 @@ const BillableServices = () => {
   ];
 
   const launchBillableServiceForm = useCallback(() => {
-    navigate({ to: window.getOpenmrsSpaBase() + 'billable-services/add-service' });
+    setEditingService(null);
+    setShowOverlay(true);
   }, []);
 
   const searchResults = useMemo(() => {
@@ -84,6 +88,40 @@ const BillableServices = () => {
 
   const { paginated, goTo, results, currentPage } = usePagination(searchResults, pageSize);
 
+  const handleSearch = useCallback(
+    (e) => {
+      goTo(1);
+      setSearchString(e.target.value);
+    },
+    [goTo, setSearchString],
+  );
+
+  const handleEditService = useCallback((service) => {
+    setEditingService(service);
+    setShowOverlay(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setShowOverlay(false);
+    setEditingService(null);
+  }, []);
+
+  if (isLoading) {
+    return <InlineLoading status="active" iconDescription="Loading" description="Loading data..." />;
+  }
+  if (error) {
+    return <ErrorState headerTitle={t('billableService', 'Billable Service')} error={error} />;
+  }
+  if (billableServices.length === 0) {
+    return (
+      <EmptyState
+        displayText={t('billableService', 'Billable Service')}
+        headerTitle={t('billableService', 'Billable Service')}
+        launchForm={launchBillableServiceForm}
+      />
+    );
+  }
+
   let rowData = [];
   if (results) {
     results.forEach((service, index) => {
@@ -95,7 +133,16 @@ const BillableServices = () => {
         serviceType: service?.serviceType?.display,
         status: service.serviceStatus,
         prices: '--',
-        actions: '--',
+        actions: (
+          <TableCell className="cds--table-column-menu">
+            <OverflowMenu size="sm" flipped>
+              <OverflowMenuItem
+                itemText={t('editBillableService', 'Edit billable service')}
+                onClick={() => handleEditService(service)}
+              />
+            </OverflowMenu>
+          </TableCell>
+        ),
       };
       let cost = '';
       service.servicePrices.forEach((price) => {
@@ -104,28 +151,6 @@ const BillableServices = () => {
       s.prices = cost;
       rowData.push(s);
     });
-  }
-
-  const handleSearch = useCallback(
-    (e) => {
-      goTo(1);
-      setSearchString(e.target.value);
-    },
-    [goTo, setSearchString],
-  );
-
-  if (isLoading) {
-    <InlineLoading status="active" iconDescription="Loading" description="Loading data..." />;
-  }
-  if (error) {
-    <ErrorState headerTitle={t('billableService', 'Billable Service')} error={error} />;
-  }
-  if (billableServices.length === 0) {
-    <EmptyState
-      displayText={t('billableService', 'Billable Service')}
-      headerTitle={t('billableService', 'Billable Service')}
-      launchForm={launchBillableServiceForm}
-    />;
   }
 
   return (
@@ -212,6 +237,19 @@ const BillableServices = () => {
           headerTitle={t('billableService', 'Billable service')}
         />
       )}
+      {showOverlay && (
+        <Modal
+          open={showOverlay}
+          modalHeading={t('billableService', 'Billable Service')}
+          primaryButtonText={null}
+          secondaryButtonText={t('cancel', 'Cancel')}
+          onRequestClose={closeModal}
+          onSecondarySubmit={closeModal}
+          size="lg"
+          passiveModal={true}>
+          <AddBillableService editingService={editingService} onClose={closeModal} />
+        </Modal>
+      )}
     </>
   );
 };
@@ -252,4 +290,5 @@ function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveS
     </>
   );
 }
+
 export default BillableServices;
