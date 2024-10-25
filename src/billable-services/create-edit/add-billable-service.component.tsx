@@ -55,7 +55,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
   const { serviceTypes, isLoading: isLoadingServicesTypes } = useServiceTypes();
-  const [billableServicePayload, setBillableServicePayload] = useState<any>(editingService || {});
+  const [billableServicePayload, setBillableServicePayload] = useState(editingService || {});
 
   const {
     control,
@@ -64,8 +64,15 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
     setValue,
   } = useForm<any>({
     mode: 'all',
-    defaultValues: { payment: editingService?.servicePrices || [DEFAULT_PAYMENT_OPTION] },
+    defaultValues: {
+      name: editingService?.name,
+      serviceShortName: editingService?.shortName,
+      serviceType: editingService?.serviceType,
+      conceptsSearch: editingService?.concept,
+      payment: editingService?.servicePrices || [DEFAULT_PAYMENT_OPTION],
+    },
     resolver: zodResolver(paymentFormSchema),
+    shouldUnregister: !editingService,
   });
   const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
 
@@ -90,12 +97,19 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
     });
 
   useEffect(() => {
-    if (editingService && paymentModes.length && serviceTypes.length) {
+    if (editingService && !isLoadingPaymentModes) {
       setBillableServicePayload(editingService);
-      setValue('serviceName', editingService.serviceName || '');
+      setValue('serviceName', editingService.name || '');
       setValue('shortName', editingService.shortName || '');
-      setValue('serviceType', editingService.serviceType || null);
-      setValue('payment', editingService.servicePrices || [DEFAULT_PAYMENT_OPTION]);
+      setValue('serviceType', editingService.serviceType || '');
+      setValue(
+        'payment',
+        editingService.servicePrices.map((payment) => ({
+          paymentMode: payment.paymentMode,
+          price: payment.price,
+        })),
+      );
+      setValue('conceptsSearch', editingService.concept);
 
       if (editingService.concept) {
         setSelectedConcept(editingService.concept);
@@ -105,13 +119,17 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
 
   const onSubmit = (data) => {
     const payload = {
-      name: billableServicePayload.serviceName,
+      name: billableServicePayload.name,
       shortName: billableServicePayload.shortName,
       serviceType: billableServicePayload.serviceType.uuid,
-      servicePrices: data.payment.map((payment) => ({
-        paymentMode: payment.paymentMode,
-        price: parseFloat(payment.price),
-      })),
+      servicePrices: data.payment.map((payment) => {
+        const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
+        return {
+          paymentMode: payment.paymentMode,
+          name: mode?.name || 'Unknown',
+          price: parseFloat(payment.price),
+        };
+      }),
       serviceStatus: 'ENABLED',
       concept: selectedConcept?.uuid,
     };
@@ -171,11 +189,11 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             type="text"
             labelText={t('serviceName', 'Service Name')}
             size="md"
-            value={billableServicePayload.serviceName || ''}
+            value={billableServicePayload.name || ''}
             onChange={(e) =>
               setBillableServicePayload({
                 ...billableServicePayload,
-                serviceName: e.target.value,
+                name: e.target.value,
               })
             }
             placeholder="Enter service name"
@@ -305,7 +323,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
                       label={t('selectPaymentMethod', 'Select payment method')}
                       items={paymentModes ?? []}
                       itemToString={(item) => (item ? item.name : '')}
-                      selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
+                      selectedItem={paymentModes.find((mode) => mode.uuid === field.value.uuid)}
                       invalid={!!errors?.payment?.[index]?.paymentMode}
                       invalidText={errors?.payment?.[index]?.paymentMode?.message}
                     />
@@ -348,7 +366,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
         <Button kind="secondary" onClick={onClose}>
           {t('cancel', 'Cancel')}
         </Button>
-        <Button type="submit" disabled={!isValid}>
+        <Button type="submit" disabled={!isValid && !editingService}>
           {t('save', 'Save')}
         </Button>
       </section>
