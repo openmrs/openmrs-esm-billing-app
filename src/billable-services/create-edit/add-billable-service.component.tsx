@@ -10,6 +10,7 @@ import {
   Search,
   TextInput,
   Tile,
+  Select,
 } from '@carbon/react';
 import { navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { Add, TrashCan, WarningFilled } from '@carbon/react/icons';
@@ -105,7 +106,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
       setValue(
         'payment',
         editingService.servicePrices.map((payment) => ({
-          paymentMode: payment.paymentMode,
+          paymentMode: payment.paymentMode?.uuid || '',
           price: payment.price,
         })),
       );
@@ -317,16 +318,27 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
                 name={`payment.${index}.paymentMode`}
                 render={({ field }) => (
                   <Layer>
-                    <Dropdown
-                      onChange={({ selectedItem }) => field.onChange(selectedItem?.uuid)}
-                      titleText={t('paymentMode', 'Payment Mode')}
-                      label={t('selectPaymentMethod', 'Select payment method')}
-                      items={paymentModes ?? []}
-                      itemToString={(item) => (item ? item.name : '')}
-                      selectedItem={paymentModes.find((mode) => mode.uuid === field.value.uuid)}
-                      invalid={!!errors?.payment?.[index]?.paymentMode}
-                      invalidText={errors?.payment?.[index]?.paymentMode?.message}
-                    />
+                    <label className="selectLabel">Payment Method</label>
+                    <select
+                      onChange={(e) => {
+                        const selectedMode = paymentModes.find((mode) => mode.uuid === e.target.value);
+                        field.onChange(selectedMode?.uuid);
+                      }}
+                      aria-label={t('selectPaymentMethod', 'Select payment method')}
+                      value={field.value || ''}
+                      className={`${styles.largeSelect} ${errors?.payment?.[index]?.paymentMode ? 'invalid' : ''}`}>
+                      <option value="" disabled>
+                        {t('paymentMode', 'Payment Mode')}
+                      </option>
+                      {paymentModes?.map((mode) => (
+                        <option key={mode.uuid} value={mode.uuid}>
+                          {mode.name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors?.payment?.[index]?.paymentMode && (
+                      <span className="error-text">{errors.payment[index].paymentMode.message}</span>
+                    )}
                   </Layer>
                 )}
               />
