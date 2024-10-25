@@ -1,7 +1,8 @@
 import useSWR from 'swr';
-import { type OpenmrsResource, openmrsFetch, restBaseUrl, useConfig } from '@openmrs/esm-framework';
+import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { type ServiceConcept } from '../types';
 import { apiBasePath } from '../constants';
+import { type BillableService } from '../types/index';
 
 type ResponseObject = {
   results: Array<OpenmrsResource>;
@@ -10,10 +11,47 @@ type ResponseObject = {
 export const useBillableServices = () => {
   const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
 
-  const { data, isLoading, isValidating, error, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
+  // Instead of generating with Faker.js, manually create some mock data for testing
+  const generateMockBillableServices = (count: number): BillableService[] => {
+    const mockBillableServices: BillableService[] = Array.from({ length: count }, (_, i) => ({
+      uuid: `uuid-${i}`,
+      name: `Service ${i}`,
+      shortName: `Short Name ${i}`,
+      serviceStatus: i % 2 === 0 ? 'Active' : 'Inactive',
+      serviceType: { display: `Type ${i % 5}` },
+      servicePrices: [
+        {
+          name: `Price Type ${i}`,
+          price: (i + 1) * 10,
+        },
+      ],
+    }));
+
+    // Log the mock data to the console
+    // console.log('Mock Billable Services:', mockBillableServices);
+
+    return mockBillableServices;
+  };
+
+  const useMockData = true; // Set this to true for testing
+
+  // If testing, generate mock data instead of using the real API
+  if (useMockData) {
+    const mockBillableServices = generateMockBillableServices(100); // Generate 100 mock services
+    return {
+      billableServices: mockBillableServices,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: () => {},
+    };
+  }
+
+  // Fetch real data when not in testing mode
+  const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService[]>(url);
 
   return {
-    billableServices: data?.data.results ?? [],
+    billableServices: data ?? [],
     isLoading,
     isValidating,
     error,
