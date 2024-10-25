@@ -3394,7 +3394,7 @@ __metadata:
   dependencies:
     "@carbon/react": "npm:^1.48.1"
     "@hookform/resolvers": "npm:^3.3.4"
-    "@openmrs/esm-framework": "npm:^5.8.2-pre.2420"
+    "@openmrs/esm-framework": "npm:next"
     "@openmrs/esm-patient-common-lib": "npm:next"
     "@playwright/test": "npm:^1.41.1"
     "@swc/cli": "npm:^0.3.2"
@@ -3433,7 +3433,7 @@ __metadata:
     lerna: "npm:^8.0.2"
     lodash: "npm:^4.17.21"
     lodash-es: "npm:^4.17.21"
-    openmrs: "npm:^5.8.2-pre.2420"
+    openmrs: "npm:next"
     pinst: "npm:^3.0.0"
     prettier: "npm:^3.2.4"
     pretty-quick: "npm:^4.0.0"
@@ -3553,7 +3553,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openmrs/esm-framework@npm:5.8.2-pre.2420, @openmrs/esm-framework@npm:^5.8.2-pre.2420":
+"@openmrs/esm-framework@npm:5.8.2-pre.2420, @openmrs/esm-framework@npm:next":
   version: 5.8.2-pre.2420
   resolution: "@openmrs/esm-framework@npm:5.8.2-pre.2420"
   dependencies:
@@ -15871,7 +15871,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openmrs@npm:^5.8.2-pre.2420":
+"openmrs@npm:next":
   version: 5.8.2-pre.2420
   resolution: "openmrs@npm:5.8.2-pre.2420"
   dependencies:
