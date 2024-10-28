@@ -62,32 +62,28 @@ const BillsTable = () => {
   ];
 
   const searchResults = useMemo(() => {
-    if (bills !== undefined && bills.length > 0) {
-      const filteredBills = bills
-        .map((bill) => {
-          if (bill.payments && bill.payments.length > 0) {
-            const totalPaid = bill.payments.reduce((sum, payment) => sum + payment.amountTendered, 0);
-            if (totalPaid >= bill.totalAmount) {
-              bill.status = 'PAID';
-            }
-          }
-          return bill;
-        })
-        .filter((bill) => {
-          if (billPaymentStatus === 'PAID') {
-            return bill.status === 'PAID';
-          } else if (billPaymentStatus === 'PENDING') {
-            return bill.status === 'PENDING';
-          } else {
-            return true;
-          }
-        });
+    if (!bills?.length) return bills;
 
-      return filteredBills;
-    }
+    return bills
+      .map((bill) => {
+        if (bill.payments?.length > 0) {
+          const totalPaid = bill.payments.reduce((sum, payment) => sum + payment.amountTendered, 0);
+          if (totalPaid >= bill.totalAmount) {
+            bill.status = 'PAID';
+          }
+        }
+        return bill;
+      })
+      .filter((bill) => {
+        const statusMatch = billPaymentStatus === '' ? true : bill.status === billPaymentStatus;
+        const searchMatch = !searchString
+          ? true
+          : bill.patientName.toLowerCase().includes(searchString.toLowerCase()) ||
+            bill.identifier.toLowerCase().includes(searchString.toLowerCase());
 
-    return bills;
-  }, [searchString, bills, billPaymentStatus]);
+        return statusMatch && searchMatch;
+      });
+  }, [bills, searchString, billPaymentStatus]);
 
   const { paginated, goTo, results, currentPage } = usePagination(searchResults, pageSize);
 

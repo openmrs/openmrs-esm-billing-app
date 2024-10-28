@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { useBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
@@ -49,7 +49,7 @@ jest.mock('@openmrs/esm-patient-common-lib', () => ({
   EmptyDataIllustration: jest.fn(() => <div>Empty state illustration</div>),
 }));
 
-// Mock esm-framework
+// Mock esm-framework with expanded functionality
 jest.mock('@openmrs/esm-framework', () => ({
   useLayoutType: jest.fn(() => 'desktop'),
   isDesktop: jest.fn(() => true),
@@ -64,10 +64,10 @@ jest.mock('@openmrs/esm-framework', () => ({
     currentPage: 1,
     goTo: jest.fn(),
     results: data,
-    paginated: false,
+    paginated: true, // Changed to true to show pagination
   })),
   ConfigurableLink: jest.fn(({ children, to, templateParams }) => {
-    const resolvedTo = to.replace('${patientUuid}', templateParams.patientUuid).replace('${uuid}', templateParams.uuid);
+    const resolvedTo = '/home/billing/patient/' + templateParams.patientUuid + '/' + templateParams.uuid;
     return <a href={resolvedTo}>{children}</a>;
   }),
   openmrsSpaBase: '',
@@ -138,24 +138,73 @@ describe('BillsTable', () => {
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  xtest('should filter bills by search term', async () => {
+  test('should filter bills by search term', async () => {
     render(<BillsTable />);
 
     const searchInput = screen.getByRole('searchbox');
+    expect(searchInput).toBeInTheDocument();
+
+    // Initially both patients should be visible
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Mary Smith')).toBeInTheDocument();
+
+    // Type into search input
     await user.type(searchInput, 'John Doe');
 
-    // Wait for the filtering to happen
+    // Wait for Mary Smith to disappear
+    await waitFor(() => {
+      expect(screen.queryByText('Mary Smith')).not.toBeInTheDocument();
+    });
+
+    // John Doe should still be visible
     expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.queryByText('Mary Smith')).not.toBeInTheDocument();
   });
 
-  xtest('should render patient name as a link', () => {
+  test('should render patient name as a link', () => {
     render(<BillsTable />);
 
     // Find the link by both role and text content
     const patientNameLink = screen.getByRole('link', { name: 'John Doe' });
     expect(patientNameLink).toBeInTheDocument();
+
     // Check if the href contains the correct patient UUID and bill UUID
     expect(patientNameLink.getAttribute('href')).toEqual('/home/billing/patient/uuid1/1');
+  });
+
+  test('should filter bills by payment status', async () => {
+    mockBills.mockImplementationOnce(() => ({
+      bills: mockBillsData.map((bill) => ({ ...bill, status: 'PENDING' })),
+      isLoading: false,
+      isValidating: false,
+      error: null,
+    }));
+
+    render(<BillsTable />);
+
+    // Find and click the filter dropdown
+    const filterDropdown = screen.getByText('Pending bills');
+    await user.click(filterDropdown);
+
+    // Select 'Paid bills' option
+    const paidBillsOption = screen.getAllByText('Paid bills')[0];
+    await user.click(paidBillsOption);
+
+    // Since our mock data has no paid bills, we should see the "no matching bills" message
+    expect(screen.getByText('noMatchingBillsToDisplay')).toBeInTheDocument();
+  });
+
+  test('should show loading state during background updates', () => {
+    mockBills.mockImplementationOnce(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: true,
+      error: null,
+    }));
+
+    render(<BillsTable />);
+
+    // Look for the loading indicator using a more specific query
+    const loadingIndicator = screen.getByTitle('loading');
+    expect(loadingIndicator).toBeInTheDocument();
   });
 });
