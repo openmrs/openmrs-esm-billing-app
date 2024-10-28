@@ -4,7 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { useBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
-// Mock i18next
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
@@ -34,7 +33,6 @@ const mockBillsData = [
   },
 ];
 
-// Mock billing resource
 jest.mock('../billing.resource', () => ({
   useBills: jest.fn(() => ({
     bills: mockBillsData,
@@ -44,12 +42,10 @@ jest.mock('../billing.resource', () => ({
   })),
 }));
 
-// Mock patient common lib
 jest.mock('@openmrs/esm-patient-common-lib', () => ({
   EmptyDataIllustration: jest.fn(() => <div>Empty state illustration</div>),
 }));
 
-// Mock esm-framework with expanded functionality
 jest.mock('@openmrs/esm-framework', () => ({
   useLayoutType: jest.fn(() => 'desktop'),
   isDesktop: jest.fn(() => true),
@@ -64,7 +60,7 @@ jest.mock('@openmrs/esm-framework', () => ({
     currentPage: 1,
     goTo: jest.fn(),
     results: data,
-    paginated: true, // Changed to true to show pagination
+    paginated: true,
   })),
   ConfigurableLink: jest.fn(({ children, to, templateParams }) => {
     const resolvedTo = '/home/billing/patient/' + templateParams.patientUuid + '/' + templateParams.uuid;
@@ -79,7 +75,6 @@ describe('BillsTable', () => {
 
   beforeEach(() => {
     user = userEvent.setup();
-    // Reset mock to default state before each test
     mockBills.mockImplementation(() => ({
       bills: mockBillsData,
       isLoading: false,
@@ -94,7 +89,6 @@ describe('BillsTable', () => {
     expect(screen.getByText('visitTime')).toBeInTheDocument();
     expect(screen.getByText('identifier')).toBeInTheDocument();
 
-    // The rows should be rendered with the mock data
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
     expect(screen.getByText('12345678')).toBeInTheDocument();
   });
@@ -144,30 +138,24 @@ describe('BillsTable', () => {
     const searchInput = screen.getByRole('searchbox');
     expect(searchInput).toBeInTheDocument();
 
-    // Initially both patients should be visible
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('Mary Smith')).toBeInTheDocument();
 
-    // Type into search input
     await user.type(searchInput, 'John Doe');
 
-    // Wait for Mary Smith to disappear
     await waitFor(() => {
       expect(screen.queryByText('Mary Smith')).not.toBeInTheDocument();
     });
 
-    // John Doe should still be visible
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
 
   test('should render patient name as a link', () => {
     render(<BillsTable />);
 
-    // Find the link by both role and text content
     const patientNameLink = screen.getByRole('link', { name: 'John Doe' });
     expect(patientNameLink).toBeInTheDocument();
 
-    // Check if the href contains the correct patient UUID and bill UUID
     expect(patientNameLink.getAttribute('href')).toEqual('/home/billing/patient/uuid1/1');
   });
 
@@ -181,15 +169,12 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    // Find and click the filter dropdown
     const filterDropdown = screen.getByText('Pending bills');
     await user.click(filterDropdown);
 
-    // Select 'Paid bills' option
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
     await user.click(paidBillsOption);
 
-    // Since our mock data has no paid bills, we should see the "no matching bills" message
     expect(screen.getByText('noMatchingBillsToDisplay')).toBeInTheDocument();
   });
 
@@ -203,7 +188,6 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    // Look for the loading indicator using a more specific query
     const loadingIndicator = screen.getByTitle('loading');
     expect(loadingIndicator).toBeInTheDocument();
   });
