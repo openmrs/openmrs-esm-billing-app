@@ -1,7 +1,8 @@
 import useSWR from 'swr';
-import { type OpenmrsResource, openmrsFetch, restBaseUrl, useConfig } from '@openmrs/esm-framework';
+import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { type ServiceConcept } from '../types';
 import { apiBasePath } from '../constants';
+import { type BillableService } from '../types/index';
 
 type ResponseObject = {
   results: Array<OpenmrsResource>;
@@ -11,8 +12,9 @@ export const useBillableServices = () => {
   const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display),servicePrices:(uuid,name,price,paymentMode:(uuid,nme)))`;
   const { data, isLoading, isValidating, error, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
+
   return {
-    billableServices: data?.data.results ?? [],
+    billableServices: data ?? [],
     isLoading,
     isValidating,
     error,

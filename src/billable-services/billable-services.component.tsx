@@ -26,6 +26,7 @@ import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { useBillableServices } from './billable-service.resource';
 import AddBillableService from './create-edit/add-billable-service.component';
 import styles from './billable-services.scss';
+import { type BillableService } from '../types/index';
 
 const BillableServices = () => {
   const { t } = useTranslation();
@@ -72,21 +73,23 @@ const BillableServices = () => {
     setShowOverlay(true);
   }, []);
 
-  const searchResults = useMemo(() => {
-    if (billableServices !== undefined && billableServices.length > 0) {
+  const searchResults: BillableService[] = useMemo(() => {
+    const flatBillableServices = Array.isArray(billableServices) ? billableServices.flat() : billableServices;
+
+    if (flatBillableServices !== undefined && flatBillableServices.length > 0) {
       if (searchString && searchString.trim() !== '') {
         const search = searchString.toLowerCase();
-        return billableServices?.filter((service) =>
+        return flatBillableServices.filter((service: BillableService) =>
           Object.entries(service).some(([header, value]) => {
             return header === 'uuid' ? false : `${value}`.toLowerCase().includes(search);
           }),
         );
       }
     }
-    return billableServices;
+    return flatBillableServices;
   }, [searchString, billableServices]);
 
-  const { paginated, goTo, results, currentPage } = usePagination(searchResults, pageSize);
+  const { paginated, goTo, results, currentPage } = usePagination<BillableService>(searchResults, pageSize);
 
   const handleSearch = useCallback(
     (e) => {

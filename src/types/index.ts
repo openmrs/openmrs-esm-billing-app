@@ -180,3 +180,17 @@ export type ServicePrice = {
   price: string;
   uuid: string;
 };
+
+export interface BillableService {
+  uuid: string;
+  name: string;
+  shortName: string;
+  serviceStatus: string;
+  serviceType?: {
+    display: string;
+  };
+  servicePrices: Array<{
+    name: string;
+    price: number;
+  }>;
+}
