@@ -15,6 +15,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  OverflowMenu,
+  OverflowMenuItem,
+  Modal,
   Tile,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
@@ -22,6 +25,7 @@ import { useLayoutType, isDesktop, useConfig, usePagination, ErrorState, navigat
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { useBillableServices } from './billable-service.resource';
 import styles from './billable-services.scss';
+import AddBillableService from './create-edit/add-billable-service.component';
 import { type BillableService } from '../types/index';
 
 const BillableServices = () => {
@@ -34,9 +38,8 @@ const BillableServices = () => {
   const pageSizes = config?.billableServices?.pageSizes ?? [10, 20, 30, 40, 50];
   const [pageSize, setPageSize] = useState(config?.billableServices?.pageSize ?? 10);
 
-  //creating service state
   const [showOverlay, setShowOverlay] = useState(false);
-  const [overlayHeader, setOverlayTitle] = useState('');
+  const [editingService, setEditingService] = useState(null);
 
   const headerData = [
     {
@@ -67,6 +70,8 @@ const BillableServices = () => {
 
   const launchBillableServiceForm = useCallback(() => {
     navigate({ to: window.getOpenmrsSpaBase() + 'billable-services/add-service' });
+    setEditingService(null);
+    setShowOverlay(true);
   }, []);
 
   const searchResults: BillableService[] = useMemo(() => {
@@ -98,7 +103,16 @@ const BillableServices = () => {
         serviceType: service?.serviceType?.display,
         status: service.serviceStatus,
         prices: '--',
-        actions: '--',
+        actions: (
+          <TableCell>
+            <OverflowMenu size="sm" flipped>
+              <OverflowMenuItem
+                itemText={t('editBillableService', 'Edit Billable Service')}
+                onClick={() => handleEditService(service)}
+              />
+            </OverflowMenu>
+          </TableCell>
+        ),
       };
       let cost = '';
       service.servicePrices.forEach((price) => {
@@ -116,6 +130,15 @@ const BillableServices = () => {
     },
     [goTo, setSearchString],
   );
+  const handleEditService = useCallback((service) => {
+    setEditingService(service);
+    setShowOverlay(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setShowOverlay(false);
+    setEditingService(null);
+  }, []);
 
   if (isLoading) {
     <InlineLoading status="active" iconDescription="Loading" description="Loading data..." />;
@@ -214,6 +237,19 @@ const BillableServices = () => {
           displayText={t('noServicesToDisplay', 'There are no services to display')}
           headerTitle={t('billableService', 'Billable service')}
         />
+      )}
+      {showOverlay && (
+        <Modal
+          open={showOverlay}
+          modalHeading={t('billableService', 'Billable Service')}
+          primaryButtonText={null}
+          secondaryButtonText={t('cancel', 'Cancel')}
+          onRequestClose={closeModal}
+          onSecondarySubmit={closeModal}
+          size="lg"
+          passiveModal={true}>
+          <AddBillableService editingService={editingService} onClose={closeModal} />
+        </Modal>
       )}
     </>
   );

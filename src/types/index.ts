@@ -156,6 +156,7 @@ export interface FacilityDetail {
 }
 
 export type ServiceConcept = {
+  uuid: any;
   concept: {
     uuid: string;
     display: string;

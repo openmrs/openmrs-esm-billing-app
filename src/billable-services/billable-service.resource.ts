@@ -9,8 +9,7 @@ type ResponseObject = {
 };
 
 export const useBillableServices = () => {
-  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price))`;
-
+  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
   const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService[]>(url);
 
   return {
@@ -73,3 +72,14 @@ export function useConceptsSearch(conceptToLookup: string) {
     isSearching: isLoading,
   };
 }
+
+export const updateBillableService = (uuid: string, payload: any) => {
+  const url = `${apiBasePath}/billableService/${uuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};

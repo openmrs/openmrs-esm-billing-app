@@ -57,6 +57,7 @@ xdescribe('AddBillableService', () => {
 
   test('should render billable services form and generate correct payload', async () => {
     const user = userEvent.setup();
+    const mockOnClose = jest.fn();
     mockUseBillableServices.mockReturnValue({
       billableServices: [],
       isLoading: false,
@@ -66,10 +67,11 @@ xdescribe('AddBillableService', () => {
     });
     mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoading: false });
     mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoading: false });
-    render(<AddBillableService />);
 
-    const formTtile = screen.getByRole('heading', { name: /Add Billable Services/i });
-    expect(formTtile).toBeInTheDocument();
+    render(<AddBillableService onClose={mockOnClose} />);
+
+    const formTitle = screen.getByRole('heading', { name: /Add Billable Services/i });
+    expect(formTitle).toBeInTheDocument();
 
     const serviceNameTextInp = screen.getByRole('textbox', { name: /Service Name/i });
     expect(serviceNameTextInp).toBeInTheDocument();
@@ -131,6 +133,7 @@ xdescribe('AddBillableService', () => {
 
   test("should navigate back to billable services dashboard when 'Cancel' button is clicked", async () => {
     const user = userEvent.setup();
+    const mockOnClose = jest.fn();
     mockUseBillableServices.mockReturnValue({
       billableServices: [],
       isLoading: false,
@@ -140,13 +143,13 @@ xdescribe('AddBillableService', () => {
     });
     mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoading: false });
     mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoading: false });
-    render(<AddBillableService />);
+
+    render(<AddBillableService onClose={mockOnClose} />);
 
     const cancelBtn = screen.getByRole('button', { name: /Cancel/i });
     expect(cancelBtn).toBeInTheDocument();
     await user.click(cancelBtn);
 
-    expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith({ to: '/openmrs/spa/billable-services' });
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 });

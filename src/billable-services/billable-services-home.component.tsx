@@ -18,6 +18,10 @@ const BillableServiceHome: React.FC = () => {
     navigate({ to: `${basePath}/${path}` });
   };
 
+  const handleCloseAddService = () => {
+    navigate({ to: `${basePath}` });
+  };
+
   return (
     <BrowserRouter basename={`${window.spaBase}/billable-services`}>
       <main className={styles.mainSection}>
@@ -39,7 +43,7 @@ const BillableServiceHome: React.FC = () => {
           <BillingHeader title={t('billServicesManagement', 'Bill services management')} />
           <Routes>
             <Route path="/" element={<BillableServicesDashboard />} />
-            <Route path="/add-service" element={<AddBillableService />} />
+            <Route path="/add-service" element={<AddBillableService onClose={handleCloseAddService} />} />
             <Route path="/waive-bill" element={<BillWaiver />} />
           </Routes>
         </section>

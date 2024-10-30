@@ -1,5 +1,4 @@
-/* eslint-disable curly */
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import {
   Button,
   ComboBox,
@@ -12,7 +11,7 @@ import {
   TextInput,
   Tile,
 } from '@carbon/react';
-import { navigate, showSnackbar, useDebounce, useLayoutType, useSession } from '@openmrs/esm-framework';
+import { navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { Add, TrashCan, WarningFilled } from '@carbon/react/icons';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +19,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   createBillableSerice,
+  updateBillableService,
   useConceptsSearch,
   usePaymentModes,
   useServiceTypes,
@@ -50,21 +50,29 @@ const paymentFormSchema = z.object({
 
 const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
 
-const AddBillableService: React.FC = () => {
+const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }> = ({ editingService, onClose }) => {
   const { t } = useTranslation();
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
   const { serviceTypes, isLoading: isLoadingServicesTypes } = useServiceTypes();
-  const [billableServicePayload, setBillableServicePayload] = useState<any>({});
+  const [billableServicePayload, setBillableServicePayload] = useState(editingService || {});
 
   const {
     control,
     handleSubmit,
     formState: { errors, isValid },
+    setValue,
   } = useForm<any>({
     mode: 'all',
-    defaultValues: { payment: [DEFAULT_PAYMENT_OPTION] },
+    defaultValues: {
+      name: editingService?.name,
+      serviceShortName: editingService?.shortName,
+      serviceType: editingService?.serviceType,
+      conceptsSearch: editingService?.concept,
+      payment: editingService?.servicePrices || [DEFAULT_PAYMENT_OPTION],
+    },
     resolver: zodResolver(paymentFormSchema),
+    shouldUnregister: !editingService,
   });
   const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
 
@@ -88,43 +96,63 @@ const AddBillableService: React.FC = () => {
       to: window.getOpenmrsSpaBase() + 'billable-services',
     });
 
-  if (isLoadingPaymentModes && isLoadingServicesTypes) {
-    return (
-      <InlineLoading
-        status="active"
-        iconDescription={t('loadingDescription', 'Loading')}
-        description={t('loading', 'Loading data...')}
-      />
-    );
-  }
+  useEffect(() => {
+    if (editingService && !isLoadingPaymentModes) {
+      setBillableServicePayload(editingService);
+      setValue('serviceName', editingService.name || '');
+      setValue('shortName', editingService.shortName || '');
+      setValue('serviceType', editingService.serviceType || '');
+      setValue(
+        'payment',
+        editingService.servicePrices.map((payment) => ({
+          paymentMode: payment.paymentMode?.uuid || '',
+          price: payment.price,
+        })),
+      );
+      setValue('conceptsSearch', editingService.concept);
+
+      if (editingService.concept) {
+        setSelectedConcept(editingService.concept);
+      }
+    }
+  }, [editingService, paymentModes, serviceTypes, setValue]);
 
   const onSubmit = (data) => {
-    const payload: any = {};
+    const payload = {
+      name: billableServicePayload.name,
+      shortName: billableServicePayload.shortName,
+      serviceType: billableServicePayload.serviceType.uuid,
+      servicePrices: data.payment.map((payment) => {
+        const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
+        return {
+          paymentMode: payment.paymentMode,
+          name: mode?.name || 'Unknown',
+          price: parseFloat(payment.price),
+        };
+      }),
+      serviceStatus: 'ENABLED',
+      concept: selectedConcept?.uuid,
+    };
 
-    let servicePrices = [];
-    data.payment.forEach((element) => {
-      element.name = paymentModes.filter((p) => p.uuid === element.paymentMode)[0].name;
-      servicePrices.push(element);
-    });
-    payload.name = billableServicePayload.serviceName;
-    payload.shortName = billableServicePayload.shortName;
-    payload.serviceType = billableServicePayload.serviceType.uuid;
-    payload.servicePrices = servicePrices;
-    payload.serviceStatus = 'ENABLED';
-    payload.concept = selectedConcept?.concept?.uuid;
+    const saveAction = editingService
+      ? updateBillableService(editingService.uuid, payload)
+      : createBillableSerice(payload);
 
-    createBillableSerice(payload).then(
+    saveAction.then(
       (resp) => {
         showSnackbar({
           title: t('billableService', 'Billable service'),
-          subtitle: 'Billable service created successfully',
+          subtitle: editingService
+            ? t('updatedSuccessfully', 'Billable service updated successfully')
+            : t('createdSuccessfully', 'Billable service created successfully'),
           kind: 'success',
           timeoutInMs: 3000,
         });
+        onClose();
         handleNavigateToServiceDashboard();
       },
       (error) => {
-        showSnackbar({ title: 'Bill payment error', kind: 'error', subtitle: error?.message });
+        showSnackbar({ title: t('billPaymentError', 'Bill payment error'), kind: 'error', subtitle: error?.message });
       },
     );
   };
@@ -137,9 +165,23 @@ const AddBillableService: React.FC = () => {
     return null;
   };
 
+  if (isLoadingPaymentModes && isLoadingServicesTypes) {
+    return (
+      <InlineLoading
+        status="active"
+        iconDescription={t('loadingDescription', 'Loading')}
+        description={t('loading', 'Loading data...')}
+      />
+    );
+  }
+
   return (
-    <Form className={styles.form}>
-      <h4>{t('addBillableServices', 'Add Billable Services')}</h4>
+    <Form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+      <h4>
+        {editingService
+          ? t('editBillableServices', 'Edit Billable Services')
+          : t('addBillableServices', 'Add Billable Services')}
+      </h4>
       <section className={styles.section}>
         <Layer>
           <TextInput
@@ -147,10 +189,11 @@ const AddBillableService: React.FC = () => {
             type="text"
             labelText={t('serviceName', 'Service Name')}
             size="md"
+            value={billableServicePayload.name || ''}
             onChange={(e) =>
               setBillableServicePayload({
                 ...billableServicePayload,
-                serviceName: e.target.value,
+                name: e.target.value,
               })
             }
             placeholder="Enter service name"
@@ -164,6 +207,7 @@ const AddBillableService: React.FC = () => {
             type="text"
             labelText={t('serviceShortName', 'Short Name')}
             size="md"
+            value={billableServicePayload.shortName || ''}
             onChange={(e) =>
               setBillableServicePayload({
                 ...billableServicePayload,
@@ -189,6 +233,7 @@ const AddBillableService: React.FC = () => {
                 placeholder={t('searchConcepts', 'Search associated concept')}
                 className={errors?.search && styles.serviceError}
                 onChange={(e) => {
+                  setSearchTerm(e.target.value);
                   onChange(e);
                   handleSearchTermChange(e);
                 }}
@@ -210,6 +255,7 @@ const AddBillableService: React.FC = () => {
             </ResponsiveWrapper>
           )}
         />
+
         {(() => {
           if (!debouncedSearchTerm || selectedConcept) return null;
           if (isSearching)
@@ -247,7 +293,8 @@ const AddBillableService: React.FC = () => {
             id="serviceType"
             items={serviceTypes ?? []}
             titleText={t('serviceType', 'Service Type')}
-            itemToString={(item) => item?.display}
+            itemToString={(item) => item?.display || ''}
+            selectedItem={billableServicePayload.serviceType || null}
             onChange={({ selectedItem }) => {
               setBillableServicePayload({
                 ...billableServicePayload,
@@ -271,11 +318,12 @@ const AddBillableService: React.FC = () => {
                 render={({ field }) => (
                   <Layer>
                     <Dropdown
-                      onChange={({ selectedItem }) => field.onChange(selectedItem?.uuid)}
+                      onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
                       titleText={t('paymentMode', 'Payment Mode')}
                       label={t('selectPaymentMethod', 'Select payment method')}
                       items={paymentModes ?? []}
                       itemToString={(item) => (item ? item.name : '')}
+                      selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
                       invalid={!!errors?.payment?.[index]?.paymentMode}
                       invalidText={errors?.payment?.[index]?.paymentMode?.message}
                     />
@@ -315,10 +363,10 @@ const AddBillableService: React.FC = () => {
       </section>
 
       <section>
-        <Button kind="secondary" onClick={handleNavigateToServiceDashboard}>
+        <Button kind="secondary" onClick={onClose}>
           {t('cancel', 'Cancel')}
         </Button>
-        <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+        <Button type="submit" disabled={!isValid && !editingService}>
           {t('save', 'Save')}
         </Button>
       </section>
