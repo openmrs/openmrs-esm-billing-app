@@ -116,10 +116,10 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
       }
     }
   }, [editingService, paymentModes, serviceTypes, setValue]);
-
+  const MAX_NAME_LENGTH = 19;
   const onSubmit = (data) => {
     const payload = {
-      name: billableServicePayload.name,
+      name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH), // Truncate if necessary
       shortName: billableServicePayload.shortName,
       serviceType: billableServicePayload.serviceType.uuid,
       servicePrices: data.payment.map((payment) => {
@@ -190,14 +190,19 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             labelText={t('serviceName', 'Service Name')}
             size="md"
             value={billableServicePayload.name || ''}
-            onChange={(e) =>
+            onChange={(e) => {
+              const newName = e.target.value.substring(0, MAX_NAME_LENGTH);
               setBillableServicePayload({
                 ...billableServicePayload,
-                name: e.target.value,
-              })
-            }
-            placeholder="Enter service name"
+                name: newName,
+              });
+            }}
+            placeholder="Enter service name (max 19 characters)"
+            maxLength={MAX_NAME_LENGTH}
           />
+          {billableServicePayload.name?.length >= MAX_NAME_LENGTH && (
+            <span style={{ color: 'red' }}>Name cannot exceed {MAX_NAME_LENGTH} characters.</span>
+          )}
         </Layer>
       </section>
       <section className={styles.section}>
@@ -366,7 +371,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
         <Button kind="secondary" onClick={onClose}>
           {t('cancel', 'Cancel')}
         </Button>
-        <Button type="submit" disabled={!isValid && !editingService}>
+        <Button type="submit" disabled={!isValid || Object.keys(errors).length > 0}>
           {t('save', 'Save')}
         </Button>
       </section>
