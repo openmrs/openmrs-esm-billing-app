@@ -119,7 +119,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
   const MAX_NAME_LENGTH = 19;
   const onSubmit = (data) => {
     const payload = {
-      name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH), // Truncate if necessary
+      name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH),
       shortName: billableServicePayload.shortName,
       serviceType: billableServicePayload.serviceType.uuid,
       servicePrices: data.payment.map((payment) => {
