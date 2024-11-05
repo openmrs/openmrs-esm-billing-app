@@ -201,7 +201,11 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             maxLength={MAX_NAME_LENGTH}
           />
           {billableServicePayload.name?.length >= MAX_NAME_LENGTH && (
-            <span style={{ color: 'red' }}>Service Name exceeds the character limit of {MAX_NAME_LENGTH}.</span>
+            <span className={styles.errorMessage}>
+              {t('serviceNameExceedsLimit', 'Service Name exceeds the character limit of {{MAX_NAME_LENGTH}}.', {
+                MAX_NAME_LENGTH,
+              })}
+            </span>
           )}
         </Layer>
       </section>
@@ -224,7 +228,11 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             maxLength={MAX_NAME_LENGTH}
           />
           {billableServicePayload.shortName?.length >= MAX_NAME_LENGTH && (
-            <span style={{ color: 'red' }}>Short Name exceeds the character limit of {MAX_NAME_LENGTH}.</span>
+            <span className={styles.errorMessage}>
+              {t('shortNameExceedsLimit', 'Short Name exceeds the character limit of {{MAX_NAME_LENGTH}}.', {
+                MAX_NAME_LENGTH,
+              })}
+            </span>
           )}
         </Layer>
       </section>
