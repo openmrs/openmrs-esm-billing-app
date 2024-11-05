@@ -120,7 +120,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
   const onSubmit = (data) => {
     const payload = {
       name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH),
-      shortName: billableServicePayload.shortName,
+      shortName: billableServicePayload.shortName.substring(0, MAX_NAME_LENGTH),
       serviceType: billableServicePayload.serviceType.uuid,
       servicePrices: data.payment.map((payment) => {
         const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
@@ -197,11 +197,11 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
                 name: newName,
               });
             }}
-            placeholder="Enter service name (max 19 characters)"
+            placeholder="Enter service name"
             maxLength={MAX_NAME_LENGTH}
           />
           {billableServicePayload.name?.length >= MAX_NAME_LENGTH && (
-            <span style={{ color: 'red' }}>Name cannot exceed {MAX_NAME_LENGTH} characters.</span>
+            <span style={{ color: 'red' }}>Service Name exceeds the character limit of {MAX_NAME_LENGTH}.</span>
           )}
         </Layer>
       </section>
@@ -213,14 +213,19 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             labelText={t('serviceShortName', 'Short Name')}
             size="md"
             value={billableServicePayload.shortName || ''}
-            onChange={(e) =>
+            onChange={(e) => {
+              const newShortName = e.target.value.substring(0, MAX_NAME_LENGTH);
               setBillableServicePayload({
                 ...billableServicePayload,
-                shortName: e.target.value,
-              })
-            }
+                shortName: newShortName,
+              });
+            }}
             placeholder="Enter service short name"
+            maxLength={MAX_NAME_LENGTH}
           />
+          {billableServicePayload.shortName?.length >= MAX_NAME_LENGTH && (
+            <span style={{ color: 'red' }}>Short Name exceeds the character limit of {MAX_NAME_LENGTH}.</span>
+          )}
         </Layer>
       </section>
       <section>
