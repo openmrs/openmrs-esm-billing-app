@@ -116,11 +116,11 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
       }
     }
   }, [editingService, paymentModes, serviceTypes, setValue]);
-
+  const MAX_NAME_LENGTH = 19;
   const onSubmit = (data) => {
     const payload = {
-      name: billableServicePayload.name,
-      shortName: billableServicePayload.shortName,
+      name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH),
+      shortName: billableServicePayload.shortName.substring(0, MAX_NAME_LENGTH),
       serviceType: billableServicePayload.serviceType.uuid,
       servicePrices: data.payment.map((payment) => {
         const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
@@ -190,14 +190,23 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             labelText={t('serviceName', 'Service Name')}
             size="md"
             value={billableServicePayload.name || ''}
-            onChange={(e) =>
+            onChange={(e) => {
+              const newName = e.target.value.substring(0, MAX_NAME_LENGTH);
               setBillableServicePayload({
                 ...billableServicePayload,
-                name: e.target.value,
-              })
-            }
+                name: newName,
+              });
+            }}
             placeholder="Enter service name"
+            maxLength={MAX_NAME_LENGTH}
           />
+          {billableServicePayload.name?.length >= MAX_NAME_LENGTH && (
+            <span className={styles.errorMessage}>
+              {t('serviceNameExceedsLimit', 'Service Name exceeds the character limit of {{MAX_NAME_LENGTH}}.', {
+                MAX_NAME_LENGTH,
+              })}
+            </span>
+          )}
         </Layer>
       </section>
       <section className={styles.section}>
@@ -208,14 +217,23 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
             labelText={t('serviceShortName', 'Short Name')}
             size="md"
             value={billableServicePayload.shortName || ''}
-            onChange={(e) =>
+            onChange={(e) => {
+              const newShortName = e.target.value.substring(0, MAX_NAME_LENGTH);
               setBillableServicePayload({
                 ...billableServicePayload,
-                shortName: e.target.value,
-              })
-            }
+                shortName: newShortName,
+              });
+            }}
             placeholder="Enter service short name"
+            maxLength={MAX_NAME_LENGTH}
           />
+          {billableServicePayload.shortName?.length >= MAX_NAME_LENGTH && (
+            <span className={styles.errorMessage}>
+              {t('shortNameExceedsLimit', 'Short Name exceeds the character limit of {{MAX_NAME_LENGTH}}.', {
+                MAX_NAME_LENGTH,
+              })}
+            </span>
+          )}
         </Layer>
       </section>
       <section>
@@ -366,7 +384,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
         <Button kind="secondary" onClick={onClose}>
           {t('cancel', 'Cancel')}
         </Button>
-        <Button type="submit" disabled={!isValid && !editingService}>
+        <Button type="submit" disabled={!isValid || Object.keys(errors).length > 0}>
           {t('save', 'Save')}
         </Button>
       </section>
