@@ -26,20 +26,12 @@ export const configSchema = {
     },
   },
 
-  patientCategories: {
+  nonPayingPatientCategories: {
     _type: Type.Object,
-    _description: 'Configurable patient categories for non-paying patients',
+    _description: 'Concept UUIDs for non-paying patient categories',
     _default: {
-      categories: [
-        {
-          text: 'Child under 5',
-          uuid: '1528AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-        },
-        {
-          text: 'Student',
-          uuid: '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
-        },
-      ],
+      childUnder5: '1528AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
+      student: '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     },
   },
 
@@ -89,4 +81,5 @@ export interface ConfigObject {
   showEditBillButton: boolean;
   postBilledItems: Object;
   serviceTypes: Object;
+  nonPayingPatientCategories: Object;
 }
