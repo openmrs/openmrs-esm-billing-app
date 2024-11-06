@@ -60,7 +60,8 @@
     {
       "name": "billing-checkin-form",
       "slot": "extra-visit-attribute-slot",
-      "component": "billingCheckInForm"
+      "component": "billingCheckInForm",
+      "featureFlag": "billing"
     },
     {
       "slot": "system-admin-page-card-link-slot",
