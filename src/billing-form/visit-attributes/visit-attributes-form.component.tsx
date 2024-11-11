@@ -31,12 +31,13 @@ const visitAttributesFormSchema = z.object({
 
 const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes, setPaymentMethod }) => {
   const { t } = useTranslation();
+  const { patientCatergory, catergoryConcepts, nonPayingPatientCategories } = useConfig();
   const { control, getValues, watch } = useForm<VisitAttributesFormValue>({
     mode: 'all',
     defaultValues: {},
     resolver: zodResolver(visitAttributesFormSchema),
   });
-  const { patientCatergory, catergoryConcepts } = useConfig();
+
   const [paymentDetails, paymentMethods, insuranceSchema, policyNumber, patientCategory] = watch([
     'paymentDetails',
     'paymentMethods',
@@ -46,13 +47,20 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
   ]);
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentMethods();
+  const patientCategoryOptions = React.useMemo(() => {
+    return Object.entries(nonPayingPatientCategories ?? {}).map(([key, uuid]) => ({
+      text: key,
+      uuid,
+    }));
+  }, [nonPayingPatientCategories]);
+
   React.useEffect(() => {
     setAttributes(createVisitAttributesPayload());
   }, [paymentDetails, paymentMethods, insuranceSchema, policyNumber, patientCategory]);
 
   const createVisitAttributesPayload = () => {
     const { paymentDetails, paymentMethods, insuranceScheme, policyNumber, patientCategory } = getValues();
-    setPaymentMethod(paymentMethods);
+    setPaymentMethod?.(paymentMethods);
     const formPayload = [
       { uuid: patientCatergory.paymentDetails, value: paymentDetails },
       { uuid: patientCatergory.paymentMethods, value: paymentMethods },
@@ -156,12 +164,10 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
               className={styles.sectionField}
               onChange={({ selectedItem }) => field.onChange(selectedItem?.uuid)}
               id="patientCategory"
-              items={[
-                { text: 'Child under 5', uuid: catergoryConcepts.childUnder5 },
-                { text: 'Student', uuid: catergoryConcepts.student },
-              ]}
+              items={patientCategoryOptions}
               itemToString={(item) => (item ? item.text : '')}
               titleText={t('patientCategory', 'Patient category')}
+              placeholder={t('selectPatientCategory', 'Select patient category')}
             />
           )}
         />

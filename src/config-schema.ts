@@ -23,6 +23,13 @@ export const configSchema = {
       payingDetails: '44b34972-6630-4e5a-a9f6-a6eb0f109650',
       nonPayingDetails: 'f3fb2d88-cccd-422c-8766-be101ba7bd2e',
       insuranceDetails: 'beac329b-f1dc-4a33-9e7c-d95821a137a6',
+    },
+  },
+
+  nonPayingPatientCategories: {
+    _type: Type.Object,
+    _description: 'Concept UUIDs for non-paying patient categories',
+    _default: {
       childUnder5: '1528AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
       student: '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     },
@@ -53,7 +60,7 @@ export const configSchema = {
   },
 
   pageSize: {
-    _type: Type.String,
+    _type: Type.Number,
     _description: 'The default page size',
     _default: 10,
   },
@@ -74,4 +81,5 @@ export interface ConfigObject {
   showEditBillButton: boolean;
   postBilledItems: Object;
   serviceTypes: Object;
+  nonPayingPatientCategories: Object;
 }
