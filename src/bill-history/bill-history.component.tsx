@@ -112,7 +112,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   }
 
   return (
-    <>
+    <div>
       <CardHeader title={t('billingHistory', 'Billing History')}>
         <Button renderIcon={Add} onClick={() => launchPatientWorkspace('billing-form-workspace', {})} kind="ghost">
           {t('addBill', 'Add bill item(s)')}
@@ -194,7 +194,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
           />
         )}
       </div>
-    </>
+    </div>
   );
 };
 
