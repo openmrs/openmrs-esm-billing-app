@@ -1,7 +1,8 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import fuzzy from 'fuzzy';
 import {
+  Button,
   DataTable,
   DataTableSkeleton,
   Layer,
@@ -12,17 +13,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  type DataTableRow,
-  TableToolbarSearch,
   TableSelectRow,
+  TableToolbarSearch,
   Tile,
-  Button,
+  type DataTableRow,
 } from '@carbon/react';
+import { Edit } from '@carbon/react/icons';
 import { isDesktop, showModal, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { type LineItem, type MappedBill } from '../types';
-import styles from './invoice-table.scss';
 import { convertToCurrency } from '../helpers';
-import { Edit } from '@carbon/react/icons';
+import styles from './invoice-table.scss';
 
 type InvoiceTableProps = {
   bill: MappedBill;
@@ -33,14 +33,15 @@ type InvoiceTableProps = {
 
 const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, isLoadingBill, onSelectItem }) => {
   const { t } = useTranslation();
-  const lineItems = bill?.lineItems ?? [];
-  const paidLineItems = lineItems?.filter((item) => item.paymentStatus === 'PAID') ?? [];
+  const { defaultCurrency, showEditBillButton } = useConfig();
   const layout = useLayoutType();
+  const lineItems = useMemo(() => bill?.lineItems ?? [], [bill?.lineItems]);
+  const paidLineItems = useMemo(() => lineItems?.filter((item) => item.paymentStatus === 'PAID') ?? [], [lineItems]);
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
+
   const [selectedLineItems, setSelectedLineItems] = useState(paidLineItems ?? []);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
-  const { defaultCurrency, showEditBillButton } = useConfig();
 
   useEffect(() => {
     if (onSelectItem) {
@@ -74,13 +75,16 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
     { header: t('actions', 'Actions'), key: 'actionButton' },
   ];
 
-  const handleSelectBillItem = (row: LineItem) => {
-    const dispose = showModal('edit-bill-line-item-dialog', {
-      bill,
-      item: row,
-      closeModal: () => dispose(),
-    });
-  };
+  const handleSelectBillItem = useCallback(
+    (row: LineItem) => {
+      const dispose = showModal('edit-bill-line-item-dialog', {
+        bill,
+        item: row,
+        closeModal: () => dispose(),
+      });
+    },
+    [bill],
+  );
 
   const tableRows: Array<typeof DataTableRow> = useMemo(
     () =>
@@ -113,7 +117,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           ),
         };
       }) ?? [],
-    [bill?.receiptNumber, filteredLineItems, defaultCurrency, showEditBillButton, t],
+    [filteredLineItems, bill?.receiptNumber, defaultCurrency, showEditBillButton, t, handleSelectBillItem],
   );
 
   if (isLoadingBill) {

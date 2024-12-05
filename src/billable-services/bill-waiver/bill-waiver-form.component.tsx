@@ -3,14 +3,14 @@ import { Form, Stack, FormGroup, Layer, Button, NumberInput } from '@carbon/reac
 import { TaskAdd } from '@carbon/react/icons';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { restBaseUrl, showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { createBillWaiverPayload } from './utils';
 import { convertToCurrency } from '../../helpers';
 import { processBillPayment } from '../../billing.resource';
 import { useBillableItems } from '../../billing-form/billing-form.resource';
 import type { LineItem, MappedBill } from '../../types';
-import styles from './bill-waiver-form.scss';
 import { apiBasePath } from '../../constants';
+import styles from './bill-waiver-form.scss';
 
 type BillWaiverFormProps = {
   bill: MappedBill;

@@ -6,6 +6,9 @@ import {
   DataTable,
   InlineLoading,
   Layer,
+  Modal,
+  OverflowMenu,
+  OverflowMenuItem,
   Pagination,
   Search,
   Table,
@@ -15,18 +18,15 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  OverflowMenu,
-  OverflowMenuItem,
-  Modal,
   Tile,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import { useLayoutType, isDesktop, useConfig, usePagination, ErrorState, navigate } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
-import { useBillableServices } from './billable-service.resource';
-import styles from './billable-services.scss';
-import AddBillableService from './create-edit/add-billable-service.component';
 import { type BillableService } from '../types/index';
+import { useBillableServices } from './billable-service.resource';
+import AddBillableService from './create-edit/add-billable-service.component';
+import styles from './billable-services.scss';
 
 const BillableServices = () => {
   const { t } = useTranslation();
@@ -91,8 +91,8 @@ const BillableServices = () => {
   }, [searchString, billableServices]);
 
   const { paginated, goTo, results, currentPage } = usePagination<BillableService>(searchResults, pageSize);
+  const rowData = [];
 
-  let rowData = [];
   if (results) {
     results.forEach((service, index) => {
       const s = {

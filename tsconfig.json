@@ -1,16 +1,18 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "ESNext",
-    "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "jsx": "react",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "module": "esnext",
     "moduleResolution": "node",
-    "module": "ESNext",
     "noEmit": true,
-    "lib": ["es2022", "dom", "dom.iterable"],
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "target": "esnext"
   },
-  "types": ["@testing-library/jest-dom"],
 }

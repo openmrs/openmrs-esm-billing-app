@@ -1,7 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import PrintReceipt from './print-receipt.component';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { useTranslation } from 'react-i18next';
+import PrintReceipt from './print-receipt.component';
 
 jest.mock('react-i18next', () => ({
   useTranslation: jest.fn(),

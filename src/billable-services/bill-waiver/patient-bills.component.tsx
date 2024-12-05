@@ -15,12 +15,12 @@ import {
   Tile,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '@openmrs/esm-framework';
 import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
 import { type MappedBill } from '../../types';
 import { convertToCurrency } from '../../helpers';
 import PatientBillsSelections from './bill-selection.component';
 import styles from '../../bills-table/bills-table.scss';
-import { useConfig } from '@openmrs/esm-framework';
 
 type PatientBillsProps = {
   patientUuid: string;

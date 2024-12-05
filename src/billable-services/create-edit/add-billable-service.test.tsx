@@ -1,21 +1,20 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import AddBillableService from './add-billable-service.component';
+import { render, screen } from '@testing-library/react';
+import { type FetchResponse, navigate } from '@openmrs/esm-framework';
 import {
   useBillableServices,
   usePaymentModes,
   useServiceTypes,
   createBillableSerice,
 } from '../billable-service.resource';
-import { FetchResponse, navigate, showSnackbar } from '@openmrs/esm-framework';
+import AddBillableService from './add-billable-service.component';
 
 const mockUseBillableServices = useBillableServices as jest.MockedFunction<typeof useBillableServices>;
 const mockUsePaymentModes = usePaymentModes as jest.MockedFunction<typeof usePaymentModes>;
 const mockUseServiceTypes = useServiceTypes as jest.MockedFunction<typeof useServiceTypes>;
 const mockCreateBillableSerice = createBillableSerice as jest.MockedFunction<typeof createBillableSerice>;
 const mockNavigate = navigate as jest.MockedFunction<typeof navigate>;
-const mockShowSnackbar = showSnackbar as jest.MockedFunction<typeof showSnackbar>;
 
 jest.mock('../billable-service.resource', () => ({
   useBillableServices: jest.fn(),

@@ -11,12 +11,12 @@ import {
   TextInput,
   Tile,
 } from '@carbon/react';
-import { navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { Add, TrashCan, WarningFilled } from '@carbon/react/icons';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import {
   createBillableSerice,
   updateBillableService,
@@ -115,8 +115,10 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
         setSelectedConcept(editingService.concept);
       }
     }
-  }, [editingService, paymentModes, serviceTypes, setValue]);
+  }, [editingService, isLoadingPaymentModes, paymentModes, serviceTypes, setValue]);
+
   const MAX_NAME_LENGTH = 19;
+
   const onSubmit = (data) => {
     const payload = {
       name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH),

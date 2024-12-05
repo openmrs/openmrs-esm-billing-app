@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
+import { useConfig } from '@openmrs/esm-framework';
 import { billsSummary } from '../../__mocks__/bills.mock';
 import { useBills } from '../billing.resource';
 import MetricsCards from './metrics-cards.component';
-import { useConfig } from '@openmrs/esm-framework';
 
 const mockUseBills = useBills as jest.Mock;
 const mockUseConfig = useConfig as jest.Mock;
