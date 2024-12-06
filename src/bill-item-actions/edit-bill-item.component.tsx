@@ -1,21 +1,28 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, ModalBody, ModalFooter, ModalHeader, Form, InlineLoading } from '@carbon/react';
+import {
+  Button,
+  Column,
+  Form,
+  InlineLoading,
+  InlineNotification,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  NumberInput,
+  TextInput,
+} from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar } from '@openmrs/esm-framework';
 import { Controller, type FieldErrors, useForm } from 'react-hook-form';
+import { mutate } from 'swr';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type LineItem, type MappedBill } from '../types';
-import styles from './bill-item-actions.scss';
-import { updateBillItems } from '../billing.resource';
-import { mutate } from 'swr';
+import { showSnackbar } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
-import { Column } from '@carbon/react';
-import { InlineNotification } from '@carbon/react';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
+import { type LineItem, type MappedBill } from '../types';
+import { updateBillItems } from '../billing.resource';
 import { useBillableServices } from '../billable-services/billable-service.resource';
-import { NumberInput } from '@carbon/react';
-import { TextInput } from '@carbon/react';
+import styles from './bill-item-actions.scss';
 
 interface BillLineItemProps {
   bill: MappedBill;
@@ -25,9 +32,9 @@ interface BillLineItemProps {
 
 const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) => {
   const { t } = useTranslation();
+  const { billableServices } = useBillableServices();
   const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [total, setTotal] = useState(0);
-  const { billableServices } = useBillableServices();
 
   const schema = useMemo(
     () =>
@@ -35,7 +42,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
         quantity: z.string({ required_error: t('quantityRequired', 'Quantity is required') }),
         price: z.string({ required_error: t('priceIsRequired', 'Price is required') }),
       }),
-    [],
+    [t],
   );
 
   type BillLineItemForm = z.infer<typeof schema>;

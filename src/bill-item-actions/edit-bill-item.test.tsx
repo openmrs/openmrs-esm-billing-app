@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import ChangeStatus from './edit-bill-item.component';
-import { updateBillItems } from '../billing.resource';
 import { showSnackbar } from '@openmrs/esm-framework';
-import { type LineItem, type MappedBill } from '../types';
+import { type MappedBill } from '../types';
+import { updateBillItems } from '../billing.resource';
+import ChangeStatus from './edit-bill-item.component';
 
 // Mock external dependencies
 jest.mock('../billing.resource', () => ({

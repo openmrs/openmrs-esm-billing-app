@@ -1,12 +1,12 @@
-import useSWR from 'swr';
-import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl } from '@openmrs/esm-framework';
-import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
+import { useContext } from 'react';
+import dayjs from 'dayjs';
 import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
+import useSWR from 'swr';
+import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl } from '@openmrs/esm-framework';
 import { apiBasePath, omrsDateFormat } from './constants';
-import { useContext } from 'react';
+import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
 import SelectedDateContext from './hooks/selectedDateContext';
-import dayjs from 'dayjs';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
   const { selectedDate } = useContext(SelectedDateContext);

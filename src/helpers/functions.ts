@@ -1,6 +1,4 @@
 import { type Payment, type LineItem } from '../types';
-import { type ConfigObject } from '../config-schema';
-import { useConfig } from '@openmrs/esm-framework';
 
 // amount already paid
 export function calculateTotalAmountTendered(payments: Array<Payment>) {

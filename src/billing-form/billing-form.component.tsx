@@ -1,32 +1,32 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import fuzzy from 'fuzzy';
+import isEmpty from 'lodash-es/isEmpty';
 import {
-  ButtonSet,
   Button,
+  ButtonSet,
   Form,
   InlineLoading,
-  RadioButtonGroup,
   RadioButton,
+  RadioButtonGroup,
   Search,
   Stack,
   Table,
-  TableHead,
   TableBody,
+  TableCell,
+  TableHead,
   TableHeader,
   TableRow,
-  TableCell,
 } from '@carbon/react';
-import styles from './billing-form.scss';
-import { useTranslation } from 'react-i18next';
-import { restBaseUrl, showSnackbar, showToast, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
-import { useFetchSearchResults, processBillItems } from '../billing.resource';
-import { mutate } from 'swr';
-import { convertToCurrency } from '../helpers';
-import { z } from 'zod';
 import { TrashCan } from '@carbon/react/icons';
-import fuzzy from 'fuzzy';
-import { type BillabeItem } from '../types';
+import { mutate } from 'swr';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+import { showSnackbar, showToast, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
-import isEmpty from 'lodash-es/isEmpty';
+import { convertToCurrency } from '../helpers';
+import { type BillabeItem } from '../types';
+import { useFetchSearchResults, processBillItems } from '../billing.resource';
+import styles from './billing-form.scss';
 
 type BillingFormProps = {
   patientUuid: string;
@@ -41,7 +41,6 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [grandTotal, setGrandTotal] = useState(0);
   const [searchOptions, setSearchOptions] = useState([]);
   const [billItems, setBillItems] = useState([]);
-  const [searchVal, setSearchVal] = useState('');
   const [category, setCategory] = useState('');
   const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,7 +170,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           .sort((r1, r2) => r1.score - r2.score)
           .map((result) => result.original)
       : searchOptions;
-  }, [debouncedSearchTerm, data, billItems]);
+  }, [debouncedSearchTerm, isLoading, error, data, billItems, searchOptions]);
 
   useEffect(() => {
     setSearchOptions(filterItems);
@@ -189,7 +188,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     };
 
     billItems.forEach((item) => {
-      let lineItem: any = {
+      const lineItem: any = {
         quantity: parseInt(item.Qnty),
         price: item.Price,
         priceName: 'Default',

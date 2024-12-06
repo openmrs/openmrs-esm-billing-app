@@ -1,12 +1,12 @@
-import React from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { TextInput, InlineLoading, ComboBox, RadioButtonGroup, RadioButton } from '@carbon/react';
+import { ComboBox, InlineLoading, RadioButton, RadioButtonGroup, TextInput } from '@carbon/react';
+import { useConfig } from '@openmrs/esm-framework';
 import { usePaymentMethods } from '../billing-form.resource';
 import styles from './visit-attributes-form.scss';
-import { useConfig } from '@openmrs/esm-framework';
 
 type VisitAttributesFormProps = {
   setAttributes: (state) => void;
@@ -47,20 +47,17 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
   ]);
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentMethods();
-  const patientCategoryOptions = React.useMemo(() => {
+  const patientCategoryOptions = useMemo(() => {
     return Object.entries(nonPayingPatientCategories ?? {}).map(([key, uuid]) => ({
       text: key,
       uuid,
     }));
   }, [nonPayingPatientCategories]);
 
-  React.useEffect(() => {
-    setAttributes(createVisitAttributesPayload());
-  }, [paymentDetails, paymentMethods, insuranceSchema, policyNumber, patientCategory]);
-
-  const createVisitAttributesPayload = () => {
+  const createVisitAttributesPayload = useCallback(() => {
     const { paymentDetails, paymentMethods, insuranceScheme, policyNumber, patientCategory } = getValues();
     setPaymentMethod?.(paymentMethods);
+
     const formPayload = [
       { uuid: patientCatergory.paymentDetails, value: paymentDetails },
       { uuid: patientCatergory.paymentMethods, value: paymentMethods },
@@ -68,6 +65,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
       { uuid: patientCatergory.policyNumber, value: policyNumber },
       { uuid: patientCatergory.patientCategory, value: patientCategory },
     ];
+
     const visitAttributesPayload = formPayload.filter(
       (item) => item.value !== undefined && item.value !== null && item.value !== '',
     );
@@ -75,7 +73,27 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
       attributeType: value.uuid,
       value: value.value,
     }));
-  };
+  }, [
+    getValues,
+    patientCatergory.insuranceScheme,
+    patientCatergory.patientCategory,
+    patientCatergory.paymentDetails,
+    patientCatergory.paymentMethods,
+    patientCatergory.policyNumber,
+    setPaymentMethod,
+  ]);
+
+  useEffect(() => {
+    setAttributes(createVisitAttributesPayload());
+  }, [
+    paymentDetails,
+    paymentMethods,
+    insuranceSchema,
+    policyNumber,
+    patientCategory,
+    setAttributes,
+    createVisitAttributesPayload,
+  ]);
 
   if (isLoadingPaymentModes) {
     return (

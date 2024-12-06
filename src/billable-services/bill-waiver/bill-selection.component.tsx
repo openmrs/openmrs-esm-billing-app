@@ -9,11 +9,11 @@ import {
   StructuredListWrapper,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
+import { useConfig } from '@openmrs/esm-framework';
 import { convertToCurrency } from '../../helpers';
 import { type MappedBill, type LineItem } from '../../types';
 import BillWaiverForm from './bill-waiver-form.component';
 import styles from './bill-waiver.scss';
-import { useConfig } from '@openmrs/esm-framework';
 
 const PatientBillsSelections: React.FC<{ bills: MappedBill; setPatientUuid: (patientUuid) => void }> = ({
   bills,

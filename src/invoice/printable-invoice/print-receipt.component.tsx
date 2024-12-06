@@ -8,6 +8,7 @@ import { apiBasePath } from '../../constants';
 interface PrintReceiptProps {
   billId: number;
 }
+
 const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
   const { t } = useTranslation();
   const [isRedirecting, setIsRedirecting] = useState(false);

@@ -1,17 +1,39 @@
 {
   "env": {
-    "node": true,
-    "browser": true
+    "node": true
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
-  "ignorePatterns": ["**/*.test.tsx"],
+  "parserOptions": {
+    "project": true,
+    "tsconfigRootDir": "__dirname"
+  },
+  "plugins": ["@typescript-eslint", "import", "react-hooks"],
+  "root": true,
   "rules": {
+    // The following rules need `noImplicitAny` to be set to `true` in our tsconfig. They are too restrictive for now, but should be reconsidered in future
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-unsafe-argument": "off",
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/unbound-method": "off",
+    "@typescript-eslint/consistent-type-definitions": "off",
+    "@typescript-eslint/consistent-type-exports": "error",
+    // Use `import type` instead of `import` for type imports
+    "@typescript-eslint/consistent-type-imports": [
+      "error",
+      {
+        "fixStyle": "inline-type-imports"
+      }
+    ],
+    "import/no-duplicates": "error",
     "no-console": ["error", { "allow": ["warn", "error"] }],
-    "no-explicit-any": "off",
-    "no-extra-boolean-cast": "off",
-    "no-prototype-builtins": "off",
     "no-restricted-imports": [
       "error",
       {
@@ -26,6 +48,7 @@
             "importNames": ["default"],
             "message": "Import specific methods from `lodash-es`. e.g. `import { map } from 'lodash-es'`"
           },
+          // These two rules ensure that we're importing Carbon components and icons from the correct packages (after v10). May be removed in the future.
           {
             "name": "carbon-components-react",
             "message": "Import from `@carbon/react` directly. e.g. `import { Toggle } from '@carbon/react'`"
@@ -37,21 +60,7 @@
         ]
       }
     ],
-    "no-unsafe-optional-chaining": "off",
-    "no-useless-escape": "off",
-    "prefer-const": "off",
-    "@typescript-eslint/ban-ts-comment": "off",
-    "@typescript-eslint/ban-types": "off",
-    // Use `import type` instead of `import` for type imports https://typescript-eslint.io/blog/consistent-type-imports-and-exports-why-and-how
-    "@typescript-eslint/consistent-type-imports": [
-      "error",
-      {
-        "fixStyle": "inline-type-imports"
-      }
-    ],
-    "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/triple-slash-reference": "off"
+    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/rules-of-hooks": "error"
   }
 }

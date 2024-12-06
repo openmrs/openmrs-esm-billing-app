@@ -3,15 +3,15 @@ import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
 import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle, registerFeatureFlag } from '@openmrs/esm-framework';
+import appMenu from './billable-services/billable-services-menu-item/item.component';
 import BillableServiceHome from './billable-services/billable-services-home.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 import BillHistory from './bill-history/bill-history.component';
 import BillingCheckInForm from './billing-form/billing-checkin-form.component';
 import RequirePaymentModal from './modal/require-payment-modal.component';
 import RootComponent from './root.component';
-import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 import ServiceMetrics from './billable-services/dashboard/service-metrics.component';
-import appMenu from './billable-services/billable-services-menu-item/item.component';
+import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 
 const moduleName = '@openmrs/esm-billing-app';
 
@@ -46,15 +46,23 @@ export const billingSummaryDashboardLink = getSyncLifecycle(
   options,
 );
 
-export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
-export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);
-export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
-export const serviceMetrics = getSyncLifecycle(ServiceMetrics, options);
-export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
-export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
-export const root = getSyncLifecycle(RootComponent, options);
-export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);
+
+export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
+
+export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);
+
+export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
+
+export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
+
+export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
+
+export const root = getSyncLifecycle(RootComponent, options);
+
+export const serviceMetrics = getSyncLifecycle(ServiceMetrics, options);
+
+export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 
 export const editBillLineItemDialog = getAsyncLifecycle(() => import('./bill-item-actions/edit-bill-item.component'), {
   featureName: 'edit bill line item',

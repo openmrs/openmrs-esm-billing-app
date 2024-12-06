@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import PaymentHistory from './payment-history.component';
 import { useConfig } from '@openmrs/esm-framework';
-import { MappedBill } from '../../../types';
+import PaymentHistory from './payment-history.component';
+import { type MappedBill } from '../../../types';
 
 // Mocking useConfig to return a default currency
 jest.mock('@openmrs/esm-framework', () => ({

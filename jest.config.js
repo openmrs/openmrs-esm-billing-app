@@ -4,6 +4,7 @@
 const path = require('path');
 
 module.exports = {
+  clearMocks: true,
   collectCoverageFrom: [
     '**/src/**/*.component.tsx',
     '!**/node_modules/**',

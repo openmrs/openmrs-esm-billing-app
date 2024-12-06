@@ -1,9 +1,9 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import InvoiceTable from './invoice-table.component';
-import { showModal, useConfig, useDebounce } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
-import { MappedBill } from '../types';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { showModal } from '@openmrs/esm-framework';
+import InvoiceTable from './invoice-table.component';
+import { type MappedBill } from '../types';
 
 // Mocking dependencies
 jest.mock('react-i18next', () => ({

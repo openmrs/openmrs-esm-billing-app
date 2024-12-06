@@ -12,10 +12,10 @@ import {
   StructuredListRow,
   StructuredListWrapper,
 } from '@carbon/react';
+import { useConfig } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
 import styles from './require-payment.scss';
-import { useConfig } from '@openmrs/esm-framework';
 
 type RequirePaymentModalProps = {
   closeModal: () => void;
@@ -25,7 +25,7 @@ type RequirePaymentModalProps = {
 const RequirePaymentModal: React.FC<RequirePaymentModalProps> = ({ closeModal, patientUuid }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig();
-  const { bills, isLoading, error } = useBills(patientUuid);
+  const { bills, isLoading } = useBills(patientUuid);
   const lineItems = bills.filter((bill) => bill?.status !== 'PAID').flatMap((bill) => bill?.lineItems);
 
   return (

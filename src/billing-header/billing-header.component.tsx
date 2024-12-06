@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Calendar, Location, UserFollow } from '@carbon/react/icons';
-import { formatDate, useSession } from '@openmrs/esm-framework';
-import BillingIllustration from './billing-illustration.component';
-import styles from './billing-header.scss';
-import SelectedDateContext from '../hooks/selectedDateContext';
-import { omrsDateFormat } from '../constants';
-import { DatePickerInput } from '@carbon/react';
-import { DatePicker } from '@carbon/react';
 import dayjs from 'dayjs';
+import { DatePickerInput, DatePicker } from '@carbon/react';
+import { useTranslation } from 'react-i18next';
+import { Location, UserFollow } from '@carbon/react/icons';
+import { useSession } from '@openmrs/esm-framework';
+import { omrsDateFormat } from '../constants';
+import BillingIllustration from './billing-illustration.component';
+import SelectedDateContext from '../hooks/selectedDateContext';
+import styles from './billing-header.scss';
+
 interface BillingHeaderProps {
   title: string;
 }

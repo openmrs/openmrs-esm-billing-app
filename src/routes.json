@@ -69,10 +69,6 @@
       "name": "billable-services-admin-card-link"
     },
     {
-      "name": "require-billing-modal",
-      "component": "requirePaymentModal"
-    },
-    {
       "name": "patient-banner-billing-tags",
       "component": "visitAttributeTags",
       "slot": "patient-banner-tags-slot",
@@ -88,6 +84,12 @@
       "component": "editBillLineItemDialog",
       "online": true,
       "offline": true
+    }
+  ],
+  "modals": [
+    {
+      "name": "require-billing-modal",
+      "component": "requirePaymentModal"
     }
   ],
   "workspaces": [
