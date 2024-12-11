@@ -9,7 +9,7 @@ import BillWaiver from './bill-waiver/bill-waiver.component';
 import BillableServicesDashboard from './dashboard/dashboard.component';
 import BillingHeader from '../billing-header/billing-header.component';
 import CashPointConfiguration from './cash-point/cash-point-configuration.component';
-// import PaymentModesConfig from './settings/payment-modes-config.component';
+import PaymentModesConfig from './payyment-modes/payment-modes-config.component';
 import styles from './billable-services.scss';
 
 const BillableServiceHome: React.FC = () => {
@@ -56,7 +56,7 @@ const BillableServiceHome: React.FC = () => {
             <Route path="/add-service" element={<AddBillableService onClose={handleCloseAddService} />} />
             <Route path="/waive-bill" element={<BillWaiver />} />
             <Route path="/cash-point-config" element={<CashPointConfiguration />} />
-            {/* <Route path="/payment-modes-config" element={<PaymentModesConfig />} /> */}
+            <Route path="/payment-modes-config" element={<PaymentModesConfig />} />
           </Routes>
         </section>
       </main>

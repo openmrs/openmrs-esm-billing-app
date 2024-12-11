@@ -13,7 +13,6 @@ import {
   TextInput,
   OverflowMenu,
   OverflowMenuItem,
-  Dropdown,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
@@ -23,25 +22,22 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { showSnackbar } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
-import styles from './cash-point-configuration.scss';
+import styles from './payment-modes-config.scss';
 
 // Validation schema
-const cashPointSchema = z.object({
-  name: z.string().min(1, 'Cash Point Name is required'),
-  uuid: z
-    .string()
-    .min(1, 'UUID is required')
-    .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i, 'Invalid UUID format'),
-  location: z.string().min(1, 'Location is required'),
+const paymentModeSchema = z.object({
+  name: z.string().min(1, 'Payment Mode Name is required'),
+  description: z.string().optional(),
 });
 
-type CashPointFormValues = z.infer<typeof cashPointSchema>;
+type PaymentModeFormValues = z.infer<typeof paymentModeSchema>;
 
-const CashPointConfiguration: React.FC = () => {
+const PaymentModesConfig: React.FC = () => {
   const { t } = useTranslation();
-  const [cashPoints, setCashPoints] = useState([]);
-  const [locations, setLocations] = useState([]);
+  const [paymentModes, setPaymentModes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState(null);
   const baseUrl = `${window.location.origin}/openmrs/ws/rest/v1`;
 
   const {
@@ -49,41 +45,22 @@ const CashPointConfiguration: React.FC = () => {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<CashPointFormValues>({
-    resolver: zodResolver(cashPointSchema),
+  } = useForm<PaymentModeFormValues>({
+    resolver: zodResolver(paymentModeSchema),
     defaultValues: {
       name: '',
-      uuid: '',
-      location: '',
+      description: '',
     },
   });
 
-  const fetchCashPoints = useCallback(async () => {
+  const fetchPaymentModes = useCallback(async () => {
     try {
-      const response = await axios.get(`${baseUrl}/billing/cashPoint?v=full`);
-      setCashPoints(response.data.results || []);
+      const response = await axios.get(`${baseUrl}/billing/paymentMode?v=full`);
+      setPaymentModes(response.data.results || []);
     } catch (err) {
       showSnackbar({
         title: t('error', 'Error'),
-        subtitle: t('errorFetchingCashPoints', 'An error occurred while fetching cash points.'),
-        kind: 'error',
-        isLowContrast: false,
-      });
-    }
-  }, [baseUrl, t]);
-
-  const fetchLocations = useCallback(async () => {
-    try {
-      const response = await axios.get(`${baseUrl}/location?v=default`);
-      const allLocations = response.data.results.map((loc) => ({
-        id: loc.uuid,
-        label: loc.display,
-      }));
-      setLocations(allLocations);
-    } catch (err) {
-      showSnackbar({
-        title: t('error', 'Error'),
-        subtitle: t('errorFetchingLocations', 'An error occurred while fetching locations.'),
+        subtitle: t('errorFetchingPaymentModes', 'An error occurred while fetching payment modes.'),
         kind: 'error',
         isLowContrast: false,
       });
@@ -91,60 +68,81 @@ const CashPointConfiguration: React.FC = () => {
   }, [baseUrl, t]);
 
   useEffect(() => {
-    fetchCashPoints();
-    fetchLocations();
-  }, [fetchCashPoints, fetchLocations]);
+    fetchPaymentModes();
+  }, [fetchPaymentModes]);
 
-  const onSubmit = async (data: CashPointFormValues) => {
+  const onSubmit = async (data: PaymentModeFormValues) => {
     try {
-      await axios.post(`${baseUrl}/billing/cashPoint`, {
+      await axios.post(`${baseUrl}/billing/paymentMode`, {
         name: data.name,
-        uuid: data.uuid,
-        location: { uuid: data.location },
+        description: data.description,
       });
 
       showSnackbar({
         title: t('success', 'Success'),
-        subtitle: t('cashPointSaved', 'Cash point was successfully saved.'),
+        subtitle: t('paymentModeSaved', 'Payment mode was successfully saved.'),
         kind: 'success',
       });
 
       setIsModalOpen(false);
-      reset({ name: '', uuid: '', location: '' });
-      fetchCashPoints();
+      reset({ name: '', description: '' });
+      fetchPaymentModes();
     } catch (err) {
       showSnackbar({
         title: t('error', 'Error'),
-        subtitle: t('errorSavingCashPoint', 'An error occurred while saving the cash point.'),
+        subtitle: t('errorSavingPaymentMode', 'An error occurred while saving the payment mode.'),
         kind: 'error',
         isLowContrast: false,
       });
     }
   };
 
-  const rowData = cashPoints.map((point) => ({
-    id: point.uuid,
-    name: point.name,
-    uuid: point.uuid,
-    location: point.location ? point.location.display : 'None',
+  const handleDelete = async () => {
+    if (!selectedPaymentMode) return;
+
+    try {
+      await axios.delete(`${baseUrl}/billing/paymentMode/${selectedPaymentMode.uuid}`);
+
+      showSnackbar({
+        title: t('success', 'Success'),
+        subtitle: t('paymentModeDeleted', 'Payment mode was successfully deleted.'),
+        kind: 'success',
+      });
+
+      setIsDeleteModalOpen(false);
+      setSelectedPaymentMode(null);
+      fetchPaymentModes();
+    } catch (err) {
+      showSnackbar({
+        title: t('error', 'Error'),
+        subtitle: t('errorDeletingPaymentMode', 'An error occurred while deleting the payment mode.'),
+        kind: 'error',
+        isLowContrast: false,
+      });
+    }
+  };
+
+  const rowData = paymentModes.map((mode) => ({
+    id: mode.uuid,
+    name: mode.name,
+    description: mode.description || '--',
   }));
 
   const headerData = [
     { key: 'name', header: t('name', 'Name') },
-    { key: 'uuid', header: t('uuid', 'UUID') },
-    { key: 'location', header: t('location', 'Location') },
+    { key: 'description', header: t('description', 'Description') },
     { key: 'actions', header: t('actions', 'Actions') },
   ];
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <CardHeader title={t('cashPointHistory', 'Cash Point History')}>
+        <CardHeader title={t('paymentModeHistory', 'Payment Mode History')}>
           <Button renderIcon={Add} onClick={() => setIsModalOpen(true)} kind="ghost">
-            {t('addCashPoint', 'Add New Cash Point')}
+            {t('addPaymentMode', 'Add New Payment Mode')}
           </Button>
         </CardHeader>
-        <div className={styles.billHistoryContainer}>
+        <div className={styles.historyContainer}>
           <DataTable rows={rowData} headers={headerData} isSortable size="lg">
             {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
               <TableContainer>
@@ -167,7 +165,14 @@ const CashPointConfiguration: React.FC = () => {
                           ) : (
                             <TableCell key={cell.id}>
                               <OverflowMenu>
-                                <OverflowMenuItem itemText={t('delete', 'Delete')} disabled />
+                                <OverflowMenuItem
+                                  itemText={t('delete', 'Delete')}
+                                  onClick={() => {
+                                    const selected = paymentModes.find((p) => p.uuid === row.id);
+                                    setSelectedPaymentMode(selected);
+                                    setIsDeleteModalOpen(true);
+                                  }}
+                                />
                               </OverflowMenu>
                             </TableCell>
                           ),
@@ -182,10 +187,10 @@ const CashPointConfiguration: React.FC = () => {
         </div>
       </div>
 
-      {/* Modal for Adding New Cash Point */}
+      {/* Modal for Adding New Payment Mode */}
       <Modal
         open={isModalOpen}
-        modalHeading={t('addCashPoint', 'Add Cash Point')}
+        modalHeading={t('addPaymentMode', 'Add Payment Mode')}
         onRequestClose={() => setIsModalOpen(false)}
         onRequestSubmit={handleSubmit(onSubmit)}
         primaryButtonText={t('save', 'Save')}
@@ -197,9 +202,9 @@ const CashPointConfiguration: React.FC = () => {
             control={control}
             render={({ field }) => (
               <TextInput
-                id="cash-point-name"
-                labelText={t('cashPointName', 'Cash Point Name')}
-                placeholder={t('cashPointNamePlaceholder', 'e.g., Pharmacy Cash Point')}
+                id="payment-mode-name"
+                labelText={t('paymentModeName', 'Payment Mode Name')}
+                placeholder={t('paymentModeNamePlaceholder', 'e.g., Cash, Credit Card')}
                 invalid={!!errors.name}
                 invalidText={errors.name?.message}
                 {...field}
@@ -207,39 +212,36 @@ const CashPointConfiguration: React.FC = () => {
             )}
           />
           <Controller
-            name="uuid"
+            name="description"
             control={control}
             render={({ field }) => (
               <TextInput
-                id="cash-point-uuid"
-                labelText={t('cashPointUuid', 'Cash Point UUID')}
-                placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
-                invalid={!!errors.uuid}
-                invalidText={errors.uuid?.message}
+                id="payment-mode-description"
+                labelText={t('description', 'Description')}
+                placeholder={t('descriptionPlaceholder', 'e.g., Used for all cash transactions')}
+                invalid={!!errors.description}
+                invalidText={errors.description?.message}
                 {...field}
-              />
-            )}
-          />
-          <Controller
-            name="location"
-            control={control}
-            render={({ field }) => (
-              <Dropdown
-                id="cash-point-location"
-                label={t('location', 'Select Location')}
-                titleText={t('cashPointLocation', 'Cash Point Location')}
-                items={locations}
-                selectedItem={locations.find((loc) => loc.id === field.value)}
-                onChange={({ selectedItem }) => field.onChange(selectedItem?.id)}
-                invalid={!!errors.location}
-                invalidText={errors.location?.message}
               />
             )}
           />
         </form>
       </Modal>
+
+      {/* Modal for Deleting Payment Mode */}
+      <Modal
+        open={isDeleteModalOpen}
+        modalHeading={t('deletePaymentMode', 'Delete Payment Mode')}
+        onRequestClose={() => setIsDeleteModalOpen(false)}
+        onRequestSubmit={handleDelete}
+        primaryButtonText={t('delete', 'Delete')}
+        secondaryButtonText={t('cancel', 'Cancel')}
+        primaryButtonDanger
+        danger>
+        <p>{t('confirmDeleteMessage', 'Are you sure you want to delete this payment mode? Proceed cautiously.')}</p>
+      </Modal>
     </div>
   );
 };
 
-export default CashPointConfiguration;
+export default PaymentModesConfig;
