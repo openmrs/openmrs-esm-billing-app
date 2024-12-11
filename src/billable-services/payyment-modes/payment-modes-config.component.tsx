@@ -72,6 +72,22 @@ const PaymentModesConfig: React.FC = () => {
   }, [fetchPaymentModes]);
 
   const onSubmit = async (data: PaymentModeFormValues) => {
+    // Check for duplicate payment mode name
+    const isDuplicate = paymentModes.some((mode) => mode.name.toLowerCase() === data.name.toLowerCase());
+
+    if (isDuplicate) {
+      showSnackbar({
+        title: t('error', 'Error'),
+        subtitle: t(
+          'duplicatePaymentModeError',
+          'A payment mode with the same name already exists. Please create another payment mode',
+        ),
+        kind: 'error',
+        isLowContrast: false,
+      });
+      return;
+    }
+
     try {
       await axios.post(`${baseUrl}/billing/paymentMode`, {
         name: data.name,

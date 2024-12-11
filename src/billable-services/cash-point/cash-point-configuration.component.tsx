@@ -96,6 +96,23 @@ const CashPointConfiguration: React.FC = () => {
   }, [fetchCashPoints, fetchLocations]);
 
   const onSubmit = async (data: CashPointFormValues) => {
+    const isDuplicate = cashPoints.some(
+      (point) => point.name.toLowerCase() === data.name.toLowerCase() || point.uuid === data.uuid,
+    );
+
+    if (isDuplicate) {
+      showSnackbar({
+        title: t('error', 'Error'),
+        subtitle: t(
+          'duplicateCashPointError',
+          'A cash point with the same name or UUID already exists. Please use a unique name and UUID.',
+        ),
+        kind: 'error',
+        isLowContrast: false,
+      });
+      return;
+    }
+
     try {
       await axios.post(`${baseUrl}/billing/cashPoint`, {
         name: data.name,
