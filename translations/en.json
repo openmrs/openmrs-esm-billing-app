@@ -57,6 +57,8 @@
   "descriptionPlaceholder": "e.g., Used for all cash transactions",
   "discard": "Discard",
   "discount": "Discount",
+  "duplicateCashPointError": "A cash point with the same name or UUID already exists. Please use a unique name and UUID.",
+  "duplicatePaymentModeError": "A payment mode with the same name already exists. Please create another payment mode",
   "editBillableService": "Edit billable service",
   "editBillableServices": "Edit Billable Services",
   "editBillLineItem": "Edit bill line item?",

@@ -17,11 +17,10 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './cash-point-configuration.scss';
 
@@ -42,7 +41,6 @@ const CashPointConfiguration: React.FC = () => {
   const [cashPoints, setCashPoints] = useState([]);
   const [locations, setLocations] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const baseUrl = `${window.location.origin}/openmrs/ws/rest/v1`;
 
   const {
     control,
@@ -60,7 +58,7 @@ const CashPointConfiguration: React.FC = () => {
 
   const fetchCashPoints = useCallback(async () => {
     try {
-      const response = await axios.get(`${baseUrl}/billing/cashPoint?v=full`);
+      const response = await openmrsFetch('/ws/rest/v1/billing/cashPoint?v=full');
       setCashPoints(response.data.results || []);
     } catch (err) {
       showSnackbar({
@@ -70,11 +68,11 @@ const CashPointConfiguration: React.FC = () => {
         isLowContrast: false,
       });
     }
-  }, [baseUrl, t]);
+  }, [t]);
 
   const fetchLocations = useCallback(async () => {
     try {
-      const response = await axios.get(`${baseUrl}/location?v=default`);
+      const response = await openmrsFetch('/ws/rest/v1/location?v=default');
       const allLocations = response.data.results.map((loc) => ({
         id: loc.uuid,
         label: loc.display,
@@ -88,7 +86,7 @@ const CashPointConfiguration: React.FC = () => {
         isLowContrast: false,
       });
     }
-  }, [baseUrl, t]);
+  }, [t]);
 
   useEffect(() => {
     fetchCashPoints();
@@ -114,21 +112,37 @@ const CashPointConfiguration: React.FC = () => {
     }
 
     try {
-      await axios.post(`${baseUrl}/billing/cashPoint`, {
-        name: data.name,
-        uuid: data.uuid,
-        location: { uuid: data.location },
+      const response = await openmrsFetch('/ws/rest/v1/billing/cashPoint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: {
+          name: data.name,
+          uuid: data.uuid,
+          location: { uuid: data.location },
+        },
       });
 
-      showSnackbar({
-        title: t('success', 'Success'),
-        subtitle: t('cashPointSaved', 'Cash point was successfully saved.'),
-        kind: 'success',
-      });
+      if (response.ok) {
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('cashPointSaved', 'Cash point was successfully saved.'),
+          kind: 'success',
+        });
 
-      setIsModalOpen(false);
-      reset({ name: '', uuid: '', location: '' });
-      fetchCashPoints();
+        setIsModalOpen(false);
+        reset({ name: '', uuid: '', location: '' });
+        fetchCashPoints();
+      } else {
+        const errorData = response.data || {};
+        showSnackbar({
+          title: t('error', 'Error'),
+          subtitle: errorData.message || t('errorSavingCashPoint', 'An error occurred while saving the cash point.'),
+          kind: 'error',
+          isLowContrast: false,
+        });
+      }
     } catch (err) {
       showSnackbar({
         title: t('error', 'Error'),

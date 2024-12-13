@@ -16,11 +16,10 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './payment-modes-config.scss';
 
@@ -38,7 +37,6 @@ const PaymentModesConfig: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPaymentMode, setSelectedPaymentMode] = useState(null);
-  const baseUrl = `${window.location.origin}/openmrs/ws/rest/v1`;
 
   const {
     control,
@@ -55,7 +53,7 @@ const PaymentModesConfig: React.FC = () => {
 
   const fetchPaymentModes = useCallback(async () => {
     try {
-      const response = await axios.get(`${baseUrl}/billing/paymentMode?v=full`);
+      const response = await openmrsFetch('/ws/rest/v1/billing/paymentMode?v=full');
       setPaymentModes(response.data.results || []);
     } catch (err) {
       showSnackbar({
@@ -65,7 +63,7 @@ const PaymentModesConfig: React.FC = () => {
         isLowContrast: false,
       });
     }
-  }, [baseUrl, t]);
+  }, [t]);
 
   useEffect(() => {
     fetchPaymentModes();
@@ -89,20 +87,37 @@ const PaymentModesConfig: React.FC = () => {
     }
 
     try {
-      await axios.post(`${baseUrl}/billing/paymentMode`, {
-        name: data.name,
-        description: data.description,
+      const response = await openmrsFetch('/ws/rest/v1/billing/paymentMode', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: data.name,
+          description: data.description,
+        }),
       });
 
-      showSnackbar({
-        title: t('success', 'Success'),
-        subtitle: t('paymentModeSaved', 'Payment mode was successfully saved.'),
-        kind: 'success',
-      });
+      if (response.ok) {
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('paymentModeSaved', 'Payment mode was successfully saved.'),
+          kind: 'success',
+        });
 
-      setIsModalOpen(false);
-      reset({ name: '', description: '' });
-      fetchPaymentModes();
+        setIsModalOpen(false);
+        reset({ name: '', description: '' });
+        fetchPaymentModes();
+      } else {
+        const errorData = response.data || {};
+        showSnackbar({
+          title: t('error', 'Error'),
+          subtitle:
+            errorData.message || t('errorSavingPaymentMode', 'An error occurred while saving the payment mode.'),
+          kind: 'error',
+          isLowContrast: false,
+        });
+      }
     } catch (err) {
       showSnackbar({
         title: t('error', 'Error'),
@@ -117,7 +132,9 @@ const PaymentModesConfig: React.FC = () => {
     if (!selectedPaymentMode) return;
 
     try {
-      await axios.delete(`${baseUrl}/billing/paymentMode/${selectedPaymentMode.uuid}`);
+      await openmrsFetch(`/ws/rest/v1/billing/paymentMode/${selectedPaymentMode.uuid}`, {
+        method: 'DELETE',
+      });
 
       showSnackbar({
         title: t('success', 'Success'),
