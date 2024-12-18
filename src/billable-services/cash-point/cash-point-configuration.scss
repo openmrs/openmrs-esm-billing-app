@@ -1,0 +1,23 @@
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.container {
+  padding: layout.$spacing-05;
+}
+
+.card {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: layout.$spacing-05;
+}
+
+.billHistoryContainer {
+  margin-top: layout.$spacing-05;
+}
+
+.table {
+  width: 100%;
+  table-layout: auto;
+}
