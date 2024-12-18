@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showSnackbar, openmrsFetch } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './payment-modes-config.scss';
 
@@ -53,7 +53,7 @@ const PaymentModesConfig: React.FC = () => {
 
   const fetchPaymentModes = useCallback(async () => {
     try {
-      const response = await openmrsFetch('/ws/rest/v1/billing/paymentMode?v=full');
+      const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode?v=full`);
       setPaymentModes(response.data.results || []);
     } catch (err) {
       showSnackbar({
@@ -87,7 +87,7 @@ const PaymentModesConfig: React.FC = () => {
     }
 
     try {
-      const response = await openmrsFetch('/ws/rest/v1/billing/paymentMode', {
+      const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ const PaymentModesConfig: React.FC = () => {
     if (!selectedPaymentMode) return;
 
     try {
-      await openmrsFetch(`/ws/rest/v1/billing/paymentMode/${selectedPaymentMode.uuid}`, {
+      await openmrsFetch(`${restBaseUrl}/billing/paymentMode/${selectedPaymentMode.uuid}`, {
         method: 'DELETE',
       });
 

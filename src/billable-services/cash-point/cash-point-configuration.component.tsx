@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showSnackbar, openmrsFetch } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './cash-point-configuration.scss';
 
@@ -58,7 +58,7 @@ const CashPointConfiguration: React.FC = () => {
 
   const fetchCashPoints = useCallback(async () => {
     try {
-      const response = await openmrsFetch('/ws/rest/v1/billing/cashPoint?v=full');
+      const response = await openmrsFetch(`${restBaseUrl}/billing/cashPoint?v=full`);
       setCashPoints(response.data.results || []);
     } catch (err) {
       showSnackbar({
@@ -72,7 +72,7 @@ const CashPointConfiguration: React.FC = () => {
 
   const fetchLocations = useCallback(async () => {
     try {
-      const response = await openmrsFetch('/ws/rest/v1/location?v=default');
+      const response = await openmrsFetch(`${restBaseUrl}/location?v=default`);
       const allLocations = response.data.results.map((loc) => ({
         id: loc.uuid,
         label: loc.display,
@@ -112,7 +112,7 @@ const CashPointConfiguration: React.FC = () => {
     }
 
     try {
-      const response = await openmrsFetch('/ws/rest/v1/billing/cashPoint', {
+      const response = await openmrsFetch(`${restBaseUrl}/billing/cashPoint`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
