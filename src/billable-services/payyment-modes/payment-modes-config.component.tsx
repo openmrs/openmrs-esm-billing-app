@@ -11,6 +11,7 @@ import {
   TableCell,
   Modal,
   TextInput,
+  Tag,
   OverflowMenu,
   OverflowMenuItem,
 } from '@carbon/react';
@@ -37,6 +38,7 @@ const PaymentModesConfig: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPaymentMode, setSelectedPaymentMode] = useState(null);
+  const [statusMap, setStatusMap] = useState<{ [key: string]: boolean }>({});
 
   const {
     control,
@@ -45,25 +47,39 @@ const PaymentModesConfig: React.FC = () => {
     formState: { errors, isSubmitting },
   } = useForm<PaymentModeFormValues>({
     resolver: zodResolver(paymentModeSchema),
-    defaultValues: {
-      name: '',
-      description: '',
-    },
+    defaultValues: { name: '', description: '' },
   });
 
+  // Fetch all payment modes
   const fetchPaymentModes = useCallback(async () => {
     try {
       const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode?v=full`);
-      setPaymentModes(response.data.results || []);
+      const modes = response.data.results || [];
+      setPaymentModes(modes);
+      await fetchStatus(modes);
     } catch (err) {
       showSnackbar({
         title: t('error', 'Error'),
         subtitle: t('errorFetchingPaymentModes', 'An error occurred while fetching payment modes.'),
         kind: 'error',
-        isLowContrast: false,
       });
     }
   }, [t]);
+
+  // Fetch "in use" status for each payment mode
+  const fetchStatus = async (modes) => {
+    const statusPromises = modes.map(async (mode) => {
+      const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode/isInUse/${mode.uuid}`);
+      return { uuid: mode.uuid, inUse: response?.data?.inUse || false };
+    });
+
+    const statusResults = await Promise.all(statusPromises);
+    const statusObj = statusResults.reduce((acc, curr) => {
+      acc[curr.uuid] = curr.inUse;
+      return acc;
+    }, {});
+    setStatusMap(statusObj);
+  };
 
   useEffect(() => {
     fetchPaymentModes();
@@ -89,41 +105,22 @@ const PaymentModesConfig: React.FC = () => {
     try {
       const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: data.name,
-          description: data.description,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: data.name, description: data.description }),
       });
-
-      if (response.ok) {
-        showSnackbar({
-          title: t('success', 'Success'),
-          subtitle: t('paymentModeSaved', 'Payment mode was successfully saved.'),
-          kind: 'success',
-        });
-
-        setIsModalOpen(false);
-        reset({ name: '', description: '' });
-        fetchPaymentModes();
-      } else {
-        const errorData = response.data || {};
-        showSnackbar({
-          title: t('error', 'Error'),
-          subtitle:
-            errorData.message || t('errorSavingPaymentMode', 'An error occurred while saving the payment mode.'),
-          kind: 'error',
-          isLowContrast: false,
-        });
-      }
-    } catch (err) {
+      showSnackbar({
+        title: t('success', 'Success'),
+        subtitle: t('paymentModeSaved', 'Payment mode saved successfully.'),
+        kind: 'success',
+      });
+      setIsModalOpen(false);
+      reset();
+      fetchPaymentModes();
+    } catch {
       showSnackbar({
         title: t('error', 'Error'),
-        subtitle: t('errorSavingPaymentMode', 'An error occurred while saving the payment mode.'),
+        subtitle: t('errorSavingPaymentMode', 'Failed to save payment mode.'),
         kind: 'error',
-        isLowContrast: false,
       });
     }
   };
@@ -132,38 +129,43 @@ const PaymentModesConfig: React.FC = () => {
     if (!selectedPaymentMode) return;
 
     try {
-      await openmrsFetch(`${restBaseUrl}/billing/paymentMode/${selectedPaymentMode.uuid}`, {
-        method: 'DELETE',
-      });
-
-      showSnackbar({
-        title: t('success', 'Success'),
-        subtitle: t('paymentModeDeleted', 'Payment mode was successfully deleted.'),
-        kind: 'success',
-      });
-
-      setIsDeleteModalOpen(false);
-      setSelectedPaymentMode(null);
-      fetchPaymentModes();
-    } catch (err) {
+      const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode/isInUse/${selectedPaymentMode.uuid}`);
+      if (response.data.inUse) {
+        showSnackbar({
+          title: t('error', 'Error'),
+          subtitle: t('paymentModeInUseError', 'This payment mode is in use and cannot be deleted.'),
+          kind: 'error',
+        });
+      } else {
+        await openmrsFetch(`${restBaseUrl}/billing/paymentMode/${selectedPaymentMode.uuid}`, { method: 'DELETE' });
+        showSnackbar({
+          title: t('success', 'Success'),
+          subtitle: t('paymentModeDeleted', 'Payment mode was successfully deleted.'),
+          kind: 'success',
+        });
+        fetchPaymentModes();
+      }
+    } catch {
       showSnackbar({
         title: t('error', 'Error'),
         subtitle: t('errorDeletingPaymentMode', 'An error occurred while deleting the payment mode.'),
         kind: 'error',
-        isLowContrast: false,
       });
     }
+    setIsDeleteModalOpen(false);
   };
 
   const rowData = paymentModes.map((mode) => ({
     id: mode.uuid,
     name: mode.name,
     description: mode.description || '--',
+    status: statusMap[mode.uuid] ? 'In Use' : 'Not In Use',
   }));
 
-  const headerData = [
+  const headers = [
     { key: 'name', header: t('name', 'Name') },
     { key: 'description', header: t('description', 'Description') },
+    { key: 'status', header: t('status', 'Status') },
     { key: 'actions', header: t('actions', 'Actions') },
   ];
 
@@ -175,49 +177,52 @@ const PaymentModesConfig: React.FC = () => {
             {t('addPaymentMode', 'Add New Payment Mode')}
           </Button>
         </CardHeader>
-        <div className={styles.historyContainer}>
-          <DataTable rows={rowData} headers={headerData} isSortable size="lg">
-            {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
-              <TableContainer>
-                <Table className={styles.table} {...getTableProps()}>
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                          {header.header}
-                        </TableHeader>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow key={row.id} {...getRowProps({ row })}>
-                        {row.cells.map((cell) =>
-                          cell.info.header !== 'actions' ? (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
-                          ) : (
-                            <TableCell key={cell.id}>
-                              <OverflowMenu>
-                                <OverflowMenuItem
-                                  itemText={t('delete', 'Delete')}
-                                  onClick={() => {
-                                    const selected = paymentModes.find((p) => p.uuid === row.id);
-                                    setSelectedPaymentMode(selected);
-                                    setIsDeleteModalOpen(true);
-                                  }}
-                                />
-                              </OverflowMenu>
-                            </TableCell>
-                          ),
-                        )}
-                      </TableRow>
+
+        <DataTable rows={rowData} headers={headers} isSortable size="lg">
+          {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
+            <TableContainer>
+              <Table {...getTableProps()}>
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                        {header.header}
+                      </TableHeader>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </DataTable>
-        </div>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) =>
+                        cell.info.header === 'status' ? (
+                          <TableCell key={cell.id}>
+                            <Tag type={cell.value === 'In Use' ? 'red' : 'green'}>{cell.value}</Tag>
+                          </TableCell>
+                        ) : cell.info.header === 'actions' ? (
+                          <TableCell key={cell.id}>
+                            <OverflowMenu>
+                              <OverflowMenuItem
+                                itemText={t('delete', 'Delete')}
+                                onClick={() => {
+                                  const selected = paymentModes.find((p) => p.uuid === row.id);
+                                  setSelectedPaymentMode(selected);
+                                  setIsDeleteModalOpen(true);
+                                }}
+                              />
+                            </OverflowMenu>
+                          </TableCell>
+                        ) : (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ),
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
       </div>
 
       {/* Modal for Adding New Payment Mode */}
