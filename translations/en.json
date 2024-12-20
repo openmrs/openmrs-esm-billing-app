@@ -114,6 +114,7 @@
   "paymentMode": "Payment Mode",
   "paymentModeDeleted": "Payment mode was successfully deleted.",
   "paymentModeHistory": "Payment Mode History",
+  "paymentModeInUseError": "This payment mode is in use and cannot be deleted.",
   "paymentModeName": "Payment Mode Name",
   "paymentModeNamePlaceholder": "e.g., Cash, Credit Card",
   "paymentModeSaved": "Payment mode was successfully saved.",

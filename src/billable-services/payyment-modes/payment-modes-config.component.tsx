@@ -23,6 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './payment-modes-config.scss';
+import { PAYMENT_MODE_STATUS } from '../../constants';
 
 // Validation schema
 const paymentModeSchema = z.object({
@@ -159,7 +160,7 @@ const PaymentModesConfig: React.FC = () => {
     id: mode.uuid,
     name: mode.name,
     description: mode.description || '--',
-    status: statusMap[mode.uuid] ? 'In Use' : 'Not In Use',
+    status: statusMap[mode.uuid], // Keep as boolean
   }));
 
   const headers = [
@@ -197,7 +198,12 @@ const PaymentModesConfig: React.FC = () => {
                       {row.cells.map((cell) =>
                         cell.info.header === 'status' ? (
                           <TableCell key={cell.id}>
-                            <Tag type={cell.value === 'In Use' ? 'red' : 'green'}>{cell.value}</Tag>
+                            <Tag
+                              type={
+                                cell.value ? PAYMENT_MODE_STATUS.tagType.inUse : PAYMENT_MODE_STATUS.tagType.notInUse
+                              }>
+                              {cell.value ? t('inUse', 'In Use') : t('notInUse', 'Not In Use')}
+                            </Tag>
                           </TableCell>
                         ) : cell.info.header === 'actions' ? (
                           <TableCell key={cell.id}>
