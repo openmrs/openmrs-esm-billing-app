@@ -2,6 +2,8 @@
 
 The OpenMRS Billing Module is designed to streamline the financial operations within healthcare settings by facilitating the management of patient billing, payments, and service pricing. This module integrates seamlessly with the OpenMRS platform, allowing healthcare providers to generate bills, track payments, and manage various billable services. It is an essential tool for ensuring transparency and accuracy in financial transactions within healthcare facilities, contributing to efficient service delivery.
 
+Dependency: Note that this frontend module depends on the backend module called "Billing Module": https://github.com/openmrs/openmrs-module-billing
+
 For more information, please see the
 [OpenMRS Frontend Developer Documentation](https://o3-docs.openmrs.org/#/).
 
