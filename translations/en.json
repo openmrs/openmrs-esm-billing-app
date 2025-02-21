@@ -44,7 +44,7 @@
   "cashPointNamePlaceholder": "e.g., Pharmacy Cash Point",
   "cashPointSaved": "Cash point was successfully saved.",
   "cashPointUuid": "Cash Point UUID",
-  "cashPointUuidPlaceholder": "Enter UUID",
+  "cashPointUuidPlaceholderText": "e.g., 1ce1b7d4-c865-4178-82b0-5932e51503d6",
   "checkFilters": "Check the filters above",
   "clearSearchInput": "Clear search input",
   "clientBalance": "Client Balance",
