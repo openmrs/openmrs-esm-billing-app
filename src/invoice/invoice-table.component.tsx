@@ -172,7 +172,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
               className={`${styles.invoiceTable} billingTable`}>
               <TableHead>
                 <TableRow>
-                  {rows.length > 1 && isSelectable ? <TableHeader /> : null}
+                  {rows.length >= 1 && isSelectable ? <TableHeader /> : null}
                   {headers.map((header) => (
                     <TableHeader key={header.key}>{header.header}</TableHeader>
                   ))}
@@ -186,7 +186,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
                       {...getRowProps({
                         row,
                       })}>
-                      {rows.length > 1 && isSelectable && (
+                      {rows.length >= 1 && isSelectable && (
                         <TableSelectRow
                           aria-label="Select row"
                           {...getSelectionProps({ row })}
