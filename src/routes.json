@@ -97,7 +97,9 @@
       "name": "billing-form-workspace",
       "title": "billingForm",
       "component": "billingFormWorkspace",
-      "type": "form"
+      "type": "form",
+      "width": "extra-wide",
+      "canMaximize": true
     }
   ]
 }
