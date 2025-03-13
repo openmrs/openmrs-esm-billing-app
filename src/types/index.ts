@@ -195,3 +195,10 @@ export interface BillableService {
     price: number;
   }>;
 }
+export interface StockItem {
+  uuid: string;
+  drugUuid: string;
+  drugName: string;
+  conceptUuid: string;
+  conceptName: string;
+}

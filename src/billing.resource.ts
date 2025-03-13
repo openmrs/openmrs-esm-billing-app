@@ -3,9 +3,17 @@ import dayjs from 'dayjs';
 import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
 import useSWR from 'swr';
-import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl } from '@openmrs/esm-framework';
+import {
+  formatDate,
+  parseDate,
+  openmrsFetch,
+  useSession,
+  useVisit,
+  restBaseUrl,
+  useOpenmrsFetchAll,
+} from '@openmrs/esm-framework';
 import { apiBasePath, omrsDateFormat } from './constants';
-import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
+import type { FacilityDetail, MappedBill, PatientInvoice, StockItem } from './types';
 import SelectedDateContext from './hooks/selectedDateContext';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
@@ -162,4 +170,17 @@ export const updateBillItems = (payload) => {
       'Content-Type': 'application/json',
     },
   });
+};
+
+export const useStockItems = () => {
+  const url = `${restBaseUrl}/stockmanagement/stockitem`;
+  const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<StockItem[]>(url);
+
+  return {
+    stockItems: data ?? [],
+    isLoadingItem: isLoading,
+    isValidating,
+    error,
+    mutate,
+  };
 };

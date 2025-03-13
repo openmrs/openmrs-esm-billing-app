@@ -9,7 +9,7 @@ import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import { type LineItem, type MappedBill } from '../../types';
 import { convertToCurrency } from '../../helpers';
 import { createPaymentPayload } from './utils';
-import { processBillPayment } from '../../billing.resource';
+import { processBillPayment, useStockItems } from '../../billing.resource';
 import { InvoiceBreakDown } from './invoice-breakdown/invoice-breakdown.component';
 import PaymentHistory from './payment-history/payment-history.component';
 import PaymentForm from './payment-form/payment-form.component';
@@ -32,6 +32,7 @@ export type PaymentFormValue = {
 const Payments: React.FC<PaymentProps> = ({ bill, mutate, selectedLineItems }) => {
   const { t } = useTranslation();
   const { billableServices, isLoading, isValidating, error } = useBillableServices();
+  const { stockItems, isLoadingItem } = useStockItems();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
@@ -73,6 +74,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate, selectedLineItems }) =
         amountDue,
         billableServices,
         selectedLineItems,
+        stockItems,
       );
       paymentPayload.payments.forEach((payment) => {
         payment.dateCreated = new Date(payment.dateCreated);

@@ -16,6 +16,7 @@ export const createPaymentPayload = (
   amountDue: number,
   billableServices: Array<any>,
   selectedLineItems: Array<LineItem>,
+  stockItems: Array<any>,
 ) => {
   const { cashier } = bill;
   const totalAmount = bill?.totalAmount;
@@ -42,7 +43,7 @@ export const createPaymentPayload = (
   const updatedLineItems = bill?.lineItems.map((lineItem) => ({
     ...lineItem,
     billableService: getBillableServiceUuid(billableServices, lineItem.billableService),
-    item: processBillItem?.(lineItem),
+    item: getStockItemUuid(stockItems, lineItem?.item),
     paymentStatus:
       bill?.lineItems.length > 1
         ? hasLineItem(selectedLineItems ?? [], lineItem) && totalAmountRendered >= lineItem.price * lineItem.quantity
@@ -67,6 +68,8 @@ export const createPaymentPayload = (
 };
 
 export const getBillableServiceUuid = (billableServices: Array<any>, serviceName: string) => {
-  return billableServices.length ? billableServices.find((service) => service.name === serviceName).uuid : null;
+  return billableServices.length ? billableServices.find((service) => service.name === serviceName)?.uuid : null;
 };
-const processBillItem = (item) => (item.item || item.billableService)?.split(':')[0];
+const getStockItemUuid = (stockItems: Array<any>, itemName: string) => {
+  return stockItems.length ? stockItems.find((item) => item?.conceptName === itemName)?.uuid : null;
+};
