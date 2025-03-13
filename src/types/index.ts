@@ -174,6 +174,7 @@ export type BillabeItem = {
   name?: string;
   commonName?: string;
   servicePrices?: ServicePrice[];
+  purchasePrice?: number;
 };
 
 export type ServicePrice = {

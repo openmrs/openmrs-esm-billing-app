@@ -155,8 +155,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           uuid: item.uuid || '',
           Item: item.commonName ? item.commonName : item.name,
           Qnty: 1,
-          Price: item.commonName ? 10 : item.servicePrices[0]?.price,
-          Total: item.commonName ? 10 : item.servicePrices[0]?.price,
+          Price: item.commonName ? item?.purchasePrice : item.servicePrices[0]?.price,
+          Total: item.commonName ? item?.purchasePrice : item.servicePrices[0]?.price,
           category: item.commonName ? 'StockItem' : 'Service',
         };
       })
