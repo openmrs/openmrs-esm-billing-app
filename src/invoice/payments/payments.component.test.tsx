@@ -5,6 +5,7 @@ import { useVisit, useConfig, navigate } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
 import Payments from './payments.component';
 import { type MappedBill, type LineItem } from '../../types';
+import { useStockItems } from '../../billing.resource';
 
 // Add this mock for currency formatting
 const mockFormatToParts = jest.fn().mockReturnValue([{ type: 'integer', value: '1000' }]);
@@ -32,6 +33,10 @@ jest.mock('../../billing.resource', () => ({
 
 jest.mock('../../billable-services/billable-service.resource', () => ({
   useBillableServices: jest.fn(),
+}));
+
+jest.mock('../../billing.resource', () => ({
+  useStockItems: jest.fn(),
 }));
 
 describe('Payments', () => {
@@ -102,6 +107,7 @@ describe('Payments', () => {
     (useVisit as jest.Mock).mockReturnValue({ currentVisit: null });
     (useConfig as jest.Mock).mockReturnValue({ defaultCurrency: 'USD' });
     (useBillableServices as jest.Mock).mockReturnValue({ billableServices: [], isLoading: false });
+    (useStockItems as jest.Mock).mockReturnValue({ stockItems: [], isLoadingItem: false });
   });
 
   it('renders payment form and history', () => {
