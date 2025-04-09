@@ -14,19 +14,17 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Copy test environment variables
         run: cp example.env .env
 
       - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18.x"
+        uses: actions/setup-node@v4
 
       - name: Cache dependencies
         id: cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
@@ -55,7 +53,7 @@ jobs:
         run: docker stop $(docker ps -a -q)
 
       - name: Upload report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
