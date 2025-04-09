@@ -86,6 +86,13 @@
       "offline": true
     }
   ],
+  "featureFlags": [
+    {
+      "description": "This feature introduces navigation links on the patient chart and home page to allow accessing the billing module features",
+      "flagName": "billing",
+      "label": "Billing module"
+    }
+  ],
   "modals": [
     {
       "name": "require-billing-modal",
