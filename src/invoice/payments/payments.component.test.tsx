@@ -1,10 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import { useVisit, useConfig, navigate } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
-import Payments from './payments.component';
 import { type MappedBill, type LineItem } from '../../types';
+import Payments from './payments.component';
 
 // Add this mock for currency formatting
 const mockFormatToParts = jest.fn().mockReturnValue([{ type: 'integer', value: '1000' }]);
@@ -14,17 +14,6 @@ global.Intl.NumberFormat = jest.fn().mockImplementation(() => ({
   format: mockFormat,
 })) as any;
 global.Intl.NumberFormat.supportedLocalesOf = jest.fn().mockReturnValue(['en-US']);
-
-jest.mock('@openmrs/esm-framework', () => ({
-  useVisit: jest.fn(),
-  useConfig: jest.fn(),
-  showSnackbar: jest.fn(),
-  navigate: jest.fn(),
-  createGlobalStore: jest.fn(),
-  createUseStore: jest.fn(),
-  useLayoutType: jest.fn().mockReturnValue('desktop'),
-  formatDate: jest.fn().mockReturnValue('2023-09-01'),
-}));
 
 jest.mock('../../billing.resource', () => ({
   processBillPayment: jest.fn(),
