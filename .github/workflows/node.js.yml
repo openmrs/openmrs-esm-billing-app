@@ -87,7 +87,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
 
-  deploy_form_builder:
+  deploy_billing_app:
     runs-on: ubuntu-latest
 
     needs: pre_release
