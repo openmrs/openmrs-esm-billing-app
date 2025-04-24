@@ -13,7 +13,7 @@
     "build": "webpack --mode production",
     "coverage": "yarn test --coverage",
     "debug": "npm run serve",
-    "extract-translations": "i18next 'src/**/*.component.tsx' 'src/index.ts' --config ./i18next-parser.config.js",
+    "extract-translations": "i18next 'src/**/*.component.tsx' 'src/index.ts' --config ./tools/i18next-parser.config.js",
     "lint": "eslint src --ext ts,tsx --max-warnings=0",
     "postinstall": "husky install",
     "prettier": "prettier --config prettier.config.js --write \"src/**/*.{ts,tsx,css,scss}\" \"e2e/**/*.ts\"",

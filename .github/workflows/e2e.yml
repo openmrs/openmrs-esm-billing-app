@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup node
         uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Cache dependencies
         id: cache
@@ -49,7 +51,7 @@ jobs:
         run: yarn test-e2e
 
       - name: Stop dev server
-        if: "!cancelled()"
+        if: '!cancelled()'
         run: docker stop $(docker ps -a -q)
 
       - name: Upload report
