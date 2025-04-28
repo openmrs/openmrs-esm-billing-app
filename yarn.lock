@@ -1476,7 +1476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/react@npm:^1.48.1, @carbon/react@npm:^1.76.0":
+"@carbon/react@npm:^1.76.0":
   version: 1.80.0
   resolution: "@carbon/react@npm:1.80.0"
   dependencies:
@@ -3094,7 +3094,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openmrs/esm-billing-app@workspace:."
   dependencies:
-    "@carbon/react": "npm:^1.48.1"
+    "@carbon/react": "npm:^1.76.0"
     "@hookform/resolvers": "npm:^3.3.4"
     "@openmrs/esm-framework": "npm:next"
     "@openmrs/esm-patient-common-lib": "npm:next"

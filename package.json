@@ -41,7 +41,7 @@
     "url": "https://github.com/openmrs/openmrs-esm-billing-app/issues"
   },
   "dependencies": {
-    "@carbon/react": "^1.48.1",
+    "@carbon/react": "^1.76.0",
     "@hookform/resolvers": "^3.3.4",
     "classnames": "^2.5.1",
     "fuzzy": "^0.1.3",
