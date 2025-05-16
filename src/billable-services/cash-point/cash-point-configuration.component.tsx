@@ -244,7 +244,7 @@ const CashPointConfiguration: React.FC = () => {
               <TextInput
                 id="cash-point-uuid"
                 labelText={t('cashPointUuid', 'Cash Point UUID')}
-                placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
+                placeholder={t('cashPointUuidPlaceholderText', 'e.g., 1ce1b7d4-c865-4178-82b0-5932e51503d6')}
                 invalid={!!errors.uuid}
                 invalidText={errors.uuid?.message}
                 {...field}
