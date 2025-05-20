@@ -21,3 +21,9 @@
   width: 100%;
   table-layout: auto;
 }
+
+:global {
+  .cds--modal-close {
+    background: none !important;
+  }
+}
