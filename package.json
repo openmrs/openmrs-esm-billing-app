@@ -1,6 +1,6 @@
 {
   "name": "@openmrs/esm-billing-app",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "O3 frontend module for handling billing concerns in healthcare settings",
   "browser": "dist/openmrs-esm-billing-app.js",
   "main": "src/index.ts",
