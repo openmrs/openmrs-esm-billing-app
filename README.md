@@ -1,15 +1,24 @@
 # OpenMRS 3.x Billing ESM
 
+![OpenMRS CI](https://github.com/openmrs/openmrs-esm-billing-app/actions/workflows/ci.yml/badge.svg)
+
 The OpenMRS Billing Module is designed to streamline the financial operations within healthcare settings by facilitating the management of patient billing, payments, and service pricing. This module integrates seamlessly with the OpenMRS platform, allowing healthcare providers to generate bills, track payments, and manage various billable services. It is an essential tool for ensuring transparency and accuracy in financial transactions within healthcare facilities, contributing to efficient service delivery.
+
+The **Billing ESM** is a microfrontend for OpenMRS 3.x designed to manage healthcare billing workflows. It allows users to:
+
+- Generate and manage bills
+- Capture payments and insurance details
+- Configure billable services and categories
+- Integrate with visits and patient dashboards
 
 Dependency: Note that this frontend module depends on the backend module called "Billing Module": https://github.com/openmrs/openmrs-module-billing
 
 For more information, please see the
-[OpenMRS Frontend Developer Documentation](https://o3-docs.openmrs.org/#/).
+[OpenMRS Frontend Developer Documentation](https://openmrs.atlassian.net/wiki/x/IABBHg).
 
 ## Local development
 
-Check out the developer documentation [here](http://o3-dev.docs.openmrs.org).
+Check out the developer documentation [here](https://openmrs.atlassian.net/wiki/x/IABBHg).
 
 This monorepo uses [yarn](https://yarnpkg.com).
 
@@ -75,11 +84,41 @@ To run end-to-end tests, run:
 yarn test-e2e
 ```
 
-Read the [e2e testing guide](https://o3-docs.openmrs.org/docs/frontend-modules/end-to-end-testing) to learn more about End-to-End tests in this project.
+Read the [e2e testing guide](https://openmrs.atlassian.net/wiki/x/Z8CEAQ) to learn more about End-to-End tests in this project.
 
 ### Updating Playwright
 
 The Playwright version in the [Bamboo e2e Dockerfile](e2e/support/bamboo/playwright.Dockerfile#L2) and the `package.json` file must match. If you update the Playwright version in one place, you must update it in the other.
+
+## ⚙️ Configuration
+
+You can customize billing behavior using OpenMRS frontend config overrides.
+### 🔧 Example Config
+
+``` bash
+{
+  "openmrs": {
+    "config": {
+      "billing": {
+        "defaultCurrency": "UGX",
+        "pageSize": 20,
+        "showEditBillButton": true,
+        "patientCatergory": {
+          "paymentDetails": "fbc0702d-...",
+          "insuranceScheme": "aac48226-..."
+        },
+        "nonPayingPatientCategories": {
+          "childUnder5": "1528AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      }
+    }
+  }
+}
+```
+``` bash
+📌 Ensure all UUIDs used here exist in your OpenMRS instance.
+🧩 Configuration can be managed via your MF shell app or import-map-deployer
+```
 
 ## Troubleshooting
 
@@ -99,7 +138,6 @@ git checkout package.json
 ```bash
 yarn
 ```
-
 ## Design Patterns
 
 For documentation about our design patterns, please visit our [design system](https://zeroheight.com/23a080e38/p/880723--introduction) documentation website.
@@ -110,8 +148,10 @@ Please see the [Implementer Documentation](https://wiki.openmrs.org/pages/viewpa
 
 ## Deployment
 
-See [Creating a Distribution](http://o3-dev.docs.openmrs.org/#/main/distribution?id=creating-a-distribution) for information about adding microfrontends to a distribution.
+See [Creating a Distribution](https://openmrs.atlassian.net/wiki/x/IABBHg) for information about adding microfrontends to a distribution.
 
 ## Contributing
 
-For more information on how to get started, please refer to [OpenMRS Frontend Developer Documentation](https://o3-docs.openmrs.org/docs/introduction).
+For more information on how to get started, please refer to [OpenMRS Frontend Developer Documentation](https://openmrs.atlassian.net/wiki/x/94ABCQ).
+
+Detailed documentation on Billing Module can be found [here](https://openmrs.atlassian.net/wiki/x/0w2bAQ)
