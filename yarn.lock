@@ -3248,7 +3248,7 @@ __metadata:
     webpack-dev-server: "npm:^5.2.1"
     zod: "npm:^3.22.4"
   peerDependencies:
-    "@openmrs/esm-framework": 7.x
+    "@openmrs/esm-framework": 8.x
     "@openmrs/esm-patient-common-lib": 10.x
     react: 18.x
     react-dom: 18.x
