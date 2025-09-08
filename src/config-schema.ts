@@ -1,8 +1,27 @@
-import { Type } from '@openmrs/esm-framework';
+import { Type, validators } from '@openmrs/esm-framework';
 
 export interface BillingConfig {}
 
 export const configSchema = {
+  logo: {
+    src: {
+      _type: Type.String,
+      _default: '',
+      _description:
+        'The path or URL to the logo image. If set to an empty string, the default OpenMRS SVG sprite will be used.',
+      _validators: [validators.isUrl],
+    },
+    alt: {
+      _type: Type.String,
+      _default: 'Logo',
+      _description: 'The alternative text for the logo image, displayed when the image cannot be loaded or on hover.',
+    },
+  },
+  country: {
+    _type: Type.String,
+    _description: 'The text that gets printed on the top right of the invoice, typically the name of the country',
+    _default: 'Kenya',
+  },
   patientCatergory: {
     _type: Type.Object,
     _description: 'Patient Category Custom UUIDs',
@@ -15,7 +34,6 @@ export const configSchema = {
       formPayloadPending: '919b51c9-8e2e-468f-8354-181bf3e55786',
     },
   },
-
   catergoryConcepts: {
     _type: Type.Object,
     _description: 'Patient Category Concept UUIDs',
@@ -25,7 +43,6 @@ export const configSchema = {
       insuranceDetails: 'beac329b-f1dc-4a33-9e7c-d95821a137a6',
     },
   },
-
   nonPayingPatientCategories: {
     _type: Type.Object,
     _description: 'Concept UUIDs for non-paying patient categories',
@@ -34,7 +51,6 @@ export const configSchema = {
       student: '159465AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA',
     },
   },
-
   postBilledItems: {
     _type: Type.Object,
     _description: 'Post Bill Items such as cashPoints, cashier, priceUUid when submitting a bill',
@@ -44,7 +60,6 @@ export const configSchema = {
       priceUuid: '7b9171ac-d3c1-49b4-beff-c9902aee5245',
     },
   },
-
   serviceTypes: {
     _type: Type.Object,
     _description: 'Post Bill Items such as cashPoints, cashier, priceUUid when submitting a bill',
@@ -52,19 +67,16 @@ export const configSchema = {
       billableService: '21b8cf43-9f9f-4d02-9f4a-d710ece54261',
     },
   },
-
   defaultCurrency: {
     _type: Type.String,
     _description: 'The default currency for the application. Specify the currency code (e.g., KES, UGX, GBP).',
     _default: 'KES',
   },
-
   pageSize: {
     _type: Type.Number,
     _description: 'The default page size',
     _default: 10,
   },
-
   showEditBillButton: {
     _type: Type.Boolean,
     _description: 'Whether to show the edit bill button or not.',
@@ -73,13 +85,37 @@ export const configSchema = {
 };
 
 export interface ConfigObject {
-  patientCatergory: Object;
+  logo: {
+    src: string;
+    alt: string;
+  };
+  country: string;
+  patientCatergory: {
+    paymentDetails: string;
+    paymentMethods: string;
+    policyNumber: string;
+    insuranceScheme: string;
+    patientCategory: string;
+    formPayloadPending: string;
+  };
+  catergoryConcepts: {
+    payingDetails: string;
+    nonPayingDetails: string;
+    insuranceDetails: string;
+  };
+  nonPayingPatientCategories: {
+    childUnder5: string;
+    student: string;
+  };
+  postBilledItems: {
+    cashPoint: string;
+    cashier: string;
+    priceUuid: string;
+  };
+  serviceTypes: {
+    billableService: string;
+  };
   defaultCurrency: string;
-  catergoryConcepts: Object;
-  pageSize;
-  object;
+  pageSize: number;
   showEditBillButton: boolean;
-  postBilledItems: Object;
-  serviceTypes: Object;
-  nonPayingPatientCategories: Object;
 }

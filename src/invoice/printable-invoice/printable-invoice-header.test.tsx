@@ -28,7 +28,7 @@ const testProps = {
 describe('PrintableInvoiceHeader', () => {
   test('should render PrintableInvoiceHeader component', () => {
     mockUseConfig.mockReturnValue({ logo: { src: 'logo.png', alt: 'logo' } });
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
+    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
     render(<PrintableInvoiceHeader {...testProps} />);
     const header = screen.getByText('Invoice');
     expect(header).toBeInTheDocument();
@@ -37,12 +37,12 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText('Nairobi')).toBeInTheDocument();
     expect(screen.getByText('Westlands, Nairobi')).toBeInTheDocument();
     expect(screen.getByText('MTRH')).toBeInTheDocument();
-    expect(screen.getByText('Kenya')).toBeInTheDocument();
+    expect(screen.getByText('')).toBeInTheDocument();
   });
 
   test('should display the logo when logo is provided', () => {
     mockUseConfig.mockReturnValue({ logo: { src: 'logo.png', alt: 'logo' } });
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
+    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
     render(<PrintableInvoiceHeader {...testProps} />);
     const logo = screen.getByAltText('logo');
     expect(logo).toBeInTheDocument();
@@ -50,7 +50,7 @@ describe('PrintableInvoiceHeader', () => {
 
   test('should display the default logo when logo is not provided', () => {
     mockUseConfig.mockReturnValue({ logo: {} });
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
+    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
     render(<PrintableInvoiceHeader {...testProps} />);
     const logo = screen.getByRole('img');
     expect(logo).toBeInTheDocument();

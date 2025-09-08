@@ -3236,7 +3236,7 @@ __metadata:
     react-hook-form: "npm:^7.49.3"
     react-i18next: "npm:^14.0.1"
     react-router-dom: "npm:^6.21.3"
-    react-to-print: "npm:^2.14.15"
+    react-to-print: "npm:^3.1.1"
     rxjs: "npm:^6.6.7"
     sass: "npm:^1.70.0"
     swc-loader: "npm:^0.2.3"
@@ -16827,13 +16827,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-to-print@npm:^2.14.15":
-  version: 2.14.15
-  resolution: "react-to-print@npm:2.14.15"
+"react-to-print@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "react-to-print@npm:3.1.1"
   peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
-  checksum: 10/a6f79082a177491555eb6725f5d4622df1a632e9196b95c4d6e574a317d39eec80f811eafd97526b6af8f65aeb2febc15245c91c563b5f6fc1692ce4ef9d066c
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ~19
+  checksum: 10/23e5fb6f605e9650b259ea510860b0f8338b20e350023b0f16dccf4ba5b4174d3553797e1429ca6ab60c117b1443302c16aa22fad43d16ad15abe87504e24f0b
   languageName: node
   linkType: hard
 
