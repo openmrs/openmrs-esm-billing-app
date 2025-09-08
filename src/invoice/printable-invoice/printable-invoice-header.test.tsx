@@ -1,19 +1,16 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
-import { useConfig } from '@openmrs/esm-framework';
+import { type ConfigObject, useConfig } from '@openmrs/esm-framework';
 import { useDefaultFacility } from '../../billing.resource';
 import PrintableInvoiceHeader from './printable-invoice-header.component';
 
 const mockUseDefaultFacility = useDefaultFacility as jest.MockedFunction<typeof useDefaultFacility>;
-const mockUseConfig = useConfig as jest.MockedFunction<typeof useConfig>;
+const mockUseConfig = jest.mocked(useConfig<ConfigObject>);
 
 jest.mock('../../billing.resource', () => ({
   useDefaultFacility: jest.fn(),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  useConfig: jest.fn(),
-}));
 const testProps = {
   patientDetails: {
     name: 'John Doe',
@@ -27,7 +24,7 @@ const testProps = {
 
 describe('PrintableInvoiceHeader', () => {
   test('should render PrintableInvoiceHeader component', () => {
-    mockUseConfig.mockReturnValue({ logo: { src: 'logo.png', alt: 'logo' } });
+    mockUseConfig.mockReturnValue({ logo: { src: 'logo.png', alt: 'logo' }, country: 'Kenya' });
     mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
     render(<PrintableInvoiceHeader {...testProps} />);
     const header = screen.getByText('Invoice');
@@ -37,7 +34,7 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText('Nairobi')).toBeInTheDocument();
     expect(screen.getByText('Westlands, Nairobi')).toBeInTheDocument();
     expect(screen.getByText('MTRH')).toBeInTheDocument();
-    expect(screen.getByText('')).toBeInTheDocument();
+    expect(screen.getByText('Kenya')).toBeInTheDocument();
   });
 
   test('should display the logo when logo is provided', () => {

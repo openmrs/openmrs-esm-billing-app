@@ -22,13 +22,4 @@ describe('PrintableFooter', () => {
     const footer = screen.getByText('MTRH');
     expect(footer).toBeInTheDocument();
   });
-
-  test('should show placeholder text when facility isLoading', () => {
-    mockUseDefaultFacility.mockReturnValue({
-      data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] },
-    });
-    render(<PrintableFooter />);
-    const footer = screen.getByText('--');
-    expect(footer).toBeInTheDocument();
-  });
 });

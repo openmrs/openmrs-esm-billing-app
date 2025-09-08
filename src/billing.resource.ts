@@ -3,7 +3,15 @@ import dayjs from 'dayjs';
 import isEmpty from 'lodash-es/isEmpty';
 import sortBy from 'lodash-es/sortBy';
 import useSWR from 'swr';
-import { formatDate, parseDate, openmrsFetch, useSession, useVisit, restBaseUrl } from '@openmrs/esm-framework';
+import {
+  formatDate,
+  parseDate,
+  openmrsFetch,
+  useSession,
+  useVisit,
+  restBaseUrl,
+  type SessionLocation,
+} from '@openmrs/esm-framework';
 import { apiBasePath, omrsDateFormat } from './constants';
 import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
 import SelectedDateContext from './hooks/selectedDateContext';
@@ -108,7 +116,7 @@ export const processBillPayment = (payload, billUuid: string) => {
   });
 };
 
-export function useDefaultFacility() {
+export function useDefaultFacility(): { data: SessionLocation | null } {
   const { sessionLocation } = useSession();
   return { data: sessionLocation };
 }

@@ -172,7 +172,7 @@ const CashPointConfiguration: React.FC = () => {
       <div className={styles.card}>
         <CardHeader title={t('cashPointHistory', 'Cash Point History')}>
           <Button renderIcon={Add} onClick={() => setIsModalOpen(true)} kind="ghost">
-            {t('addCashPoint', 'Add New Cash Point')}
+            {t('addNewCashPoint', 'Add New Cash Point')}
           </Button>
         </CardHeader>
         <div className={styles.billHistoryContainer}>
@@ -257,7 +257,7 @@ const CashPointConfiguration: React.FC = () => {
             render={({ field }) => (
               <Dropdown
                 id="cash-point-location"
-                label={t('location', 'Select Location')}
+                label={t('selectLocation', 'Select Location')}
                 titleText={t('cashPointLocation', 'Cash Point Location')}
                 items={locations}
                 selectedItem={locations.find((loc) => loc.id === field.value)}

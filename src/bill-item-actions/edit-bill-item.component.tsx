@@ -105,15 +105,19 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
       (res) => {
         mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
         showSnackbar({
-          title: t('billItems', 'Save Bill'),
-          subtitle: 'Bill processing has been successful',
+          title: t('saveBill', 'Save Bill'),
+          subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
           kind: 'success',
           timeoutInMs: 3000,
         });
         closeModal();
       },
       (error) => {
-        showSnackbar({ title: 'Bill processing error', kind: 'error', subtitle: error?.message });
+        showSnackbar({
+          title: t('billProcessingError', 'Bill processing error'),
+          kind: 'error',
+          subtitle: error?.message,
+        });
       },
     );
   };

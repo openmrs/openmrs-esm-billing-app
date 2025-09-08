@@ -56,7 +56,7 @@ const BillableServices = () => {
       key: 'serviceType',
     },
     {
-      header: t('status', 'Service Status'),
+      header: t('serviceStatus', 'Service Status'),
       key: 'status',
     },
     {

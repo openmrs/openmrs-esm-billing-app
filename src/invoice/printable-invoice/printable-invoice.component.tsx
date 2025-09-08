@@ -29,10 +29,10 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const headerData = [
-    { header: 'Inventory item', key: 'billItem' },
-    { header: 'Quantity', key: 'quantity' },
-    { header: 'Unit price', key: 'price' },
-    { header: 'Total', key: 'total' },
+    { header: t('inventoryItem', 'Inventory item'), key: 'billItem' },
+    { header: t('quantity', 'Quantity'), key: 'quantity' },
+    { header: t('unitPrice', 'Unit price'), key: 'price' },
+    { header: t('total', 'Total'), key: 'total' },
   ];
 
   const rowData =
@@ -47,10 +47,10 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
     }) ?? [];
 
   const invoiceTotal = {
-    'Total Amount': bill?.totalAmount,
-    'Amount Tendered': bill?.tenderedAmount,
-    'Discount Amount': 0,
-    'Amount due': bill?.totalAmount - bill?.tenderedAmount,
+    [t('totalAmount', 'Total Amount')]: bill?.totalAmount,
+    [t('amountTendered', 'Amount Tendered')]: bill?.tenderedAmount,
+    [t('discountAmount', 'Discount Amount')]: 0,
+    [t('amountDue', 'Amount due')]: bill?.totalAmount - bill?.tenderedAmount,
   };
 
   const patientDetails = useMemo(() => {
@@ -65,9 +65,9 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
   }, [patient, t]);
 
   const invoiceDetails = {
-    'Invoice #': bill?.receiptNumber,
-    'Invoice date': bill.dateCreated,
-    Status: bill?.status,
+    [t('invoiceNumber', 'Invoice #')]: bill?.receiptNumber,
+    [t('invoiceDate', 'Invoice date')]: bill.dateCreated,
+    [t('status', 'Status')]: bill?.status,
   };
 
   if (isLoading) {
