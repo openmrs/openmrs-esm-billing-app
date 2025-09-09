@@ -154,7 +154,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; 
           kind: 'success',
           timeoutInMs: 3000,
         });
-        if (editingService && onServiceUpdated) {
+        if (onServiceUpdated) {
           onServiceUpdated();
         }
         onClose();
