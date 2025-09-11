@@ -11,14 +11,14 @@ The **Billing ESM** is a microfrontend for OpenMRS 3.x designed to manage health
 - Configure billable services and categories
 - Integrate with visits and patient dashboards
 
-Dependency: Note that this frontend module depends on the backend module called "Billing Module": https://github.com/openmrs/openmrs-module-billing
+Dependency: Note that this frontend module depends on the backend module called "Billing Module": <https://github.com/openmrs/openmrs-module-billing>
 
 For more information, please see the
 [OpenMRS Frontend Developer Documentation](https://openmrs.atlassian.net/wiki/x/IABBHg).
 
 ## Local development
 
-Check out the developer documentation [here](https://openmrs.atlassian.net/wiki/x/IABBHg).
+Check out the developer documentation [in the OpenMRS Wiki](https://openmrs.atlassian.net/wiki/x/IABBHg).
 
 This monorepo uses [yarn](https://yarnpkg.com).
 
@@ -36,8 +36,8 @@ yarn start
 
 Once the dev server launches, log in and select a location. You will get redirected to the home page. Once there:
 
-* Go to the Implementers tools, under the feature flags, toggle on the Billing Module feature flag to access billing functionalities.
-* For more information on how to navigate and use the billing module, please refer to this [documentation](https://www.notion.so/ucsf-ighs/Billing-User-Manual-7f0427617e714b7db14432312cbb7cad) 
+- Go to the Implementers tools, under the feature flags, toggle on the Billing Module feature flag to access billing functionalities.
+- For more information on how to navigate and use the billing module, please refer to this [documentation](https://www.notion.so/ucsf-ighs/Billing-User-Manual-7f0427617e714b7db14432312cbb7cad)
 
 ## Running tests
 
@@ -52,6 +52,7 @@ To run tests in `watch` mode, run:
 ```bash
 yarn turbo run test:watch
 ```
+
 To run a specific test file, run:
 
 ```bash
@@ -93,6 +94,7 @@ The Playwright version in the [Bamboo e2e Dockerfile](e2e/support/bamboo/playwri
 ## ⚙️ Configuration
 
 You can customize billing behavior using OpenMRS frontend config overrides.
+
 ### 🔧 Example Config
 
 ``` bash
@@ -115,6 +117,7 @@ You can customize billing behavior using OpenMRS frontend config overrides.
   }
 }
 ```
+
 ``` bash
 📌 Ensure all UUIDs used here exist in your OpenMRS instance.
 🧩 Configuration can be managed via your MF shell app or import-map-deployer
@@ -129,15 +132,18 @@ If you notice that your local version of the application is not working or that 
 yarn up openmrs@next @openmrs/esm-framework@next
 ```
 
-### Reset version specifiers to `next`. Don't commit actual version numbers.
+### Reset version specifiers to `next`. Don't commit actual version numbers
+
 ```bash
 git checkout package.json
 ```
 
 ### Run `yarn` to recreate the lockfile
+
 ```bash
 yarn
 ```
+
 ## Design Patterns
 
 For documentation about our design patterns, please visit our [design system](https://zeroheight.com/23a080e38/p/880723--introduction) documentation website.
@@ -154,4 +160,4 @@ See [Creating a Distribution](https://openmrs.atlassian.net/wiki/x/IABBHg) for i
 
 For more information on how to get started, please refer to [OpenMRS Frontend Developer Documentation](https://openmrs.atlassian.net/wiki/x/94ABCQ).
 
-Detailed documentation on Billing Module can be found [here](https://openmrs.atlassian.net/wiki/x/0w2bAQ)
+Detailed documentation on Billing Module can be found [in the OpenMRS Wiki](https://openmrs.atlassian.net/wiki/x/0w2bAQ)

@@ -26,14 +26,14 @@ import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { type BillableService } from '../types/index';
 import { useBillableServices } from './billable-service.resource';
 import AddBillableService from './create-edit/add-billable-service.component';
-import type { ConfigObject } from '../config-schema';
+import type { BillingConfig } from '../config-schema';
 import styles from './billable-services.scss';
 
 const BillableServices = () => {
   const { t } = useTranslation();
   const { billableServices, isLoading, isValidating, error, mutate } = useBillableServices();
   const layout = useLayoutType();
-  const { pageSize: configuredPageSize } = useConfig<ConfigObject>();
+  const { pageSize: configuredPageSize } = useConfig<BillingConfig>();
   const [searchString, setSearchString] = useState('');
   const responsiveSize = isDesktop(layout) ? 'lg' : 'sm';
   const pageSizes = [10, 20, 30, 40, 50];

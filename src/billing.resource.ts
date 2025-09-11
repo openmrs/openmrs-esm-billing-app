@@ -13,7 +13,7 @@ import {
   type SessionLocation,
 } from '@openmrs/esm-framework';
 import { apiBasePath, omrsDateFormat } from './constants';
-import type { FacilityDetail, MappedBill, PatientInvoice } from './types';
+import type { MappedBill, PatientInvoice } from './types';
 import SelectedDateContext from './hooks/selectedDateContext';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {

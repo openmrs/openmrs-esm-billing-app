@@ -149,7 +149,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   };
 
   return (
-    <div className={styles.invoiceContainer}>
+    <>
       <DataTable headers={tableHeaders} isSortable rows={tableRows} size={responsiveSize} useZebraStyles>
         {({ rows, headers, getRowProps, getSelectionProps, getTableProps, getToolbarProps }) => (
           <TableContainer
@@ -221,7 +221,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           </Layer>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

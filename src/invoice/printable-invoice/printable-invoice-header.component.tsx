@@ -3,7 +3,7 @@ import { type PatientDetails } from '../../types';
 import { useConfig } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import { useDefaultFacility } from '../../billing.resource';
-import type { ConfigObject } from '../../config-schema';
+import type { BillingConfig } from '../../config-schema';
 import styles from './printable-invoice-header.scss';
 
 interface PrintableInvoiceHeaderProps {
@@ -12,7 +12,7 @@ interface PrintableInvoiceHeaderProps {
 
 const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patientDetails }) => {
   const { t } = useTranslation();
-  const { logo, country } = useConfig<ConfigObject>();
+  const { logo, country } = useConfig<BillingConfig>();
   const { data } = useDefaultFacility();
 
   return (

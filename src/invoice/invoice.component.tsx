@@ -13,7 +13,7 @@ import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
-import type { ConfigObject } from '../config-schema';
+import type { BillingConfig } from '../config-schema';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -30,7 +30,7 @@ const Invoice: React.FC = () => {
   const [selectedLineItems, setSelectedLineItems] = useState<LineItem[]>([]);
   const componentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
-  const { defaultCurrency } = useConfig<ConfigObject>();
+  const { defaultCurrency } = useConfig<BillingConfig>();
   const handleSelectItem = (lineItems: LineItem[]) => {
     setSelectedLineItems(lineItems);
   };

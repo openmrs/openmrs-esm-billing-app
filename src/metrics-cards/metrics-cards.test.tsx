@@ -3,10 +3,11 @@ import { render, screen } from '@testing-library/react';
 import { useConfig } from '@openmrs/esm-framework';
 import { billsSummary } from '../../__mocks__/bills.mock';
 import { useBills } from '../billing.resource';
+import { type MappedBill } from '../types';
 import MetricsCards from './metrics-cards.component';
 
-const mockUseBills = useBills as jest.Mock;
-const mockUseConfig = useConfig as jest.Mock;
+const mockUseBills = jest.mocked(useBills);
+const mockUseConfig = jest.mocked(useConfig);
 
 jest.mock('../billing.resource', () => ({
   useBills: jest.fn(),
@@ -14,13 +15,19 @@ jest.mock('../billing.resource', () => ({
 
 describe('MetricsCards', () => {
   test('renders loading state', () => {
-    mockUseBills.mockReturnValue({ isLoading: true, bills: [], error: null });
+    mockUseBills.mockReturnValue({ isLoading: true, bills: [], error: null, isValidating: false, mutate: jest.fn() });
     renderMetricsCards();
     expect(screen.getByText(/Loading bill metrics.../i)).toBeInTheDocument();
   });
 
   test('renders error state', () => {
-    mockUseBills.mockReturnValue({ isLoading: false, bills: [], error: new Error('Internal server error') });
+    mockUseBills.mockReturnValue({
+      isLoading: false,
+      bills: [],
+      error: new Error('Internal server error'),
+      isValidating: false,
+      mutate: jest.fn(),
+    });
     renderMetricsCards();
     expect(
       screen.getByText(
@@ -30,7 +37,13 @@ describe('MetricsCards', () => {
   });
 
   test('renders metrics cards', () => {
-    mockUseBills.mockReturnValue({ isLoading: false, bills: billsSummary, error: null });
+    mockUseBills.mockReturnValue({
+      isLoading: false,
+      bills: billsSummary as unknown as MappedBill[],
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
     mockUseConfig.mockImplementation(() => ({ defaultCurrency: 'USD' }));
     renderMetricsCards();
     expect(screen.getByRole('heading', { name: /cumulative bills/i })).toBeInTheDocument();

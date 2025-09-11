@@ -3,7 +3,7 @@ import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, us
 import { type ServiceConcept } from '../types';
 import { apiBasePath } from '../constants';
 import { type BillableService } from '../types/index';
-import type { ConfigObject } from '../config-schema';
+import type { BillingConfig } from '../config-schema';
 
 type ResponseObject = {
   results: Array<OpenmrsResource>;
@@ -23,7 +23,7 @@ export const useBillableServices = () => {
 };
 
 export function useServiceTypes() {
-  const { serviceTypes } = useConfig<ConfigObject>();
+  const { serviceTypes } = useConfig<BillingConfig>();
   const serviceConceptUuid = serviceTypes.billableService;
   const url = `${restBaseUrl}/concept/${serviceConceptUuid}?v=custom:(setMembers:(uuid,display))`;
 
@@ -48,7 +48,7 @@ export const usePaymentModes = () => {
   };
 };
 
-export const createBillableSerice = (payload: any) => {
+export const createBillableService = (payload: any) => {
   const url = `${apiBasePath}api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',

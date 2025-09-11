@@ -1,7 +1,5 @@
 import { Type, validators } from '@openmrs/esm-framework';
 
-export interface BillingConfig {}
-
 export const configSchema = {
   logo: {
     src: {
@@ -84,7 +82,7 @@ export const configSchema = {
   },
 };
 
-export interface ConfigObject {
+export interface BillingConfig {
   logo: {
     src: string;
     alt: string;
