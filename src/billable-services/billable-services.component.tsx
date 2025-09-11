@@ -248,7 +248,7 @@ const BillableServices = () => {
           onSecondarySubmit={closeModal}
           size="lg"
           passiveModal={true}>
-          <AddBillableService editingService={editingService} onClose={closeModal} />
+          <AddBillableService editingService={editingService} onClose={closeModal} onServiceUpdated={mutate} />
         </Modal>
       )}
     </>
