@@ -1,19 +1,17 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
 import { useConfig } from '@openmrs/esm-framework';
+import { type BillingConfig } from '../../config-schema';
 import { useDefaultFacility } from '../../billing.resource';
 import PrintableInvoiceHeader from './printable-invoice-header.component';
 
-const mockUseDefaultFacility = useDefaultFacility as jest.MockedFunction<typeof useDefaultFacility>;
-const mockUseConfig = useConfig as jest.MockedFunction<typeof useConfig>;
+const mockUseDefaultFacility = jest.mocked(useDefaultFacility);
+const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 
 jest.mock('../../billing.resource', () => ({
   useDefaultFacility: jest.fn(),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  useConfig: jest.fn(),
-}));
 const testProps = {
   patientDetails: {
     name: 'John Doe',
@@ -26,9 +24,15 @@ const testProps = {
 };
 
 describe('PrintableInvoiceHeader', () => {
+  beforeEach(() => {
+    mockUseConfig.mockReturnValue({
+      logo: { src: 'logo.png', alt: 'logo' },
+      country: 'Kenya',
+    } as unknown as BillingConfig);
+    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
+  });
+
   test('should render PrintableInvoiceHeader component', () => {
-    mockUseConfig.mockReturnValue({ logo: { src: 'logo.png', alt: 'logo' } });
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
     render(<PrintableInvoiceHeader {...testProps} />);
     const header = screen.getByText('Invoice');
     expect(header).toBeInTheDocument();
@@ -41,16 +45,12 @@ describe('PrintableInvoiceHeader', () => {
   });
 
   test('should display the logo when logo is provided', () => {
-    mockUseConfig.mockReturnValue({ logo: { src: 'logo.png', alt: 'logo' } });
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
     render(<PrintableInvoiceHeader {...testProps} />);
     const logo = screen.getByAltText('logo');
     expect(logo).toBeInTheDocument();
   });
 
   test('should display the default logo when logo is not provided', () => {
-    mockUseConfig.mockReturnValue({ logo: {} });
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
     render(<PrintableInvoiceHeader {...testProps} />);
     const logo = screen.getByRole('img');
     expect(logo).toBeInTheDocument();

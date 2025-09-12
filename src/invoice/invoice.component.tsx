@@ -4,7 +4,7 @@ import { Printer } from '@carbon/react/icons';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
-import { ExtensionSlot, useConfig, usePatient } from '@openmrs/esm-framework';
+import { ExtensionSlot, showSnackbar, useConfig, usePatient } from '@openmrs/esm-framework';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { convertToCurrency } from '../helpers';
 import { type LineItem } from '../types';
@@ -13,6 +13,7 @@ import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
+import type { BillingConfig } from '../config-schema';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -29,7 +30,7 @@ const Invoice: React.FC = () => {
   const [selectedLineItems, setSelectedLineItems] = useState<LineItem[]>([]);
   const componentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
-  const { defaultCurrency } = useConfig();
+  const { defaultCurrency } = useConfig<BillingConfig>();
   const handleSelectItem = (lineItems: LineItem[]) => {
     setSelectedLineItems(lineItems);
   };
@@ -51,11 +52,12 @@ const Invoice: React.FC = () => {
   }, [bill, patient]);
 
   const handlePrint = useReactToPrint({
-    content: reactToPrintContent,
     documentTitle: `Invoice ${bill?.receiptNumber} - ${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
-    onBeforeGetContent: handleOnBeforeGetContent,
+    onBeforePrint: handleOnBeforeGetContent,
     onAfterPrint: handleAfterPrint,
-    removeAfterPrint: true,
+    preserveAfterPrint: false,
+    onPrintError: (_, error) =>
+      showSnackbar({ title: t('printError', 'Error printing invoice'), kind: 'error', subtitle: error.message }),
   });
 
   useEffect(() => {
@@ -110,7 +112,7 @@ const Invoice: React.FC = () => {
         <div>
           <Button
             disabled={isPrinting}
-            onClick={handlePrint}
+            onClick={() => handlePrint(reactToPrintContent)}
             renderIcon={(props) => <Printer size={24} {...props} />}
             iconDescription="Print bill"
             size="md">

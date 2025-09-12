@@ -78,16 +78,19 @@
   color: colors.$cool-gray-90;
 }
 
-@media screen {
-  .printContainer {
-    background-color: colors.$white;
-    display: none;
+.printContainer {
+  background-color: colors.$white;
+  display: none;
+
+  @media print {
+    display: block !important;
   }
 }
 
 @media print {
   html,
   body {
+    display: block !important;
     background-color: colors.$white !important;
   }
 }

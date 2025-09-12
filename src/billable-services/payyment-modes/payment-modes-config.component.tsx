@@ -172,7 +172,7 @@ const PaymentModesConfig: React.FC = () => {
       <div className={styles.card}>
         <CardHeader title={t('paymentModeHistory', 'Payment Mode History')}>
           <Button renderIcon={Add} onClick={() => setIsModalOpen(true)} kind="ghost">
-            {t('addPaymentMode', 'Add New Payment Mode')}
+            {t('addNewPaymentMode', 'Add New Payment Mode')}
           </Button>
         </CardHeader>
         <div className={styles.historyContainer}>

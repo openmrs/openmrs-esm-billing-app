@@ -3,6 +3,7 @@ import { type PatientDetails } from '../../types';
 import { useConfig } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import { useDefaultFacility } from '../../billing.resource';
+import type { BillingConfig } from '../../config-schema';
 import styles from './printable-invoice-header.scss';
 
 interface PrintableInvoiceHeaderProps {
@@ -11,7 +12,7 @@ interface PrintableInvoiceHeaderProps {
 
 const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patientDetails }) => {
   const { t } = useTranslation();
-  const { logo } = useConfig();
+  const { logo, country } = useConfig<BillingConfig>();
   const { data } = useDefaultFacility();
 
   return (
@@ -20,8 +21,8 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
         <p className={styles.heading}>{t('invoice', 'Invoice')}</p>
         {logo?.src ? (
           <img className={styles.img} src={logo.src} alt={logo.alt} />
-        ) : logo?.name ? (
-          logo.name
+        ) : logo?.alt ? (
+          logo.alt
         ) : (
           // OpenMRS Logo
           <svg
@@ -53,7 +54,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
 
         <div className={styles.facilityDetails}>
           <p className={styles.facilityName}>{data?.display}</p>
-          <p className={styles.itemLabel}>Kenya</p>
+          <p className={styles.itemLabel}>{country}</p>
         </div>
       </div>
     </div>

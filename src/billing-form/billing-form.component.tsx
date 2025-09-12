@@ -70,7 +70,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       isValid = false;
       const parsedErrorMessage = JSON.parse(error.message);
       showToast({
-        title: t('billItems', 'Save Bill'),
+        title: t('saveBill', 'Save Bill'),
         kind: 'error',
         description: parsedErrorMessage[0].message,
       });
@@ -214,15 +214,19 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         closeWorkspace();
         mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
         showSnackbar({
-          title: t('billItems', 'Save Bill'),
-          subtitle: 'Bill processing has been successful',
+          title: t('saveBill', 'Save Bill'),
+          subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
           kind: 'success',
           timeoutInMs: 3000,
         });
       },
       (error) => {
         setIsSubmitting(false);
-        showSnackbar({ title: 'Bill processing error', kind: 'error', subtitle: error?.message });
+        showSnackbar({
+          title: t('billProcessingError', 'Bill processing error'),
+          kind: 'error',
+          subtitle: error?.message,
+        });
       },
     );
   };

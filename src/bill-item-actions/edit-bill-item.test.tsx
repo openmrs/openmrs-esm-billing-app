@@ -1,17 +1,16 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { showSnackbar } from '@openmrs/esm-framework';
+import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
+import { type FetchResponse, showSnackbar } from '@openmrs/esm-framework';
 import { type MappedBill } from '../types';
 import { updateBillItems } from '../billing.resource';
 import ChangeStatus from './edit-bill-item.component';
 
-// Mock external dependencies
+const mockUpdateBillItems = jest.mocked(updateBillItems);
+const mockShowSnackbar = jest.mocked(showSnackbar);
+
 jest.mock('../billing.resource', () => ({
   updateBillItems: jest.fn(() => Promise.resolve({})),
-}));
-
-jest.mock('@openmrs/esm-framework', () => ({
-  showSnackbar: jest.fn(),
 }));
 
 jest.mock('../billable-services/billable-service.resource', () => ({
@@ -77,10 +76,6 @@ const mockItem = {
 describe('ChangeStatus component', () => {
   const closeModalMock = jest.fn();
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   test('renders the form with correct fields and default values', () => {
     render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
@@ -91,24 +86,26 @@ describe('ChangeStatus component', () => {
     expect(screen.getByText(/Total/)).toHaveTextContent('200');
   });
 
-  test('updates total when quantity is changed', () => {
+  test('updates total when quantity is changed', async () => {
+    const user = userEvent.setup();
     render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
-    fireEvent.change(quantityInput, { target: { value: 3 } });
+    await user.type(quantityInput, '3');
 
     expect(screen.getByText(/Total/)).toHaveTextContent('300');
   });
 
   test('submits the form and shows a success notification', async () => {
-    (updateBillItems as jest.Mock).mockResolvedValueOnce({});
+    const user = userEvent.setup();
+    mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
 
     render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
-    fireEvent.click(screen.getByText(/Save/));
+    await user.click(screen.getByText(/Save/));
 
     await waitFor(() => {
-      expect(updateBillItems).toHaveBeenCalled();
+      expect(mockUpdateBillItems).toHaveBeenCalled();
       expect(showSnackbar).toHaveBeenCalledWith({
         title: 'Save Bill',
         subtitle: 'Bill processing has been successful',
@@ -120,14 +117,15 @@ describe('ChangeStatus component', () => {
   });
 
   test('shows error notification when submission fails', async () => {
-    (updateBillItems as jest.Mock).mockRejectedValueOnce({ message: 'Error occurred' });
+    const user = userEvent.setup();
+    mockUpdateBillItems.mockRejectedValueOnce({ message: 'Error occurred' });
 
     render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
-    fireEvent.click(screen.getByText(/Save/));
+    await user.click(screen.getByText(/Save/));
 
     await waitFor(() => {
-      expect(showSnackbar).toHaveBeenCalledWith({
+      expect(mockShowSnackbar).toHaveBeenCalledWith({
         title: 'Bill processing error',
         kind: 'error',
         subtitle: 'Error occurred',

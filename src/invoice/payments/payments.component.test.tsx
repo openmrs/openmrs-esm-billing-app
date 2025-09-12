@@ -1,12 +1,21 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
-import { useVisit, useConfig, navigate } from '@openmrs/esm-framework';
+import {
+  useVisit,
+  useConfig,
+  navigate,
+  getDefaultsFromConfigSchema,
+  type VisitReturnType,
+} from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
 import { type MappedBill, type LineItem } from '../../types';
+import { configSchema, type BillingConfig } from '../../config-schema';
 import Payments from './payments.component';
 
-// Add this mock for currency formatting
+const mockUseVisit = jest.mocked(useVisit);
+const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
+const mockUseBillableServices = jest.mocked(useBillableServices);
 const mockFormatToParts = jest.fn().mockReturnValue([{ type: 'integer', value: '1000' }]);
 const mockFormat = jest.fn().mockReturnValue('$1000.00');
 global.Intl.NumberFormat = jest.fn().mockImplementation(() => ({
@@ -87,10 +96,15 @@ describe('Payments', () => {
   const mockSelectedLineItems: LineItem[] = [];
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    (useVisit as jest.Mock).mockReturnValue({ currentVisit: null });
-    (useConfig as jest.Mock).mockReturnValue({ defaultCurrency: 'USD' });
-    (useBillableServices as jest.Mock).mockReturnValue({ billableServices: [], isLoading: false });
+    mockUseVisit.mockReturnValue({ currentVisit: null } as unknown as VisitReturnType);
+    mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
+    mockUseBillableServices.mockReturnValue({
+      billableServices: [],
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+    });
   });
 
   it('renders payment form and history', () => {

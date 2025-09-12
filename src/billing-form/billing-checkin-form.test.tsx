@@ -42,8 +42,6 @@ const mockBillableItems = [
 
 const mockUseCashPoint = useCashPoint as jest.MockedFunction<typeof useCashPoint>;
 const mockUseBillableItems = useBillableItems as jest.MockedFunction<typeof useBillableItems>;
-const mockCreatePatientBill = createPatientBill as jest.MockedFunction<typeof createPatientBill>;
-const mockusePaymentMethods = usePaymentMethods as jest.MockedFunction<typeof usePaymentMethods>;
 
 jest.mock('./billing-form.resource', () => ({
   useBillableItems: jest.fn(),

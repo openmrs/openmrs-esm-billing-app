@@ -65,13 +65,13 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   }, [debouncedSearchTerm, lineItems]);
 
   const tableHeaders = [
-    { header: 'No', key: 'no', width: 7 }, // Width as a percentage
-    { header: 'Bill item', key: 'billItem', width: 25 },
-    { header: 'Bill code', key: 'billCode', width: 20 },
-    { header: 'Status', key: 'status', width: 25 },
-    { header: 'Quantity', key: 'quantity', width: 15 },
-    { header: 'Price', key: 'price', width: 24 },
-    { header: 'Total', key: 'total', width: 15 },
+    { header: t('number', 'No'), key: 'no', width: 7 }, // Width as a percentage
+    { header: t('billItem', 'Bill item'), key: 'billItem', width: 25 },
+    { header: t('billCode', 'Bill code'), key: 'billCode', width: 20 },
+    { header: t('status', 'Status'), key: 'status', width: 25 },
+    { header: t('quantity', 'Quantity'), key: 'quantity', width: 15 },
+    { header: t('price', 'Price'), key: 'price', width: 24 },
+    { header: t('total', 'Total'), key: 'total', width: 15 },
     { header: t('actions', 'Actions'), key: 'actionButton' },
   ];
 
@@ -149,7 +149,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   };
 
   return (
-    <div className={styles.invoiceContainer}>
+    <>
       <DataTable headers={tableHeaders} isSortable rows={tableRows} size={responsiveSize} useZebraStyles>
         {({ rows, headers, getRowProps, getSelectionProps, getTableProps, getToolbarProps }) => (
           <TableContainer
@@ -221,7 +221,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           </Layer>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
