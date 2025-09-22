@@ -80,11 +80,6 @@
 
 .printContainer {
   background-color: colors.$white;
-  display: none;
-
-  @media print {
-    display: block !important;
-  }
 }
 
 @media print {
