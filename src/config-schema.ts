@@ -5,14 +5,13 @@ export const configSchema = {
     src: {
       _type: Type.String,
       _default: '',
-      _description:
-        'The path or URL to the logo image. If set to an empty string, the default OpenMRS SVG sprite will be used.',
+      _description: 'The path or URL to the logo image. If set to an empty string, the alt text will be used.',
       _validators: [validators.isUrl],
     },
     alt: {
       _type: Type.String,
-      _default: 'Logo',
-      _description: 'The alternative text for the logo image, displayed when the image cannot be loaded or on hover.',
+      _description:
+        'The alternative text for the logo image, displayed when the image cannot be loaded or on hover. If not provided and src is empty, the default OpenMRS SVG sprite will be used.',
     },
   },
   country: {

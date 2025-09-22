@@ -1,27 +1,27 @@
 import React from 'react';
 import { type PatientDetails } from '../../types';
-import { useConfig } from '@openmrs/esm-framework';
+import { type SessionLocation, useConfig } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
-import { useDefaultFacility } from '../../billing.resource';
 import type { BillingConfig } from '../../config-schema';
 import styles from './printable-invoice-header.scss';
+import isEmpty from 'lodash/isEmpty';
 
 interface PrintableInvoiceHeaderProps {
   patientDetails: PatientDetails;
+  defaultFacility: SessionLocation | null;
 }
 
-const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patientDetails }) => {
+const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patientDetails, defaultFacility }) => {
   const { t } = useTranslation();
   const { logo, country } = useConfig<BillingConfig>();
-  const { data } = useDefaultFacility();
 
   return (
     <div className={styles.container}>
       <div className={styles.printableHeader}>
         <p className={styles.heading}>{t('invoice', 'Invoice')}</p>
-        {logo?.src ? (
+        {logo && logo.src && !isEmpty(logo.src) ? (
           <img className={styles.img} src={logo.src} alt={logo.alt} />
-        ) : logo?.alt ? (
+        ) : logo && logo.alt ? (
           logo.alt
         ) : (
           // OpenMRS Logo
@@ -53,7 +53,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
         </div>
 
         <div className={styles.facilityDetails}>
-          <p className={styles.facilityName}>{data?.display}</p>
+          <p className={styles.facilityName}>{defaultFacility?.display}</p>
           <p className={styles.itemLabel}>{country}</p>
         </div>
       </div>
