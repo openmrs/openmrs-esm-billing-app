@@ -23,6 +23,8 @@ const testProps = {
   },
 };
 
+const defaultFacility = { display: 'MTRH', uuid: 'mtrh-uuid', links: [] };
+
 describe('PrintableInvoiceHeader', () => {
   beforeEach(() => {
     mockUseConfig.mockReturnValue({
@@ -33,7 +35,7 @@ describe('PrintableInvoiceHeader', () => {
   });
 
   test('should render PrintableInvoiceHeader component', () => {
-    render(<PrintableInvoiceHeader {...testProps} />);
+    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} />);
     const header = screen.getByText('Invoice');
     expect(header).toBeInTheDocument();
 
@@ -45,13 +47,13 @@ describe('PrintableInvoiceHeader', () => {
   });
 
   test('should display the logo when logo is provided', () => {
-    render(<PrintableInvoiceHeader {...testProps} />);
+    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} />);
     const logo = screen.getByAltText('logo');
     expect(logo).toBeInTheDocument();
   });
 
   test('should display the default logo when logo is not provided', () => {
-    render(<PrintableInvoiceHeader {...testProps} />);
+    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} />);
     const logo = screen.getByRole('img');
     expect(logo).toBeInTheDocument();
   });

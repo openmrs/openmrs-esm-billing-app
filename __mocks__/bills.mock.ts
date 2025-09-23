@@ -1,5 +1,17 @@
 import { restBaseUrl } from '@openmrs/esm-framework';
 
+export const mockPatient = {
+  uuid: 'dda9b65f-0037-11ec-85e7-04ed33c79a3e',
+  display: 'MGFRYY - WACERA WACERA WACERA',
+  links: [
+    {
+      rel: 'self',
+      uri: `http://localhost:8089/openmrs${restBaseUrl}/patient/dda9b65f-0037-11ec-85e7-04ed33c79a3e`,
+      resourceAlias: 'patient',
+    },
+  ],
+};
+
 export const billsSummary = [
   {
     uuid: '65f9f19a-f70e-44f4-9c6c-55b23dab4a3f',

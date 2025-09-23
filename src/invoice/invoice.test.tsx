@@ -2,9 +2,9 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
 import { useReactToPrint } from 'react-to-print';
-import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
+import { getDefaultsFromConfigSchema, useConfig, usePatient } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
-import { mockBill } from '../../__mocks__/bills.mock';
+import { mockBill, mockPatient } from '../../__mocks__/bills.mock';
 import { useBill, processBillPayment } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
 import Invoice from './invoice.component';
@@ -77,6 +77,7 @@ jest.mock('react-to-print', () => ({
 
 describe('Invoice', () => {
   const mockedBill = useBill as jest.Mock;
+  const mockedPatient = usePatient as jest.Mock;
   const mockedProcessBillPayment = processBillPayment as jest.Mock;
   const mockedUsePaymentModes = usePaymentModes as jest.Mock;
   const mockedUseReactToPrint = useReactToPrint as jest.Mock;
@@ -103,6 +104,14 @@ describe('Invoice', () => {
   beforeEach(() => {
     mockedBill.mockReturnValue({
       bill: defaultBillData,
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
+
+    mockedPatient.mockReturnValue({
+      patient: mockPatient,
       isLoading: false,
       error: null,
       isValidating: false,
