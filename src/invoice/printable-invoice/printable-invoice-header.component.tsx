@@ -19,9 +19,9 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
     <div className={styles.container}>
       <div className={styles.printableHeader}>
         <p className={styles.heading}>{t('invoice', 'Invoice')}</p>
-        {logo && logo.src && !isEmpty(logo.src) ? (
+        {logo?.src && !isEmpty(logo.src) ? (
           <img className={styles.img} src={logo.src} alt={logo.alt} />
-        ) : logo && logo.alt ? (
+        ) : logo?.alt && !isEmpty(logo.alt) ? (
           logo.alt
         ) : (
           // OpenMRS Logo

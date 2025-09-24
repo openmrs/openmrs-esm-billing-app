@@ -10,6 +10,7 @@ export const configSchema = {
     },
     alt: {
       _type: Type.String,
+      _default: '',
       _description:
         'The alternative text for the logo image, displayed when the image cannot be loaded or on hover. If not provided and src is empty, the default OpenMRS SVG sprite will be used.',
     },
