@@ -1,6 +1,6 @@
 import React from 'react';
 import { type PatientDetails } from '../../types';
-import { type SessionLocation, useConfig } from '@openmrs/esm-framework';
+import { type SessionLocation, useConfig, interpolateUrl } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import type { BillingConfig } from '../../config-schema';
 import styles from './printable-invoice-header.scss';
@@ -20,7 +20,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
       <div className={styles.printableHeader}>
         <p className={styles.heading}>{t('invoice', 'Invoice')}</p>
         {logo?.src && !isEmpty(logo.src) ? (
-          <img className={styles.img} src={logo.src} alt={logo.alt} />
+          <img className={styles.img} src={interpolateUrl(logo.src)} alt={logo.alt} />
         ) : logo?.alt && !isEmpty(logo.alt) ? (
           logo.alt
         ) : (

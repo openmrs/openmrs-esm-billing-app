@@ -39,7 +39,7 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
     bill?.lineItems?.map((item) => {
       return {
         id: `${item.uuid}`,
-        billItem: item.item,
+        billItem: item.billableService ?? item.item,
         quantity: item.quantity,
         price: item.price,
         total: item.price * item.quantity,
