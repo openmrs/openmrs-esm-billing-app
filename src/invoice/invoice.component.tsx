@@ -133,9 +133,11 @@ const Invoice: React.FC = () => {
       <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onSelectItem={handleSelectItem} />
       <Payments bill={bill} mutate={mutate} selectedLineItems={selectedLineItems} />
 
-      <div className={styles.printContainer}>
-        <PrintableInvoice bill={bill} patient={patient} defaultFacility={data} componentRef={componentRef} />
-      </div>
+      {bill && patient && (
+        <div className={styles.printContainer}>
+          <PrintableInvoice bill={bill} patient={patient} defaultFacility={data} componentRef={componentRef} />
+        </div>
+      )}
     </div>
   );
 };
