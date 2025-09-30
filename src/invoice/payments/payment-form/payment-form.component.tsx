@@ -10,19 +10,12 @@ import styles from './payment-form.scss';
 
 type PaymentFormProps = {
   disablePayment: boolean;
-  clientBalance: number;
-  isSingleLineItemSelected: boolean;
   isSingleLineItem: boolean;
 };
 
 const DEFAULT_PAYMENT = { method: '', amount: 0, referenceCode: '' };
 
-const PaymentForm: React.FC<PaymentFormProps> = ({
-  disablePayment,
-  clientBalance,
-  isSingleLineItemSelected,
-  isSingleLineItem,
-}) => {
+const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineItem }) => {
   const { t } = useTranslation();
   const {
     control,
@@ -119,7 +112,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           </div>
         ))}
       <Button
-        disabled={disablePayment || (!isSingleLineItem && !isSingleLineItemSelected)}
+        disabled={disablePayment}
         size="md"
         onClick={handleAppendPaymentMode}
         className={styles.paymentButtons}

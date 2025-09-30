@@ -110,17 +110,6 @@ describe('InvoiceTable', () => {
     expect(screen.getByText('Item 2')).toBeInTheDocument();
   });
 
-  it('correctly handles row selection', async () => {
-    const user = userEvent.setup();
-    const onSelectItem = jest.fn();
-    render(<InvoiceTable bill={bill} onSelectItem={onSelectItem} />);
-
-    const checkboxes = screen.getAllByLabelText('Select row');
-    await user.click(checkboxes[0]);
-
-    expect(onSelectItem).toHaveBeenCalledWith([bill.lineItems[0]]);
-  });
-
   it('resets isRedirecting to false after timeout', async () => {
     const user = userEvent.setup();
     render(<InvoiceTable bill={bill} />);

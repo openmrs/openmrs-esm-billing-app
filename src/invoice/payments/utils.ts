@@ -1,13 +1,5 @@
-import { type LineItem, type MappedBill } from '../../types';
+import { type MappedBill } from '../../types';
 import { type Payment } from './payments.component';
-
-const hasLineItem = (lineItems: Array<LineItem>, item: LineItem) => {
-  if (lineItems?.length === 0) {
-    return false;
-  }
-  const foundItem = lineItems.find((lineItem) => lineItem.uuid === item.uuid);
-  return Boolean(foundItem);
-};
 
 export const createPaymentPayload = (
   bill: MappedBill,
@@ -15,10 +7,9 @@ export const createPaymentPayload = (
   formValues: Array<Payment>,
   amountDue: number,
   billableServices: Array<any>,
-  selectedLineItems: Array<LineItem>,
 ) => {
   const { cashier } = bill;
-  const totalAmount = bill?.totalAmount;
+  const totalAmount = bill.totalAmount ?? 0;
   const paymentStatus = amountDue <= 0 ? 'PAID' : 'PENDING';
   const previousPayments = bill?.payments.map((payment) => ({
     amount: payment.amount,
@@ -37,22 +28,13 @@ export const createPaymentPayload = (
   }));
 
   const updatedPayments = [...newPayments, ...previousPayments];
-  const totalAmountRendered = updatedPayments.reduce((acc, payment) => acc + payment.amountTendered, 0);
 
   const updatedLineItems = bill?.lineItems.map((lineItem) => ({
     ...lineItem,
     billableService: getBillableServiceUuid(billableServices, lineItem.billableService),
     item: processBillItem?.(lineItem),
-    paymentStatus:
-      bill?.lineItems.length > 1
-        ? hasLineItem(selectedLineItems ?? [], lineItem) && totalAmountRendered >= lineItem.price * lineItem.quantity
-          ? 'PAID'
-          : 'PENDING'
-        : paymentStatus,
+    paymentStatus: lineItem.paymentStatus === 'PAID' ? 'PAID' : paymentStatus,
   }));
-
-  const allItemsBillPaymentStatus =
-    updatedLineItems.filter((item) => item.paymentStatus === 'PENDING').length === 0 ? 'PAID' : 'PENDING';
 
   const processedPayment = {
     cashPoint: bill?.cashPointUuid,
@@ -60,7 +42,7 @@ export const createPaymentPayload = (
     lineItems: updatedLineItems,
     payments: [...updatedPayments],
     patient: patientUuid,
-    status: selectedLineItems?.length > 0 ? allItemsBillPaymentStatus : paymentStatus,
+    status: paymentStatus,
   };
 
   return processedPayment;
