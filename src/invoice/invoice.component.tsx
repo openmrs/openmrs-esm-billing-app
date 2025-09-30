@@ -12,7 +12,6 @@ import PrintableInvoice from './printable-invoice/printable-invoice.component';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { convertToCurrency } from '../helpers';
 import { useBill, useDefaultFacility } from '../billing.resource';
-import { type LineItem } from '../types';
 import type { BillingConfig } from '../config-schema';
 import styles from './invoice.scss';
 
@@ -28,13 +27,9 @@ const Invoice: React.FC = () => {
   const { patient, isLoading: isLoadingPatient } = usePatient(patientUuid);
   const { bill, isLoading: isLoadingBill, error, mutate } = useBill(billUuid);
   const [isPrinting, setIsPrinting] = useState(false);
-  const [selectedLineItems, setSelectedLineItems] = useState<LineItem[]>([]);
   const componentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
   const { defaultCurrency } = useConfig<BillingConfig>();
-  const handleSelectItem = (lineItems: LineItem[]) => {
-    setSelectedLineItems(lineItems);
-  };
 
   const handleAfterPrint = useCallback(() => {
     onBeforeGetContentResolve.current = null;
@@ -65,11 +60,6 @@ const Invoice: React.FC = () => {
       onBeforeGetContentResolve.current();
     }
   }, [isPrinting]);
-
-  useEffect(() => {
-    const unPaidLineItems = bill?.lineItems?.filter((item) => item.paymentStatus === 'PENDING') ?? [];
-    setSelectedLineItems(unPaidLineItems);
-  }, [bill?.lineItems]);
 
   // Do not remove this comment. Adds the translation keys for the invoice details
   /**
@@ -130,8 +120,8 @@ const Invoice: React.FC = () => {
         </div>
       </div>
 
-      <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onSelectItem={handleSelectItem} />
-      <Payments bill={bill} mutate={mutate} selectedLineItems={selectedLineItems} />
+      <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} />
+      <Payments bill={bill} mutate={mutate} />
 
       {bill && patient && (
         <div className={styles.printContainer}>

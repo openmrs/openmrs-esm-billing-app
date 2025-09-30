@@ -31,12 +31,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm
-          disablePayment={false}
-          clientBalance={100}
-          isSingleLineItemSelected={false}
-          isSingleLineItem={false}
-        />
+        <PaymentForm disablePayment={false} isSingleLineItem={false} />
       </Wrapper>,
     );
 
@@ -53,12 +48,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm
-          disablePayment={false}
-          clientBalance={100}
-          isSingleLineItemSelected={false}
-          isSingleLineItem={false}
-        />
+        <PaymentForm disablePayment={false} isSingleLineItem={false} />
       </Wrapper>,
     );
 
@@ -75,12 +65,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm
-          disablePayment={false}
-          clientBalance={100}
-          isSingleLineItemSelected={false}
-          isSingleLineItem={true}
-        />
+        <PaymentForm disablePayment={false} isSingleLineItem={true} />
       </Wrapper>,
     );
 
@@ -103,12 +88,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm
-          disablePayment={false}
-          clientBalance={100}
-          isSingleLineItemSelected={true}
-          isSingleLineItem={false}
-        />
+        <PaymentForm disablePayment={false} isSingleLineItem={false} />
       </Wrapper>,
     );
 
@@ -128,12 +108,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm
-          disablePayment={true}
-          clientBalance={100}
-          isSingleLineItemSelected={true}
-          isSingleLineItem={false}
-        />
+        <PaymentForm disablePayment={true} isSingleLineItem={false} />
       </Wrapper>,
     );
 
@@ -151,12 +126,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm
-          disablePayment={false}
-          clientBalance={100}
-          isSingleLineItemSelected={true}
-          isSingleLineItem={false}
-        />
+        <PaymentForm disablePayment={false} isSingleLineItem={false} />
       </Wrapper>,
     );
 

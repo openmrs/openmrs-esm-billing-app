@@ -108,14 +108,14 @@ describe('Payments', () => {
   });
 
   it('renders payment form and history', () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} selectedLineItems={mockSelectedLineItems} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} />);
     expect(screen.getByText('Payments')).toBeInTheDocument();
     expect(screen.getByText('Total Amount:')).toBeInTheDocument();
     expect(screen.getByText('Total Tendered:')).toBeInTheDocument();
   });
 
   it('calculates and displays correct amounts', () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} selectedLineItems={mockSelectedLineItems} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} />);
     const amountElements = screen.getAllByText('$1000.00');
     expect(amountElements[amountElements.length - 3]).toBeInTheDocument();
     expect(amountElements[amountElements.length - 2]).toBeInTheDocument();
@@ -123,12 +123,12 @@ describe('Payments', () => {
   });
 
   it('disables Process Payment button when form is invalid', () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} selectedLineItems={mockSelectedLineItems} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} />);
     expect(screen.getByText('Process Payment')).toBeDisabled();
   });
 
   it('navigates to billing dashboard when Discard is clicked', async () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} selectedLineItems={mockSelectedLineItems} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} />);
     await userEvent.click(screen.getByText('Discard'));
     expect(navigate).toHaveBeenCalled();
   });
