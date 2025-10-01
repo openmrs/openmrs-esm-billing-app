@@ -287,11 +287,11 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           <Table aria-label="sample table" className={styles.mt2}>
             <TableHead>
               <TableRow>
-                <TableHeader>Item</TableHeader>
-                <TableHeader>Quantity</TableHeader>
-                <TableHeader>Price</TableHeader>
-                <TableHeader>Total</TableHeader>
-                <TableHeader>Action</TableHeader>
+                <TableHeader>{t('item', 'Item')}</TableHeader>
+                <TableHeader>{t('quantity', 'Quantity')}</TableHeader>
+                <TableHeader>{t('price', 'Price')}</TableHeader>
+                <TableHeader>{t('total', 'Total')}</TableHeader>
+                <TableHeader>{t('action', 'Action')}</TableHeader>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -323,7 +323,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                   </TableRow>
                 ))
               ) : (
-                <p>Loading...</p>
+                <p>{t('loading', 'Loading...')}</p>
               )}
               <TableRow>
                 <TableCell colSpan={3}></TableCell>
