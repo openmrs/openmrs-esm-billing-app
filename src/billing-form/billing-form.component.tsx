@@ -87,6 +87,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
     setSaveDisabled(!isValid || anyInvalidQuantity);
 
+    setBillItems(updatedItems);
+
     const updatedGrandTotal = updatedItems.reduce((acc, item) => acc + item.Total, 0);
     setGrandTotal(updatedGrandTotal);
   };
