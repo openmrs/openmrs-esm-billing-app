@@ -1,4 +1,5 @@
 {
+  "action": "Action",
   "actions": "Actiuni",
   "addBill": "Adauga element(e) in factura",
   "addBillableServices": "Adauga servicii facturabile",
