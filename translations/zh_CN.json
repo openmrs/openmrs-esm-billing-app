@@ -54,7 +54,6 @@
   "cashPointUuidPlaceholder": "Enter UUID",
   "checkFilters": "Check the filters above",
   "clearSearchInput": "清除搜索输入",
-  "clientBalance": "客户余额",
   "confirmDeleteMessage": "您确定要删除此支付方式吗？请谨慎此操作",
   "createdSuccessfully": "已成功创建计费服务",
   "currentPrice": "当前价格",
