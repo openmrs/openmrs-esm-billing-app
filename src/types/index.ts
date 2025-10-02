@@ -52,19 +52,19 @@ interface Provider {
 }
 
 export interface LineItem {
-  uuid: string;
-  display: string;
-  voided: boolean;
-  voidReason: string | null;
-  item: string;
-  billableService: string;
+  uuid?: string;
+  item?: string;
+  paymentStatus: string;
+  billableService?: string;
   quantity: number;
   price: number;
-  priceName: string;
-  priceUuid: string;
-  lineItemOrder: number;
-  resourceVersion: string;
-  paymentStatus: string;
+  priceName?: string;
+  priceUuid?: string;
+  lineItemOrder?: number;
+  resourceVersion?: string;
+  display?: string;
+  voided?: boolean;
+  voidReason?: string | null;
 }
 
 interface PatientLink {
@@ -168,7 +168,7 @@ export type ServiceConcept = {
   display: string;
 };
 
-export type BillabeItem = {
+export type BillableItem = {
   uuid: string;
   id?: number;
   name?: string;
@@ -177,6 +177,7 @@ export type BillabeItem = {
 };
 
 export type ServicePrice = {
+  name: string;
   price: string;
   uuid: string;
 };
