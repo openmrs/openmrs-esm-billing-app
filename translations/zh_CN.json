@@ -1,4 +1,5 @@
 {
+  "action": "Action",
   "actions": "动作",
   "addBill": "添加（多个）账单项目",
   "addBillableServices": "添加计费服务",
