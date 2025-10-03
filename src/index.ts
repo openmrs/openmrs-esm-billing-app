@@ -35,6 +35,7 @@ export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
 }
 
+// t('billingHistory', 'Billing History')
 export const billingSummaryDashboardLink = getSyncLifecycle(
   createDashboardLink({ ...dashboardMeta, moduleName }),
   options,
