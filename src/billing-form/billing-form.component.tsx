@@ -84,7 +84,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     };
 
     selectedItems.forEach((item) => {
-      const lineItem: any = {
+      const lineItem: LineItem = {
         quantity: item.quantity,
         price: item.price,
         lineItemOrder: 0,
