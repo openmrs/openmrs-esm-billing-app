@@ -1,8 +1,10 @@
-export const dashboardMeta = {
+import { type DashboardLinkConfig } from '@openmrs/esm-patient-common-lib';
+
+export const dashboardMeta: DashboardLinkConfig & { slot: string; columns: number; hideDashboardTitle: boolean } = {
   slot: 'patient-chart-billing-dashboard-slot',
   columns: 1,
   title: 'Billing history',
   hideDashboardTitle: true,
-  icon: '',
+  icon: 'omrs-icon-money',
   path: 'Billing history',
 };
