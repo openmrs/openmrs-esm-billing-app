@@ -1,4 +1,5 @@
 {
+  "action": "Action",
   "actions": "ქმედებები",
   "addBill": "Add bill item(s)",
   "addBillableServices": "Add Billable Services",
