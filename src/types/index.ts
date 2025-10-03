@@ -65,6 +65,8 @@ export interface LineItem {
   display?: string;
   voided?: boolean;
   voidReason?: string | null;
+  selectedPaymentMethod?: ServicePrice;
+  availablePaymentMethods?: ServicePrice[];
 }
 
 interface PatientLink {

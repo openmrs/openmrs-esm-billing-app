@@ -88,3 +88,76 @@
 .spacer {
   margin-top: layout.$spacing-05;
 }
+
+.selectedItemsContainer {
+  margin-top: 1rem;
+  
+  h4 {
+    margin-bottom: 1rem;
+    color: #161616;
+  }
+  
+  .itemCard {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f4f4f4;
+    
+    .itemHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      
+      .itemName {
+        font-weight: 600;
+        font-size: 1rem;
+        color: #161616;
+      }
+    }
+    
+    .itemControls {
+      .controlSection {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1rem;
+        
+        label {
+          font-size: 0.875rem;
+          font-weight: 500;
+          margin-bottom: 0.5rem;
+          color: #525252;
+        }
+        
+        .priceDisplay,
+        .totalDisplay {
+          font-weight: 600;
+          color: #161616;
+          padding: 0.5rem 0;
+        }
+      }
+    }
+  }
+  
+  .grandTotal {
+    text-align: right;
+    padding: 1rem;
+    border-top: 2px solid #0f62fe;
+    margin-top: 1rem;
+    font-size: 1.125rem;
+    background-color: #f4f4f4;
+  }
+}
+
+@media (max-width: 767px) {
+  .selectedItemsContainer {
+    .itemCard {
+      .itemControls {
+        .controlSection {
+          margin-bottom: 0.5rem;
+        }
+      }
+    }
+  }
+}
