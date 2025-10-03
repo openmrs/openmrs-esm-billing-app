@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -19,7 +19,7 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
-import { isDesktop, launchWorkspace, useConfig, useLayoutType, usePagination } from '@openmrs/esm-framework';
+import { launchWorkspace, useConfig, usePagination } from '@openmrs/esm-framework';
 import { CardHeader, EmptyDataIllustration, ErrorState, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
 import { convertToCurrency } from '../helpers';
 import { useBills } from '../billing.resource';
@@ -33,11 +33,9 @@ interface BillHistoryProps {
 const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const { t } = useTranslation();
   const { bills, isLoading, error } = useBills(patientUuid);
-  const layout = useLayoutType();
-  const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const { paginated, goTo, results, currentPage } = usePagination(bills);
   const { pageSize, defaultCurrency } = useConfig();
-  const [currentPageSize, setCurrentPageSize] = React.useState(pageSize);
+  const [currentPageSize, setCurrentPageSize] = useState(pageSize);
   const { pageSizes } = usePaginationInfo(pageSize, bills?.length, currentPage, results?.length);
 
   const headerData = [
@@ -74,7 +72,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   if (isLoading) {
     return (
       <div className={styles.loaderContainer}>
-        <DataTableSkeleton showHeader={false} showToolbar={false} zebra size={responsiveSize} />
+        <DataTableSkeleton showHeader={false} showToolbar={false} zebra size="md" />
       </div>
     );
   }
@@ -113,15 +111,15 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
         </Button>
       </CardHeader>
       <div className={styles.billHistoryContainer}>
-        <DataTable isSortable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles>
+        <DataTable isSortable rows={rowData} headers={headerData} size="md" useZebraStyles>
           {({
-            rows,
-            headers,
             getExpandHeaderProps,
-            getTableProps,
-            getTableContainerProps,
             getHeaderProps,
             getRowProps,
+            getTableContainerProps,
+            getTableProps,
+            headers,
+            rows,
           }) => (
             <TableContainer {...getTableContainerProps}>
               <Table className={styles.table} {...getTableProps()} aria-label="Bill list">
@@ -153,7 +151,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                           ))}
                         </TableExpandRow>
                         {row.isExpanded ? (
-                          <TableExpandedRow className={styles.expandedRow} colSpan={headers.length + 1}>
+                          <TableExpandedRow colSpan={headers.length + 1}>
                             <div className={styles.container} key={i}>
                               <InvoiceTable bill={currentBill} />
                             </div>
@@ -178,7 +176,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             pageSizes={pageSizes}
             totalItems={bills.length}
             className={styles.pagination}
-            size={responsiveSize}
+            size="md"
             onChange={({ page: newPage, pageSize }) => {
               if (newPage !== currentPage) {
                 goTo(newPage);
