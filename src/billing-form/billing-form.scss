@@ -73,6 +73,9 @@
 
 .grid {
   margin: layout.$spacing-05;
+  display: flex;
+  flex-direction: column;
+  gap: layout.$spacing-05;
 }
 
 .row {

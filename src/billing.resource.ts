@@ -9,11 +9,11 @@ import {
   openmrsFetch,
   useSession,
   useVisit,
-  restBaseUrl,
   type SessionLocation,
+  useOpenmrsFetchAll,
 } from '@openmrs/esm-framework';
 import { apiBasePath, omrsDateFormat } from './constants';
-import type { MappedBill, PatientInvoice } from './types';
+import type { MappedBill, PatientInvoice, BillableItem } from './types';
 import SelectedDateContext from './hooks/selectedDateContext';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
@@ -134,16 +134,9 @@ export const usePatientPaymentInfo = (patientUuid: string) => {
   return paymentInformation;
 };
 
-export function useFetchSearchResults(searchVal, category) {
-  let url = ``;
-  if (category == 'Stock Item') {
-    url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${searchVal}`;
-  } else {
-    url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
-  }
-  const { data, error, isLoading, isValidating } = useSWR(searchVal ? url : null, openmrsFetch, {});
-
-  return { data: data?.data, error, isLoading: isLoading, isValidating };
+export function useBillableServices() {
+  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
+  return useOpenmrsFetchAll<BillableItem>(url);
 }
 
 export const processBillItems = (payload) => {
