@@ -189,10 +189,15 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       </div>
 
       <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-        <Button className={styles.button} kind="secondary" disabled={isSubmitting || selectedItems.length === 0} onClick={closeWorkspace}>
+        <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={closeWorkspace}>
           {t('discard', 'Discard')}
         </Button>
-        <Button className={styles.button} kind="primary" onClick={postBillItems} disabled={isSubmitting} type="submit">
+        <Button
+          className={styles.button}
+          kind="primary"
+          onClick={postBillItems}
+          disabled={isSubmitting || selectedItems.length === 0}
+          type="submit">
           {isSubmitting ? (
             <InlineLoading description={t('saving', 'Saving') + '...'} />
           ) : (
