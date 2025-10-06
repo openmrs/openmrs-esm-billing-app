@@ -26,17 +26,18 @@ import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { type BillableService } from '../types/index';
 import { useBillableServices } from './billable-service.resource';
 import AddBillableService from './create-edit/add-billable-service.component';
+import type { BillingConfig } from '../config-schema';
 import styles from './billable-services.scss';
 
 const BillableServices = () => {
   const { t } = useTranslation();
   const { billableServices, isLoading, isValidating, error, mutate } = useBillableServices();
   const layout = useLayoutType();
-  const config = useConfig();
+  const { pageSize: configuredPageSize } = useConfig<BillingConfig>();
   const [searchString, setSearchString] = useState('');
   const responsiveSize = isDesktop(layout) ? 'lg' : 'sm';
-  const pageSizes = config?.billableServices?.pageSizes ?? [10, 20, 30, 40, 50];
-  const [pageSize, setPageSize] = useState(config?.billableServices?.pageSize ?? 10);
+  const pageSizes = [10, 20, 30, 40, 50];
+  const [pageSize, setPageSize] = useState(configuredPageSize ?? 10);
 
   const [showOverlay, setShowOverlay] = useState(false);
   const [editingService, setEditingService] = useState(null);
@@ -55,7 +56,7 @@ const BillableServices = () => {
       key: 'serviceType',
     },
     {
-      header: t('status', 'Service Status'),
+      header: t('serviceStatus', 'Service Status'),
       key: 'status',
     },
     {
@@ -248,7 +249,7 @@ const BillableServices = () => {
           onSecondarySubmit={closeModal}
           size="lg"
           passiveModal={true}>
-          <AddBillableService editingService={editingService} onClose={closeModal} />
+          <AddBillableService editingService={editingService} onClose={closeModal} onServiceUpdated={mutate} />
         </Modal>
       )}
     </>

@@ -2,7 +2,7 @@ import { configSchema } from './config-schema';
 import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
-import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle, registerFeatureFlag } from '@openmrs/esm-framework';
+import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import appMenu from './billable-services/billable-services-menu-item/item.component';
 import BillableServiceHome from './billable-services/billable-services-home.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
@@ -20,12 +20,6 @@ const options = {
   moduleName,
 };
 
-registerFeatureFlag(
-  'billing',
-  'Billing module',
-  'This feature introduces navigation links on the patient chart and home page to allow accessing the billing module features',
-);
-
 // t('billing', 'Billing')
 export const billingDashboardLink = getSyncLifecycle(
   createLeftPanelLink({
@@ -41,6 +35,7 @@ export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
 }
 
+// t('billingHistory', 'Billing History')
 export const billingSummaryDashboardLink = getSyncLifecycle(
   createDashboardLink({ ...dashboardMeta, moduleName }),
   options,

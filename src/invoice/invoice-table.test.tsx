@@ -1,43 +1,24 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { showModal } from '@openmrs/esm-framework';
-import InvoiceTable from './invoice-table.component';
+import userEvent from '@testing-library/user-event';
+import { render, screen, act } from '@testing-library/react';
+import { getDefaultsFromConfigSchema, showModal, useConfig } from '@openmrs/esm-framework';
 import { type MappedBill } from '../types';
+import { configSchema, type BillingConfig } from '../config-schema';
+import InvoiceTable from './invoice-table.component';
 
-// Mocking dependencies
-jest.mock('react-i18next', () => ({
-  useTranslation: jest.fn(() => ({
-    t: jest.fn((key, fallback) => fallback || key),
-    i18n: { language: 'en' },
-  })),
-}));
-
-jest.mock('@openmrs/esm-framework', () => ({
-  showModal: jest.fn(),
-  useConfig: jest.fn(() => ({
-    defaultCurrency: 'USD',
-    showEditBillButton: true,
-  })),
-  useDebounce: jest.fn((value) => value),
-  useLayoutType: jest.fn(() => 'desktop'),
-  isDesktop: jest.fn(() => true),
-}));
+const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 
 jest.mock('../helpers', () => ({
   convertToCurrency: jest.fn((price) => `USD ${price}`),
 }));
 
 describe('InvoiceTable', () => {
-  const mockT = jest.fn((key) => key);
-
   beforeEach(() => {
-    (useTranslation as jest.Mock).mockReturnValue({ t: mockT, i18n: { language: 'en' } });
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.useRealTimers();
+    mockUseConfig.mockReturnValue({
+      ...getDefaultsFromConfigSchema(configSchema),
+      defaultCurrency: 'USD',
+      showEditBillButton: true,
+    });
   });
 
   const bill: MappedBill = {
@@ -103,11 +84,12 @@ describe('InvoiceTable', () => {
     expect(screen.getByTestId('receipt-number-0')).toHaveTextContent('12345');
   });
 
-  it('renders the edit button and calls showModal when clicked', () => {
+  it('renders the edit button and calls showModal when clicked', async () => {
+    const user = userEvent.setup();
     render(<InvoiceTable bill={bill} />);
 
     const editButton = screen.getByTestId('edit-button-1');
-    fireEvent.click(editButton);
+    await user.click(editButton);
     expect(showModal).toHaveBeenCalledWith('edit-bill-line-item-dialog', expect.anything());
   });
 
@@ -117,31 +99,23 @@ describe('InvoiceTable', () => {
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
-  it('filters line items based on the search term', () => {
+  it('filters line items based on the search term', async () => {
+    const user = userEvent.setup();
     render(<InvoiceTable bill={bill} />);
-    const searchInput = screen.getByPlaceholderText('searchThisTable'); //
+    const searchInput = screen.getByPlaceholderText(/search this table/i);
 
-    fireEvent.change(searchInput, { target: { value: 'Item 2' } });
+    await user.type(searchInput, 'Item 2');
 
     expect(screen.queryByText('Item 1')).not.toBeInTheDocument();
     expect(screen.getByText('Item 2')).toBeInTheDocument();
   });
 
-  it('correctly handles row selection', () => {
-    const onSelectItem = jest.fn();
-    render(<InvoiceTable bill={bill} onSelectItem={onSelectItem} />);
-
-    const checkboxes = screen.getAllByLabelText('Select row');
-    fireEvent.click(checkboxes[0]);
-
-    expect(onSelectItem).toHaveBeenCalledWith([bill.lineItems[0]]);
-  });
-
-  it('resets isRedirecting to false after timeout', () => {
+  it('resets isRedirecting to false after timeout', async () => {
+    const user = userEvent.setup();
     render(<InvoiceTable bill={bill} />);
 
     const button = screen.getByTestId('edit-button-1');
-    fireEvent.click(button);
+    await user.click(button);
     act(() => {
       jest.advanceTimersByTime(1000);
     });

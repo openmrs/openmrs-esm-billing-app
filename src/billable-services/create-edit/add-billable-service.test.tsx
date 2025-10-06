@@ -6,21 +6,21 @@ import {
   useBillableServices,
   usePaymentModes,
   useServiceTypes,
-  createBillableSerice,
+  createBillableService,
 } from '../billable-service.resource';
 import AddBillableService from './add-billable-service.component';
 
 const mockUseBillableServices = useBillableServices as jest.MockedFunction<typeof useBillableServices>;
 const mockUsePaymentModes = usePaymentModes as jest.MockedFunction<typeof usePaymentModes>;
 const mockUseServiceTypes = useServiceTypes as jest.MockedFunction<typeof useServiceTypes>;
-const mockCreateBillableSerice = createBillableSerice as jest.MockedFunction<typeof createBillableSerice>;
+const mockcreateBillableService = createBillableService as jest.MockedFunction<typeof createBillableService>;
 const mockNavigate = navigate as jest.MockedFunction<typeof navigate>;
 
 jest.mock('../billable-service.resource', () => ({
   useBillableServices: jest.fn(),
   usePaymentModes: jest.fn(),
   useServiceTypes: jest.fn(),
-  createBillableSerice: jest.fn(),
+  createBillableService: jest.fn(),
 }));
 
 const mockPaymentModes = [
@@ -107,13 +107,13 @@ xdescribe('AddBillableService', () => {
     expect(priceTextInp).toBeInTheDocument();
     await user.type(priceTextInp, '1000');
 
-    mockCreateBillableSerice.mockReturnValue(Promise.resolve({} as FetchResponse<any>));
+    mockcreateBillableService.mockReturnValue(Promise.resolve({} as FetchResponse<any>));
     const saveBtn = screen.getByRole('button', { name: /Save/i });
     expect(saveBtn).toBeInTheDocument();
     await user.click(saveBtn);
 
-    expect(mockCreateBillableSerice).toHaveBeenCalledTimes(1);
-    expect(mockCreateBillableSerice).toHaveBeenCalledWith({
+    expect(mockcreateBillableService).toHaveBeenCalledTimes(1);
+    expect(mockcreateBillableService).toHaveBeenCalledWith({
       name: 'Test Service Name',
       shortName: 'Test Short Name',
       serviceType: undefined,

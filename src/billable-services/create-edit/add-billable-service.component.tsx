@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import {
-  createBillableSerice,
+  createBillableService,
   updateBillableService,
   useConceptsSearch,
   usePaymentModes,
@@ -50,7 +50,11 @@ const paymentFormSchema = z.object({
 
 const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
 
-const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }> = ({ editingService, onClose }) => {
+const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; onServiceUpdated?: () => void }> = ({
+  editingService,
+  onClose,
+  onServiceUpdated,
+}) => {
   const { t } = useTranslation();
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
@@ -138,7 +142,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
 
     const saveAction = editingService
       ? updateBillableService(editingService.uuid, payload)
-      : createBillableSerice(payload);
+      : createBillableService(payload);
 
     saveAction.then(
       (resp) => {
@@ -150,6 +154,9 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
           kind: 'success',
           timeoutInMs: 3000,
         });
+        if (onServiceUpdated) {
+          onServiceUpdated();
+        }
         onClose();
         handleNavigateToServiceDashboard();
       },

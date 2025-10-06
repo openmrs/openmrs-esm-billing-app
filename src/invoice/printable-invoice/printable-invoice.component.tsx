@@ -8,9 +8,8 @@ import {
   TableBody,
   TableHeader,
   TableCell,
-  DataTableSkeleton,
 } from '@carbon/react';
-import { age, isDesktop, useLayoutType } from '@openmrs/esm-framework';
+import { age, isDesktop, type SessionLocation, useLayoutType } from '@openmrs/esm-framework';
 import { getGender } from '../../helpers';
 import { type MappedBill } from '../../types';
 import { useTranslation } from 'react-i18next';
@@ -21,25 +20,26 @@ import styles from './printable-invoice.scss';
 type PrintableInvoiceProps = {
   bill: MappedBill;
   patient: fhir.Patient;
-  isLoading: boolean;
+  componentRef: React.RefObject<HTMLDivElement>;
+  defaultFacility: SessionLocation;
 };
 
-const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLoading }) => {
+const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, componentRef, defaultFacility }) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const headerData = [
-    { header: 'Inventory item', key: 'billItem' },
-    { header: 'Quantity', key: 'quantity' },
-    { header: 'Unit price', key: 'price' },
-    { header: 'Total', key: 'total' },
+    { header: t('inventoryItem', 'Inventory item'), key: 'billItem' },
+    { header: t('quantity', 'Quantity'), key: 'quantity' },
+    { header: t('unitPrice', 'Unit price'), key: 'price' },
+    { header: t('total', 'Total'), key: 'total' },
   ];
 
   const rowData =
     bill?.lineItems?.map((item) => {
       return {
         id: `${item.uuid}`,
-        billItem: item.item,
+        billItem: item.billableService ?? item.item,
         quantity: item.quantity,
         price: item.price,
         total: item.price * item.quantity,
@@ -47,10 +47,10 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
     }) ?? [];
 
   const invoiceTotal = {
-    'Total Amount': bill?.totalAmount,
-    'Amount Tendered': bill?.tenderedAmount,
-    'Discount Amount': 0,
-    'Amount due': bill?.totalAmount - bill?.tenderedAmount,
+    [t('totalAmount', 'Total Amount')]: bill?.totalAmount,
+    [t('amountTendered', 'Amount Tendered')]: bill?.tenderedAmount,
+    [t('discountAmount', 'Discount Amount')]: 0,
+    [t('amountDue', 'Amount due')]: bill?.totalAmount - bill?.tenderedAmount,
   };
 
   const patientDetails = useMemo(() => {
@@ -65,28 +65,14 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
   }, [patient, t]);
 
   const invoiceDetails = {
-    'Invoice #': bill?.receiptNumber,
-    'Invoice date': bill.dateCreated,
-    Status: bill?.status,
+    [t('invoiceNumber', 'Invoice #')]: bill?.receiptNumber,
+    [t('invoiceDate', 'Invoice date')]: bill?.dateCreated,
+    [t('status', 'Status')]: bill?.status,
   };
 
-  if (isLoading) {
-    return (
-      <div className={styles.loaderContainer}>
-        <DataTableSkeleton
-          columnCount={headerData?.length ?? 0}
-          showHeader={false}
-          showToolbar={false}
-          size={responsiveSize}
-          zebra
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.container}>
-      <PrintableInvoiceHeader patientDetails={patientDetails} />
+    <div className={styles.container} ref={componentRef}>
+      <PrintableInvoiceHeader patientDetails={patientDetails} defaultFacility={defaultFacility} />
       <div className={styles.printableInvoiceContainer}>
         <div className={styles.detailsContainer}>
           {Object.entries(invoiceDetails).map(([key, val]) => (
@@ -99,7 +85,7 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, isLo
 
         <div className={styles.itemsContainer}>
           <div className={styles.tableContainer}>
-            <DataTable isSortable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles={false}>
+            <DataTable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles={false}>
               {({ rows, headers, getRowProps, getTableProps }) => (
                 <TableContainer>
                   <Table {...getTableProps()} aria-label="Invoice line items">

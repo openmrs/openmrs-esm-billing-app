@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -18,19 +18,13 @@ import {
   TableRow,
   Tile,
 } from '@carbon/react';
-import { isDesktop, useConfig, useLayoutType, usePagination } from '@openmrs/esm-framework';
-import {
-  CardHeader,
-  EmptyDataIllustration,
-  ErrorState,
-  launchPatientWorkspace,
-  usePaginationInfo,
-} from '@openmrs/esm-patient-common-lib';
+import { Add } from '@carbon/react/icons';
+import { launchWorkspace, useConfig, usePagination } from '@openmrs/esm-framework';
+import { CardHeader, EmptyDataIllustration, ErrorState, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { convertToCurrency } from '../helpers';
 import { useBills } from '../billing.resource';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
-import { Add } from '@carbon/react/icons';
-import { convertToCurrency } from '../helpers';
 
 interface BillHistoryProps {
   patientUuid: string;
@@ -39,11 +33,9 @@ interface BillHistoryProps {
 const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const { t } = useTranslation();
   const { bills, isLoading, error } = useBills(patientUuid);
-  const layout = useLayoutType();
-  const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const { paginated, goTo, results, currentPage } = usePagination(bills);
   const { pageSize, defaultCurrency } = useConfig();
-  const [currentPageSize, setCurrentPageSize] = React.useState(pageSize);
+  const [currentPageSize, setCurrentPageSize] = useState(pageSize);
   const { pageSizes } = usePaginationInfo(pageSize, bills?.length, currentPage, results?.length);
 
   const headerData = [
@@ -80,7 +72,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   if (isLoading) {
     return (
       <div className={styles.loaderContainer}>
-        <DataTableSkeleton showHeader={false} showToolbar={false} zebra size={responsiveSize} />
+        <DataTableSkeleton showHeader={false} showToolbar={false} zebra size="md" />
       </div>
     );
   }
@@ -103,7 +95,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             <EmptyDataIllustration />
           </div>
           <p className={styles.content}>There are no bills to display.</p>
-          <Button onClick={() => launchPatientWorkspace('billing-form-workspace')} kind="ghost">
+          <Button onClick={() => launchWorkspace('billing-form-workspace')} kind="ghost">
             {t('launchBillForm', 'Launch bill form')}
           </Button>
         </Tile>
@@ -114,20 +106,20 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   return (
     <div>
       <CardHeader title={t('billingHistory', 'Billing History')}>
-        <Button renderIcon={Add} onClick={() => launchPatientWorkspace('billing-form-workspace', {})} kind="ghost">
+        <Button renderIcon={Add} onClick={() => launchWorkspace('billing-form-workspace', {})} kind="ghost">
           {t('addBill', 'Add bill item(s)')}
         </Button>
       </CardHeader>
       <div className={styles.billHistoryContainer}>
-        <DataTable isSortable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles>
+        <DataTable isSortable rows={rowData} headers={headerData} size="md" useZebraStyles>
           {({
-            rows,
-            headers,
             getExpandHeaderProps,
-            getTableProps,
-            getTableContainerProps,
             getHeaderProps,
             getRowProps,
+            getTableContainerProps,
+            getTableProps,
+            headers,
+            rows,
           }) => (
             <TableContainer {...getTableContainerProps}>
               <Table className={styles.table} {...getTableProps()} aria-label="Bill list">
@@ -159,9 +151,9 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                           ))}
                         </TableExpandRow>
                         {row.isExpanded ? (
-                          <TableExpandedRow className={styles.expandedRow} colSpan={headers.length + 1}>
+                          <TableExpandedRow colSpan={headers.length + 1}>
                             <div className={styles.container} key={i}>
-                              <InvoiceTable bill={currentBill} isSelectable={false} />
+                              <InvoiceTable bill={currentBill} />
                             </div>
                           </TableExpandedRow>
                         ) : (
@@ -184,7 +176,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             pageSizes={pageSizes}
             totalItems={bills.length}
             className={styles.pagination}
-            size={responsiveSize}
+            size="md"
             onChange={({ page: newPage, pageSize }) => {
               if (newPage !== currentPage) {
                 goTo(newPage);

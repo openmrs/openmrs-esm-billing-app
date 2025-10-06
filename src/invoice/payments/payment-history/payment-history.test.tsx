@@ -1,24 +1,19 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { useConfig } from '@openmrs/esm-framework';
-import PaymentHistory from './payment-history.component';
+import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
+import { type BillingConfig, configSchema } from '../../../config-schema';
 import { type MappedBill } from '../../../types';
-
-// Mocking useConfig to return a default currency
-jest.mock('@openmrs/esm-framework', () => ({
-  useConfig: jest.fn(),
-  formatDate: jest.fn((date) => date.toISOString().split('T')[0]),
-}));
+import PaymentHistory from './payment-history.component';
 
 jest.mock('../../../helpers', () => ({
   convertToCurrency: jest.fn((amount, currency) => `${currency} ${amount.toFixed(2)}`),
 }));
 
+const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
+
 describe('PaymentHistory Component', () => {
   beforeEach(() => {
-    (useConfig as jest.Mock).mockReturnValue({
-      defaultCurrency: 'USD',
-    });
+    mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
   });
 
   const mockBill: MappedBill = {
@@ -129,12 +124,12 @@ describe('PaymentHistory Component', () => {
   test('renders correct data in the rows', () => {
     render(<PaymentHistory bill={mockBill} />);
 
-    expect(screen.getByText('2023-09-01')).toBeInTheDocument();
+    expect(screen.getByText('01-Sept-2023')).toBeInTheDocument();
     expect(screen.getByText('USD 80.00')).toBeInTheDocument();
     expect(screen.getByText('USD 100.00')).toBeInTheDocument();
     expect(screen.getByText('Credit Card')).toBeInTheDocument();
 
-    expect(screen.getByText('2023-09-05')).toBeInTheDocument();
+    expect(screen.getByText('05-Sept-2023')).toBeInTheDocument();
     expect(screen.getByText('USD 180.00')).toBeInTheDocument();
     expect(screen.getByText('USD 200.00')).toBeInTheDocument();
     expect(screen.getByText('Cash')).toBeInTheDocument();
@@ -153,7 +148,7 @@ describe('PaymentHistory Component', () => {
   test('formats dates and converts amounts correctly', () => {
     render(<PaymentHistory bill={mockBill} />);
 
-    expect(screen.getByText('2023-09-01')).toBeInTheDocument();
+    expect(screen.getByText('01-Sept-2023')).toBeInTheDocument();
     expect(screen.getByText('USD 80.00')).toBeInTheDocument();
     expect(screen.getByText('USD 100.00')).toBeInTheDocument();
   });

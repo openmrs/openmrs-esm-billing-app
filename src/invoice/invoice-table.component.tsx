@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import fuzzy from 'fuzzy';
 import {
@@ -13,7 +13,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableSelectRow,
   TableToolbarSearch,
   Tile,
   type DataTableRow,
@@ -22,32 +21,22 @@ import { Edit } from '@carbon/react/icons';
 import { isDesktop, showModal, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { type LineItem, type MappedBill } from '../types';
 import { convertToCurrency } from '../helpers';
+import type { BillingConfig } from '../config-schema';
 import styles from './invoice-table.scss';
 
 type InvoiceTableProps = {
   bill: MappedBill;
-  isSelectable?: boolean;
   isLoadingBill?: boolean;
-  onSelectItem?: (selectedLineItems: LineItem[]) => void;
 };
 
-const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, isLoadingBill, onSelectItem }) => {
+const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
   const { t } = useTranslation();
-  const { defaultCurrency, showEditBillButton } = useConfig();
+  const { defaultCurrency, showEditBillButton } = useConfig<BillingConfig>();
   const layout = useLayoutType();
   const lineItems = useMemo(() => bill?.lineItems ?? [], [bill?.lineItems]);
-  const paidLineItems = useMemo(() => lineItems?.filter((item) => item.paymentStatus === 'PAID') ?? [], [lineItems]);
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-
-  const [selectedLineItems, setSelectedLineItems] = useState(paidLineItems ?? []);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
-
-  useEffect(() => {
-    if (onSelectItem) {
-      onSelectItem(selectedLineItems);
-    }
-  }, [selectedLineItems, onSelectItem]);
 
   const filteredLineItems = useMemo(() => {
     if (!debouncedSearchTerm) {
@@ -65,13 +54,13 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
   }, [debouncedSearchTerm, lineItems]);
 
   const tableHeaders = [
-    { header: 'No', key: 'no', width: 7 }, // Width as a percentage
-    { header: 'Bill item', key: 'billItem', width: 25 },
-    { header: 'Bill code', key: 'billCode', width: 20 },
-    { header: 'Status', key: 'status', width: 25 },
-    { header: 'Quantity', key: 'quantity', width: 15 },
-    { header: 'Price', key: 'price', width: 24 },
-    { header: 'Total', key: 'total', width: 15 },
+    { header: t('number', 'No'), key: 'no', width: 7 }, // Width as a percentage
+    { header: t('billItem', 'Bill item'), key: 'billItem', width: 25 },
+    { header: t('billCode', 'Bill code'), key: 'billCode', width: 20 },
+    { header: t('status', 'Status'), key: 'status', width: 25 },
+    { header: t('quantity', 'Quantity'), key: 'quantity', width: 15 },
+    { header: t('price', 'Price'), key: 'price', width: 24 },
+    { header: t('total', 'Total'), key: 'total', width: 15 },
     { header: t('actions', 'Actions'), key: 'actionButton' },
   ];
 
@@ -135,23 +124,10 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
     );
   }
 
-  const handleRowSelection = (row: typeof DataTableRow, checked: boolean) => {
-    const matchingRow = filteredLineItems.find((item) => item.uuid === row.id);
-    let newSelectedLineItems;
-
-    if (checked) {
-      newSelectedLineItems = [...selectedLineItems, matchingRow];
-    } else {
-      newSelectedLineItems = selectedLineItems.filter((item) => item.uuid !== row.id);
-    }
-    setSelectedLineItems(newSelectedLineItems);
-    onSelectItem(newSelectedLineItems);
-  };
-
   return (
-    <div className={styles.invoiceContainer}>
-      <DataTable headers={tableHeaders} isSortable rows={tableRows} size={responsiveSize} useZebraStyles>
-        {({ rows, headers, getRowProps, getSelectionProps, getTableProps, getToolbarProps }) => (
+    <>
+      <DataTable headers={tableHeaders} rows={tableRows} size={responsiveSize} useZebraStyles>
+        {({ rows, headers, getRowProps, getTableProps }) => (
           <TableContainer
             description={
               <span className={styles.tableDescription}>
@@ -172,7 +148,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
               className={`${styles.invoiceTable} billingTable`}>
               <TableHead>
                 <TableRow>
-                  {rows.length > 1 && isSelectable ? <TableHeader /> : null}
                   {headers.map((header) => (
                     <TableHeader key={header.key}>{header.header}</TableHeader>
                   ))}
@@ -186,18 +161,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
                       {...getRowProps({
                         row,
                       })}>
-                      {rows.length > 1 && isSelectable && (
-                        <TableSelectRow
-                          aria-label="Select row"
-                          {...getSelectionProps({ row })}
-                          disabled={tableRows[index].status === 'PAID'}
-                          onChange={(checked: boolean) => handleRowSelection(row, checked)}
-                          checked={
-                            tableRows[index].status === 'PAID' ||
-                            Boolean(selectedLineItems?.find((item) => item?.uuid === row?.id))
-                          }
-                        />
-                      )}
                       {row.cells.map((cell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}
@@ -221,7 +184,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isSelectable = true, 
           </Layer>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

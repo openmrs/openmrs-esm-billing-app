@@ -1,16 +1,14 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
+import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
+import { type MappedBill } from '../types';
+import { configSchema, type BillingConfig } from '../config-schema';
 import RequirePaymentModal from './require-payment-modal.component';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
-}));
-
-jest.mock('@openmrs/esm-framework', () => ({
-  useConfig: () => ({ defaultCurrency: 'USD' }),
-}));
+const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
+const mockUseBills = jest.mocked<typeof useBills>(useBills);
 
 jest.mock('../billing.resource', () => ({
   useBills: jest.fn(),
@@ -25,19 +23,19 @@ describe('RequirePaymentModal', () => {
   const patientUuid = '12345';
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
   });
 
   it('renders correctly', () => {
-    (useBills as jest.Mock).mockReturnValue({ bills: [], isLoading: false, error: null });
+    mockUseBills.mockReturnValue({ bills: [], isLoading: false, error: null, isValidating: false, mutate: jest.fn() });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
-    expect(screen.getByText('patientBillingAlert')).toBeInTheDocument();
+    expect(screen.getByText('Patient Billing Alert')).toBeInTheDocument();
   });
 
   it('displays loading state', () => {
-    (useBills as jest.Mock).mockReturnValue({ bills: [], isLoading: true, error: null });
+    mockUseBills.mockReturnValue({ bills: [], isLoading: true, error: null, isValidating: false, mutate: jest.fn() });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
-    expect(screen.getByText('inlineLoading')).toBeInTheDocument();
+    expect(screen.getByText('Loading bill items...')).toBeInTheDocument();
   });
 
   it('displays line items', () => {
@@ -50,17 +48,24 @@ describe('RequirePaymentModal', () => {
         ],
       },
     ];
-    (useBills as jest.Mock).mockReturnValue({ bills, isLoading: false, error: null });
+    mockUseBills.mockReturnValue({
+      bills: bills as unknown as MappedBill[],
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
     expect(screen.getByText('Service 1')).toBeInTheDocument();
     expect(screen.getByText('Item 1')).toBeInTheDocument();
   });
 
-  it('handles closeModal', () => {
-    (useBills as jest.Mock).mockReturnValue({ bills: [], isLoading: false, error: null });
+  it('handles closeModal', async () => {
+    const user = userEvent.setup();
+    mockUseBills.mockReturnValue({ bills: [], isLoading: false, error: null, isValidating: false, mutate: jest.fn() });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
-    fireEvent.click(screen.getByText('cancel'));
-    fireEvent.click(screen.getByText('ok'));
+    await user.click(screen.getByText('Cancel'));
+    await user.click(screen.getByText('OK'));
     expect(closeModal).toHaveBeenCalledTimes(2);
   });
 });
