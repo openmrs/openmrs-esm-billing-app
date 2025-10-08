@@ -126,6 +126,12 @@
       margin-top: layout.$spacing-03;
       align-items: flex-start;
       
+      display: flex;
+      flex-wrap: wrap;
+      gap: layout.$spacing-05;
+      margin-top: layout.$spacing-03;
+      align-items: flex-start;
+      
       .controlSection {
         display: flex;
         flex-direction: column;
@@ -168,6 +174,7 @@
         
         .priceDisplay,
         .totalDisplay {
+          font-size: 0.875rem;
           font-size: 0.875rem;
           font-weight: 600;
           color: $text-02;
