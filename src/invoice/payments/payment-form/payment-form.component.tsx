@@ -80,7 +80,18 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
                 <NumberInput
                   id="paymentAmount"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  value={field.value ?? ''}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    if (value === '') {
+                      field.onChange(null);
+                    } else {
+                      const numericValue = Number(value);
+                      if (!isNaN(numericValue)) {
+                        field.onChange(numericValue);
+                      }
+                    }
+                  }}
                   invalid={!!errors?.payment?.[index]?.amount}
                   invalidText={errors?.payment?.[index]?.amount?.message}
                   label={t('amount', 'Amount')}

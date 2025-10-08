@@ -35,7 +35,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
       .number()
-      .lte(bill?.totalAmount - bill?.tenderedAmount, { message: 'Amount paid should not be greater than amount due' }),
+      .nullable()
+      .refine((val) => val === null || val <= bill?.totalAmount - bill?.tenderedAmount, {
+        message: 'Amount paid should not be greater than amount due',
+      }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
   });
 
