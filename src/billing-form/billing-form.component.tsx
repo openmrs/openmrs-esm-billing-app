@@ -15,8 +15,6 @@ import {
   TableRow,
   TableHeader,
   TableCell,
-  Grid,
-  Column,
 } from '@carbon/react';
 import { TrashCan } from '@carbon/react/icons';
 import { useConfig, useLayoutType, showSnackbar } from '@openmrs/esm-framework';
@@ -26,6 +24,11 @@ import type { BillingConfig } from '../config-schema';
 import type { BillableItem, LineItem, ServicePrice } from '../types';
 import { apiBasePath } from '../constants';
 import styles from './billing-form.scss';
+
+interface ExtendedLineItem extends LineItem {
+  selectedPaymentMethod?: ServicePrice;
+  availablePaymentMethods?: ServicePrice[];
+}
 
 type BillingFormProps = {
   patientUuid: string;
@@ -37,7 +40,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const { t } = useTranslation();
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedItems, setSelectedItems] = useState<LineItem[]>([]);
+  const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
   const { data, error, isLoading } = useBillableServices();
 
   const selectBillableItem = (item: BillableItem) => {
@@ -61,7 +64,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       selectedPaymentMethod = availablePaymentMethods[0];
     }
 
-    const mappedItem: LineItem = {
+    const mappedItem: ExtendedLineItem = {
       uuid: item.uuid,
       display: item.name,
       quantity: 1,
@@ -204,61 +207,57 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                   />
                 </div>
 
-                <Grid className={styles.itemControls}>
-                  <Column sm={4} md={2} lg={3}>
+                <div className={styles.itemControls}>
+                  <div className={styles.controlSection}>
+                    <label>{t('quantity', 'Quantity')}</label>
+                    <NumberInput
+                      id={`quantity-${item.uuid}`}
+                      min={1}
+                      value={item.quantity}
+                      size="md"
+                      onChange={(_, { value }) => {
+                        const number = parseFloat(String(value));
+                        updateQuantity(item.uuid, isNaN(number) ? 1 : number);
+                      }}
+                    />
+                  </div>
+
+                  {item.availablePaymentMethods && item.availablePaymentMethods.length > 1 ? (
                     <div className={styles.controlSection}>
-                      <label>{t('quantity', 'Quantity')}</label>
-                      <NumberInput
-                        id={`quantity-${item.uuid}`}
-                        min={1}
-                        value={item.quantity}
-                        onChange={(_, { value }) => {
-                          const number = parseFloat(String(value));
-                          updateQuantity(item.uuid, isNaN(number) ? 1 : number);
+                      <label>{t('selectPaymentMethod', 'Select payment method')}</label>
+                      <ComboBox
+                        id={`payment-method-${item.uuid}`}
+                        items={item.availablePaymentMethods}
+                        size="md"
+                        itemToString={(method: ServicePrice) =>
+                          method
+                            ? `${method.name} - ${convertToCurrency(parseFloat(method.price), defaultCurrency)}`
+                            : ''
+                        }
+                        selectedItem={item.selectedPaymentMethod}
+                        onChange={({ selectedItem }) => {
+                          if (selectedItem) {
+                            updatePaymentMethod(item.uuid, selectedItem);
+                          }
                         }}
+                        placeholder={t('selectPaymentMethod', 'Select payment method')}
+                        titleText=""
                       />
                     </div>
-                  </Column>
-
-                  <Column sm={4} md={4} lg={5}>
-                    {item.availablePaymentMethods && item.availablePaymentMethods.length > 1 ? (
-                      <div className={styles.controlSection}>
-                        <label>{t('selectPaymentMethod', 'Select payment method')}</label>
-                        <ComboBox
-                          id={`payment-method-${item.uuid}`}
-                          items={item.availablePaymentMethods}
-                          itemToString={(method: ServicePrice) =>
-                            method
-                              ? `${method.name} - ${convertToCurrency(parseFloat(method.price), defaultCurrency)}`
-                              : ''
-                          }
-                          selectedItem={item.selectedPaymentMethod}
-                          onChange={({ selectedItem }) => {
-                            if (selectedItem) {
-                              updatePaymentMethod(item.uuid, selectedItem);
-                            }
-                          }}
-                          placeholder={t('selectPaymentMethod', 'Select payment method')}
-                          titleText=""
-                        />
-                      </div>
-                    ) : (
-                      <div className={styles.controlSection}>
-                        <label>{t('unitPrice', 'Unit Price')}</label>
-                        <span className={styles.priceDisplay}>{convertToCurrency(item.price, defaultCurrency)}</span>
-                      </div>
-                    )}
-                  </Column>
-
-                  <Column sm={4} md={2} lg={3}>
+                  ) : (
                     <div className={styles.controlSection}>
-                      <label>{t('total', 'Total')}</label>
-                      <span className={styles.totalDisplay}>
-                        {convertToCurrency(item.price * item.quantity, defaultCurrency)}
-                      </span>
+                      <label>{t('unitPrice', 'Unit Price')}</label>
+                      <span className={styles.priceDisplay}>{convertToCurrency(item.price, defaultCurrency)}</span>
                     </div>
-                  </Column>
-                </Grid>
+                  )}
+
+                  <div className={styles.controlSection}>
+                    <label>{t('total', 'Total')}</label>
+                    <span className={styles.totalDisplay}>
+                      {convertToCurrency(item.price * item.quantity, defaultCurrency)}
+                    </span>
+                  </div>
+                </div>
               </div>
             ))}
 
