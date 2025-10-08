@@ -103,9 +103,9 @@ xdescribe('AddBillableService', () => {
     expect(paymentMethodOptions).toBeInTheDocument();
     await user.click(paymentMethodOptions);
 
-    const priceTextInp = screen.getByRole('textbox', { name: /Price/i });
-    expect(priceTextInp).toBeInTheDocument();
-    await user.type(priceTextInp, '1000');
+    const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
+    expect(priceInput).toBeInTheDocument();
+    await user.type(priceInput, '1000');
 
     mockcreateBillableService.mockReturnValue(Promise.resolve({} as FetchResponse<any>));
     const saveBtn = screen.getByRole('button', { name: /Save/i });
