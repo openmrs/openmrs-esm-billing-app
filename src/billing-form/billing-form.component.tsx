@@ -208,20 +208,6 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                 </div>
 
                 <div className={styles.itemControls}>
-                  <div className={styles.controlSection}>
-                    <label>{t('quantity', 'Quantity')}</label>
-                    <NumberInput
-                      id={`quantity-${item.uuid}`}
-                      min={1}
-                      value={item.quantity}
-                      size="md"
-                      onChange={(_, { value }) => {
-                        const number = parseFloat(String(value));
-                        updateQuantity(item.uuid, isNaN(number) ? 1 : number);
-                      }}
-                    />
-                  </div>
-
                   {item.availablePaymentMethods && item.availablePaymentMethods.length > 1 ? (
                     <div className={styles.controlSection}>
                       <label>{t('selectPaymentMethod', 'Select payment method')}</label>
@@ -250,6 +236,20 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                       <span className={styles.priceDisplay}>{convertToCurrency(item.price, defaultCurrency)}</span>
                     </div>
                   )}
+
+                  <div className={styles.controlSection}>
+                    <label>{t('quantity', 'Quantity')}</label>
+                    <NumberInput
+                      id={`quantity-${item.uuid}`}
+                      min={1}
+                      value={item.quantity}
+                      size="md"
+                      onChange={(_, { value }) => {
+                        const number = parseFloat(String(value));
+                        updateQuantity(item.uuid, isNaN(number) ? 1 : number);
+                      }}
+                    />
+                  </div>
 
                   <div className={styles.controlSection}>
                     <label>{t('total', 'Total')}</label>

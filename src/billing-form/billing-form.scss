@@ -138,13 +138,13 @@
         min-width: 0;
         
         &:first-child {
-          flex: 0 0 140px;
-          width: 140px;
+          flex: 1 1 auto;
+          min-width: 250px;
         }
         
         &:nth-child(2) {
-          flex: 1 1 auto;
-          min-width: 250px;
+          flex: 0 0 140px;
+          width: 140px;
         }
         
         &:last-child {
