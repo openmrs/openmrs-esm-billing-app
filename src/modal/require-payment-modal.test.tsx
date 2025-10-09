@@ -5,7 +5,7 @@ import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { type MappedBill } from '../types';
 import { configSchema, type BillingConfig } from '../config-schema';
-import RequirePaymentModal from './require-payment-modal.component';
+import RequirePaymentModal from './require-payment.modal';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockUseBills = jest.mocked<typeof useBills>(useBills);

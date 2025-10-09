@@ -50,11 +50,12 @@ const paymentFormSchema = z.object({
 
 const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
 
-const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; onServiceUpdated?: () => void }> = ({
-  editingService,
-  onClose,
-  onServiceUpdated,
-}) => {
+const AddBillableService: React.FC<{
+  editingService?: any;
+  onClose: () => void;
+  onServiceUpdated?: () => void;
+  isModal?: boolean;
+}> = ({ editingService, onClose, onServiceUpdated, isModal = false }) => {
   const { t } = useTranslation();
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
@@ -185,13 +186,13 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; 
   }
 
   return (
-    <Form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+    <Form id="billable-service-form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <h4>
         {editingService
           ? t('editBillableServices', 'Edit Billable Services')
           : t('addBillableServices', 'Add Billable Services')}
       </h4>
-      <section className={styles.section}>
+      <section>
         <Layer>
           <TextInput
             id="serviceName"
@@ -218,7 +219,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; 
           )}
         </Layer>
       </section>
-      <section className={styles.section}>
+      <section>
         <Layer>
           <TextInput
             id="serviceShortName"
@@ -314,7 +315,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; 
           );
         })()}
       </section>
-      <section className={styles.section}>
+      <section>
         <Layer>
           <ComboBox
             id="serviceType"
@@ -334,9 +335,8 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; 
           />
         </Layer>
       </section>
-
       <section>
-        <div className={styles.container}>
+        <div>
           {fields.map((field, index) => (
             <div key={field.id} className={styles.paymentMethodContainer}>
               <Controller
@@ -388,15 +388,16 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void; 
           {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
         </div>
       </section>
-
-      <section>
-        <Button kind="secondary" onClick={onClose}>
-          {t('cancel', 'Cancel')}
-        </Button>
-        <Button type="submit" disabled={!isValid || Object.keys(errors).length > 0}>
-          {t('save', 'Save')}
-        </Button>
-      </section>
+      {!isModal && (
+        <section>
+          <Button kind="secondary" onClick={onClose}>
+            {t('cancel', 'Cancel')}
+          </Button>
+          <Button type="submit" disabled={!isValid || Object.keys(errors).length > 0}>
+            {t('save', 'Save')}
+          </Button>
+        </section>
+      )}
     </Form>
   );
 };

@@ -12,7 +12,7 @@ import {
   StructuredListRow,
   StructuredListWrapper,
 } from '@carbon/react';
-import { useConfig } from '@openmrs/esm-framework';
+import { getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
 import styles from './require-payment.scss';
@@ -29,22 +29,23 @@ const RequirePaymentModal: React.FC<RequirePaymentModalProps> = ({ closeModal, p
   const lineItems = bills.filter((bill) => bill?.status !== 'PAID').flatMap((bill) => bill?.lineItems);
 
   return (
-    <div>
+    <>
       <ModalHeader closeModal={closeModal} title={t('patientBillingAlert', 'Patient Billing Alert')} />
       <ModalBody>
         <p className={styles.bodyShort02}>
           {t(
             'billPaymentRequiredMessage',
-            'The current patient has pending bill. Advice patient to settle bill before receiving services',
+            'The current patient has a pending bill. Advise the patient to settle the bill before receiving services',
           )}
         </p>
         {isLoading && (
           <InlineLoading
             status="active"
             iconDescription="Loading"
-            description={t('inlineLoading', 'Loading bill items...')}
+            description={t('loadingBillItems', 'Loading bill items') + '...'}
           />
         )}
+
         <StructuredListWrapper isCondensed>
           <StructuredListHead>
             <StructuredListRow head>
@@ -55,30 +56,28 @@ const RequirePaymentModal: React.FC<RequirePaymentModalProps> = ({ closeModal, p
             </StructuredListRow>
           </StructuredListHead>
           <StructuredListBody>
-            {lineItems.map((lineItem) => {
-              return (
-                <StructuredListRow>
-                  <StructuredListCell>{lineItem.billableService || lineItem.item}</StructuredListCell>
-                  <StructuredListCell>{lineItem.quantity}</StructuredListCell>
-                  <StructuredListCell>{convertToCurrency(lineItem.price, defaultCurrency)}</StructuredListCell>
-                  <StructuredListCell>
-                    {convertToCurrency(lineItem.quantity * lineItem.price, defaultCurrency)}
-                  </StructuredListCell>
-                </StructuredListRow>
-              );
-            })}
+            {lineItems.map((lineItem) => (
+              <StructuredListRow key={lineItem.uuid}>
+                <StructuredListCell>{lineItem.billableService || lineItem.item}</StructuredListCell>
+                <StructuredListCell>{lineItem.quantity}</StructuredListCell>
+                <StructuredListCell>{convertToCurrency(lineItem.price, defaultCurrency)}</StructuredListCell>
+                <StructuredListCell>
+                  {convertToCurrency(lineItem.quantity * lineItem.price, defaultCurrency)}
+                </StructuredListCell>
+              </StructuredListRow>
+            ))}
           </StructuredListBody>
         </StructuredListWrapper>
       </ModalBody>
       <ModalFooter>
         <Button kind="secondary" onClick={closeModal}>
-          {t('cancel', 'Cancel')}
+          {getCoreTranslation('cancel')}
         </Button>
         <Button kind="primary" onClick={closeModal}>
           {t('ok', 'OK')}
         </Button>
       </ModalFooter>
-    </div>
+    </>
   );
 };
 

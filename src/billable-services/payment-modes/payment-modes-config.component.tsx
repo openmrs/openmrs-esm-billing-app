@@ -16,20 +16,20 @@ import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, openmrsFetch, restBaseUrl, showModal } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
-import styles from './cash-point-configuration.scss';
+import styles from './payment-modes-config.scss';
 
-const CashPointConfiguration: React.FC = () => {
+const PaymentModesConfig: React.FC = () => {
   const { t } = useTranslation();
-  const [cashPoints, setCashPoints] = useState([]);
+  const [paymentModes, setPaymentModes] = useState([]);
 
-  const fetchCashPoints = useCallback(async () => {
+  const fetchPaymentModes = useCallback(async () => {
     try {
-      const response = await openmrsFetch(`${restBaseUrl}/billing/cashPoint?v=full`);
-      setCashPoints(response.data.results || []);
+      const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode?v=full`);
+      setPaymentModes(response.data.results || []);
     } catch (err) {
       showSnackbar({
         title: t('error', 'Error'),
-        subtitle: t('errorFetchingCashPoints', 'An error occurred while fetching cash points.'),
+        subtitle: t('errorFetchingPaymentModes', 'An error occurred while fetching payment modes.'),
         kind: 'error',
         isLowContrast: false,
       });
@@ -37,38 +37,44 @@ const CashPointConfiguration: React.FC = () => {
   }, [t]);
 
   useEffect(() => {
-    fetchCashPoints();
-  }, [fetchCashPoints]);
+    fetchPaymentModes();
+  }, [fetchPaymentModes]);
 
-  const handleAddCashPoint = () => {
-    showModal('add-cash-point-modal', {
-      onCashPointAdded: fetchCashPoints,
+  const handleAddPaymentMode = () => {
+    showModal('add-payment-mode-modal', {
+      onPaymentModeAdded: fetchPaymentModes,
     });
   };
 
-  const rowData = cashPoints.map((point) => ({
-    id: point.uuid,
-    name: point.name,
-    uuid: point.uuid,
-    location: point.location ? point.location.display : 'None',
+  const handleDeletePaymentMode = (paymentMode) => {
+    showModal('delete-payment-mode-modal', {
+      paymentModeUuid: paymentMode.uuid,
+      paymentModeName: paymentMode.name,
+      onPaymentModeDeleted: fetchPaymentModes,
+    });
+  };
+
+  const rowData = paymentModes.map((mode) => ({
+    id: mode.uuid,
+    name: mode.name,
+    description: mode.description || '--',
   }));
 
   const headerData = [
     { key: 'name', header: t('name', 'Name') },
-    { key: 'uuid', header: t('uuid', 'UUID') },
-    { key: 'location', header: t('location', 'Location') },
+    { key: 'description', header: t('description', 'Description') },
     { key: 'actions', header: t('actions', 'Actions') },
   ];
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <CardHeader title={t('cashPointHistory', 'Cash Point History')}>
-          <Button renderIcon={Add} onClick={handleAddCashPoint} kind="ghost">
-            {t('addNewCashPoint', 'Add New Cash Point')}
+        <CardHeader title={t('paymentModeHistory', 'Payment Mode History')}>
+          <Button renderIcon={Add} onClick={handleAddPaymentMode} kind="ghost">
+            {t('addNewPaymentMode', 'Add New Payment Mode')}
           </Button>
         </CardHeader>
-        <div>
+        <div className={styles.historyContainer}>
           <DataTable rows={rowData} headers={headerData} isSortable size="lg">
             {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
               <TableContainer>
@@ -94,7 +100,10 @@ const CashPointConfiguration: React.FC = () => {
                                 <OverflowMenuItem
                                   className={styles.menuItem}
                                   itemText={t('delete', 'Delete')}
-                                  disabled
+                                  onClick={() => {
+                                    const selected = paymentModes.find((p) => p.uuid === row.id);
+                                    handleDeletePaymentMode(selected);
+                                  }}
                                 />
                               </OverflowMenu>
                             </TableCell>
@@ -113,4 +122,4 @@ const CashPointConfiguration: React.FC = () => {
   );
 };
 
-export default CashPointConfiguration;
+export default PaymentModesConfig;

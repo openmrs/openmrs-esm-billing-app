@@ -9,6 +9,7 @@ import {
   ModalFooter,
   ModalHeader,
   NumberInput,
+  Stack,
   TextInput,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ import { Controller, type FieldErrors, useForm } from 'react-hook-form';
 import { mutate } from 'swr';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { getCoreTranslation, showSnackbar } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { type LineItem, type MappedBill } from '../types';
@@ -24,13 +25,13 @@ import { updateBillItems } from '../billing.resource';
 import { useBillableServices } from '../billable-services/billable-service.resource';
 import styles from './bill-item-actions.scss';
 
-interface BillLineItemProps {
+interface EditBillLineItemModalProps {
   bill: MappedBill;
-  item: LineItem;
   closeModal: () => void;
+  item: LineItem;
 }
 
-const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) => {
+const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, closeModal, item }) => {
   const { t } = useTranslation();
   const { billableServices } = useBillableServices();
   const [showErrorNotification, setShowErrorNotification] = useState(false);
@@ -56,7 +57,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
   const {
     control,
     handleSubmit,
-    formState: { isSubmitting, errors, isDirty },
+    formState: { isSubmitting, errors },
     watch,
   } = useForm<BillLineItemForm>({
     defaultValues: {
@@ -74,7 +75,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
     setTotal(newTotal);
   }, [quantity, price]);
 
-  const onSubmit = (data: BillLineItemForm) => {
+  const onSubmit = async (data: BillLineItemForm) => {
     const url = `${apiBasePath}bill`;
 
     const newItem = {
@@ -101,43 +102,42 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
       status: bill.status,
       uuid: bill.uuid,
     };
-    updateBillItems(payload).then(
-      (res) => {
-        mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
-        showSnackbar({
-          title: t('saveBill', 'Save Bill'),
-          subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
-          kind: 'success',
-          timeoutInMs: 3000,
-        });
-        closeModal();
-      },
-      (error) => {
-        showSnackbar({
-          title: t('billProcessingError', 'Bill processing error'),
-          kind: 'error',
-          subtitle: error?.message,
-        });
-      },
-    );
+
+    try {
+      await updateBillItems(payload);
+      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+      showSnackbar({
+        title: t('saveBill', 'Save Bill'),
+        subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
+        kind: 'success',
+        timeoutInMs: 3000,
+      });
+      closeModal();
+    } catch (error) {
+      showSnackbar({
+        title: t('billProcessingError', 'Bill processing error'),
+        kind: 'error',
+        subtitle: error?.message,
+      });
+    }
   };
 
   if (Object.keys(bill)?.length === 0) {
     return <ModalHeader closeModal={closeModal} title={t('billLineItemEmpty', 'This bill has no line items')} />;
   }
 
-  if (Object.keys(bill)?.length > 0) {
-    return (
-      <div>
+  return (
+    <>
+      <ModalHeader closeModal={closeModal} title={t('editBillLineItem', 'Edit bill line item?')} />
+      <ModalBody>
         <Form onSubmit={handleSubmit(onSubmit, onError)}>
-          <ModalHeader closeModal={closeModal} title={t('editBillLineItem', 'Edit bill line item?')} />
-          <ModalBody>
+          <Stack gap={5}>
             <div className={styles.modalBody}>
               <h5>
                 {bill?.patientName} &nbsp; · &nbsp;{bill?.cashPointName} &nbsp; · &nbsp;{bill?.receiptNumber}&nbsp;
               </h5>
             </div>
-            <section className={styles.section}>
+            <section>
               <p className={styles.label}>
                 {t('item', 'Item')} : {item?.billableService ? item?.billableService : item?.item}
               </p>
@@ -150,7 +150,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
               <Controller
                 name="quantity"
                 control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
+                render={({ field: { onChange, value } }) => (
                   <NumberInput
                     label={t('quantity', 'Quantity')}
                     id="quantityInput"
@@ -175,7 +175,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
                     value={value}
                     readOnly={true}
                     className={styles.controlField}
-                    helperText="This is the unit Price for this item."
+                    helperText={t('unitPriceHelperText', 'This is the unit price for this item.')}
                   />
                 )}
               />
@@ -195,31 +195,29 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
                 </Column>
               )}
             </section>
-          </ModalBody>
-          <ModalFooter>
-            <Button kind="secondary" onClick={closeModal}>
-              {t('cancel', 'Cancel')}
-            </Button>
-            <Button disabled={isSubmitting} type="submit">
-              <>
-                {isSubmitting ? (
-                  <div className={styles.inline}>
-                    <InlineLoading
-                      status="active"
-                      iconDescription={t('submitting', 'Submitting')}
-                      description={t('submitting', 'Submitting...')}
-                    />
-                  </div>
-                ) : (
-                  t('save', 'Save')
-                )}
-              </>
-            </Button>
-          </ModalFooter>
+          </Stack>
         </Form>
-      </div>
-    );
-  }
+      </ModalBody>
+      <ModalFooter>
+        <Button kind="secondary" onClick={closeModal}>
+          {getCoreTranslation('cancel')}
+        </Button>
+        <Button type="submit" disabled={isSubmitting} onClick={handleSubmit(onSubmit, onError)}>
+          {isSubmitting ? (
+            <div className={styles.inline}>
+              <InlineLoading
+                status="active"
+                iconDescription={t('submitting', 'Submitting')}
+                description={t('submitting', 'Submitting') + '...'}
+              />
+            </div>
+          ) : (
+            getCoreTranslation('save')
+          )}
+        </Button>
+      </ModalFooter>
+    </>
+  );
 };
 
-export default ChangeStatus;
+export default EditBillLineItemModal;

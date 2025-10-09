@@ -6,7 +6,6 @@ import {
   DataTable,
   InlineLoading,
   Layer,
-  Modal,
   OverflowMenu,
   OverflowMenuItem,
   Pagination,
@@ -21,11 +20,18 @@ import {
   Tile,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
-import { useLayoutType, isDesktop, useConfig, usePagination, ErrorState, navigate } from '@openmrs/esm-framework';
+import {
+  useLayoutType,
+  isDesktop,
+  useConfig,
+  usePagination,
+  ErrorState,
+  navigate,
+  showModal,
+} from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { type BillableService } from '../types/index';
 import { useBillableServices } from './billable-service.resource';
-import AddBillableService from './create-edit/add-billable-service.component';
 import type { BillingConfig } from '../config-schema';
 import styles from './billable-services.scss';
 
@@ -38,9 +44,6 @@ const BillableServices = () => {
   const responsiveSize = isDesktop(layout) ? 'lg' : 'sm';
   const pageSizes = [10, 20, 30, 40, 50];
   const [pageSize, setPageSize] = useState(configuredPageSize ?? 10);
-
-  const [showOverlay, setShowOverlay] = useState(false);
-  const [editingService, setEditingService] = useState(null);
 
   const headerData = [
     {
@@ -71,8 +74,6 @@ const BillableServices = () => {
 
   const launchBillableServiceForm = useCallback(() => {
     navigate({ to: window.getOpenmrsSpaBase() + 'billable-services/add-service' });
-    setEditingService(null);
-    setShowOverlay(true);
   }, []);
 
   const searchResults: BillableService[] = useMemo(() => {
@@ -104,16 +105,6 @@ const BillableServices = () => {
         serviceType: service?.serviceType?.display,
         status: service.serviceStatus,
         prices: '--',
-        actions: (
-          <TableCell>
-            <OverflowMenu size="sm" flipped>
-              <OverflowMenuItem
-                itemText={t('editBillableService', 'Edit Billable Service')}
-                onClick={() => handleEditService(service)}
-              />
-            </OverflowMenu>
-          </TableCell>
-        ),
       };
       let cost = '';
       service.servicePrices.forEach((price) => {
@@ -131,128 +122,118 @@ const BillableServices = () => {
     },
     [goTo, setSearchString],
   );
-  const handleEditService = useCallback((service) => {
-    setEditingService(service);
-    setShowOverlay(true);
-  }, []);
-
-  const closeModal = useCallback(() => {
-    setShowOverlay(false);
-    setEditingService(null);
-  }, []);
+  const handleEditService = useCallback(
+    (service) => {
+      showModal('edit-billable-service-modal', {
+        editingService: service,
+        onServiceUpdated: mutate,
+      });
+    },
+    [mutate],
+  );
 
   if (isLoading) {
-    <InlineLoading status="active" iconDescription="Loading" description="Loading data..." />;
+    return <InlineLoading status="active" iconDescription="Loading" description="Loading data..." />;
   }
+
   if (error) {
-    <ErrorState headerTitle={t('billableService', 'Billable Service')} error={error} />;
+    return <ErrorState headerTitle={t('billableService', 'Billable Service')} error={error} />;
   }
+
   if (billableServices.length === 0) {
-    <EmptyState
-      displayText={t('billableService', 'Billable Service')}
-      headerTitle={t('billableService', 'Billable Service')}
-      launchForm={launchBillableServiceForm}
-    />;
+    return (
+      <EmptyState
+        displayText={t('billableServices__lower', 'billable services')}
+        headerTitle={t('billableService', 'Billable Service')}
+        launchForm={launchBillableServiceForm}
+      />
+    );
   }
 
   return (
-    <>
-      {billableServices?.length > 0 ? (
-        <div className={styles.serviceContainer}>
-          <FilterableTableHeader
-            handleSearch={handleSearch}
-            isValidating={isValidating}
-            layout={layout}
-            responsiveSize={responsiveSize}
-            t={t}
-          />
-          <DataTable
-            isSortable
-            rows={rowData}
-            headers={headerData}
-            size={responsiveSize}
-            useZebraStyles={rowData?.length > 1 ? true : false}>
-            {({ rows, headers, getRowProps, getTableProps }) => (
-              <TableContainer>
-                <Table {...getTableProps()} aria-label="service list">
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader key={header.key}>{header.header}</TableHeader>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow
-                        key={row.id}
-                        {...getRowProps({
-                          row,
-                        })}>
-                        {row.cells.map((cell) => (
-                          <TableCell key={cell.id}>{cell.value}</TableCell>
-                        ))}
-                      </TableRow>
+    <div className={styles.serviceContainer}>
+      <FilterableTableHeader
+        handleSearch={handleSearch}
+        isValidating={isValidating}
+        layout={layout}
+        responsiveSize={responsiveSize}
+        t={t}
+      />
+      <DataTable
+        isSortable
+        rows={rowData}
+        headers={headerData}
+        size={responsiveSize}
+        useZebraStyles={rowData?.length > 1 ? true : false}>
+        {({ rows, headers, getRowProps, getTableProps }) => (
+          <TableContainer>
+            <Table {...getTableProps()} aria-label="service list">
+              <TableHead>
+                <TableRow>
+                  {headers.map((header) => (
+                    <TableHeader key={header.key}>{header.header}</TableHeader>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow
+                    key={row.id}
+                    {...getRowProps({
+                      row,
+                    })}>
+                    {row.cells.map((cell) => (
+                      <TableCell key={cell.id}>{cell.value}</TableCell>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </DataTable>
-          {searchResults?.length === 0 && (
-            <div className={styles.filterEmptyState}>
-              <Layer level={0}>
-                <Tile className={styles.filterEmptyStateTile}>
-                  <p className={styles.filterEmptyStateContent}>
-                    {t('noMatchingServicesToDisplay', 'No matching services to display')}
-                  </p>
-                  <p className={styles.filterEmptyStateHelper}>{t('checkFilters', 'Check the filters above')}</p>
-                </Tile>
-              </Layer>
-            </div>
-          )}
-          {paginated && (
-            <Pagination
-              forwardText="Next page"
-              backwardText="Previous page"
-              page={currentPage}
-              pageSize={pageSize}
-              pageSizes={pageSizes}
-              totalItems={searchResults?.length}
-              className={styles.pagination}
-              size={responsiveSize}
-              onChange={({ pageSize: newPageSize, page: newPage }) => {
-                if (newPageSize !== pageSize) {
-                  setPageSize(newPageSize);
-                }
-                if (newPage !== currentPage) {
-                  goTo(newPage);
-                }
-              }}
-            />
-          )}
+                    <TableCell className="cds--table-column-menu">
+                      <OverflowMenu size="sm" flipped>
+                        <OverflowMenuItem
+                          className={styles.menuItem}
+                          itemText={t('editBillableService', 'Edit Billable Service')}
+                          onClick={() => handleEditService(results.find((service) => service.uuid === row.id))}
+                        />
+                      </OverflowMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </DataTable>
+      {searchResults?.length === 0 && (
+        <div className={styles.filterEmptyState}>
+          <Layer level={0}>
+            <Tile className={styles.filterEmptyStateTile}>
+              <p className={styles.filterEmptyStateContent}>
+                {t('noMatchingServicesToDisplay', 'No matching services to display')}
+              </p>
+              <p className={styles.filterEmptyStateHelper}>{t('checkFilters', 'Check the filters above')}</p>
+            </Tile>
+          </Layer>
         </div>
-      ) : (
-        <EmptyState
-          launchForm={launchBillableServiceForm}
-          displayText={t('noServicesToDisplay', 'There are no services to display')}
-          headerTitle={t('billableService', 'Billable service')}
+      )}
+      {paginated && (
+        <Pagination
+          forwardText="Next page"
+          backwardText="Previous page"
+          page={currentPage}
+          pageSize={pageSize}
+          pageSizes={pageSizes}
+          totalItems={searchResults?.length}
+          className={styles.pagination}
+          size={responsiveSize}
+          onChange={({ pageSize: newPageSize, page: newPage }) => {
+            if (newPageSize !== pageSize) {
+              setPageSize(newPageSize);
+            }
+            if (newPage !== currentPage) {
+              goTo(newPage);
+            }
+          }}
         />
       )}
-      {showOverlay && (
-        <Modal
-          open={showOverlay}
-          modalHeading={t('billableService', 'Billable Service')}
-          primaryButtonText={null}
-          secondaryButtonText={t('cancel', 'Cancel')}
-          onRequestClose={closeModal}
-          onSecondarySubmit={closeModal}
-          size="lg"
-          passiveModal={true}>
-          <AddBillableService editingService={editingService} onClose={closeModal} onServiceUpdated={mutate} />
-        </Modal>
-      )}
-    </>
+    </div>
   );
 };
 

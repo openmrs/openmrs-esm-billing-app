@@ -81,12 +81,32 @@
     },
     {
       "name": "edit-bill-line-item-dialog",
-      "component": "editBillLineItemDialog",
+      "component": "editBillLineItemModal",
       "online": true,
       "offline": true
     }
   ],
   "modals": [
+    {
+      "name": "add-cash-point-modal",
+      "component": "addCashPointModal"
+    },
+    {
+      "name": "add-payment-mode-modal",
+      "component": "addPaymentModeModal"
+    },
+    {
+      "name": "delete-payment-mode-modal",
+      "component": "deletePaymentModeModal"
+    },
+    {
+      "name": "edit-bill-item-modal",
+      "component": "editBillLineItemModal"
+    },
+    {
+      "name": "edit-billable-service-modal",
+      "component": "editBillableServiceModal"
+    },
     {
       "name": "require-billing-modal",
       "component": "requirePaymentModal"
