@@ -129,8 +129,8 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   return (
     <>
       <ModalHeader closeModal={closeModal} title={t('editBillLineItem', 'Edit bill line item?')} />
-      <ModalBody>
-        <Form onSubmit={handleSubmit(onSubmit, onError)}>
+      <Form onSubmit={handleSubmit(onSubmit, onError)}>
+        <ModalBody>
           <Stack gap={5}>
             <div className={styles.modalBody}>
               <h5>
@@ -196,26 +196,26 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
               )}
             </section>
           </Stack>
-        </Form>
-      </ModalBody>
-      <ModalFooter>
-        <Button kind="secondary" onClick={closeModal}>
-          {getCoreTranslation('cancel')}
-        </Button>
-        <Button type="submit" disabled={isSubmitting} onClick={handleSubmit(onSubmit, onError)}>
-          {isSubmitting ? (
-            <div className={styles.inline}>
-              <InlineLoading
-                status="active"
-                iconDescription={t('submitting', 'Submitting')}
-                description={t('submitting', 'Submitting') + '...'}
-              />
-            </div>
-          ) : (
-            getCoreTranslation('save')
-          )}
-        </Button>
-      </ModalFooter>
+        </ModalBody>
+        <ModalFooter>
+          <Button kind="secondary" onClick={closeModal}>
+            {getCoreTranslation('cancel')}
+          </Button>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <div className={styles.inline}>
+                <InlineLoading
+                  status="active"
+                  iconDescription={t('submitting', 'Submitting')}
+                  description={t('submitting', 'Submitting') + '...'}
+                />
+              </div>
+            ) : (
+              getCoreTranslation('save')
+            )}
+          </Button>
+        </ModalFooter>
+      </Form>
     </>
   );
 };

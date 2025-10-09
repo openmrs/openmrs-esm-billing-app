@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
-import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 
 type CashPointFormValues = {
   name: string;
@@ -57,7 +57,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
       setLocations(allLocations);
     } catch (err) {
       showSnackbar({
-        title: t('error', 'Error'),
+        title: getCoreTranslation('error'),
         subtitle: t('errorFetchingLocations', 'An error occurred while fetching locations.'),
         kind: 'error',
         isLowContrast: false,
@@ -94,7 +94,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
       onCashPointAdded();
     } catch (err) {
       showSnackbar({
-        title: t('error', 'Error'),
+        title: getCoreTranslation('error'),
         subtitle: err?.message || t('errorSavingCashPoint', 'An error occurred while saving the cash point.'),
         kind: 'error',
         isLowContrast: false,
@@ -154,10 +154,10 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
         </ModalBody>
         <ModalFooter>
           <Button kind="secondary" onClick={closeModal}>
-            {t('cancel', 'Cancel')}
+            {getCoreTranslation('cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t('saving', 'Saving') + '...' : t('save', 'Save')}
+            {isSubmitting ? t('saving', 'Saving') + '...' : getCoreTranslation('save')}
           </Button>
         </ModalFooter>
       </Form>

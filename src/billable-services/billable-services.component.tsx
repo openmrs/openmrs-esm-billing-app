@@ -28,6 +28,7 @@ import {
   ErrorState,
   navigate,
   showModal,
+  getCoreTranslation,
 } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { type BillableService } from '../types/index';
@@ -67,7 +68,7 @@ const BillableServices = () => {
       key: 'prices',
     },
     {
-      header: t('actions', 'Actions'),
+      header: getCoreTranslation('actions'),
       key: 'actions',
     },
   ];

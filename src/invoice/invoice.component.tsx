@@ -52,7 +52,11 @@ const Invoice: React.FC = () => {
     onAfterPrint: handleAfterPrint,
     preserveAfterPrint: false,
     onPrintError: (_, error) =>
-      showSnackbar({ title: t('printError', 'Error printing invoice'), kind: 'error', subtitle: error.message }),
+      showSnackbar({
+        title: t('errorPrintingInvoice', 'Error printing invoice'),
+        kind: 'error',
+        subtitle: error.message,
+      }),
   });
 
   useEffect(() => {

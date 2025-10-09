@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
-import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 
 interface DeletePaymentModeModalProps {
   closeModal: () => void;
@@ -36,7 +36,7 @@ const DeletePaymentModeModal: React.FC<DeletePaymentModeModalProps> = ({
       onPaymentModeDeleted();
     } catch (err) {
       showSnackbar({
-        title: t('error', 'Error'),
+        title: getCoreTranslation('error'),
         subtitle: err?.message || t('errorDeletingPaymentMode', 'An error occurred while deleting the payment mode.'),
         kind: 'error',
         isLowContrast: false,
@@ -53,18 +53,16 @@ const DeletePaymentModeModal: React.FC<DeletePaymentModeModalProps> = ({
         <p>{t('confirmDeleteMessage', 'Are you sure you want to delete this payment mode? Proceed cautiously.')}</p>
         {paymentModeName && (
           <p>
-            <strong>
-              {t('paymentModeName', 'Payment Mode Name')}: {paymentModeName}
-            </strong>
+            <strong>{t('paymentModeName', 'Payment Mode Name: {{paymentModeName}}', { paymentModeName })}</strong>
           </p>
         )}
       </ModalBody>
       <ModalFooter>
         <Button kind="secondary" onClick={closeModal}>
-          {t('cancel', 'Cancel')}
+          {getCoreTranslation('cancel')}
         </Button>
         <Button kind="danger" onClick={handleDelete} disabled={isDeleting}>
-          {isDeleting ? t('deleting', 'Deleting') + '...' : t('delete', 'Delete')}
+          {isDeleting ? t('deleting', 'Deleting') + '...' : getCoreTranslation('delete')}
         </Button>
       </ModalFooter>
     </>

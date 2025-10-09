@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import AddBillableService from './add-billable-service.component';
+import { getCoreTranslation } from '@openmrs/esm-framework';
 
 interface EditBillableServiceModalProps {
   closeModal: () => void;
@@ -29,7 +30,7 @@ const EditBillableServiceModal: React.FC<EditBillableServiceModalProps> = ({
       </ModalBody>
       <ModalFooter>
         <Button kind="secondary" onClick={closeModal}>
-          {t('cancel', 'Cancel')}
+          {getCoreTranslation('cancel')}
         </Button>
         <Button
           onClick={() => {
@@ -39,7 +40,7 @@ const EditBillableServiceModal: React.FC<EditBillableServiceModalProps> = ({
               form.requestSubmit();
             }
           }}>
-          {t('save', 'Save')}
+          {getCoreTranslation('save')}
         </Button>
       </ModalFooter>
     </>

@@ -16,7 +16,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
+import { getCoreTranslation, navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import {
   createBillableService,
   updateBillableService,
@@ -30,10 +30,6 @@ import styles from './add-billable-service.scss';
 type PaymentMode = {
   paymentMode: string;
   price: string | number;
-};
-
-type PaymentModeFormValue = {
-  payment: Array<PaymentMode>;
 };
 
 const servicePriceSchema = z.object({
@@ -180,7 +176,7 @@ const AddBillableService: React.FC<{
       <InlineLoading
         status="active"
         iconDescription={t('loadingDescription', 'Loading')}
-        description={t('loading', 'Loading data...')}
+        description={t('loadingData', 'Loading data') + '...'}
       />
     );
   }
@@ -391,10 +387,10 @@ const AddBillableService: React.FC<{
       {!isModal && (
         <section>
           <Button kind="secondary" onClick={onClose}>
-            {t('cancel', 'Cancel')}
+            {getCoreTranslation('cancel')}
           </Button>
           <Button type="submit" disabled={!isValid || Object.keys(errors).length > 0}>
-            {t('save', 'Save')}
+            {getCoreTranslation('save')}
           </Button>
         </section>
       )}

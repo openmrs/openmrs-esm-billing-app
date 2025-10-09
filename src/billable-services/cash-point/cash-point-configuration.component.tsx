@@ -2,8 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Button,
   DataTable,
-  OverflowMenu,
-  OverflowMenuItem,
   Table,
   TableBody,
   TableCell,
@@ -14,7 +12,7 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, openmrsFetch, restBaseUrl, showModal } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl, showModal, getCoreTranslation } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './cash-point-configuration.scss';
 
@@ -28,7 +26,7 @@ const CashPointConfiguration: React.FC = () => {
       setCashPoints(response.data.results || []);
     } catch (err) {
       showSnackbar({
-        title: t('error', 'Error'),
+        title: getCoreTranslation('error'),
         subtitle: t('errorFetchingCashPoints', 'An error occurred while fetching cash points.'),
         kind: 'error',
         isLowContrast: false,
@@ -57,7 +55,6 @@ const CashPointConfiguration: React.FC = () => {
     { key: 'name', header: t('name', 'Name') },
     { key: 'uuid', header: t('uuid', 'UUID') },
     { key: 'location', header: t('location', 'Location') },
-    { key: 'actions', header: t('actions', 'Actions') },
   ];
 
   return (
@@ -85,21 +82,9 @@ const CashPointConfiguration: React.FC = () => {
                   <TableBody>
                     {rows.map((row) => (
                       <TableRow key={row.id} {...getRowProps({ row })}>
-                        {row.cells.map((cell) =>
-                          cell.info.header !== 'actions' ? (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
-                          ) : (
-                            <TableCell key={cell.id}>
-                              <OverflowMenu>
-                                <OverflowMenuItem
-                                  className={styles.menuItem}
-                                  itemText={t('delete', 'Delete')}
-                                  disabled
-                                />
-                              </OverflowMenu>
-                            </TableCell>
-                          ),
-                        )}
+                        {row.cells.map((cell) => (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ))}
                       </TableRow>
                     ))}
                   </TableBody>

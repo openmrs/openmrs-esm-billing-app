@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
-import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 
 type PaymentModeFormValues = {
   name: string;
@@ -61,7 +61,7 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
       onPaymentModeAdded();
     } catch (err) {
       showSnackbar({
-        title: t('error', 'Error'),
+        title: getCoreTranslation('error'),
         subtitle: err?.message || t('errorSavingPaymentMode', 'An error occurred while saving the payment mode.'),
         kind: 'error',
         isLowContrast: false,
@@ -107,10 +107,10 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
         </ModalBody>
         <ModalFooter>
           <Button kind="secondary" onClick={closeModal}>
-            {t('cancel', 'Cancel')}
+            {getCoreTranslation('cancel')}
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? t('saving', 'Saving') + '...' : t('save', 'Save')}
+            {isSubmitting ? t('saving', 'Saving') + '...' : getCoreTranslation('save')}
           </Button>
         </ModalFooter>
       </Form>

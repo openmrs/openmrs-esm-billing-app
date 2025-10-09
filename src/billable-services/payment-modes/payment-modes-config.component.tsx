@@ -14,7 +14,7 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, openmrsFetch, restBaseUrl, showModal } from '@openmrs/esm-framework';
+import { showSnackbar, openmrsFetch, restBaseUrl, showModal, getCoreTranslation } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './payment-modes-config.scss';
 
@@ -28,7 +28,7 @@ const PaymentModesConfig: React.FC = () => {
       setPaymentModes(response.data.results || []);
     } catch (err) {
       showSnackbar({
-        title: t('error', 'Error'),
+        title: getCoreTranslation('error'),
         subtitle: t('errorFetchingPaymentModes', 'An error occurred while fetching payment modes.'),
         kind: 'error',
         isLowContrast: false,
@@ -63,7 +63,7 @@ const PaymentModesConfig: React.FC = () => {
   const headerData = [
     { key: 'name', header: t('name', 'Name') },
     { key: 'description', header: t('description', 'Description') },
-    { key: 'actions', header: t('actions', 'Actions') },
+    { key: 'actions', header: getCoreTranslation('actions') },
   ];
 
   return (
@@ -99,7 +99,7 @@ const PaymentModesConfig: React.FC = () => {
                               <OverflowMenu>
                                 <OverflowMenuItem
                                   className={styles.menuItem}
-                                  itemText={t('delete', 'Delete')}
+                                  itemText={getCoreTranslation('delete')}
                                   onClick={() => {
                                     const selected = paymentModes.find((p) => p.uuid === row.id);
                                     handleDeletePaymentMode(selected);

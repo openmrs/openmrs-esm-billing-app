@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@carbon/react';
 import { Printer } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
+import { getCoreTranslation } from '@openmrs/esm-framework';
 import { apiBasePath } from '../../constants';
 import styles from './print-receipt.scss';
 
@@ -36,7 +37,7 @@ const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
       renderIcon={(props) => <Printer size={24} {...props} />}
       onClick={handlePrintReceiptClick}
       disabled={isRedirecting}>
-      {isRedirecting ? t('loading', 'Loading') : t('printReceipt', 'Print receipt')}
+      {isRedirecting ? getCoreTranslation('loading') : t('printReceipt', 'Print receipt')}
     </Button>
   );
 };
