@@ -22,9 +22,7 @@ describe('BillableService', () => {
 
     render(<BillableServices />);
 
-    // Check that empty state is rendered without looking for specific test ID
-    expect(screen.getByText('Billable service')).toBeInTheDocument();
-    // Check that empty state is visible with some indication
+    expect(screen.getByRole('button', { name: /record.*billable services/i })).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 

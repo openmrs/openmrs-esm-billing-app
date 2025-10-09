@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar } from '@openmrs/esm-framework';
+import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import styles from './billing-checkin-form.scss';
@@ -73,7 +73,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     return (
       <InlineLoading
         status="active"
-        iconDescription={t('loading', 'Loading')}
+        iconDescription={getCoreTranslation('loading')}
         description={t('loadingBillingServices', 'Loading billing services...')}
       />
     );

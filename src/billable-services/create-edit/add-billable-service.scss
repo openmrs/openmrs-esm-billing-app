@@ -8,10 +8,7 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-}
-
-.section {
-  margin: layout.$spacing-03;
+  margin: layout.$spacing-05;
 }
 
 .sectionTitle {
@@ -99,7 +96,7 @@
 
 .conceptLabel {
   @include type.type-style('label-02');
-  margin: layout.$spacing-05;
+  margin-bottom: layout.$spacing-05;
 }
 
 .errorContainer {

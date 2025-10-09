@@ -9,7 +9,7 @@ import {
   StructuredListWrapper,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@openmrs/esm-framework';
+import { getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { convertToCurrency } from '../../helpers';
 import { type MappedBill, type LineItem } from '../../types';
 import BillWaiverForm from './bill-waiver-form.component';
@@ -44,7 +44,7 @@ const PatientBillsSelections: React.FC<{ bills: MappedBill; setPatientUuid: (pat
             <StructuredListCell head>{t('quantity', 'Quantity')}</StructuredListCell>
             <StructuredListCell head>{t('unitPrice', 'Unit Price')}</StructuredListCell>
             <StructuredListCell head>{t('total', 'Total')}</StructuredListCell>
-            <StructuredListCell head>{t('actions', 'Actions')}</StructuredListCell>
+            <StructuredListCell head>{getCoreTranslation('actions')}</StructuredListCell>
           </StructuredListRow>
         </StructuredListHead>
         <StructuredListBody>

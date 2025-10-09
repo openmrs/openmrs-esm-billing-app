@@ -17,7 +17,7 @@ import {
   TableCell,
 } from '@carbon/react';
 import { TrashCan } from '@carbon/react/icons';
-import { useConfig, useLayoutType, showSnackbar } from '@openmrs/esm-framework';
+import { useConfig, useLayoutType, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
 import { processBillItems, useBillableServices } from '../billing.resource';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
@@ -174,7 +174,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     <Form className={styles.form}>
       <div className={styles.grid}>
         {isLoading ? (
-          <InlineLoading description={t('loading', 'Loading') + '...'} />
+          <InlineLoading description={getCoreTranslation('loading') + '...'} />
         ) : error ? (
           <InlineNotification
             kind="error"

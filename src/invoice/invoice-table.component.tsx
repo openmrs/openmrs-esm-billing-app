@@ -18,7 +18,14 @@ import {
   type DataTableRow,
 } from '@carbon/react';
 import { Edit } from '@carbon/react/icons';
-import { isDesktop, showModal, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
+import {
+  isDesktop,
+  showModal,
+  useConfig,
+  useDebounce,
+  useLayoutType,
+  getCoreTranslation,
+} from '@openmrs/esm-framework';
 import { type LineItem, type MappedBill } from '../types';
 import { convertToCurrency } from '../helpers';
 import type { BillingConfig } from '../config-schema';
@@ -61,7 +68,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
     { header: t('quantity', 'Quantity'), key: 'quantity', width: 15 },
     { header: t('price', 'Price'), key: 'price', width: 24 },
     { header: t('total', 'Total'), key: 'total', width: 15 },
-    { header: t('actions', 'Actions'), key: 'actionButton' },
+    { header: getCoreTranslation('actions'), key: 'actionButton' },
   ];
 
   const handleSelectBillItem = useCallback(
