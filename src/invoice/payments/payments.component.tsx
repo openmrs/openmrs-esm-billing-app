@@ -22,7 +22,7 @@ type PaymentProps = {
   mutate: () => void;
 };
 
-export type Payment = { method: string; amount: string | number; referenceCode?: number | string };
+export type Payment = { method: string; amount: number | null | undefined; referenceCode?: number | string };
 
 export type PaymentFormValue = {
   payment: Array<Payment>;
@@ -30,14 +30,15 @@ export type PaymentFormValue = {
 
 const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
   const { t } = useTranslation();
-  const { billableServices, isLoading, isValidating, error } = useBillableServices();
+  const { billableServices } = useBillableServices();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
       .number()
       .nullable()
-      .refine((val) => val === null || val <= bill?.totalAmount - bill?.tenderedAmount, {
-        message: 'Amount paid should not be greater than amount due',
+      .optional()
+      .refine((val) => val === null || val === undefined || val <= bill?.totalAmount - bill?.tenderedAmount, {
+        message: t('amountPaidShouldNotBeGreaterThanAmountDue', 'Amount paid should not be greater than amount due'),
       }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
   });
@@ -65,7 +66,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
 
   const handleProcessPayment = () => {
     if (bill) {
-      const amountBeingTendered = formValues?.reduce((acc, curr) => acc + Number(curr.amount), 0);
+      const amountBeingTendered = formValues?.reduce((acc, curr) => acc + (curr.amount || 0), 0);
       const amountRemaining = amountDue - amountBeingTendered;
       const paymentPayload = createPaymentPayload(
         bill,
@@ -88,7 +89,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
           if (currentVisit) {
             updateBillVisitAttribute(currentVisit);
           }
-          methods.reset({ payment: [{ method: '', amount: '0', referenceCode: '' }] });
+          methods.reset({ payment: [{ method: '', amount: null, referenceCode: '' }] });
           mutate();
         },
         (error) => {
