@@ -12,6 +12,7 @@
   "addPaymentOptions": "Add payment option",
   "amount": "Amount",
   "amountDue": "Amount Due",
+  "amountPaidShouldNotBeGreaterThanAmountDue": "Amount paid should not be greater than amount due",
   "amountTendered": "Amount Tendered",
   "amountToWaiveAriaLabel": "Enter amount to waive",
   "amountToWaiveHelper": "Specify the amount to be deducted from the bill",

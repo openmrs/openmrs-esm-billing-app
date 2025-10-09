@@ -13,7 +13,7 @@ type PaymentFormProps = {
   isSingleLineItem: boolean;
 };
 
-const DEFAULT_PAYMENT = { method: '', amount: 0, referenceCode: '' };
+const DEFAULT_PAYMENT = { method: '', amount: null, referenceCode: '' };
 
 const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineItem }) => {
   const { t } = useTranslation();
@@ -80,11 +80,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
                 <NumberInput
                   id="paymentAmount"
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
+                  onChange={({ value }) => field.onChange(Number(value) || null)}
                   invalid={!!errors?.payment?.[index]?.amount}
                   invalidText={errors?.payment?.[index]?.amount?.message}
                   label={t('amount', 'Amount')}
                   placeholder={t('enterAmount', 'Enter amount')}
+                  min={0}
                 />
               )}
             />
