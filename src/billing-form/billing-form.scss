@@ -119,20 +119,12 @@
       }
     }
     
-    .itemControls {
+      .itemControls {
       display: flex;
       flex-wrap: wrap;
       gap: layout.$spacing-05;
       margin-top: layout.$spacing-03;
-      align-items: flex-start;
-      
-      display: flex;
-      flex-wrap: wrap;
-      gap: layout.$spacing-05;
-      margin-top: layout.$spacing-03;
-      align-items: flex-start;
-      
-      .controlSection {
+      align-items: flex-end;      .controlSection {
         display: flex;
         flex-direction: column;
         min-width: 0;
@@ -150,6 +142,8 @@
         &:last-child {
           flex: 0 0 180px;
           width: 180px;
+          margin-left: auto;
+          text-align: right;
         }
         
         label {
