@@ -9,7 +9,7 @@ import BillWaiver from './bill-waiver/bill-waiver.component';
 import BillableServicesDashboard from './dashboard/dashboard.component';
 import BillingHeader from '../billing-header/billing-header.component';
 import CashPointConfiguration from './cash-point/cash-point-configuration.component';
-import PaymentModesConfig from './payyment-modes/payment-modes-config.component';
+import PaymentModesConfig from './payment-modes/payment-modes-config.component';
 import styles from './billable-services.scss';
 
 const BillableServiceHome: React.FC = () => {

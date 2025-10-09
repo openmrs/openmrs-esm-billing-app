@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, showSnackbar } from '@openmrs/esm-framework';
 import { type MappedBill } from '../types';
 import { updateBillItems } from '../billing.resource';
-import ChangeStatus from './edit-bill-item.component';
+import EditBillLineItemModal from './edit-bill-item.modal';
 
 const mockUpdateBillItems = jest.mocked(updateBillItems);
 const mockShowSnackbar = jest.mocked(showSnackbar);
@@ -77,7 +77,7 @@ describe('ChangeStatus component', () => {
   const closeModalMock = jest.fn();
 
   test('renders the form with correct fields and default values', () => {
-    render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
+    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
     expect(screen.getByText('Edit bill line item?')).toBeInTheDocument();
     expect(screen.getByText('John Doe · Main Cashpoint · 123456')).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('ChangeStatus component', () => {
 
   test('updates total when quantity is changed', async () => {
     const user = userEvent.setup();
-    render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
+    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
     await user.type(quantityInput, '3');
@@ -100,7 +100,7 @@ describe('ChangeStatus component', () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
 
-    render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
+    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
     await user.click(screen.getByText(/Save/));
 
@@ -120,7 +120,7 @@ describe('ChangeStatus component', () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockRejectedValueOnce({ message: 'Error occurred' });
 
-    render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
+    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
     await user.click(screen.getByText(/Save/));
 
