@@ -78,7 +78,7 @@ export const configSchema = {
   showEditBillButton: {
     _type: Type.Boolean,
     _description: 'Whether to show the edit bill button or not.',
-    _default: false,
+    _default: true,
   },
 };
 

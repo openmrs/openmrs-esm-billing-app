@@ -156,7 +156,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                     min={0}
                     max={100}
                     value={value}
-                    onChange={onChange}
+                    onChange={(_event: any, { value: newValue }: any) => onChange(String(newValue))}
                     className={styles.controlField}
                     invalid={errors.quantity?.message}
                     invalidText={errors.quantity?.message}
