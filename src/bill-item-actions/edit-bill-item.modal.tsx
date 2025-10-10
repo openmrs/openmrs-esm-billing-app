@@ -153,7 +153,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                   <NumberInput
                     label={t('quantity', 'Quantity')}
                     id="quantityInput"
-                    min={0}
+                    min={1}
                     max={100}
                     value={value}
                     onChange={(_event: any, { value: newValue }: any) => onChange(String(newValue))}
