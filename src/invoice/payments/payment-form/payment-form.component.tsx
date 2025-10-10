@@ -80,6 +80,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
               render={({ field }) => (
                 <NumberInput
                   allowEmpty
+                  disableWheel
+                  hideSteppers
                   id="paymentAmount"
                   invalid={!!errors?.payment?.[index]?.amount}
                   invalidText={errors?.payment?.[index]?.amount?.message}
