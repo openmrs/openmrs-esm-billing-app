@@ -5,25 +5,31 @@
 .invoiceBreakdown {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: flex-end;
-  margin: layout.$spacing-02 0;
+  align-items: center;
+  margin: layout.$spacing-03 0;
 }
 
 .label {
-  @include type.type-style('heading-03');
+  font-size: 0.875rem; // 14px
+  font-weight: 400;
   color: colors.$gray-100;
-  text-align: end;
+  text-align: left;
+  line-height: 1.25rem;
 }
 
 .value {
-  @extend .label;
-  font-weight: bold;
+  font-size: 0.875rem; // 14px
+  font-weight: 400;
+  color: colors.$gray-100;
+  text-align: left;
+  line-height: 1.25rem;
   margin-left: layout.$spacing-03;
-  text-align: start;
 }
 
 .extendedLabel {
-  @extend .label;
-  font-weight: bold;
+  font-size: 0.875rem; // 14px
+  font-weight: 600;
   color: crimson;
+  text-align: left;
+  line-height: 1.25rem;
 }
