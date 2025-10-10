@@ -21,20 +21,29 @@ import {
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import {
-  useLayoutType,
-  isDesktop,
-  useConfig,
-  usePagination,
   ErrorState,
+  getCoreTranslation,
+  isDesktop,
   navigate,
   showModal,
-  getCoreTranslation,
+  useConfig,
+  useLayoutType,
+  usePagination,
+  type LayoutType,
 } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { type BillableService } from '../types/index';
 import { useBillableServices } from './billable-service.resource';
 import type { BillingConfig } from '../config-schema';
 import styles from './billable-services.scss';
+
+interface FilterableTableHeaderProps {
+  layout: LayoutType;
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isValidating: boolean;
+  responsiveSize: 'sm' | 'md' | 'lg';
+  t: (key: string, fallback: string) => string;
+}
 
 const BillableServices = () => {
   const { t } = useTranslation();
@@ -67,10 +76,6 @@ const BillableServices = () => {
       header: t('prices', 'Prices'),
       key: 'prices',
     },
-    {
-      header: getCoreTranslation('actions'),
-      key: 'actions',
-    },
   ];
 
   const launchBillableServiceForm = useCallback(() => {
@@ -81,8 +86,9 @@ const BillableServices = () => {
     const flatBillableServices = Array.isArray(billableServices) ? billableServices.flat() : billableServices;
 
     if (flatBillableServices !== undefined && flatBillableServices.length > 0) {
-      if (searchString && searchString.trim() !== '') {
-        const search = searchString.toLowerCase();
+      const trimmedSearch = searchString.trim();
+      if (trimmedSearch) {
+        const search = trimmedSearch.toLowerCase();
         return flatBillableServices.filter((service: BillableService) =>
           Object.entries(service).some(([header, value]) => {
             return header === 'uuid' ? false : `${value}`.toLowerCase().includes(search);
@@ -97,21 +103,16 @@ const BillableServices = () => {
   const rowData = [];
 
   if (results) {
-    results.forEach((service, index) => {
+    results.forEach((service) => {
       const s = {
-        id: `${index}`,
+        id: service.uuid,
         uuid: service.uuid,
         serviceName: service.name,
         shortName: service.shortName,
         serviceType: service?.serviceType?.display,
         status: service.serviceStatus,
-        prices: '--',
+        prices: service.servicePrices.map((price) => `${price.name} (${price.price})`).join(', ') || '--',
       };
-      let cost = '';
-      service.servicePrices.forEach((price) => {
-        cost += `${price.name} (${price.price}) `;
-      });
-      s.prices = cost;
       rowData.push(s);
     });
   }
@@ -123,29 +124,33 @@ const BillableServices = () => {
     },
     [goTo, setSearchString],
   );
+
   const handleEditService = useCallback(
-    (service) => {
-      showModal('edit-billable-service-modal', {
-        editingService: service,
+    (service: BillableService) => {
+      const dispose = showModal('edit-billable-service-modal', {
+        serviceToEdit: service,
         onServiceUpdated: mutate,
+        closeModal: () => dispose(),
       });
     },
     [mutate],
   );
 
   if (isLoading) {
-    return <InlineLoading status="active" iconDescription="Loading" description="Loading data..." />;
+    return (
+      <InlineLoading status="active" iconDescription={getCoreTranslation('loading')} description="Loading data..." />
+    );
   }
 
   if (error) {
-    return <ErrorState headerTitle={t('billableService', 'Billable Service')} error={error} />;
+    return <ErrorState headerTitle={t('billableService', 'Billable service')} error={error} />;
   }
 
   if (billableServices.length === 0) {
     return (
       <EmptyState
         displayText={t('billableServices__lower', 'billable services')}
-        headerTitle={t('billableService', 'Billable Service')}
+        headerTitle={t('billableService', 'Billable service')}
         launchForm={launchBillableServiceForm}
       />
     );
@@ -164,16 +169,24 @@ const BillableServices = () => {
         isSortable
         rows={rowData}
         headers={headerData}
+        overflowMenuOnHover={isDesktop(layout)}
         size={responsiveSize}
-        useZebraStyles={rowData?.length > 1 ? true : false}>
-        {({ rows, headers, getRowProps, getTableProps }) => (
+        useZebraStyles={rowData?.length > 1}>
+        {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
           <TableContainer>
             <Table {...getTableProps()} aria-label="service list">
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
-                    <TableHeader key={header.key}>{header.header}</TableHeader>
+                    <TableHeader
+                      {...getHeaderProps({
+                        header,
+                      })}
+                      key={header.key}>
+                      {header.header}
+                    </TableHeader>
                   ))}
+                  <TableHeader aria-label={getCoreTranslation('actions')} />
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -187,10 +200,10 @@ const BillableServices = () => {
                       <TableCell key={cell.id}>{cell.value}</TableCell>
                     ))}
                     <TableCell className="cds--table-column-menu">
-                      <OverflowMenu size="sm" flipped>
+                      <OverflowMenu size="lg" flipped>
                         <OverflowMenuItem
                           className={styles.menuItem}
-                          itemText={t('editBillableService', 'Edit Billable Service')}
+                          itemText={t('editBillableService', 'Edit billable service')}
                           onClick={() => handleEditService(results.find((service) => service.uuid === row.id))}
                         />
                       </OverflowMenu>
@@ -216,8 +229,8 @@ const BillableServices = () => {
       )}
       {paginated && (
         <Pagination
-          forwardText="Next page"
-          backwardText="Previous page"
+          forwardText={t('nextPage', 'Next page')}
+          backwardText={t('previousPage', 'Previous page')}
           page={currentPage}
           pageSize={pageSize}
           pageSizes={pageSizes}
@@ -238,7 +251,7 @@ const BillableServices = () => {
   );
 };
 
-function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveSize, t }) {
+function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveSize, t }: FilterableTableHeaderProps) {
   return (
     <>
       <div className={styles.headerContainer}>
@@ -274,4 +287,5 @@ function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveS
     </>
   );
 }
+
 export default BillableServices;

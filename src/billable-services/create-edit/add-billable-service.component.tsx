@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   Button,
   ComboBox,
@@ -8,15 +8,17 @@ import {
   InlineLoading,
   Layer,
   Search,
+  Stack,
   TextInput,
   Tile,
 } from '@carbon/react';
-import { Add, TrashCan, WarningFilled } from '@carbon/react/icons';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
+import { Add, TrashCan } from '@carbon/react/icons';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { type TFunction } from 'i18next';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCoreTranslation, navigate, showSnackbar, useDebounce, useLayoutType } from '@openmrs/esm-framework';
+import { getCoreTranslation, navigate, ResponsiveWrapper, showSnackbar, useDebounce } from '@openmrs/esm-framework';
 import {
   createBillableService,
   updateBillableService,
@@ -24,73 +26,142 @@ import {
   usePaymentModes,
   useServiceTypes,
 } from '../billable-service.resource';
-import { type ServiceConcept } from '../../types';
+import { type BillableService, type ServiceConcept, type ServicePrice } from '../../types';
 import styles from './add-billable-service.scss';
 
-type PaymentMode = {
+interface ServiceType {
+  uuid: string;
+  display: string;
+}
+
+interface PaymentModeForm {
   paymentMode: string;
   price: string | number;
-};
+}
 
-const servicePriceSchema = z.object({
-  paymentMode: z.string().refine((value) => !!value, 'Payment method is required'),
-  price: z.union([
-    z.number().refine((value) => !!value, 'Price is required'),
-    z.string().refine((value) => !!value, 'Price is required'),
-  ]),
-});
+interface BillableServiceFormData {
+  name: string;
+  shortName?: string;
+  serviceType: ServiceType | null;
+  concept?: ServiceConcept | null;
+  payment: PaymentModeForm[];
+}
 
-const paymentFormSchema = z.object({
-  payment: z.array(servicePriceSchema).min(1, 'At least one payment option is required'),
-});
-
-const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
-
-const AddBillableService: React.FC<{
-  editingService?: any;
+interface AddBillableServiceProps {
+  serviceToEdit?: BillableService;
   onClose: () => void;
   onServiceUpdated?: () => void;
   isModal?: boolean;
-}> = ({ editingService, onClose, onServiceUpdated, isModal = false }) => {
+}
+
+const DEFAULT_PAYMENT_OPTION: PaymentModeForm = { paymentMode: '', price: 0 };
+const MAX_NAME_LENGTH = 19;
+
+const createBillableServiceSchema = (t: TFunction) => {
+  const servicePriceSchema = z.object({
+    paymentMode: z
+      .string({
+        required_error: t('paymentModeRequired', 'Payment mode is required'),
+      })
+      .trim()
+      .min(1, t('paymentModeRequired', 'Payment mode is required')),
+    price: z.union([
+      z.number().positive(t('priceMustBeGreaterThanZero', 'Price must be greater than 0')),
+      z
+        .string({
+          required_error: t('priceIsRequired', 'Price is required'),
+        })
+        .trim()
+        .min(1, t('priceIsRequired', 'Price is required'))
+        .refine(
+          (val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0,
+          t('priceMustBeValidPositiveNumber', 'Price must be a valid positive number'),
+        ),
+    ]),
+  });
+
+  return z.object({
+    name: z
+      .string({
+        required_error: t('serviceNameRequired', 'Service name is required'),
+      })
+      .trim()
+      .min(1, t('serviceNameRequired', 'Service name is required'))
+      .max(
+        MAX_NAME_LENGTH,
+        t('serviceNameExceedsLimit', 'Service name cannot exceed {{MAX_NAME_LENGTH}} characters', {
+          MAX_NAME_LENGTH,
+        }),
+      ),
+    shortName: z
+      .string()
+      .max(
+        MAX_NAME_LENGTH,
+        t('shortNameExceedsLimit', 'Short name cannot exceed {{MAX_NAME_LENGTH}} characters', { MAX_NAME_LENGTH }),
+      )
+      .optional(),
+    serviceType: z
+      .object({
+        uuid: z.string(),
+        display: z.string(),
+      })
+      .nullable()
+      .refine((val) => val !== null, t('serviceTypeRequired', 'Service type is required')),
+    concept: z
+      .object({
+        uuid: z.string(),
+        display: z.string(),
+      })
+      .nullable()
+      .optional(),
+    payment: z.array(servicePriceSchema).min(1, t('paymentOptionRequired', 'At least one payment option is required')),
+  });
+};
+
+const AddBillableService: React.FC<AddBillableServiceProps> = ({
+  serviceToEdit,
+  onClose,
+  onServiceUpdated,
+  isModal = false,
+}) => {
   const { t } = useTranslation();
 
-  const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
-  const { serviceTypes, isLoading: isLoadingServicesTypes } = useServiceTypes();
-  const [billableServicePayload, setBillableServicePayload] = useState(editingService || {});
+  const { paymentModes, isLoadingPaymentModes } = usePaymentModes();
+  const { serviceTypes, isLoadingServiceTypes } = useServiceTypes();
+
+  const billableServiceSchema = useMemo(() => createBillableServiceSchema(t), [t]);
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
-  } = useForm<any>({
+    reset,
+  } = useForm<BillableServiceFormData>({
     mode: 'all',
     defaultValues: {
-      name: editingService?.name,
-      serviceShortName: editingService?.shortName,
-      serviceType: editingService?.serviceType,
-      conceptsSearch: editingService?.concept,
-      payment: editingService?.servicePrices || [DEFAULT_PAYMENT_OPTION],
+      name: serviceToEdit?.name || '',
+      shortName: serviceToEdit?.shortName || '',
+      serviceType: serviceToEdit?.serviceType || null,
+      concept: serviceToEdit?.concept || null,
+      payment: serviceToEdit?.servicePrices?.map((servicePrice: ServicePrice) => ({
+        paymentMode: servicePrice.paymentMode?.uuid || '',
+        price: servicePrice.price,
+      })) || [DEFAULT_PAYMENT_OPTION],
     },
-    resolver: zodResolver(paymentFormSchema),
-    shouldUnregister: !editingService,
+    resolver: zodResolver(billableServiceSchema),
   });
-  const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
+  const { fields, remove, append } = useFieldArray({ name: 'payment', control });
 
-  const handleAppendPaymentMode = useCallback(() => append(DEFAULT_PAYMENT_OPTION), [append]);
-  const handleRemovePaymentMode = useCallback((index) => remove(index), [remove]);
+  const handleAppendPaymentMode = () => append(DEFAULT_PAYMENT_OPTION);
+  const handleRemovePaymentMode = (index: number) => remove(index);
 
-  const isTablet = useLayoutType() === 'tablet';
   const searchInputRef = useRef(null);
-  const handleSearchTermChange = (event: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(event.target.value);
 
-  const [selectedConcept, setSelectedConcept] = useState<ServiceConcept>(null);
+  const selectedConcept = useWatch({ control, name: 'concept' });
   const [searchTerm, setSearchTerm] = useState('');
-  const debouncedSearchTerm = useDebounce(searchTerm);
+  const debouncedSearchTerm = useDebounce(searchTerm.trim());
   const { searchResults, isSearching } = useConceptsSearch(debouncedSearchTerm);
-  const handleConceptChange = useCallback((selectedConcept: any) => {
-    setSelectedConcept(selectedConcept);
-  }, []);
 
   const handleNavigateToServiceDashboard = () =>
     navigate({
@@ -98,69 +169,63 @@ const AddBillableService: React.FC<{
     });
 
   useEffect(() => {
-    if (editingService && !isLoadingPaymentModes) {
-      setBillableServicePayload(editingService);
-      setValue('serviceName', editingService.name || '');
-      setValue('shortName', editingService.shortName || '');
-      setValue('serviceType', editingService.serviceType || '');
-      setValue(
-        'payment',
-        editingService.servicePrices.map((payment) => ({
+    if (serviceToEdit && !isLoadingPaymentModes && !isLoadingServiceTypes) {
+      reset({
+        name: serviceToEdit.name || '',
+        shortName: serviceToEdit.shortName || '',
+        serviceType: serviceToEdit.serviceType || null,
+        concept: serviceToEdit.concept || null,
+        payment: serviceToEdit.servicePrices.map((payment: ServicePrice) => ({
           paymentMode: payment.paymentMode?.uuid || '',
           price: payment.price,
         })),
-      );
-      setValue('conceptsSearch', editingService.concept);
-
-      if (editingService.concept) {
-        setSelectedConcept(editingService.concept);
-      }
+      });
     }
-  }, [editingService, isLoadingPaymentModes, paymentModes, serviceTypes, setValue]);
+  }, [serviceToEdit, isLoadingPaymentModes, reset, isLoadingServiceTypes]);
 
-  const MAX_NAME_LENGTH = 19;
-
-  const onSubmit = (data) => {
+  const onSubmit = async (data: BillableServiceFormData) => {
     const payload = {
-      name: billableServicePayload.name.substring(0, MAX_NAME_LENGTH),
-      shortName: billableServicePayload.shortName.substring(0, MAX_NAME_LENGTH),
-      serviceType: billableServicePayload.serviceType.uuid,
+      name: data.name,
+      shortName: data.shortName || '',
+      serviceType: data.serviceType!.uuid,
       servicePrices: data.payment.map((payment) => {
         const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
         return {
           paymentMode: payment.paymentMode,
           name: mode?.name || 'Unknown',
-          price: parseFloat(payment.price),
+          price: typeof payment.price === 'string' ? parseFloat(payment.price) : payment.price,
         };
       }),
       serviceStatus: 'ENABLED',
-      concept: selectedConcept?.uuid,
+      concept: data.concept?.uuid,
     };
 
-    const saveAction = editingService
-      ? updateBillableService(editingService.uuid, payload)
-      : createBillableService(payload);
+    try {
+      if (serviceToEdit) {
+        await updateBillableService(serviceToEdit.uuid, payload);
+      } else {
+        await createBillableService(payload);
+      }
 
-    saveAction.then(
-      (resp) => {
-        showSnackbar({
-          title: t('billableService', 'Billable service'),
-          subtitle: editingService
-            ? t('updatedSuccessfully', 'Billable service updated successfully')
-            : t('createdSuccessfully', 'Billable service created successfully'),
-          kind: 'success',
-          timeoutInMs: 3000,
-        });
-        if (onServiceUpdated) {
-          onServiceUpdated();
-        }
-        onClose();
-        handleNavigateToServiceDashboard();
-      },
-      (error) => {
-        showSnackbar({ title: t('billPaymentError', 'Bill payment error'), kind: 'error', subtitle: error?.message });
-      },
-    );
+      showSnackbar({
+        title: t('billableService', 'Billable service'),
+        subtitle: serviceToEdit
+          ? t('updatedSuccessfully', 'Billable service updated successfully')
+          : t('createdSuccessfully', 'Billable service created successfully'),
+        kind: 'success',
+      });
+
+      if (onServiceUpdated) {
+        onServiceUpdated();
+      }
+      handleNavigateToServiceDashboard();
+    } catch (error) {
+      showSnackbar({
+        title: t('billPaymentError', 'Bill payment error'),
+        kind: 'error',
+        subtitle: error instanceof Error ? error.message : String(error),
+      });
+    }
   };
 
   const getPaymentErrorMessage = () => {
@@ -171,7 +236,7 @@ const AddBillableService: React.FC<{
     return null;
   };
 
-  if (isLoadingPaymentModes && isLoadingServicesTypes) {
+  if (isLoadingPaymentModes || isLoadingServiceTypes) {
     return (
       <InlineLoading
         status="active"
@@ -183,223 +248,201 @@ const AddBillableService: React.FC<{
 
   return (
     <Form id="billable-service-form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <h4>
-        {editingService
-          ? t('editBillableServices', 'Edit Billable Services')
-          : t('addBillableServices', 'Add Billable Services')}
-      </h4>
-      <section>
-        <Layer>
-          <TextInput
-            id="serviceName"
-            type="text"
-            labelText={t('serviceName', 'Service Name')}
-            size="md"
-            value={billableServicePayload.name || ''}
-            onChange={(e) => {
-              const newName = e.target.value.substring(0, MAX_NAME_LENGTH);
-              setBillableServicePayload({
-                ...billableServicePayload,
-                name: newName,
-              });
-            }}
-            placeholder="Enter service name"
-            maxLength={MAX_NAME_LENGTH}
+      <Stack gap={5}>
+        <h4>
+          {serviceToEdit
+            ? t('editBillableServices', 'Edit Billable Services')
+            : t('addBillableServices', 'Add Billable Services')}
+        </h4>
+        <section>
+          {serviceToEdit ? (
+            <FormLabel className={styles.serviceNameLabel}>{serviceToEdit.name}</FormLabel>
+          ) : (
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <Layer>
+                  <TextInput
+                    {...field}
+                    id="serviceName"
+                    type="text"
+                    labelText={t('serviceName', 'Service name')}
+                    placeholder={t('enterServiceName', 'Enter service name')}
+                    maxLength={MAX_NAME_LENGTH}
+                    invalid={!!errors.name}
+                    invalidText={errors.name?.message}
+                  />
+                </Layer>
+              )}
+            />
+          )}
+        </section>
+        <section>
+          <Controller
+            name="shortName"
+            control={control}
+            render={({ field }) => (
+              <Layer>
+                <TextInput
+                  {...field}
+                  value={field.value || ''}
+                  id="serviceShortName"
+                  type="text"
+                  labelText={t('serviceShortName', 'Short Name')}
+                  placeholder={t('enterServiceShortName', 'Enter service short name')}
+                  maxLength={MAX_NAME_LENGTH}
+                  invalid={!!errors.shortName}
+                  invalidText={errors.shortName?.message}
+                />
+              </Layer>
+            )}
           />
-          {billableServicePayload.name?.length >= MAX_NAME_LENGTH && (
-            <span className={styles.errorMessage}>
-              {t('serviceNameExceedsLimit', 'Service Name exceeds the character limit of {{MAX_NAME_LENGTH}}.', {
-                MAX_NAME_LENGTH,
-              })}
-            </span>
-          )}
-        </Layer>
-      </section>
-      <section>
-        <Layer>
-          <TextInput
-            id="serviceShortName"
-            type="text"
-            labelText={t('serviceShortName', 'Short Name')}
-            size="md"
-            value={billableServicePayload.shortName || ''}
-            onChange={(e) => {
-              const newShortName = e.target.value.substring(0, MAX_NAME_LENGTH);
-              setBillableServicePayload({
-                ...billableServicePayload,
-                shortName: newShortName,
-              });
-            }}
-            placeholder="Enter service short name"
-            maxLength={MAX_NAME_LENGTH}
-          />
-          {billableServicePayload.shortName?.length >= MAX_NAME_LENGTH && (
-            <span className={styles.errorMessage}>
-              {t('shortNameExceedsLimit', 'Short Name exceeds the character limit of {{MAX_NAME_LENGTH}}.', {
-                MAX_NAME_LENGTH,
-              })}
-            </span>
-          )}
-        </Layer>
-      </section>
-      <section>
-        <FormLabel className={styles.conceptLabel}>Associated Concept</FormLabel>
-        <Controller
-          name="search"
-          control={control}
-          render={({ field: { onChange, value, onBlur } }) => (
-            <ResponsiveWrapper isTablet={isTablet}>
-              <Search
-                ref={searchInputRef}
-                size="md"
-                id="conceptsSearch"
-                labelText={t('enterConcept', 'Associated concept')}
-                placeholder={t('searchConcepts', 'Search associated concept')}
-                className={errors?.search && styles.serviceError}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  onChange(e);
-                  handleSearchTermChange(e);
-                }}
-                renderIcon={errors?.search && <WarningFilled />}
-                onBlur={onBlur}
-                onClear={() => {
-                  setSearchTerm('');
-                  setSelectedConcept(null);
-                }}
-                value={(() => {
-                  if (selectedConcept) {
-                    return selectedConcept.display;
-                  }
-                  if (debouncedSearchTerm) {
-                    return value;
-                  }
-                })()}
-              />
-            </ResponsiveWrapper>
-          )}
-        />
+        </section>
+        <section>
+          <FormLabel className={styles.conceptLabel}>{t('associatedConcept', 'Associated concept')}</FormLabel>
+          <ResponsiveWrapper>
+            <Search
+              ref={searchInputRef}
+              id="conceptsSearch"
+              labelText={t('enterConcept', 'Associated concept')}
+              placeholder={t('searchConcepts', 'Search associated concept')}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              onClear={() => {
+                setSearchTerm('');
+                setValue('concept', null);
+              }}
+              value={selectedConcept?.display || searchTerm}
+            />
+          </ResponsiveWrapper>
 
-        {(() => {
-          if (!debouncedSearchTerm || selectedConcept) return null;
-          if (isSearching)
-            return <InlineLoading className={styles.loader} description={t('searching', 'Searching') + '...'} />;
-          if (searchResults && searchResults.length) {
+          {(() => {
+            if (!debouncedSearchTerm || selectedConcept) {
+              return null;
+            }
+            if (isSearching) {
+              return <InlineLoading className={styles.loader} description={t('searching', 'Searching') + '...'} />;
+            }
+            if (searchResults && searchResults.length) {
+              return (
+                <ul className={styles.conceptsList}>
+                  {searchResults?.map((searchResult) => (
+                    <li
+                      role="menuitem"
+                      className={styles.service}
+                      key={searchResult.uuid}
+                      onClick={() => {
+                        setValue('concept', searchResult);
+                        setSearchTerm('');
+                      }}>
+                      {searchResult.display}
+                    </li>
+                  ))}
+                </ul>
+              );
+            }
             return (
-              <ul className={styles.conceptsList}>
-                {/*TODO: use uuid instead of index as the key*/}
-                {searchResults?.map((searchResult, index) => (
-                  <li
-                    role="menuitem"
-                    className={styles.service}
-                    key={index}
-                    onClick={() => handleConceptChange(searchResult)}>
-                    {searchResult.display}
-                  </li>
-                ))}
-              </ul>
+              <Layer>
+                <Tile className={styles.emptyResults}>
+                  <span>
+                    {t('noResultsFor', 'No results for')} <strong>"{debouncedSearchTerm}"</strong>
+                  </span>
+                </Tile>
+              </Layer>
             );
-          }
-          return (
-            <Layer>
-              <Tile className={styles.emptyResults}>
-                <span>
-                  {t('noResultsFor', 'No results for')} <strong>"{debouncedSearchTerm}"</strong>
-                </span>
-              </Tile>
-            </Layer>
-          );
-        })()}
-      </section>
-      <section>
-        <Layer>
-          <ComboBox
-            id="serviceType"
-            items={serviceTypes ?? []}
-            titleText={t('serviceType', 'Service Type')}
-            itemToString={(item) => item?.display || ''}
-            selectedItem={billableServicePayload.serviceType || null}
-            onChange={({ selectedItem }) => {
-              setBillableServicePayload({
-                ...billableServicePayload,
-                display: selectedItem?.display,
-                serviceType: selectedItem,
-              });
-            }}
-            placeholder="Select service type"
-            required
+          })()}
+        </section>
+        <section>
+          <Controller
+            name="serviceType"
+            control={control}
+            render={({ field }) => (
+              <Layer>
+                <ComboBox
+                  id="serviceType"
+                  items={serviceTypes ?? []}
+                  titleText={t('serviceType', 'Service type')}
+                  itemToString={(item: ServiceType) => item?.display || ''}
+                  selectedItem={field.value}
+                  onChange={({ selectedItem }: { selectedItem: ServiceType | null }) => {
+                    field.onChange(selectedItem);
+                  }}
+                  placeholder={t('selectServiceType', 'Select service type')}
+                  invalid={!!errors.serviceType}
+                  invalidText={errors.serviceType?.message}
+                />
+              </Layer>
+            )}
           />
-        </Layer>
-      </section>
-      <section>
-        <div>
-          {fields.map((field, index) => (
-            <div key={field.id} className={styles.paymentMethodContainer}>
-              <Controller
-                control={control}
-                name={`payment.${index}.paymentMode`}
-                render={({ field }) => (
-                  <Layer>
-                    <Dropdown
-                      onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
-                      titleText={t('paymentMode', 'Payment Mode')}
-                      label={t('selectPaymentMethod', 'Select payment method')}
-                      items={paymentModes ?? []}
-                      itemToString={(item) => (item ? item.name : '')}
-                      selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
-                      invalid={!!errors?.payment?.[index]?.paymentMode}
-                      invalidText={errors?.payment?.[index]?.paymentMode?.message}
-                    />
-                  </Layer>
-                )}
-              />
-              <Controller
-                control={control}
-                name={`payment.${index}.price`}
-                render={({ field }) => (
-                  <Layer>
-                    <TextInput
-                      {...field}
-                      invalid={!!errors?.payment?.[index]?.price}
-                      invalidText={errors?.payment?.[index]?.price?.message}
-                      labelText={t('sellingPrice', 'Selling Price')}
-                      placeholder={t('sellingAmount', 'Enter selling price')}
-                    />
-                  </Layer>
-                )}
-              />
-              <div className={styles.removeButtonContainer}>
-                <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
+        </section>
+        <section>
+          <div>
+            {fields.map((field, index) => (
+              <div key={field.id} className={styles.paymentMethodContainer}>
+                <Controller
+                  control={control}
+                  name={`payment.${index}.paymentMode`}
+                  render={({ field }) => (
+                    <Layer>
+                      <Dropdown
+                        id={`paymentMode-${index}`}
+                        onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
+                        titleText={t('paymentMode', 'Payment mode')}
+                        label={t('selectPaymentMode', 'Select payment mode')}
+                        items={paymentModes ?? []}
+                        itemToString={(item) => (item ? item.name : '')}
+                        selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
+                        invalid={!!errors?.payment?.[index]?.paymentMode}
+                        invalidText={errors?.payment?.[index]?.paymentMode?.message}
+                      />
+                    </Layer>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name={`payment.${index}.price`}
+                  render={({ field }) => (
+                    <Layer>
+                      {/* FIXME: this should be a NumberInput */}
+                      <TextInput
+                        {...field}
+                        id={`price-${index}`}
+                        invalid={!!errors?.payment?.[index]?.price}
+                        invalidText={errors?.payment?.[index]?.price?.message}
+                        labelText={t('sellingPrice', 'Selling Price')}
+                        placeholder={t('enterSellingPrice', 'Enter selling price')}
+                      />
+                    </Layer>
+                  )}
+                />
+                <div className={styles.removeButtonContainer}>
+                  <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
+                </div>
               </div>
-            </div>
-          ))}
-          <Button
-            size="md"
-            onClick={handleAppendPaymentMode}
-            className={styles.paymentButtons}
-            renderIcon={(props) => <Add size={24} {...props} />}
-            iconDescription="Add">
-            {t('addPaymentOptions', 'Add payment option')}
-          </Button>
-          {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
-        </div>
-      </section>
+            ))}
+            <Button
+              kind="tertiary"
+              type="button"
+              onClick={handleAppendPaymentMode}
+              className={styles.paymentButtons}
+              renderIcon={(props) => <Add size={24} {...props} />}
+              iconDescription={t('add', 'Add')}>
+              {t('addPaymentOption', 'Add payment option')}
+            </Button>
+            {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
+          </div>
+        </section>
+      </Stack>
       {!isModal && (
         <section>
           <Button kind="secondary" onClick={onClose}>
             {getCoreTranslation('cancel')}
           </Button>
-          <Button type="submit" disabled={!isValid || Object.keys(errors).length > 0}>
-            {getCoreTranslation('save')}
-          </Button>
+          <Button type="submit">{getCoreTranslation('save')}</Button>
         </section>
       )}
     </Form>
   );
 };
-
-function ResponsiveWrapper({ children, isTablet }: { children: React.ReactNode; isTablet: boolean }) {
-  return isTablet ? <Layer>{children} </Layer> : <>{children}</>;
-}
 
 export default AddBillableService;

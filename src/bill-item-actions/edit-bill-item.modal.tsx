@@ -110,7 +110,6 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
         title: t('saveBill', 'Save Bill'),
         subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
         kind: 'success',
-        timeoutInMs: 3000,
       });
       closeModal();
     } catch (error) {

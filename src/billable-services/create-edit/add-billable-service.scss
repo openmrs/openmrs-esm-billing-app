@@ -6,7 +6,6 @@
 .form {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   height: 100%;
   margin: layout.$spacing-05;
 }
@@ -132,3 +131,6 @@
   font-size: 0.875rem;
 }
 
+.serviceNameLabel {
+  @include type.type-style('body-compact-02');
+}
