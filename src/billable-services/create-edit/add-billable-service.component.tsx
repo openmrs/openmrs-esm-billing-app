@@ -7,6 +7,7 @@ import {
   FormLabel,
   InlineLoading,
   Layer,
+  NumberInput,
   Search,
   TextInput,
   Tile,
@@ -29,7 +30,7 @@ import styles from './add-billable-service.scss';
 
 type PaymentMode = {
   paymentMode: string;
-  price: string | number;
+  price: string | number | null;
 };
 
 const servicePriceSchema = z.object({
@@ -44,7 +45,7 @@ const paymentFormSchema = z.object({
   payment: z.array(servicePriceSchema).min(1, 'At least one payment option is required'),
 });
 
-const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
+const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: null };
 
 const AddBillableService: React.FC<{
   editingService?: any;
@@ -130,7 +131,7 @@ const AddBillableService: React.FC<{
         return {
           paymentMode: payment.paymentMode,
           name: mode?.name || 'Unknown',
-          price: parseFloat(payment.price),
+          price: parseFloat(payment.price || 0),
         };
       }),
       serviceStatus: 'ENABLED',
@@ -358,11 +359,14 @@ const AddBillableService: React.FC<{
                 name={`payment.${index}.price`}
                 render={({ field }) => (
                   <Layer>
-                    <TextInput
+                    <NumberInput
                       {...field}
+                      allowEmpty={true}
+                      value={field.value ?? ''}
+                      onChange={(e, { value }) => field.onChange(value === '' ? null : value)}
                       invalid={!!errors?.payment?.[index]?.price}
                       invalidText={errors?.payment?.[index]?.price?.message}
-                      labelText={t('sellingPrice', 'Selling Price')}
+                      label={t('sellingPrice', 'Selling Price')}
                       placeholder={t('sellingAmount', 'Enter selling price')}
                     />
                   </Layer>
