@@ -132,7 +132,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
   }
 
   return (
-    <>
+    <div className={styles.lineItemsWrapper}>
       <DataTable headers={tableHeaders} rows={tableRows} size={responsiveSize} useZebraStyles>
         {({ rows, headers, getRowProps, getTableProps }) => (
           <TableContainer
@@ -191,7 +191,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
           </Layer>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
