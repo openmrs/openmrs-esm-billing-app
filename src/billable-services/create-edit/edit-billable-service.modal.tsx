@@ -1,18 +1,19 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
-import AddBillableService from './add-billable-service.component';
 import { getCoreTranslation } from '@openmrs/esm-framework';
+import { type BillableService } from '../../types';
+import AddBillableService from './add-billable-service.component';
 
 interface EditBillableServiceModalProps {
   closeModal: () => void;
-  editingService?: any;
   onServiceUpdated: () => void;
+  serviceToEdit?: BillableService;
 }
 
 const EditBillableServiceModal: React.FC<EditBillableServiceModalProps> = ({
   closeModal,
-  editingService,
+  serviceToEdit,
   onServiceUpdated,
 }) => {
   const { t } = useTranslation();
@@ -22,10 +23,10 @@ const EditBillableServiceModal: React.FC<EditBillableServiceModalProps> = ({
       <ModalHeader closeModal={closeModal} title={t('billableService', 'Billable Service')} />
       <ModalBody>
         <AddBillableService
-          editingService={editingService}
+          serviceToEdit={serviceToEdit}
+          isModal
           onClose={closeModal}
           onServiceUpdated={onServiceUpdated}
-          isModal={true}
         />
       </ModalBody>
       <ModalFooter>

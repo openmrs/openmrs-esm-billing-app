@@ -41,16 +41,18 @@ const PaymentModesConfig: React.FC = () => {
   }, [fetchPaymentModes]);
 
   const handleAddPaymentMode = () => {
-    showModal('add-payment-mode-modal', {
+    const dispose = showModal('add-payment-mode-modal', {
       onPaymentModeAdded: fetchPaymentModes,
+      closeModal: () => dispose(),
     });
   };
 
   const handleDeletePaymentMode = (paymentMode) => {
-    showModal('delete-payment-mode-modal', {
+    const dispose = showModal('delete-payment-mode-modal', {
       paymentModeUuid: paymentMode.uuid,
       paymentModeName: paymentMode.name,
       onPaymentModeDeleted: fetchPaymentModes,
+      closeModal: () => dispose(),
     });
   };
 
@@ -74,49 +76,47 @@ const PaymentModesConfig: React.FC = () => {
             {t('addNewPaymentMode', 'Add New Payment Mode')}
           </Button>
         </CardHeader>
-        <div className={styles.historyContainer}>
-          <DataTable rows={rowData} headers={headerData} isSortable size="lg">
-            {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
-              <TableContainer>
-                <Table className={styles.table} {...getTableProps()}>
-                  <TableHead>
-                    <TableRow>
-                      {headers.map((header) => (
-                        <TableHeader key={header.key} {...getHeaderProps({ header })}>
-                          {header.header}
-                        </TableHeader>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <TableRow key={row.id} {...getRowProps({ row })}>
-                        {row.cells.map((cell) =>
-                          cell.info.header !== 'actions' ? (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
-                          ) : (
-                            <TableCell key={cell.id}>
-                              <OverflowMenu>
-                                <OverflowMenuItem
-                                  className={styles.menuItem}
-                                  itemText={getCoreTranslation('delete')}
-                                  onClick={() => {
-                                    const selected = paymentModes.find((p) => p.uuid === row.id);
-                                    handleDeletePaymentMode(selected);
-                                  }}
-                                />
-                              </OverflowMenu>
-                            </TableCell>
-                          ),
-                        )}
-                      </TableRow>
+        <DataTable rows={rowData} headers={headerData} isSortable size="lg">
+          {({ rows, headers, getTableProps, getHeaderProps, getRowProps }) => (
+            <TableContainer>
+              <Table className={styles.table} {...getTableProps()}>
+                <TableHead>
+                  <TableRow>
+                    {headers.map((header) => (
+                      <TableHeader key={header.key} {...getHeaderProps({ header })}>
+                        {header.header}
+                      </TableHeader>
                     ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </DataTable>
-        </div>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) =>
+                        cell.info.header !== 'actions' ? (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
+                        ) : (
+                          <TableCell key={cell.id}>
+                            <OverflowMenu>
+                              <OverflowMenuItem
+                                className={styles.menuItem}
+                                itemText={getCoreTranslation('delete')}
+                                onClick={() => {
+                                  const selected = paymentModes.find((p) => p.uuid === row.id);
+                                  handleDeletePaymentMode(selected);
+                                }}
+                              />
+                            </OverflowMenu>
+                          </TableCell>
+                        ),
+                      )}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
       </div>
     </div>
   );

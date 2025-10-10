@@ -110,7 +110,6 @@ describe('ChangeStatus component', () => {
         title: 'Save Bill',
         subtitle: 'Bill processing has been successful',
         kind: 'success',
-        timeoutInMs: 3000,
       });
       expect(closeModalMock).toHaveBeenCalled();
     });
