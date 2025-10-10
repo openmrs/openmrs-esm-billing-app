@@ -38,7 +38,7 @@ type InvoiceTableProps = {
 
 const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
   const { t } = useTranslation();
-  const { defaultCurrency, showEditBillButton } = useConfig<BillingConfig>();
+  const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
   const lineItems = useMemo(() => bill?.lineItems ?? [], [bill?.lineItems]);
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
@@ -96,24 +96,20 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
           total: item.price * item.quantity,
           actionButton: (
             <span>
-              {showEditBillButton ? (
-                <Button
-                  data-testid={`edit-button-${item.uuid}`}
-                  renderIcon={Edit}
-                  hasIconOnly
-                  kind="ghost"
-                  iconDescription={t('editThisBillItem', 'Edit this bill item')}
-                  tooltipPosition="left"
-                  onClick={() => handleSelectBillItem(item)}
-                />
-              ) : (
-                '--'
-              )}
+              <Button
+                data-testid={`edit-button-${item.uuid}`}
+                renderIcon={Edit}
+                hasIconOnly
+                kind="ghost"
+                iconDescription={t('editThisBillItem', 'Edit this bill item')}
+                tooltipPosition="left"
+                onClick={() => handleSelectBillItem(item)}
+              />
             </span>
           ),
         };
       }) ?? [],
-    [filteredLineItems, bill?.receiptNumber, defaultCurrency, showEditBillButton, t, handleSelectBillItem],
+    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem],
   );
 
   if (isLoadingBill) {

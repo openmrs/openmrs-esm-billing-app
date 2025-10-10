@@ -17,7 +17,6 @@ describe('InvoiceTable', () => {
     mockUseConfig.mockReturnValue({
       ...getDefaultsFromConfigSchema(configSchema),
       defaultCurrency: 'USD',
-      showEditBillButton: true,
     });
   });
 
