@@ -238,7 +238,7 @@ describe('Invoice', () => {
     render(<Invoice />);
 
     const printButton = screen.getByRole('button', { name: /print bill/i });
-    expect(printButton).not.toBeDisabled();
+    expect(printButton).toBeEnabled();
   });
 
   it('should render patient header when patient data is available', () => {

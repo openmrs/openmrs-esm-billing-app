@@ -226,7 +226,7 @@ describe('Payments', () => {
 
   it('should return null when bill is not provided', () => {
     const { container } = render(<Payments bill={null} mutate={mockMutate} />);
-    expect(container.firstChild).toBeNull();
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('should render add payment method button for bills with amount due', () => {
@@ -241,7 +241,7 @@ describe('Payments', () => {
 
     // Verify add payment method button is available
     expect(screen.getByText(/add payment method/i)).toBeInTheDocument();
-    expect(screen.getByText(/add payment method/i)).not.toBeDisabled();
+    expect(screen.getByText(/add payment method/i)).toBeEnabled();
   });
 
   it('should display process payment button', () => {

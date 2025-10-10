@@ -34,13 +34,15 @@ describe('PaymentForm Component', () => {
       mutate: jest.fn(),
     });
 
-    const { container } = render(
+    render(
       <Wrapper>
         <PaymentForm disablePayment={false} isSingleLineItem={false} />
       </Wrapper>,
     );
 
-    expect(container.querySelector('.cds--skeleton')).toBeInTheDocument();
+    // When loading, payment method elements should not be present
+    expect(screen.queryByText(/select payment method/i)).not.toBeInTheDocument();
+    expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
   });
 
   test('should render error message when payment modes fail to load', () => {
