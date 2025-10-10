@@ -81,7 +81,6 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             title: t('billPayment', 'Bill payment'),
             subtitle: 'Bill payment processing has been successful',
             kind: 'success',
-            timeoutInMs: 3000,
           });
           if (currentVisit) {
             updateBillVisitAttribute(currentVisit);

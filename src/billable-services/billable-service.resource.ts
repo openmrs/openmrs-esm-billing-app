@@ -1,8 +1,7 @@
 import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
-import { type ServiceConcept } from '../types';
 import { apiBasePath } from '../constants';
-import { type BillableService } from '../types/index';
+import { type BillableService, type ServiceConcept } from '../types';
 import type { BillingConfig } from '../config-schema';
 
 type ResponseObject = {
@@ -29,10 +28,14 @@ export function useServiceTypes() {
 
   const { data, error, isLoading } = useSWR<{ data }>(url, openmrsFetch);
 
+  const sortedServiceTypes = data?.data.setMembers
+    ? [...data.data.setMembers].sort((a, b) => a.display.localeCompare(b.display))
+    : [];
+
   return {
-    serviceTypes: data?.data.setMembers ?? [],
+    serviceTypes: sortedServiceTypes,
     error,
-    isLoading,
+    isLoadingServiceTypes: isLoading,
   };
 }
 
@@ -41,10 +44,14 @@ export const usePaymentModes = () => {
 
   const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
 
+  const sortedPaymentModes = data?.data.results
+    ? [...data.data.results].sort((a, b) => a.name.localeCompare(b.name))
+    : [];
+
   return {
-    paymentModes: data?.data.results ?? [],
+    paymentModes: sortedPaymentModes,
     error,
-    isLoading,
+    isLoadingPaymentModes: isLoading,
   };
 };
 

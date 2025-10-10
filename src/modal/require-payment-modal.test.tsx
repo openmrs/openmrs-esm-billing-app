@@ -43,8 +43,8 @@ describe('RequirePaymentModal', () => {
       {
         status: 'UNPAID',
         lineItems: [
-          { billableService: 'Service 1', quantity: 1, price: 100 },
-          { item: 'Item 1', quantity: 2, price: 50 },
+          { billableService: 'Service 1', quantity: 1, price: 100, uuid: 'billable-service-1' },
+          { item: 'Item 1', quantity: 2, price: 50, uuid: 'billable-item-1' },
         ],
       },
     ];

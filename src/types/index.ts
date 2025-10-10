@@ -177,8 +177,17 @@ export type BillableItem = {
 };
 
 export type ServicePrice = {
-  name: string;
-  price: string;
+  itemPriceId?: number;
+  name?: string;
+  price: string | number;
+  paymentMode?: {
+    paymentModeId?: number;
+    uuid: string;
+    name: string;
+    description?: string;
+    sortOrder?: number;
+  };
+  billableService?: BillableService;
   uuid: string;
 };
 
@@ -188,10 +197,9 @@ export interface BillableService {
   shortName: string;
   serviceStatus: string;
   serviceType?: {
+    uuid: string;
     display: string;
   };
-  servicePrices: Array<{
-    name: string;
-    price: number;
-  }>;
+  concept?: ServiceConcept;
+  servicePrices: Array<ServicePrice>;
 }
