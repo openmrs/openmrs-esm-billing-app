@@ -93,7 +93,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
           status: item.paymentStatus,
           quantity: item.quantity,
           price: convertToCurrency(item.price, defaultCurrency),
-          total: item.price * item.quantity,
+          total: convertToCurrency(item.price * item.quantity, defaultCurrency),
           actionButton: (
             <span>
               <Button
