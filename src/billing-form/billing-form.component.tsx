@@ -243,6 +243,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                   <div className={styles.controlSection}>
                     <label>{t('quantity', 'Quantity')}</label>
                     <NumberInput
+                      disableWheel
+                      hideSteppers
                       id={`quantity-${item.uuid}`}
                       min={1}
                       value={item.quantity}
