@@ -1,5 +1,5 @@
 import { restBaseUrl } from '@openmrs/esm-framework';
-import { APIRequestContext, PlaywrightWorkerArgs, WorkerFixture } from '@playwright/test';
+import { type APIRequestContext, type PlaywrightWorkerArgs, type WorkerFixture } from '@playwright/test';
 
 /**
  * A fixture which initializes an [`APIRequestContext`](https://playwright.dev/docs/api/class-apirequestcontext)
