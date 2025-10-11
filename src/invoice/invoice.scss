@@ -73,6 +73,10 @@
   flex-direction: row;
 }
 
+.invoiceContent {
+  margin: layout.$spacing-05;
+}
+
 .billDetail {
   font-weight: bold;
   color: colors.$cool-gray-90;

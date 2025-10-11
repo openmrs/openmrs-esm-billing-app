@@ -124,8 +124,10 @@ const Invoice: React.FC = () => {
         </div>
       </div>
 
-      <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} />
-      <Payments bill={bill} mutate={mutate} />
+      <div className={styles.invoiceContent}>
+        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} />
+        <Payments bill={bill} mutate={mutate} />
+      </div>
 
       {bill && patient && (
         <div className={styles.printContainer}>

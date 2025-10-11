@@ -3,6 +3,13 @@
 @use '@carbon/type';
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
+.lineItemsWrapper {
+  border: 1px solid colors.$gray-20;
+  border-radius: 4px;
+  background-color: colors.$white;
+  margin-bottom: layout.$spacing-05;
+}
+
 .filterEmptyState {
   align-items: center;
   background-color: white;
