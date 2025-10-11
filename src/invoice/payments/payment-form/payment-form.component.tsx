@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { TrashCan, Add } from '@carbon/react/icons';
-import { Button, Dropdown, NumberInputSkeleton, TextInput, NumberInput } from '@carbon/react';
+import { Button, IconButton, Dropdown, NumberInputSkeleton, TextInput, NumberInput } from '@carbon/react';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { type PaymentFormValue } from '../payments.component';
 import { usePaymentModes } from '../payment.resource';
@@ -13,7 +13,7 @@ type PaymentFormProps = {
   isSingleLineItem: boolean;
 };
 
-const DEFAULT_PAYMENT = { method: '', amount: 0, referenceCode: '' };
+const DEFAULT_PAYMENT = { method: '', amount: undefined, referenceCode: '' };
 
 const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineItem }) => {
   const { t } = useTranslation();
@@ -22,7 +22,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
     formState: { errors },
   } = useFormContext<PaymentFormValue>();
   const { paymentModes, isLoading, error } = usePaymentModes();
-  const { fields, remove, append } = useFieldArray({ name: 'payment', control: control });
+  const { fields, remove, append } = useFieldArray({ name: 'payment', control });
   const [isFormVisible, setIsFormVisible] = useState(isSingleLineItem);
 
   useEffect(() => {
@@ -38,10 +38,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
     setIsFormVisible(true);
     append(DEFAULT_PAYMENT);
   }, [append]);
-  const handleRemovePaymentMode = useCallback((index) => remove(index), [remove]);
+
+  const handleRemovePaymentMode = useCallback((index: number) => remove(index), [remove]);
 
   if (isLoading) {
-    return <NumberInputSkeleton data-testid="number-input-skeleton" />;
+    return <NumberInputSkeleton />;
   }
 
   if (error) {
@@ -55,8 +56,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
   return (
     <div className={styles.container}>
       {isFormVisible &&
-        fields.map((field, index) => (
-          <div key={field.id} className={styles.paymentMethodContainer}>
+        fields.map((fieldItem, index) => (
+          <div key={fieldItem.id} className={styles.paymentMethodContainer}>
             <Controller
               control={control}
               name={`payment.${index}.method`}
@@ -78,13 +79,19 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
               name={`payment.${index}.amount`}
               render={({ field }) => (
                 <NumberInput
+                  allowEmpty
+                  disableWheel
+                  hideSteppers
                   id="paymentAmount"
-                  {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
                   invalid={!!errors?.payment?.[index]?.amount}
                   invalidText={errors?.payment?.[index]?.amount?.message}
                   label={t('amount', 'Amount')}
+                  onChange={(_, { value }) => {
+                    const numValue = value === '' || value === undefined ? undefined : Number(value);
+                    field.onChange(numValue);
+                  }}
                   placeholder={t('enterAmount', 'Enter amount')}
+                  value={field.value ?? ''}
                 />
               )}
             />
@@ -94,31 +101,33 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
               render={({ field }) => (
                 <TextInput
                   id="paymentReferenceCode"
-                  {...field}
                   labelText={t('referenceNumber', 'Reference number')}
-                  placeholder={t('enterReferenceNumber', 'Enter ref. number')}
+                  name={field.name}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                  placeholder={t('enterReferenceNumber', 'Enter reference number')}
                   type="text"
+                  value={field.value ?? ''}
                 />
               )}
             />
             <div className={styles.removeButtonContainer}>
-              <TrashCan
-                onClick={() => handleRemovePaymentMode(index)}
-                className={styles.removeButton}
-                size={20}
-                data-testid="trash-can-icon"
-              />
+              <IconButton
+                kind="danger--tertiary"
+                label={t('removePaymentMethod', 'Remove payment method')}
+                onClick={() => handleRemovePaymentMode(index)}>
+                <TrashCan />
+              </IconButton>
             </div>
           </div>
         ))}
       <Button
         disabled={disablePayment}
-        size="md"
         onClick={handleAppendPaymentMode}
         className={styles.paymentButtons}
         renderIcon={(props) => <Add size={24} {...props} />}
-        iconDescription="Add">
-        {t('addPaymentOptions', 'Add payment option')}
+        iconDescription={t('add', 'Add')}>
+        {t('addPaymentMethod', 'Add payment method')}
       </Button>
     </div>
   );

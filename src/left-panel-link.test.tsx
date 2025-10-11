@@ -23,7 +23,6 @@ describe('LinkExtension Component', () => {
 });
 
 describe('createLeftPanelLink Function', () => {
-  const user = userEvent.setup();
   test('returns a component that renders LinkExtension', () => {
     const config = { name: 'billing', title: 'Billing' };
     const TestComponent = createLeftPanelLink(config);
@@ -31,8 +30,6 @@ describe('createLeftPanelLink Function', () => {
     render(<TestComponent />);
     expect(screen.getByText('Billing')).toBeInTheDocument();
     const testLink = screen.getByRole('link', { name: 'Billing' });
-    user.click(testLink);
-    expect(window.location.pathname).toBe('/billing/6eb8d678-514d-46ad-9554-51e48d96d567');
-    // expect(testLink).toHaveClass('active-left-nav-link');
+    expect(testLink).toHaveAttribute('href', '/openmrs/spa/home/billing');
   });
 });

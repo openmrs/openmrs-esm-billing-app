@@ -21,7 +21,7 @@ export const createPaymentPayload = (
 
   const newPayments = formValues.map((formValue) => ({
     amount: parseFloat(totalAmount.toFixed(2)),
-    amountTendered: parseFloat(Number(formValue.amount).toFixed(2)),
+    amountTendered: parseFloat(Number(formValue.amount || 0).toFixed(2)),
     attributes: [],
     instanceType: formValue.method,
     dateCreated: new Date(),
