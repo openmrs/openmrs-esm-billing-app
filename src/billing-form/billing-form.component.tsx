@@ -60,7 +60,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     let selectedPaymentMethod = null;
 
     if (availablePaymentMethods.length === 1) {
-      defaultPrice = parseFloat(availablePaymentMethods[0].price);
+      const price = availablePaymentMethods[0].price;
+      defaultPrice = typeof price === 'number' ? price : parseFloat(price);
       selectedPaymentMethod = availablePaymentMethods[0];
     }
 
@@ -95,7 +96,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         ? {
             ...item,
             selectedPaymentMethod: paymentMethod,
-            price: parseFloat(paymentMethod.price),
+            price: typeof paymentMethod.price === 'number' ? paymentMethod.price : parseFloat(paymentMethod.price),
             priceName: paymentMethod.name,
             priceUuid: paymentMethod.uuid,
           }
@@ -156,7 +157,6 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           title: t('saveBill', 'Save Bill'),
           subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
           kind: 'success',
-          timeoutInMs: 3000,
         });
       },
       (error) => {
@@ -217,7 +217,10 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                         size="md"
                         itemToString={(method: ServicePrice) =>
                           method
-                            ? `${method.name} - ${convertToCurrency(parseFloat(method.price), defaultCurrency)}`
+                            ? `${method.name} - ${convertToCurrency(
+                                typeof method.price === 'number' ? method.price : parseFloat(method.price),
+                                defaultCurrency,
+                              )}`
                             : ''
                         }
                         selectedItem={item.selectedPaymentMethod}
@@ -240,6 +243,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                   <div className={styles.controlSection}>
                     <label>{t('quantity', 'Quantity')}</label>
                     <NumberInput
+                      disableWheel
+                      hideSteppers
                       id={`quantity-${item.uuid}`}
                       min={1}
                       value={item.quantity}

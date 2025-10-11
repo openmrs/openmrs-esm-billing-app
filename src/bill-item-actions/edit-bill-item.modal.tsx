@@ -40,8 +40,23 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   const schema = useMemo(
     () =>
       z.object({
-        quantity: z.string({ required_error: t('quantityRequired', 'Quantity is required') }),
-        price: z.string({ required_error: t('priceIsRequired', 'Price is required') }),
+        // NOTE: Frontend-only validation - quantities <1 or >100 can still be submitted via API.
+        // Backend (BillServiceImpl.java:100) has empty validate() method.
+        // TODO: Add server-side validation to enforce data integrity
+        quantity: z.coerce
+          .number({
+            required_error: t('quantityRequired', 'Quantity is required'),
+            invalid_type_error: t('quantityMustBeNumber', 'Quantity must be a valid number'),
+          })
+          .int(t('quantityMustBeInteger', 'Quantity must be a whole number'))
+          .min(1, t('quantityMustBeAtLeastOne', 'Quantity must be at least 1'))
+          .max(100, t('quantityCannotExceed100', 'Quantity cannot exceed 100')),
+        price: z.coerce
+          .number({
+            required_error: t('priceIsRequired', 'Price is required'),
+            invalid_type_error: t('priceMustBeNumber', 'Price must be a valid number'),
+          })
+          .positive(t('priceMustBePositive', 'Price must be greater than 0')),
       }),
     [t],
   );
@@ -61,8 +76,8 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
     watch,
   } = useForm<BillLineItemForm>({
     defaultValues: {
-      quantity: item.quantity.toString(),
-      price: item.price.toString(),
+      quantity: item.quantity,
+      price: item.price,
     },
     resolver: zodResolver(schema),
   });
@@ -71,8 +86,10 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   const price = watch('price');
 
   useEffect(() => {
-    const newTotal = parseInt(quantity) * parseInt(price);
-    setTotal(newTotal);
+    const quantityNum = typeof quantity === 'number' ? quantity : parseFloat(quantity) || 0;
+    const priceNum = typeof price === 'number' ? price : parseFloat(price) || 0;
+    const newTotal = quantityNum * priceNum;
+    setTotal(isNaN(newTotal) ? 0 : newTotal);
   }, [quantity, price]);
 
   const onSubmit = async (data: BillLineItemForm) => {
@@ -80,8 +97,8 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
 
     const newItem = {
       ...item,
-      quantity: parseInt(data.quantity),
-      price: parseInt(data?.price),
+      quantity: data.quantity,
+      price: data.price,
       billableService: getBillableServiceUuid(billableServices, item.billableService),
       item: item?.item,
     };
@@ -90,8 +107,9 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
       .filter((currItem) => currItem.uuid !== item?.uuid)
       .map((currItem) => ({
         ...currItem,
-        billableService: getBillableServiceUuid(billableServices, item.billableService),
+        billableService: getBillableServiceUuid(billableServices, currItem.billableService),
       }));
+
     const updatedLineItems = previousLineitems.concat(newItem);
 
     const payload = {
@@ -107,17 +125,17 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
       await updateBillItems(payload);
       mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
       showSnackbar({
-        title: t('saveBill', 'Save Bill'),
-        subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
+        title: t('lineItemUpdated', 'Line item updated'),
+        subtitle: t('lineItemUpdateSuccess', 'The bill line item has been updated successfully'),
         kind: 'success',
-        timeoutInMs: 3000,
       });
       closeModal();
     } catch (error) {
       showSnackbar({
-        title: t('billProcessingError', 'Bill processing error'),
+        title: t('lineItemUpdateFailed', 'Failed to update line item'),
+        subtitle:
+          error?.message || t('lineItemUpdateErrorDefault', 'Unable to update the bill line item. Please try again.'),
         kind: 'error',
-        subtitle: error?.message,
       });
     }
   };
@@ -128,7 +146,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
 
   return (
     <>
-      <ModalHeader closeModal={closeModal} title={t('editBillLineItem', 'Edit bill line item?')} />
+      <ModalHeader closeModal={closeModal} title={t('editBillLineItem', 'Edit bill line item')} />
       <Form onSubmit={handleSubmit(onSubmit, onError)}>
         <ModalBody>
           <Stack gap={5}>
@@ -139,28 +157,30 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
             </div>
             <section>
               <p className={styles.label}>
-                {t('item', 'Item')} : {item?.billableService ? item?.billableService : item?.item}
+                {t('item', 'Item')}: {item?.billableService ? item?.billableService : item?.item}
               </p>
               <p className={styles.label}>
-                {t('currentPrice', 'Current price')} : {item?.price}
+                {t('currentPrice', 'Current price')}: {item?.price}
               </p>
               <p className={styles.label}>
-                {t('status', 'status')} : {item?.paymentStatus}
+                {t('status', 'status')}: {item?.paymentStatus}
               </p>
               <Controller
                 name="quantity"
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <NumberInput
-                    label={t('quantity', 'Quantity')}
-                    id="quantityInput"
-                    min={0}
-                    max={100}
-                    value={value}
-                    onChange={onChange}
+                    disableWheel
                     className={styles.controlField}
-                    invalid={errors.quantity?.message}
+                    hideSteppers
+                    id="quantityInput"
+                    invalid={!!errors.quantity}
                     invalidText={errors.quantity?.message}
+                    label={t('quantity', 'Quantity')}
+                    onChange={(_event, state: { value: number | string; direction: string }) => {
+                      onChange(state.value);
+                    }}
+                    value={value}
                   />
                 )}
               />
@@ -170,18 +190,18 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                 control={control}
                 render={({ field: { value } }) => (
                   <TextInput
-                    id="priceInput"
-                    labelText={t('price', 'Unit Price')}
-                    value={value}
-                    readOnly={true}
                     className={styles.controlField}
                     helperText={t('unitPriceHelperText', 'This is the unit price for this item.')}
+                    id="priceInput"
+                    labelText={t('price', 'Unit Price')}
+                    readOnly
+                    value={value}
                   />
                 )}
               />
 
               <p className={styles.label}>
-                {t('total', 'Total')} : {total}{' '}
+                {t('total', 'Total')}: {total}{' '}
               </p>
 
               {showErrorNotification && (

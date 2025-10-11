@@ -196,7 +196,7 @@ describe('BillsTable', () => {
     const patientNameLink = screen.getByRole('link', { name: 'John Doe' });
     expect(patientNameLink).toBeInTheDocument();
 
-    expect(patientNameLink.getAttribute('href')).toEqual('/home/billing/patient/uuid1/1');
+    expect(patientNameLink).toHaveAttribute('href', '/home/billing/patient/uuid1/1');
   });
 
   test('should filter bills by payment status', async () => {

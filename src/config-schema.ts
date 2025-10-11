@@ -75,11 +75,6 @@ export const configSchema = {
     _description: 'The default page size',
     _default: 10,
   },
-  showEditBillButton: {
-    _type: Type.Boolean,
-    _description: 'Whether to show the edit bill button or not.',
-    _default: false,
-  },
 };
 
 export interface BillingConfig {
@@ -115,5 +110,4 @@ export interface BillingConfig {
   };
   defaultCurrency: string;
   pageSize: number;
-  showEditBillButton: boolean;
 }

@@ -39,8 +39,9 @@ const CashPointConfiguration: React.FC = () => {
   }, [fetchCashPoints]);
 
   const handleAddCashPoint = () => {
-    showModal('add-cash-point-modal', {
+    const dispose = showModal('add-cash-point-modal', {
       onCashPointAdded: fetchCashPoints,
+      closeModal: () => dispose(),
     });
   };
 
