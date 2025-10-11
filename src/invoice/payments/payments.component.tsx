@@ -87,11 +87,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             updateBillVisitAttribute(currentVisit);
           }
 
-          if (amountRemaining > 0) {
-            methods.reset({ payment: [] });
-          } else {
-            methods.reset({ payment: [{ method: '', amount: '0', referenceCode: '' }] });
-          }
+          methods.reset({ payment: [{ method: '', amount: '0', referenceCode: '' }] });
 
           mutate();
         },
