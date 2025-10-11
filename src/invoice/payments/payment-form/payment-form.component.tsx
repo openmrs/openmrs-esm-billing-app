@@ -26,13 +26,21 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
   const [isFormVisible, setIsFormVisible] = useState(isSingleLineItem);
 
   useEffect(() => {
-    if (isSingleLineItem) {
+    if (isSingleLineItem && !disablePayment) {
       setIsFormVisible(true);
       if (fields.length === 0) {
         append(DEFAULT_PAYMENT);
       }
     }
-  }, [isSingleLineItem, append, fields.length]);
+  }, [isSingleLineItem, append, fields.length, disablePayment]);
+
+  useEffect(() => {
+    if (disablePayment) {
+      setIsFormVisible(false);
+      remove();
+    }
+  }, [disablePayment]);
+
 
   const handleAppendPaymentMode = useCallback(() => {
     setIsFormVisible(true);
