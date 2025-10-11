@@ -32,14 +32,15 @@
 }
 
 .paymentTotals {
-  margin: layout.$spacing-05 0;
+  margin: layout.$spacing-05 auto;
   padding: layout.$spacing-07 layout.$spacing-05;
+  max-width: 90%;
 }
 
 .processPayments {
   display: flex;
   justify-content: flex-end;
-  margin: layout.$spacing-05;
+  margin: layout.$spacing-05 0;
   padding-top: layout.$spacing-05;
   column-gap: layout.$spacing-04;
   border-top: 1px solid colors.$cool-gray-40;
