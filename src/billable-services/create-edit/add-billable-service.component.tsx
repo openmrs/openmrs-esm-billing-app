@@ -27,7 +27,7 @@ import {
   usePaymentModes,
   useServiceTypes,
 } from '../billable-service.resource';
-import { type BillableService, type ServiceConcept, type ServicePrice } from '../../types';
+import { type BillableService, type ServicePrice } from '../../types';
 import styles from './add-billable-service.scss';
 
 interface ServiceType {
@@ -39,7 +39,10 @@ interface PaymentModeForm {
   paymentMode: string;
   price: string | number | undefined;
 }
-
+interface ServiceConcept {
+  uuid: string;
+  display: string;
+}
 interface BillableServiceFormData {
   name: string;
   shortName?: string;
@@ -175,10 +178,11 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
 
   useEffect(() => {
     if (serviceToEdit && !isLoadingPaymentModes && !isLoadingServiceTypes) {
+      const matchedServiceType = serviceTypes?.find((type) => type.display === serviceToEdit?.serviceType?.display);
       reset({
         name: serviceToEdit.name || '',
         shortName: serviceToEdit.shortName || '',
-        serviceType: serviceToEdit.serviceType || null,
+        serviceType: matchedServiceType || null,
         concept: serviceToEdit.concept || null,
         payment: serviceToEdit.servicePrices.map((payment: ServicePrice) => ({
           paymentMode: payment.paymentMode?.uuid || '',
@@ -186,6 +190,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
         })),
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceToEdit, isLoadingPaymentModes, reset, isLoadingServiceTypes]);
 
   const onSubmit = async (data: BillableServiceFormData) => {
@@ -219,6 +224,10 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
           : t('createdSuccessfully', 'Billable service created successfully'),
         kind: 'success',
       });
+
+      if (serviceToEdit) {
+        onClose();
+      }
 
       if (onServiceUpdated) {
         onServiceUpdated();
@@ -335,9 +344,12 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                     <li
                       role="menuitem"
                       className={styles.service}
-                      key={searchResult.uuid}
+                      key={searchResult.concept.uuid}
                       onClick={() => {
-                        setValue('concept', searchResult);
+                        setValue('concept', {
+                          uuid: searchResult.concept.uuid,
+                          display: searchResult.concept.display,
+                        });
                         setSearchTerm('');
                       }}>
                       {searchResult.display}
