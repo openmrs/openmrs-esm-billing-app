@@ -65,19 +65,23 @@ const createBillableServiceSchema = (t: TFunction) => {
       })
       .trim()
       .min(1, t('paymentModeRequired', 'Payment mode is required')),
-    price: z.union([
-      z.number().positive(t('priceMustBeGreaterThanZero', 'Price must be greater than 0')),
-      z
-        .string({
-          required_error: t('priceIsRequired', 'Price is required'),
-        })
-        .trim()
-        .min(1, t('priceIsRequired', 'Price is required'))
-        .refine(
-          (val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0,
-          t('priceMustBeValidPositiveNumber', 'Price must be a valid positive number'),
-        ),
-    ]),
+    price: z.union([z.number(), z.string(), z.undefined()]).superRefine((val, ctx) => {
+      if (val === undefined || val === null || val === '') {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('priceIsRequired', 'Price is required'),
+        });
+        return;
+      }
+
+      const numValue = typeof val === 'number' ? val : parseFloat(val);
+      if (isNaN(numValue) || numValue <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t('priceMustBeGreaterThanZero', 'Price must be greater than 0'),
+        });
+      }
+    }),
   });
 
   return z.object({
