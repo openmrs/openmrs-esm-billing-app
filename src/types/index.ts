@@ -1,3 +1,5 @@
+import { type OpenmrsResource } from '@openmrs/esm-framework';
+
 export interface MappedBill {
   uuid: string;
   id: number;
@@ -121,13 +123,21 @@ export interface Payment {
   resourceVersion: string;
 }
 
+export type PaymentPayload = {
+  amount: number;
+  amountTendered: number;
+  attributes: Array<Attribute>;
+  instanceType: string;
+  dateCreated?: Date | number;
+};
+
 export interface PatientInvoice {
   uuid: string;
   display: string;
   voided: boolean;
   voidReason: string | null;
-  adjustedBy: any[];
-  billAdjusted: any;
+  adjustedBy: Array<OpenmrsResource>;
+  billAdjusted: OpenmrsResource | null;
   cashPoint: CashPoint;
   cashier: Provider;
   dateCreated: string;
@@ -136,7 +146,7 @@ export interface PatientInvoice {
   payments: Payment[];
   receiptNumber: string;
   status: string;
-  adjustmentReason: any;
+  adjustmentReason: string | null;
   id: number;
   resourceVersion: string;
 }
@@ -156,7 +166,7 @@ export interface FacilityDetail {
 }
 
 export type ServiceConcept = {
-  uuid: any;
+  uuid: string;
   concept: {
     uuid: string;
     display: string;
@@ -203,3 +213,46 @@ export interface BillableService {
   concept?: ServiceConcept;
   servicePrices: Array<ServicePrice>;
 }
+
+export type BillPaymentPayload = {
+  cashPoint: string;
+  cashier: string;
+  lineItems: Array<LineItem>;
+  payments: Array<PaymentPayload>;
+  patient: string;
+  status?: string;
+};
+
+export type CreateBillPayload = {
+  cashPoint: string;
+  cashier: string;
+  lineItems: Array<LineItem>;
+  payments: Array<PaymentPayload>;
+  patient: string;
+  status: string;
+};
+
+export type UpdateBillPayload = {
+  cashPoint: string;
+  cashier: string;
+  lineItems: Array<LineItem>;
+  patient: string;
+  status: string;
+  uuid: string;
+  payments?: Array<PaymentPayload>;
+};
+
+export type CreateBillableServicePayload = {
+  name: string;
+  shortName: string;
+  serviceStatus: string;
+  serviceType?: string;
+  concept?: string;
+  servicePrices: Array<{
+    name: string;
+    price: number;
+    paymentMode: string;
+  }>;
+};
+
+export type UpdateBillableServicePayload = Partial<CreateBillableServicePayload>;
