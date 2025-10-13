@@ -88,7 +88,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
       if (currentVisit) {
         updateBillVisitAttribute(currentVisit);
       }
-      methods.reset({ payment: [{ method: '', amount: undefined, referenceCode: '' }] });
+      methods.reset({ payment: [{ method: '', amount: null, referenceCode: '' }] });
       mutate();
     } catch (error) {
       showSnackbar({
