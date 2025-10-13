@@ -26,13 +26,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
   const [isFormVisible, setIsFormVisible] = useState(isSingleLineItem);
 
   useEffect(() => {
-    if (isSingleLineItem) {
+    if (isSingleLineItem && !disablePayment) {
       setIsFormVisible(true);
       if (fields.length === 0) {
         append(DEFAULT_PAYMENT);
       }
     }
-  }, [isSingleLineItem, append, fields.length]);
+  }, [isSingleLineItem, append, fields.length, disablePayment]);
+
+  useEffect(() => {
+    if (disablePayment) {
+      setIsFormVisible(false);
+      remove();
+    }
+  }, [disablePayment, remove]);
 
   const handleAppendPaymentMode = useCallback(() => {
     setIsFormVisible(true);
@@ -63,7 +70,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
               name={`payment.${index}.method`}
               render={({ field }) => (
                 <Dropdown
-                  id="paymentMethod"
+                  id={`paymentMethod-${fieldItem.id}`}
                   onChange={({ selectedItem }) => field.onChange(selectedItem?.uuid)}
                   titleText={t('paymentMethod', 'Payment method')}
                   label={t('selectPaymentMethod', 'Select payment method')}
@@ -82,7 +89,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
                   allowEmpty
                   disableWheel
                   hideSteppers
-                  id="paymentAmount"
+                  id={`paymentAmount-${fieldItem.id}`}
                   invalid={!!errors?.payment?.[index]?.amount}
                   invalidText={errors?.payment?.[index]?.amount?.message}
                   label={t('amount', 'Amount')}
@@ -100,7 +107,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
               control={control}
               render={({ field }) => (
                 <TextInput
-                  id="paymentReferenceCode"
+                  id={`paymentReferenceCode-${fieldItem.id}`}
                   labelText={t('referenceNumber', 'Reference number')}
                   name={field.name}
                   onBlur={field.onBlur}
