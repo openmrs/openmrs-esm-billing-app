@@ -161,7 +161,6 @@
   "priceMustBeGreaterThanZero": "Price must be greater than 0",
   "priceMustBeNumber": "Price must be a valid number",
   "priceMustBePositive": "Price must be greater than 0",
-  "priceMustBeValidPositiveNumber": "Price must be a valid positive number",
   "prices": "ფასები",
   "printBill": "ანგარიშის დაბეჭდვა",
   "printReceipt": "რეცეპტის დაბეჭდვა",
