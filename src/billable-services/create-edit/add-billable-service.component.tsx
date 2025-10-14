@@ -27,7 +27,7 @@ import {
   usePaymentModes,
   useServiceTypes,
 } from '../billable-service.resource';
-import { type BillableService, type ServicePrice } from '../../types';
+import type { ConceptSearchResult, BillableService, ServicePrice } from '../../types';
 import styles from './add-billable-service.scss';
 
 interface ServiceType {
@@ -39,15 +39,11 @@ interface PaymentModeForm {
   paymentMode: string;
   price: string | number | undefined;
 }
-interface ServiceConcept {
-  uuid: string;
-  display: string;
-}
 interface BillableServiceFormData {
   name: string;
   shortName?: string;
   serviceType: ServiceType | null;
-  concept?: ServiceConcept | null;
+  concept?: ConceptSearchResult | null;
   payment: PaymentModeForm[];
 }
 
@@ -178,11 +174,10 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
 
   useEffect(() => {
     if (serviceToEdit && !isLoadingPaymentModes && !isLoadingServiceTypes) {
-      const matchedServiceType = serviceTypes?.find((type) => type.display === serviceToEdit?.serviceType?.display);
       reset({
         name: serviceToEdit.name || '',
         shortName: serviceToEdit.shortName || '',
-        serviceType: matchedServiceType || null,
+        serviceType: serviceToEdit.serviceType || null,
         concept: serviceToEdit.concept || null,
         payment: serviceToEdit.servicePrices.map((payment: ServicePrice) => ({
           paymentMode: payment.paymentMode?.uuid || '',
@@ -190,7 +185,6 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
         })),
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceToEdit, isLoadingPaymentModes, reset, isLoadingServiceTypes]);
 
   const onSubmit = async (data: BillableServiceFormData) => {
@@ -346,10 +340,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                       className={styles.service}
                       key={searchResult.concept.uuid}
                       onClick={() => {
-                        setValue('concept', {
-                          uuid: searchResult.concept.uuid,
-                          display: searchResult.concept.display,
-                        });
+                        setValue('concept', searchResult);
                         setSearchTerm('');
                       }}>
                       {searchResult.display}

@@ -165,13 +165,9 @@ export interface FacilityDetail {
   display: string;
 }
 
-export type ServiceConcept = {
+export type ConceptSearchResult = {
   uuid: string;
   concept: {
-    uuid: string;
-    display: string;
-  };
-  conceptName: {
     uuid: string;
     display: string;
   };
@@ -210,7 +206,7 @@ export interface BillableService {
     uuid: string;
     display: string;
   };
-  concept?: ServiceConcept;
+  concept?: ConceptSearchResult;
   servicePrices: Array<ServicePrice>;
 }
 
