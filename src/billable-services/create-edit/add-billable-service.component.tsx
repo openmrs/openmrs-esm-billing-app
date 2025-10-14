@@ -7,6 +7,7 @@ import {
   FormLabel,
   InlineLoading,
   Layer,
+  NumberInput,
   Search,
   Stack,
   TextInput,
@@ -36,7 +37,7 @@ interface ServiceType {
 
 interface PaymentModeForm {
   paymentMode: string;
-  price: string | number;
+  price: string | number | undefined;
 }
 
 interface BillableServiceFormData {
@@ -54,7 +55,7 @@ interface AddBillableServiceProps {
   isModal?: boolean;
 }
 
-const DEFAULT_PAYMENT_OPTION: PaymentModeForm = { paymentMode: '', price: 0 };
+const DEFAULT_PAYMENT_OPTION: PaymentModeForm = { paymentMode: '', price: undefined };
 const MAX_NAME_LENGTH = 19;
 
 const createBillableServiceSchema = (t: TFunction) => {
@@ -150,7 +151,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
       concept: serviceToEdit?.concept || null,
       payment: serviceToEdit?.servicePrices?.map((servicePrice: ServicePrice) => ({
         paymentMode: servicePrice.paymentMode?.uuid || '',
-        price: servicePrice.price,
+        price: servicePrice.price || undefined,
       })) || [DEFAULT_PAYMENT_OPTION],
     },
     resolver: zodResolver(billableServiceSchema),
@@ -181,7 +182,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
         concept: serviceToEdit.concept || null,
         payment: serviceToEdit.servicePrices.map((payment: ServicePrice) => ({
           paymentMode: payment.paymentMode?.uuid || '',
-          price: payment.price,
+          price: payment.price || undefined,
         })),
       });
     }
@@ -407,14 +408,20 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                   name={`payment.${index}.price`}
                   render={({ field }) => (
                     <Layer>
-                      {/* FIXME: this should be a NumberInput */}
-                      <TextInput
-                        {...field}
+                      <NumberInput
+                        allowEmpty
                         id={`price-${index}`}
                         invalid={!!errors?.payment?.[index]?.price}
                         invalidText={errors?.payment?.[index]?.price?.message}
-                        labelText={t('sellingPrice', 'Selling Price')}
+                        label={t('sellingPrice', 'Selling Price')}
                         placeholder={t('enterSellingPrice', 'Enter selling price')}
+                        min={0}
+                        step={0.01}
+                        value={field.value ?? ''}
+                        onChange={(_, { value }) => {
+                          const numValue = value === '' || value === undefined ? undefined : Number(value);
+                          field.onChange(numValue);
+                        }}
                       />
                     </Layer>
                   )}

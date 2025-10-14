@@ -98,7 +98,7 @@ const fillRequiredFields = async (user, options: FillOptions = {}) => {
   await user.click(screen.getByRole('option', { name: /Cash/i }));
 
   if (!skipPrice) {
-    const priceInput = screen.getByRole('textbox', { name: /Selling Price/i });
+    const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
     await user.type(priceInput, '100');
   }
 };
@@ -159,7 +159,7 @@ describe('AddBillableService', () => {
 
       await fillRequiredFields(user, { skipPrice: true });
 
-      const priceInput = screen.getByRole('textbox', { name: /selling price/i });
+      const priceInput = screen.getByRole('spinbutton', { name: /selling price/i });
       await user.type(priceInput, '0');
 
       await submitForm(user);
@@ -174,7 +174,7 @@ describe('AddBillableService', () => {
 
       await fillRequiredFields(user, { skipPrice: true });
 
-      const priceInput = screen.getByRole('textbox', { name: /Selling Price/i });
+      const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
       await user.type(priceInput, '-10');
 
       await submitForm(user);
@@ -196,7 +196,7 @@ describe('AddBillableService', () => {
       await user.click(screen.getByRole('combobox', { name: /Payment mode/i }));
       await user.click(screen.getByRole('option', { name: /Cash/i }));
 
-      const priceInput = screen.getByRole('textbox', { name: /Selling Price/i });
+      const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
       await user.type(priceInput, '100');
 
       await submitForm(user);
@@ -211,7 +211,7 @@ describe('AddBillableService', () => {
 
       await fillRequiredFields(user, { skipPrice: true });
 
-      const priceInput = screen.getByRole('textbox', { name: /Selling Price/i });
+      const priceInput = screen.getByRole('spinbutton', { name: /selling price/i });
       await user.type(priceInput, '10.50');
 
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
