@@ -211,7 +211,7 @@ describe('AddBillableService', () => {
 
       await fillRequiredFields(user, { skipPrice: true });
 
-      const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
+      const priceInput = screen.getByRole('spinbutton', { name: /selling price/i });
       await user.type(priceInput, '10.50');
 
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
