@@ -1,7 +1,12 @@
 import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
-import { type BillableService, type ServiceConcept } from '../types';
+import {
+  type BillableService,
+  type ServiceConcept,
+  type CreateBillableServicePayload,
+  type UpdateBillableServicePayload,
+} from '../types';
 import type { BillingConfig } from '../config-schema';
 
 type ResponseObject = {
@@ -10,7 +15,7 @@ type ResponseObject = {
 
 export const useBillableServices = () => {
   const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
-  const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService[]>(url);
+  const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService>(url);
 
   return {
     billableServices: data ?? [],
@@ -26,7 +31,10 @@ export function useServiceTypes() {
   const serviceConceptUuid = serviceTypes.billableService;
   const url = `${restBaseUrl}/concept/${serviceConceptUuid}?v=custom:(setMembers:(uuid,display))`;
 
-  const { data, error, isLoading } = useSWR<{ data }>(url, openmrsFetch);
+  const { data, error, isLoading } = useSWR<{ data: { setMembers: Array<{ uuid: string; display: string }> } }>(
+    url,
+    openmrsFetch,
+  );
 
   const sortedServiceTypes = data?.data.setMembers
     ? [...data.data.setMembers].sort((a, b) => a.display.localeCompare(b.display))
@@ -55,7 +63,7 @@ export const usePaymentModes = () => {
   };
 };
 
-export const createBillableService = (payload: any) => {
+export const createBillableService = (payload: CreateBillableServicePayload) => {
   const url = `${apiBasePath}api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',
@@ -81,7 +89,7 @@ export function useConceptsSearch(conceptToLookup: string) {
   };
 }
 
-export const updateBillableService = (uuid: string, payload: any) => {
+export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
   const url = `${apiBasePath}/billableService/${uuid}`;
   return openmrsFetch(url, {
     method: 'POST',

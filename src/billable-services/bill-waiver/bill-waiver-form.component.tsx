@@ -29,7 +29,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
     return null;
   }
 
-  const handleProcessPayment = (event) => {
+  const handleProcessPayment = () => {
     const waiverEndPointPayload = createBillWaiverPayload(
       bill,
       waiverAmount,
@@ -39,7 +39,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
     );
 
     processBillPayment(waiverEndPointPayload, bill.uuid).then(
-      (resp) => {
+      () => {
         showSnackbar({
           title: t('billWaiver', 'Bill waiver'),
           subtitle: t('billWaiverSuccess', 'Bill waiver successful'),
@@ -57,7 +57,6 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
           title: t('billWaiver', 'Bill waiver'),
           subtitle: t('billWaiverError', 'Bill waiver failed {{error}}', { error: err.message }),
           kind: 'error',
-          timeoutInMs: 3500,
           isLowContrast: true,
         });
       },

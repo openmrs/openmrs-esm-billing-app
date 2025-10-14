@@ -1,4 +1,4 @@
-import { type MappedBill } from '../../types';
+import { type MappedBill, type BillableService } from '../../types';
 import { type Payment } from './payments.component';
 
 export const createPaymentPayload = (
@@ -6,7 +6,7 @@ export const createPaymentPayload = (
   patientUuid: string,
   formValues: Array<Payment>,
   amountDue: number,
-  billableServices: Array<any>,
+  billableServices: Array<BillableService>,
 ) => {
   const { cashier } = bill;
   const totalAmount = bill.totalAmount ?? 0;
@@ -48,7 +48,13 @@ export const createPaymentPayload = (
   return processedPayment;
 };
 
-export const getBillableServiceUuid = (billableServices: Array<any>, serviceName: string) => {
-  return billableServices.length ? billableServices.find((service) => service.name === serviceName).uuid : null;
+export const getBillableServiceUuid = (billableServices: Array<BillableService>, serviceName: string) => {
+  if (!billableServices.length) {
+    return null;
+  }
+  const service = billableServices.find((service) => service.name === serviceName);
+  return service?.uuid ?? null;
 };
-const processBillItem = (item) => (item.item || item.billableService)?.split(':')[0];
+
+const processBillItem = (item: { item?: string; billableService?: string }) =>
+  (item.item || item.billableService)?.split(':')[0];

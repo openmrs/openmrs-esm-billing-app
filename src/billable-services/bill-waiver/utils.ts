@@ -1,6 +1,7 @@
 import { type OpenmrsResource } from '@openmrs/esm-framework';
-import type { LineItem, MappedBill } from '../../types';
+import type { LineItem, MappedBill, PaymentPayload } from '../../types';
 
+// TODO: Move this UUID to the config schema
 const WAIVER_UUID = 'eb6173cb-9678-4614-bbe1-0ccf7ed9d1d4';
 
 export const createBillWaiverPayload = (
@@ -12,7 +13,7 @@ export const createBillWaiverPayload = (
 ) => {
   const { cashier } = bill;
 
-  const billPayment = {
+  const billPayment: PaymentPayload = {
     amount: parseFloat(totalAmount.toFixed(2)),
     amountTendered: parseFloat(Number(amountWaived).toFixed(2)),
     attributes: [],
@@ -25,11 +26,20 @@ export const createBillWaiverPayload = (
     paymentStatus: 'PAID',
   }));
 
+  // Transform existing payments to PaymentPayload format
+  const existingPayments: PaymentPayload[] = bill.payments.map((payment) => ({
+    amount: payment.amount,
+    amountTendered: payment.amountTendered,
+    attributes: payment.attributes,
+    instanceType: payment.instanceType.uuid,
+    dateCreated: payment.dateCreated,
+  }));
+
   const processedPayment = {
     cashPoint: bill.cashPointUuid,
     cashier: cashier.uuid,
     lineItems: processedLineItems,
-    payments: [...bill.payments, billPayment],
+    payments: [...existingPayments, billPayment],
     patient: bill.patientUuid,
   };
 
