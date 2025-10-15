@@ -1,6 +1,6 @@
+@use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
-@use '@carbon/colors';
 
 .sectionTitle {
   @include type.type-style('heading-compact-02');
@@ -12,6 +12,16 @@
   padding-bottom: layout.$spacing-05;
 }
 
+.billInfo {
+  @include type.type-style('body-compact-01');
+  color: colors.$gray-70;
+
+  .separator {
+    margin: 0 layout.$spacing-02;
+    color: colors.$gray-50;
+  }
+}
+
 .label {
   @include type.type-style('heading-compact-01');
   margin-bottom: layout.$spacing-05;
@@ -19,4 +29,14 @@
 
 .controlField {
   margin-bottom: layout.$spacing-05;
+}
+
+.loader {
+  &:global(.cds--inline-loading) {
+    min-height: layout.$spacing-05;
+  }
+
+  :global(.cds--inline-loading__text) {
+    font-size: unset;
+  }
 }

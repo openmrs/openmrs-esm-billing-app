@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Checkbox,
   Layer,
@@ -20,7 +20,7 @@ const PatientBillsSelections: React.FC<{ bills: MappedBill; setPatientUuid: (pat
   setPatientUuid,
 }) => {
   const { t } = useTranslation();
-  const [selectedBills, setSelectedBills] = React.useState<Array<LineItem>>([]);
+  const [selectedBills, setSelectedBills] = useState<Array<LineItem>>([]);
   const { defaultCurrency } = useConfig();
 
   const checkBoxLabel = (lineItem) => {
