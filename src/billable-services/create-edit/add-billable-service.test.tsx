@@ -85,10 +85,10 @@ const fillRequiredFields = async (user, options: FillOptions = {}) => {
   const { serviceName = 'Test Service Name', shortName = 'Test Short Name', skipPrice = false } = options;
 
   if (serviceName) {
-    await user.type(screen.getByRole('textbox', { name: /Service Name/i }), serviceName);
+    await user.type(screen.getByRole('textbox', { name: /Service name/i }), serviceName);
   }
   if (shortName) {
-    await user.type(screen.getByRole('textbox', { name: /Short Name/i }), shortName);
+    await user.type(screen.getByRole('textbox', { name: /Short name/i }), shortName);
   }
 
   await user.click(screen.getByRole('combobox', { name: /Service type/i }));
@@ -114,7 +114,7 @@ describe('AddBillableService', () => {
     const mockOnClose = jest.fn();
     renderAddBillableService({ onClose: mockOnClose });
 
-    const formTitle = screen.getByRole('heading', { name: /Add Billable Services/i });
+    const formTitle = screen.getByRole('heading', { name: /Add billable service/i });
     expect(formTitle).toBeInTheDocument();
 
     await fillRequiredFields(user);
@@ -188,7 +188,7 @@ describe('AddBillableService', () => {
       renderAddBillableService();
 
       // Fill all fields except service name
-      await user.type(screen.getByRole('textbox', { name: /Short Name/i }), 'Test Short Name');
+      await user.type(screen.getByRole('textbox', { name: /Short name/i }), 'Test Short Name');
 
       await user.click(screen.getByRole('combobox', { name: /Service type/i }));
       await user.click(screen.getByRole('option', { name: /Lab service/i }));

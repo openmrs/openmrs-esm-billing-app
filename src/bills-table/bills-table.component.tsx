@@ -149,7 +149,7 @@ const BillsTable = () => {
     return (
       <div className={styles.errorContainer}>
         <Layer>
-          <ErrorState error={error} headerTitle={t('billsList', 'Bill list')} />
+          <ErrorState error={error} headerTitle={t('billList', 'Bill list')} />
         </Layer>
       </div>
     );
@@ -168,7 +168,7 @@ const BillsTable = () => {
           label=""
           onChange={handleFilterChange}
           size={responsiveSize}
-          titleText={t('filterBy', 'Filter by') + ':'}
+          titleText={t('filterBy', 'Filter by:')}
           type="inline"
         />
       </div>
@@ -190,7 +190,7 @@ const BillsTable = () => {
             useZebraStyles={rowData?.length > 1 ? true : false}>
             {({ rows, headers, getRowProps, getTableProps }) => (
               <TableContainer>
-                <Table {...getTableProps()} aria-label="bill list">
+                <Table {...getTableProps()} aria-label={t('billList', 'Bill list')}>
                   <TableHead>
                     <TableRow>
                       {headers.map((header) => (

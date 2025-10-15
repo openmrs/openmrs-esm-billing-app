@@ -101,7 +101,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
       <InlineNotification
         kind="error"
         lowContrast
-        title={t('billErrorService', 'Bill service error')}
+        title={t('billErrorService', 'Billing service error')}
         subtitle={t('errorLoadingBillServices', 'Error loading bill services')}
       />
     );

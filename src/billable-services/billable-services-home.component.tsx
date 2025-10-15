@@ -37,12 +37,12 @@ const BillableServiceHome: React.FC = () => {
                 <SideNavLink onClick={() => handleNavigation('waive-bill')} renderIcon={Money}>
                   {t('billWaiver', 'Bill waiver')}
                 </SideNavLink>
-                <SideNavMenu title={t('billingSettings', 'Billing Settings')} renderIcon={Settings}>
+                <SideNavMenu title={t('billingSettings', 'Billing settings')} renderIcon={Settings}>
                   <SideNavMenuItem onClick={() => handleNavigation('cash-point-config')}>
-                    {t('cashPointConfig', 'Cash Point Config')}
+                    {t('cashPointConfig', 'Cash point configuration')}
                   </SideNavMenuItem>
                   <SideNavMenuItem onClick={() => handleNavigation('payment-modes-config')}>
-                    {t('paymentModesConfig', 'Payment Modes Config')}
+                    {t('paymentModesConfig', 'Payment modes configuration')}
                   </SideNavMenuItem>
                 </SideNavMenu>
               </UserHasAccess>

@@ -20,7 +20,7 @@ const EditBillableServiceModal: React.FC<EditBillableServiceModalProps> = ({
 
   return (
     <>
-      <ModalHeader closeModal={closeModal} title={t('billableService', 'Billable Service')} />
+      <ModalHeader closeModal={closeModal} title={t('billableService', 'Billable service')} />
       <ModalBody>
         <AddBillableService
           serviceToEdit={serviceToEdit}

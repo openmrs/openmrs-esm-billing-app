@@ -81,8 +81,8 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
               render={({ field }) => (
                 <TextInput
                   id="payment-mode-name"
-                  labelText={t('paymentModeName', 'Payment Mode Name')}
-                  placeholder={t('paymentModeNamePlaceholder', 'e.g., Cash, Credit Card')}
+                  labelText={t('paymentModeNameLabel', 'Payment Mode Name')}
+                  placeholder={t('paymentModeNamePlaceholder', 'For example, Cash, Credit Card')}
                   invalid={!!errors.name}
                   invalidText={errors.name?.message}
                   {...field}
@@ -96,7 +96,7 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
                 <TextInput
                   id="payment-mode-description"
                   labelText={t('description', 'Description')}
-                  placeholder={t('descriptionPlaceholder', 'e.g., Used for all cash transactions')}
+                  placeholder={t('descriptionPlaceholder', 'For example, Used for all cash transactions')}
                   invalid={!!errors.description}
                   invalidText={errors.description?.message}
                   {...field}

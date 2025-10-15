@@ -81,7 +81,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
     return (
       <div className={styles.errorContainer}>
         <Layer>
-          <ErrorState error={error} headerTitle={t('billsList', 'Bill list')} />
+          <ErrorState error={error} headerTitle={t('billList', 'Bill list')} />
         </Layer>
       </div>
     );
@@ -107,7 +107,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
     <div>
       <CardHeader title={t('billingHistory', 'Billing History')}>
         <Button renderIcon={Add} onClick={() => launchWorkspace('billing-form-workspace', {})} kind="ghost">
-          {t('addBill', 'Add bill item(s)')}
+          {t('addBill', 'Add bill items')}
         </Button>
       </CardHeader>
       <div className={styles.billHistoryContainer}>
@@ -122,7 +122,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             rows,
           }) => (
             <TableContainer {...getTableContainerProps}>
-              <Table className={styles.table} {...getTableProps()} aria-label="Bill list">
+              <Table className={styles.table} {...getTableProps()} aria-label={t('billList', 'Bill list')}>
                 <TableHead>
                   <TableRow>
                     <TableExpandHeader enableToggle {...getExpandHeaderProps()} />
