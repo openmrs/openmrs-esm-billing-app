@@ -78,12 +78,6 @@
       "name": "billing-home-tiles-ext",
       "slot": "billing-home-tiles-slot",
       "component": "serviceMetrics"
-    },
-    {
-      "name": "edit-bill-line-item-dialog",
-      "component": "editBillLineItemModal",
-      "online": true,
-      "offline": true
     }
   ],
   "modals": [
@@ -101,6 +95,10 @@
     },
     {
       "name": "edit-bill-item-modal",
+      "component": "editBillLineItemModal"
+    },
+    {
+      "name": "edit-bill-line-item-modal",
       "component": "editBillLineItemModal"
     },
     {

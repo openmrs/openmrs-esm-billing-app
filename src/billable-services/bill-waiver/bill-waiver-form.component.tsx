@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Stack, FormGroup, Layer, Button, NumberInput } from '@carbon/react';
 import { TaskAdd } from '@carbon/react/icons';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { createBillWaiverPayload } from './utils';
-import { convertToCurrency } from '../../helpers';
+import { calculateTotalAmount, convertToCurrency } from '../../helpers';
 import { processBillPayment } from '../../billing.resource';
 import { useBillableItems } from '../../billing-form/billing-form.resource';
 import type { LineItem, MappedBill } from '../../types';
@@ -20,16 +20,16 @@ type BillWaiverFormProps = {
 
 const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPatientUuid }) => {
   const { t } = useTranslation();
-  const [waiverAmount, setWaiverAmount] = React.useState(0);
-  const { lineItems: billableLineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
-  const totalAmount = lineItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
+  const [waiverAmount, setWaiverAmount] = useState(0);
+  const { lineItems: billableLineItems } = useBillableItems();
+  const totalAmount = calculateTotalAmount(lineItems);
   const { defaultCurrency } = useConfig();
 
   if (lineItems?.length === 0) {
     return null;
   }
 
-  const handleProcessPayment = () => {
+  const handleProcessPayment = async () => {
     const waiverEndPointPayload = createBillWaiverPayload(
       bill,
       waiverAmount,
@@ -38,29 +38,26 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
       billableLineItems,
     );
 
-    processBillPayment(waiverEndPointPayload, bill.uuid).then(
-      () => {
-        showSnackbar({
-          title: t('billWaiver', 'Bill waiver'),
-          subtitle: t('billWaiverSuccess', 'Bill waiver successful'),
-          kind: 'success',
-          timeoutInMs: 3500,
-          isLowContrast: true,
-        });
-        setPatientUuid('');
-        mutate((key) => typeof key === 'string' && key.startsWith(`${apiBasePath}bill?v=full`), undefined, {
-          revalidate: true,
-        });
-      },
-      (err) => {
-        showSnackbar({
-          title: t('billWaiver', 'Bill waiver'),
-          subtitle: t('billWaiverError', 'Bill waiver failed {{error}}', { error: err.message }),
-          kind: 'error',
-          isLowContrast: true,
-        });
-      },
-    );
+    try {
+      await processBillPayment(waiverEndPointPayload, bill.uuid);
+      showSnackbar({
+        title: t('billWaiver', 'Bill waiver'),
+        subtitle: t('billWaiverSuccess', 'Bill waiver successful'),
+        kind: 'success',
+        isLowContrast: true,
+      });
+      setPatientUuid('');
+      mutate((key) => typeof key === 'string' && key.startsWith(`${apiBasePath}bill?v=full`), undefined, {
+        revalidate: true,
+      });
+    } catch (error) {
+      showSnackbar({
+        title: t('billWaiver', 'Bill waiver'),
+        subtitle: t('billWaiverError', 'Bill waiver failed {{error}}', { error: error?.message }),
+        kind: 'error',
+        isLowContrast: true,
+      });
+    }
   };
 
   return (

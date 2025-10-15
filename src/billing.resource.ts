@@ -1,6 +1,5 @@
-import isEmpty from 'lodash-es/isEmpty';
-import sortBy from 'lodash-es/sortBy';
 import useSWR from 'swr';
+import sortBy from 'lodash-es/sortBy';
 import {
   formatDate,
   parseDate,
@@ -21,9 +20,11 @@ import type {
 } from './types';
 
 const mapBillProperties = (bill: PatientInvoice): MappedBill => {
+  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
+
   const status =
-    bill.lineItems.length > 1
-      ? bill.lineItems.some((item) => item.paymentStatus === 'PENDING')
+    activeLineItems.length > 1
+      ? activeLineItems.some((item) => item.paymentStatus === 'PENDING')
         ? 'PENDING'
         : 'PAID'
       : bill.status;
@@ -41,28 +42,38 @@ const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
     dateCreated: bill?.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
-    lineItems: bill?.lineItems,
-    billingService: bill?.lineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
+    lineItems: activeLineItems,
+    billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
     payments: bill.payments,
     display: bill?.display,
-    totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
+    totalAmount: activeLineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
     tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),
   };
 };
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const url = `${apiBasePath}bill?q=&v=full`;
+  // Build URL with status parameter if provided
+  const buildUrl = () => {
+    let url = `${apiBasePath}bill?v=full`;
 
-  const patientUrl = `${apiBasePath}bill?patientUuid=${patientUuid}&v=full`;
+    if (patientUuid) {
+      url += `&patientUuid=${patientUuid}`;
+    }
+
+    if (billStatus) {
+      url += `&status=${billStatus}`;
+    }
+
+    return url;
+  };
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
-    isEmpty(patientUuid) ? url : patientUrl,
+    buildUrl(),
     openmrsFetch,
   );
 
   const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
-  const filteredBills = billStatus === '' ? sortedBills : sortedBills?.filter((bill) => bill?.status === billStatus);
-  const mappedResults = filteredBills?.map((bill) => mapBillProperties(bill));
+  const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
 
   return {
     bills: mappedResults,

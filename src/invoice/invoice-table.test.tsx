@@ -168,7 +168,7 @@ describe('InvoiceTable', () => {
 
     expect(mockShowModal).toHaveBeenCalledTimes(1);
     expect(mockShowModal).toHaveBeenCalledWith(
-      'edit-bill-line-item-dialog',
+      'edit-bill-line-item-modal',
       expect.objectContaining({
         bill: defaultBill,
         item: expect.objectContaining({ uuid: '1' }),

@@ -1,21 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import {
-  Button,
-  ButtonSet,
-  ComboBox,
-  Form,
-  NumberInput,
-  InlineLoading,
-  InlineNotification,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableHeader,
-  TableCell,
-} from '@carbon/react';
+import { Button, ButtonSet, ComboBox, Form, NumberInput, InlineLoading, InlineNotification } from '@carbon/react';
 import { TrashCan } from '@carbon/react/icons';
 import { useConfig, useLayoutType, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
 import { processBillItems, useBillableServices } from '../billing.resource';
@@ -119,7 +105,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     return true;
   };
 
-  const postBillItems = () => {
+  const postBillItems = async () => {
     if (!validateSelectedItems()) {
       return;
     }
@@ -147,27 +133,24 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     });
 
     const url = `${apiBasePath}bill`;
-    processBillItems(bill).then(
-      () => {
-        setIsSubmitting(false);
-
-        closeWorkspace();
-        mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
-        showSnackbar({
-          title: t('saveBill', 'Save Bill'),
-          subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
-          kind: 'success',
-        });
-      },
-      (error) => {
-        setIsSubmitting(false);
-        showSnackbar({
-          title: t('billProcessingError', 'Bill processing error'),
-          kind: 'error',
-          subtitle: error?.message,
-        });
-      },
-    );
+    try {
+      await processBillItems(bill);
+      closeWorkspace();
+      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+      showSnackbar({
+        title: t('saveBill', 'Save Bill'),
+        subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
+        kind: 'success',
+      });
+    } catch (error) {
+      showSnackbar({
+        title: t('billProcessingError', 'Bill processing error'),
+        kind: 'error',
+        subtitle: error?.message,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

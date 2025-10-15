@@ -21,20 +21,25 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const [paymentMethod, setPaymentMethod] = useState<any>();
   let lineList = [];
 
-  const handleCreateExtraVisitInfo = useCallback((createBillPayload) => {
-    createPatientBill(createBillPayload).then(
-      (res) => {
-        showSnackbar({ title: 'Patient Bill', subtitle: 'Patient has been billed successfully', kind: 'success' });
-      },
-      (error) => {
+  const handleCreateExtraVisitInfo = useCallback(
+    async (createBillPayload) => {
+      try {
+        await createPatientBill(createBillPayload);
         showSnackbar({
-          title: 'Patient Bill Error',
-          subtitle: 'An error has occurred while creating patient bill',
+          title: t('patientBill', 'Patient bill'),
+          subtitle: t('billCreatedSuccessfully', 'Bill created successfully'),
+          kind: 'success',
+        });
+      } catch (error) {
+        showSnackbar({
+          title: t('billCreationError', 'Bill creation error'),
+          subtitle: t('errorCreatingBill', 'An error occurred while creating the bill'),
           kind: 'error',
         });
-      },
-    );
-  }, []);
+      }
+    },
+    [t],
+  );
 
   const handleBillingService = ({ selectedItem }) => {
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
@@ -74,7 +79,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
       <InlineLoading
         status="active"
         iconDescription={getCoreTranslation('loading')}
-        description={t('loadingBillingServices', 'Loading billing services...')}
+        description={`${t('loadingBillingServices', 'Loading billing services')}...`}
       />
     );
   }
@@ -110,7 +115,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
           <div className={styles.sectionTitle}>{t('billing', 'Billing')}</div>
           <div className={styles.sectionField}></div>
           <Dropdown
-            label={t('selectBillableService', 'Select a billable service...')}
+            label={t('selectBillableService', 'Select a billable service')}
             onChange={handleBillingService}
             id="billable-items"
             items={lineList}
