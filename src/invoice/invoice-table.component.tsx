@@ -73,7 +73,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
 
   const handleSelectBillItem = useCallback(
     (row: LineItem) => {
-      const dispose = showModal('edit-bill-line-item-dialog', {
+      const dispose = showModal('edit-bill-line-item-modal', {
         bill,
         item: row,
         closeModal: () => dispose(),
