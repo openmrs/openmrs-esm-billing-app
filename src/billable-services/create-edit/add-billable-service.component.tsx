@@ -56,7 +56,7 @@ interface AddBillableServiceProps {
 }
 
 const DEFAULT_PAYMENT_OPTION: PaymentModeForm = { paymentMode: '', price: undefined };
-const MAX_NAME_LENGTH = 19;
+const MAX_NAME_LENGTH = 255;
 
 const createBillableServiceSchema = (t: TFunction) => {
   const servicePriceSchema = z.object({
