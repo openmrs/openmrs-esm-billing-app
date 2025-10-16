@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Button,
-  Column,
   Form,
   InlineLoading,
-  InlineNotification,
   ModalBody,
   ModalFooter,
   ModalHeader,
@@ -13,16 +11,18 @@ import {
   TextInput,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { Controller, type FieldErrors, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { mutate } from 'swr';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCoreTranslation, showSnackbar } from '@openmrs/esm-framework';
+import { getCoreTranslation, showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { type LineItem, type MappedBill } from '../types';
 import { updateBillItems } from '../billing.resource';
 import { useBillableServices } from '../billable-services/billable-service.resource';
+import { type BillingConfig } from '../config-schema';
+import { convertToCurrency } from '../helpers';
 import styles from './bill-item-actions.scss';
 
 interface EditBillLineItemModalProps {
@@ -33,8 +33,8 @@ interface EditBillLineItemModalProps {
 
 const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, closeModal, item }) => {
   const { t } = useTranslation();
+  const { defaultCurrency } = useConfig<BillingConfig>();
   const { billableServices } = useBillableServices();
-  const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [total, setTotal] = useState(0);
 
   const schema = useMemo(
@@ -62,12 +62,6 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   );
 
   type BillLineItemForm = z.infer<typeof schema>;
-
-  const onError = (errors: FieldErrors<LineItem>) => {
-    if (errors) {
-      setShowErrorNotification(true);
-    }
-  };
 
   const {
     control,
@@ -147,23 +141,27 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   return (
     <>
       <ModalHeader closeModal={closeModal} title={t('editBillLineItem', 'Edit bill line item')} />
-      <Form onSubmit={handleSubmit(onSubmit, onError)}>
+      <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
           <Stack gap={5}>
             <div className={styles.modalBody}>
-              <h5>
-                {bill?.patientName} &nbsp; · &nbsp;{bill?.cashPointName} &nbsp; · &nbsp;{bill?.receiptNumber}&nbsp;
-              </h5>
+              <div className={styles.billInfo}>
+                {bill?.patientName}
+                <span className={styles.separator}>·</span>
+                {bill?.cashPointName}
+                <span className={styles.separator}>·</span>
+                {bill?.receiptNumber}
+              </div>
             </div>
             <section>
               <p className={styles.label}>
                 {t('item', 'Item')}: {item?.billableService ? item?.billableService : item?.item}
               </p>
               <p className={styles.label}>
-                {t('currentPrice', 'Current price')}: {item?.price}
+                {t('currentPrice', 'Current price')}: {convertToCurrency(item?.price, defaultCurrency)}
               </p>
               <p className={styles.label}>
-                {t('status', 'status')}: {item?.paymentStatus}
+                {t('serviceStatus', 'Service status')}: {item?.paymentStatus}
               </p>
               <Controller
                 name="quantity"
@@ -191,7 +189,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                 render={({ field: { value } }) => (
                   <TextInput
                     className={styles.controlField}
-                    helperText={t('unitPriceHelperText', 'This is the unit price for this item.')}
+                    helperText={t('unitPriceHelperText', 'This is the unit price for this item')}
                     id="priceInput"
                     labelText={t('price', 'Unit Price')}
                     readOnly
@@ -199,21 +197,9 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                   />
                 )}
               />
-
-              <p className={styles.label}>
-                {t('total', 'Total')}: {total}{' '}
+              <p className={styles.label} aria-live="polite">
+                {t('total', 'Total')}: {convertToCurrency(total, defaultCurrency)}
               </p>
-
-              {showErrorNotification && (
-                <Column className={styles.errorContainer}>
-                  <InlineNotification
-                    lowContrast
-                    title={t('error', 'Error')}
-                    subtitle={t('pleaseRequiredFields', 'Please fill all required fields') + '.'}
-                    onClose={() => setShowErrorNotification(false)}
-                  />
-                </Column>
-              )}
             </section>
           </Stack>
         </ModalBody>
@@ -224,11 +210,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <div className={styles.inline}>
-                <InlineLoading
-                  status="active"
-                  iconDescription={t('submitting', 'Submitting')}
-                  description={t('submitting', 'Submitting') + '...'}
-                />
+                <InlineLoading className={styles.loader} description={`${t('submitting', 'Submitting')}...`} />
               </div>
             ) : (
               getCoreTranslation('save')

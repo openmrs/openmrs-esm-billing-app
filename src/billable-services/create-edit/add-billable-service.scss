@@ -10,29 +10,8 @@
   margin: layout.$spacing-05;
 }
 
-.sectionTitle {
-  @include type.type-style('heading-compact-02');
-  color: $text-02;
-  margin-bottom: layout.$spacing-04;
-}
-
-.modalBody {
-  padding-bottom: layout.$spacing-05;
-}
-
-.container {
-  margin: layout.$spacing-05;
-}
-
-.paymentContainer {
-  margin: layout.$layout-01;
-  padding: layout.$layout-01;
-  width: 70%;
-  border-right: 1px solid colors.$cool-gray-40;
-}
-
 .paymentButtons {
-  margin: layout.$layout-01 0;
+  margin: layout.$spacing-05 0;
 }
 
 .paymentMethodContainer {
@@ -42,22 +21,6 @@
   column-gap: layout.$spacing-05;
   margin: 0.625rem 0;
   width: 100%;
-}
-
-.paymentTotals {
-  margin-top: layout.$spacing-01;
-}
-
-.processPayments {
-  display: flex;
-  justify-content: flex-end;
-  margin: layout.$spacing-05;
-  column-gap: layout.$spacing-04;
-}
-
-.errorPaymentContainer {
-  margin: layout.$spacing-04;
-  min-height: layout.$spacing-09;
 }
 
 .removeButtonContainer {
@@ -98,37 +61,16 @@
   margin-bottom: layout.$spacing-05;
 }
 
-.errorContainer {
-  margin: layout.$spacing-05;
-}
-
-.serviceError {
-  :global(.cds--search-input):focus {
-    outline: 2.5px solid $danger;
-  }
-
-  :global(.cds--search-magnifier) {
-    svg {
-      fill: $danger;
-    }
-  }
-}
-
 .errorMessage {
   @include type.type-style('label-02');
   color: $danger;
-  margin-top: 0.5rem;
+  margin-bottom: layout.$spacing-05;
 }
 
-.spinner {
+.loader {
   &:global(.cds--inline-loading) {
     min-height: layout.$spacing-05;
   }
-}
-
-.errorMessage {
-  color: red;
-  font-size: 0.875rem;
 }
 
 .serviceNameLabel {

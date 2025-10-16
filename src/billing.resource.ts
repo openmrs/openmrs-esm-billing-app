@@ -1,8 +1,5 @@
-import { useContext } from 'react';
-import dayjs from 'dayjs';
-import isEmpty from 'lodash-es/isEmpty';
-import sortBy from 'lodash-es/sortBy';
 import useSWR from 'swr';
+import sortBy from 'lodash-es/sortBy';
 import {
   formatDate,
   parseDate,
@@ -12,45 +9,71 @@ import {
   type SessionLocation,
   useOpenmrsFetchAll,
 } from '@openmrs/esm-framework';
-import { apiBasePath, omrsDateFormat } from './constants';
-import type { MappedBill, PatientInvoice, BillableItem } from './types';
-import SelectedDateContext from './hooks/selectedDateContext';
+import { apiBasePath } from './constants';
+import type {
+  MappedBill,
+  PatientInvoice,
+  BillableItem,
+  BillPaymentPayload,
+  CreateBillPayload,
+  UpdateBillPayload,
+} from './types';
 
-export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  const { selectedDate } = useContext(SelectedDateContext);
-  const endDate = dayjs().endOf('day').format(omrsDateFormat);
-  const url = `${apiBasePath}bill?q=&v=full`;
+const mapBillProperties = (bill: PatientInvoice): MappedBill => {
+  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
-  const patientUrl = `${apiBasePath}bill?patientUuid=${patientUuid}&v=full`;
+  const status =
+    activeLineItems.length > 1
+      ? activeLineItems.some((item) => item.paymentStatus === 'PENDING')
+        ? 'PENDING'
+        : 'PAID'
+      : bill.status;
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
-    isEmpty(patientUuid) ? url : patientUrl,
-    openmrsFetch,
-  );
-
-  const mapBillProperties = (bill: PatientInvoice): MappedBill => ({
+  return {
     id: bill?.id,
     uuid: bill?.uuid,
     patientName: bill?.patient?.display.split('-')?.[1],
     identifier: bill?.patient?.display.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
-    status: bill.lineItems.some((item) => item.paymentStatus === 'PENDING') ? 'PENDING' : 'PAID',
+    status,
     receiptNumber: bill?.receiptNumber,
     cashier: bill?.cashier,
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
     dateCreated: bill?.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
-    lineItems: bill?.lineItems,
-    billingService: bill?.lineItems.map((bill) => bill?.item || bill?.billableService || '--').join('  '),
-    payments: bill?.payments,
+    lineItems: activeLineItems,
+    billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
+    payments: bill.payments,
     display: bill?.display,
-    totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
-  });
+    totalAmount: activeLineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
+    tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),
+  };
+};
+
+export const useBills = (patientUuid: string = '', billStatus: string = '') => {
+  // Build URL with status parameter if provided
+  const buildUrl = () => {
+    let url = `${apiBasePath}bill?v=full`;
+
+    if (patientUuid) {
+      url += `&patientUuid=${patientUuid}`;
+    }
+
+    if (billStatus) {
+      url += `&status=${billStatus}`;
+    }
+
+    return url;
+  };
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
+    buildUrl(),
+    openmrsFetch,
+  );
 
   const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
-  const filteredBills = billStatus === '' ? sortedBills : sortedBills?.filter((bill) => bill?.status === billStatus);
-  const mappedResults = filteredBills?.map((bill) => mapBillProperties(bill));
+  const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
 
   return {
     bills: mappedResults,
@@ -68,31 +91,6 @@ export const useBill = (billUuid: string) => {
     openmrsFetch,
   );
 
-  const mapBillProperties = (bill: PatientInvoice): MappedBill => ({
-    id: bill?.id,
-    uuid: bill?.uuid,
-    patientName: bill?.patient?.display.split('-')?.[1],
-    identifier: bill?.patient?.display.split('-')?.[0],
-    patientUuid: bill?.patient?.uuid,
-    status:
-      bill.lineItems.length > 1
-        ? bill.lineItems.some((item) => item.paymentStatus === 'PENDING')
-          ? 'PENDING'
-          : 'PAID'
-        : bill.status,
-    receiptNumber: bill?.receiptNumber,
-    cashier: bill?.cashier,
-    cashPointUuid: bill?.cashPoint?.uuid,
-    cashPointName: bill?.cashPoint?.name,
-    cashPointLocation: bill?.cashPoint?.location?.display,
-    dateCreated: bill?.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
-    lineItems: bill?.lineItems,
-    billingService: bill?.lineItems.map((bill) => bill.item).join(' '),
-    payments: bill.payments,
-    totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
-    tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),
-  });
-
   const formattedBill = data?.data ? mapBillProperties(data?.data) : null;
 
   return {
@@ -104,7 +102,7 @@ export const useBill = (billUuid: string) => {
   };
 };
 
-export const processBillPayment = (payload, billUuid: string) => {
+export const processBillPayment = (payload: BillPaymentPayload, billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}`;
 
   return openmrsFetch(url, {
@@ -139,7 +137,7 @@ export function useBillableServices() {
   return useOpenmrsFetchAll<BillableItem>(url);
 }
 
-export const processBillItems = (payload) => {
+export const processBillItems = (payload: CreateBillPayload) => {
   const url = `${apiBasePath}bill`;
   return openmrsFetch(url, {
     method: 'POST',
@@ -150,7 +148,7 @@ export const processBillItems = (payload) => {
   });
 };
 
-export const updateBillItems = (payload) => {
+export const updateBillItems = (payload: UpdateBillPayload) => {
   const url = `${apiBasePath}bill/${payload.uuid}`;
   return openmrsFetch(url, {
     method: 'POST',

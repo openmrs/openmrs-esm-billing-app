@@ -52,64 +52,75 @@ const mockServiceTypes = [
   { uuid: 'a487a743-62ce-4f93-a66b-c5154ee8987d', display: 'Adherence counselling  service' },
 ];
 
+// Test helpers (canonical pattern)
+const setupMocks = () => {
+  mockUseBillableServices.mockReturnValue({
+    billableServices: [],
+    isLoading: false,
+    error: null,
+    mutate: jest.fn(),
+    isValidating: false,
+  });
+  mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoadingPaymentModes: false });
+  mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoadingServiceTypes: false });
+  mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
+};
+
+const renderAddBillableService = (props = {}) => {
+  const defaultProps = {
+    onClose: jest.fn(),
+    ...props,
+  };
+  setupMocks();
+  return render(<AddBillableService {...defaultProps} />);
+};
+
+interface FillOptions {
+  serviceName?: string;
+  shortName?: string;
+  skipPrice?: boolean;
+}
+
+const fillRequiredFields = async (user, options: FillOptions = {}) => {
+  const { serviceName = 'Test Service Name', shortName = 'Test Short Name', skipPrice = false } = options;
+
+  if (serviceName) {
+    await user.type(screen.getByRole('textbox', { name: /Service Name/i }), serviceName);
+  }
+  if (shortName) {
+    await user.type(screen.getByRole('textbox', { name: /Short Name/i }), shortName);
+  }
+
+  await user.click(screen.getByRole('combobox', { name: /Service type/i }));
+  await user.click(screen.getByRole('option', { name: /Lab service/i }));
+
+  await user.click(screen.getByRole('combobox', { name: /Payment mode/i }));
+  await user.click(screen.getByRole('option', { name: /Cash/i }));
+
+  if (!skipPrice) {
+    const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
+    await user.type(priceInput, '100');
+  }
+};
+
+const submitForm = async (user) => {
+  const saveBtn = screen.getByRole('button', { name: /save/i });
+  await user.click(saveBtn);
+};
+
 describe('AddBillableService', () => {
   test('should render billable services form and generate correct payload', async () => {
     const user = userEvent.setup();
     const mockOnClose = jest.fn();
-    mockUseBillableServices.mockReturnValue({
-      billableServices: [],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-      isValidating: false,
-    });
-    mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoadingPaymentModes: false });
-    mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoadingServiceTypes: false });
-    mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
-
-    render(<AddBillableService onClose={mockOnClose} />);
+    renderAddBillableService({ onClose: mockOnClose });
 
     const formTitle = screen.getByRole('heading', { name: /Add Billable Services/i });
     expect(formTitle).toBeInTheDocument();
 
-    const serviceNameTextInp = screen.getByRole('textbox', { name: /Service Name/i });
-    expect(serviceNameTextInp).toBeInTheDocument();
+    await fillRequiredFields(user);
+    mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
-    const serviceShortNameTextInp = screen.getByRole('textbox', { name: /Short Name/i });
-    expect(serviceShortNameTextInp).toBeInTheDocument();
-
-    await user.type(serviceNameTextInp, 'Test Service Name');
-    await user.type(serviceShortNameTextInp, 'Test Short Name');
-
-    expect(serviceNameTextInp).toHaveValue('Test Service Name');
-    expect(serviceShortNameTextInp).toHaveValue('Test Short Name');
-
-    const serviceTypeComboBox = screen.getByRole('combobox', { name: /Service type/i });
-    expect(serviceTypeComboBox).toBeInTheDocument();
-    await user.click(serviceTypeComboBox);
-    const serviceTypeOptions = screen.getByRole('option', { name: /Lab service/i });
-    expect(serviceTypeOptions).toBeInTheDocument();
-    await user.click(serviceTypeOptions);
-
-    // Fill in the default payment option (first one)
-    const paymentMethodComboBoxes = screen.getAllByRole('combobox', { name: /Payment mode/i });
-    expect(paymentMethodComboBoxes).toHaveLength(1); // Should have one default
-    await user.click(paymentMethodComboBoxes[0]);
-    const paymentMethodOptions = screen.getByRole('option', { name: /Cash/i });
-    expect(paymentMethodOptions).toBeInTheDocument();
-    await user.click(paymentMethodOptions);
-
-    const priceTextInps = screen.getAllByRole('textbox', { name: /Selling Price/i });
-    expect(priceTextInps).toHaveLength(1); // Should have one price input for the default payment method
-    const priceTextInp = priceTextInps[0];
-    expect(priceTextInp).toBeInTheDocument();
-    await user.type(priceTextInp, '1000');
-
-    mockCreateBillableService.mockReturnValue(Promise.resolve({} as FetchResponse<any>));
-    const saveBtn = screen.getAllByRole('button').find((btn) => btn.getAttribute('type') === 'submit');
-    expect(saveBtn).toBeInTheDocument();
-
-    await user.click(saveBtn);
+    await submitForm(user);
 
     expect(mockCreateBillableService).toHaveBeenCalledTimes(1);
     expect(mockCreateBillableService).toHaveBeenCalledWith({
@@ -119,7 +130,7 @@ describe('AddBillableService', () => {
       servicePrices: [
         {
           paymentMode: '63eff7a4-6f82-43c4-a333-dbcc58fe9f74',
-          price: 1000,
+          price: 100,
           name: 'Cash',
         },
       ],
@@ -133,23 +144,97 @@ describe('AddBillableService', () => {
   test("should navigate back to billable services dashboard when 'Cancel' button is clicked", async () => {
     const user = userEvent.setup();
     const mockOnClose = jest.fn();
-    mockUseBillableServices.mockReturnValue({
-      billableServices: [],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-      isValidating: false,
-    });
-    mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoadingPaymentModes: false });
-    mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoadingServiceTypes: false });
-    mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
+    renderAddBillableService({ onClose: mockOnClose });
 
-    render(<AddBillableService onClose={mockOnClose} />);
-
-    const cancelBtn = screen.getAllByRole('button').find((btn) => btn.className.includes('cds--btn--secondary'));
-    expect(cancelBtn).toBeInTheDocument();
+    const cancelBtn = screen.getByRole('button', { name: /cancel/i });
     await user.click(cancelBtn);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  describe('Form Validation', () => {
+    test('should show "Price must be greater than 0" error for zero price', async () => {
+      const user = userEvent.setup();
+      renderAddBillableService();
+
+      await fillRequiredFields(user, { skipPrice: true });
+
+      const priceInput = screen.getByRole('spinbutton', { name: /selling price/i });
+      await user.type(priceInput, '0');
+
+      await submitForm(user);
+
+      expect(screen.getByText('Price must be greater than 0')).toBeInTheDocument();
+      expect(mockCreateBillableService).not.toHaveBeenCalled();
+    });
+
+    test('should show "Price must be greater than 0" error for negative price', async () => {
+      const user = userEvent.setup();
+      renderAddBillableService();
+
+      await fillRequiredFields(user, { skipPrice: true });
+
+      const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
+      await user.type(priceInput, '-10');
+
+      await submitForm(user);
+
+      expect(screen.getByText('Price must be greater than 0')).toBeInTheDocument();
+      expect(mockCreateBillableService).not.toHaveBeenCalled();
+    });
+
+    test('should show "Service name is required" error when service name is empty', async () => {
+      const user = userEvent.setup();
+      renderAddBillableService();
+
+      // Fill all fields except service name
+      await user.type(screen.getByRole('textbox', { name: /Short Name/i }), 'Test Short Name');
+
+      await user.click(screen.getByRole('combobox', { name: /Service type/i }));
+      await user.click(screen.getByRole('option', { name: /Lab service/i }));
+
+      await user.click(screen.getByRole('combobox', { name: /Payment mode/i }));
+      await user.click(screen.getByRole('option', { name: /Cash/i }));
+
+      const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
+      await user.type(priceInput, '100');
+
+      await submitForm(user);
+
+      expect(screen.getByText('Service name is required')).toBeInTheDocument();
+      expect(mockCreateBillableService).not.toHaveBeenCalled();
+    });
+
+    test('should accept valid decimal price values', async () => {
+      const user = userEvent.setup();
+      renderAddBillableService();
+
+      await fillRequiredFields(user, { skipPrice: true });
+
+      const priceInput = screen.getByRole('spinbutton', { name: /selling price/i });
+      await user.type(priceInput, '10.50');
+
+      mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
+
+      await submitForm(user);
+
+      expect(screen.queryByText('Price is required')).not.toBeInTheDocument();
+      expect(screen.queryByText('Price must be greater than 0')).not.toBeInTheDocument();
+      expect(mockCreateBillableService).toHaveBeenCalledTimes(1);
+      expect(mockCreateBillableService).toHaveBeenCalledWith({
+        name: 'Test Service Name',
+        shortName: 'Test Short Name',
+        serviceType: 'c9604249-db0a-4d03-b074-fc6bc2fa13e6',
+        servicePrices: [
+          {
+            paymentMode: '63eff7a4-6f82-43c4-a333-dbcc58fe9f74',
+            price: 10.5,
+            name: 'Cash',
+          },
+        ],
+        serviceStatus: 'ENABLED',
+        concept: undefined,
+      });
+    });
   });
 });
