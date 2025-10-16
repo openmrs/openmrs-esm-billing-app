@@ -75,11 +75,6 @@
       "order": 2
     },
     {
-      "name": "billing-home-tiles-ext",
-      "slot": "billing-home-tiles-slot",
-      "component": "serviceMetrics"
-    },
-    {
       "name": "billable-services-left-panel-link",
       "component": "billableServicesLeftPanelLink",
       "slot": "billable-services-left-panel-slot",

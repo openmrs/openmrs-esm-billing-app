@@ -18,7 +18,6 @@ import EditBillableServiceModal from './billable-services/create-edit/edit-billa
 import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
 import RequirePaymentModal from './modal/require-payment.modal';
 import RootComponent from './root.component';
-import ServiceMetrics from './billable-services/dashboard/service-metrics.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 
 const moduleName = '@openmrs/esm-billing-app';
@@ -72,8 +71,6 @@ export const editBillableServiceModal = getSyncLifecycle(EditBillableServiceModa
 export const editBillLineItemModal = getSyncLifecycle(EditBillLineItemModal, options);
 
 export const root = getSyncLifecycle(RootComponent, options);
-
-export const serviceMetrics = getSyncLifecycle(ServiceMetrics, options);
 
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 
