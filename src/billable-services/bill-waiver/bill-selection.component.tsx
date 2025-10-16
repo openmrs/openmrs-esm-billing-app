@@ -42,7 +42,7 @@ const PatientBillsSelections: React.FC<{ bills: MappedBill; setPatientUuid: (pat
           <StructuredListRow head>
             <StructuredListCell head>{t('billItem', 'Bill item')}</StructuredListCell>
             <StructuredListCell head>{t('quantity', 'Quantity')}</StructuredListCell>
-            <StructuredListCell head>{t('unitPrice', 'Unit Price')}</StructuredListCell>
+            <StructuredListCell head>{t('unitPrice', 'Unit price')}</StructuredListCell>
             <StructuredListCell head>{t('total', 'Total')}</StructuredListCell>
             <StructuredListCell head>{getCoreTranslation('actions')}</StructuredListCell>
           </StructuredListRow>

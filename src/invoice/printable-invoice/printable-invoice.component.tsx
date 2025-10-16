@@ -47,9 +47,9 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
     }) ?? [];
 
   const invoiceTotal = {
-    [t('totalAmount', 'Total Amount')]: bill?.totalAmount,
-    [t('amountTendered', 'Amount Tendered')]: bill?.tenderedAmount,
-    [t('discountAmount', 'Discount Amount')]: 0,
+    [t('totalAmount', 'Total amount')]: bill?.totalAmount,
+    [t('amountTendered', 'Amount tendered')]: bill?.tenderedAmount,
+    [t('discountAmount', 'Discount amount')]: 0,
     [t('amountDue', 'Amount due')]: bill?.totalAmount - bill?.tenderedAmount,
   };
 
@@ -88,7 +88,7 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
             <DataTable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles={false}>
               {({ rows, headers, getRowProps, getTableProps }) => (
                 <TableContainer>
-                  <Table {...getTableProps()} aria-label="Invoice line items">
+                  <Table {...getTableProps()} aria-label={t('invoiceLineItems', 'Invoice line items')}>
                     <TableHead>
                       <TableRow>
                         {headers.map((header) => (

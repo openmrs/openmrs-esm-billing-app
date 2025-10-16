@@ -95,8 +95,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     for (const item of selectedItems) {
       if (item.availablePaymentMethods && item.availablePaymentMethods.length > 1 && !item.selectedPaymentMethod) {
         showSnackbar({
-          title: t('validationError', 'Validation Error'),
-          subtitle: t('selectPaymentMethodRequired', 'Please select a payment method for all items'),
+          title: t('validationError', 'Validation error'),
+          subtitle: t('paymentMethodRequired', 'Payment method is required for all items'),
           kind: 'error',
         });
         return false;
@@ -138,8 +138,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
       closeWorkspace();
       mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
       showSnackbar({
-        title: t('saveBill', 'Save Bill'),
-        subtitle: t('billProcessingSuccess', 'Bill processing has been successful'),
+        title: t('saveBill', 'Save bill'),
+        subtitle: t('billProcessedSuccessfully', 'Bill processed successfully'),
         kind: 'success',
       });
     } catch (error) {
@@ -162,8 +162,8 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           <InlineNotification
             kind="error"
             lowContrast
-            title={t('billErrorService', 'Bill service error')}
-            subtitle={t('errorLoadingBillServices', 'Error loading bill services')}
+            title={t('errorLoadingBillableServices', 'Error loading billable services')}
+            subtitle={error?.message}
           />
         ) : (
           <ComboBox
@@ -176,7 +176,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         )}
         {selectedItems && selectedItems.length > 0 && (
           <div className={styles.selectedItemsContainer}>
-            <h4>{t('selectedItems', 'Selected Items')}</h4>
+            <h4>{t('selectedItems', 'Selected items')}</h4>
             {selectedItems.map((item) => (
               <div key={item.uuid} className={styles.itemCard}>
                 <div className={styles.itemHeader}>
@@ -218,7 +218,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                     </div>
                   ) : (
                     <div className={styles.controlSection}>
-                      <label>{t('unitPrice', 'Unit Price')}</label>
+                      <label>{t('unitPrice', 'Unit price')}</label>
                       <span className={styles.priceDisplay}>{convertToCurrency(item.price, defaultCurrency)}</span>
                     </div>
                   )}

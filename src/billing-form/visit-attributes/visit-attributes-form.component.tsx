@@ -100,7 +100,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
       <InlineLoading
         status="active"
         iconDescription={t('loadingDescription', 'Loading')}
-        description={t('loading', 'Loading data...')}
+        description={t('loading', 'Loading data') + '...'}
       />
     );
   }

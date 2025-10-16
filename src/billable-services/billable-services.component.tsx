@@ -57,19 +57,19 @@ const BillableServices = () => {
 
   const headerData = [
     {
-      header: t('serviceName', 'Service Name'),
+      header: t('serviceName', 'Service name'),
       key: 'serviceName',
     },
     {
-      header: t('shortName', 'Short Name'),
+      header: t('shortName', 'Short name'),
       key: 'shortName',
     },
     {
-      header: t('serviceType', 'Service Type'),
+      header: t('serviceType', 'Service type'),
       key: 'serviceType',
     },
     {
-      header: t('serviceStatus', 'Service Status'),
+      header: t('serviceStatus', 'Service status'),
       key: 'status',
     },
     {
@@ -138,7 +138,11 @@ const BillableServices = () => {
 
   if (isLoading) {
     return (
-      <InlineLoading status="active" iconDescription={getCoreTranslation('loading')} description="Loading data..." />
+      <InlineLoading
+        status="active"
+        iconDescription={getCoreTranslation('loading')}
+        description={t('loading', 'Loading data') + '...'}
+      />
     );
   }
 
@@ -174,7 +178,7 @@ const BillableServices = () => {
         useZebraStyles={rowData?.length > 1}>
         {({ rows, headers, getHeaderProps, getRowProps, getTableProps }) => (
           <TableContainer>
-            <Table {...getTableProps()} aria-label="service list">
+            <Table {...getTableProps()} aria-label={t('serviceList', 'Service list')}>
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (

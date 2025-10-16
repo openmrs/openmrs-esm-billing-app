@@ -41,7 +41,7 @@ const RequirePaymentModal: React.FC<RequirePaymentModalProps> = ({ closeModal, p
         {isLoading && (
           <InlineLoading
             status="active"
-            iconDescription="Loading"
+            iconDescription={getCoreTranslation('loading')}
             description={t('loadingBillItems', 'Loading bill items') + '...'}
           />
         )}

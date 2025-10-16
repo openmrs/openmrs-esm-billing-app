@@ -119,7 +119,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
               <TextInput
                 id="cash-point-name"
                 labelText={t('cashPointName', 'Cash Point Name')}
-                placeholder={t('cashPointNamePlaceholder', 'e.g., Pharmacy Cash Point')}
+                placeholder={t('cashPointNamePlaceholder', 'For example, Pharmacy Cash Point')}
                 invalid={!!errors.name}
                 invalidText={errors.name?.message}
                 {...field}
