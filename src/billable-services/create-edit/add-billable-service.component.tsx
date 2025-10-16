@@ -1,4 +1,3 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
 import {
   Button,
   ComboBox,
@@ -14,12 +13,14 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add, TrashCan } from '@carbon/react/icons';
-import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { type TFunction } from 'i18next';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getCoreTranslation, navigate, ResponsiveWrapper, showSnackbar, useDebounce } from '@openmrs/esm-framework';
+import { type TFunction } from 'i18next';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
+import type { BillableService, ConceptSearchResult, ServicePrice } from '../../types';
 import {
   createBillableService,
   updateBillableService,
@@ -27,7 +28,6 @@ import {
   usePaymentModes,
   useServiceTypes,
 } from '../billable-service.resource';
-import type { ConceptSearchResult, BillableService, ServicePrice } from '../../types';
 import styles from './add-billable-service.scss';
 
 interface ServiceType {
@@ -150,7 +150,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
       concept: serviceToEdit?.concept || null,
       payment: serviceToEdit?.servicePrices?.map((servicePrice: ServicePrice) => ({
         paymentMode: servicePrice.paymentMode?.uuid || '',
-        price: servicePrice.price || undefined,
+        price: servicePrice.price || '',
       })) || [DEFAULT_PAYMENT_OPTION],
     },
     resolver: zodResolver(billableServiceSchema),
@@ -181,7 +181,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
         concept: serviceToEdit.concept || null,
         payment: serviceToEdit.servicePrices.map((payment: ServicePrice) => ({
           paymentMode: payment.paymentMode?.uuid || '',
-          price: payment.price || undefined,
+          price: payment.price || '',
         })),
       });
     }
@@ -417,12 +417,9 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                         label={t('sellingPrice', 'Selling price')}
                         placeholder={t('enterSellingPrice', 'Enter selling price')}
                         min={0}
-                        step={0.01}
+                        step={1}
                         value={field.value ?? ''}
-                        onChange={(_, { value }) => {
-                          const numValue = value === '' || value === undefined ? undefined : Number(value);
-                          field.onChange(numValue);
-                        }}
+                        onChange={(_, { value }) => field.onChange(Number(value))}
                       />
                     </Layer>
                   )}
