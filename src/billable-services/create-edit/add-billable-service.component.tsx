@@ -1,3 +1,4 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   ComboBox,
@@ -12,14 +13,13 @@ import {
   TextInput,
   Tile,
 } from '@carbon/react';
-import { Add, TrashCan } from '@carbon/react/icons';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { getCoreTranslation, navigate, ResponsiveWrapper, showSnackbar, useDebounce } from '@openmrs/esm-framework';
 import { type TFunction } from 'i18next';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import { Add, TrashCan } from '@carbon/react/icons';
 import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { getCoreTranslation, navigate, ResponsiveWrapper, showSnackbar, useDebounce } from '@openmrs/esm-framework';
 import type { BillableService, ConceptSearchResult, ServicePrice } from '../../types';
 import {
   createBillableService,
@@ -39,11 +39,12 @@ interface PaymentModeForm {
   paymentMode: string;
   price: string | number | undefined;
 }
+
 interface BillableServiceFormData {
   name: string;
   shortName?: string;
   serviceType: ServiceType | null;
-  concept?: ConceptSearchResult | null;
+  concept?: { uuid: string; display: string } | null;
   payment: PaymentModeForm[];
 }
 
@@ -129,7 +130,6 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
   isModal = false,
 }) => {
   const { t } = useTranslation();
-
   const { paymentModes, isLoadingPaymentModes } = usePaymentModes();
   const { serviceTypes, isLoadingServiceTypes } = useServiceTypes();
 
@@ -147,7 +147,9 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
       name: serviceToEdit?.name || '',
       shortName: serviceToEdit?.shortName || '',
       serviceType: serviceToEdit?.serviceType || null,
-      concept: serviceToEdit?.concept || null,
+      concept: serviceToEdit?.concept
+        ? { uuid: serviceToEdit.concept.uuid, display: serviceToEdit.concept.display }
+        : null,
       payment: serviceToEdit?.servicePrices?.map((servicePrice: ServicePrice) => ({
         paymentMode: servicePrice.paymentMode?.uuid || '',
         price: servicePrice.price || '',
@@ -178,7 +180,9 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
         name: serviceToEdit.name || '',
         shortName: serviceToEdit.shortName || '',
         serviceType: serviceToEdit.serviceType || null,
-        concept: serviceToEdit.concept || null,
+        concept: serviceToEdit.concept
+          ? { uuid: serviceToEdit.concept.uuid, display: serviceToEdit.concept.display }
+          : null,
         payment: serviceToEdit.servicePrices.map((payment: ServicePrice) => ({
           paymentMode: payment.paymentMode?.uuid || '',
           price: payment.price || '',
@@ -340,7 +344,10 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                       className={styles.service}
                       key={searchResult.concept.uuid}
                       onClick={() => {
-                        setValue('concept', searchResult);
+                        setValue('concept', {
+                          uuid: searchResult.concept.uuid,
+                          display: searchResult.display,
+                        });
                         setSearchTerm('');
                       }}>
                       {searchResult.display}
@@ -352,7 +359,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
             return (
               <Layer>
                 <Tile className={styles.emptyResults}>
-                  <span>{t('noResultsFor', 'No results for {searchTerm}', { searchTerm: debouncedSearchTerm })}</span>
+                  <span>{t('noResultsFor', 'No results for {{searchTerm}}', { searchTerm: debouncedSearchTerm })}</span>
                 </Tile>
               </Layer>
             );
@@ -415,11 +422,14 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                         invalid={!!errors?.payment?.[index]?.price}
                         invalidText={errors?.payment?.[index]?.price?.message}
                         label={t('sellingPrice', 'Selling price')}
-                        placeholder={t('enterSellingPrice', 'Enter selling price')}
                         min={0}
-                        step={1}
+                        onChange={(_, { value }) => {
+                          const numValue = value === '' || value === undefined ? undefined : Number(value);
+                          field.onChange(numValue);
+                        }}
+                        placeholder={t('enterSellingPrice', 'Enter selling price')}
+                        step={0.01}
                         value={field.value ?? ''}
-                        onChange={(_, { value }) => field.onChange(Number(value))}
                       />
                     </Layer>
                   )}
