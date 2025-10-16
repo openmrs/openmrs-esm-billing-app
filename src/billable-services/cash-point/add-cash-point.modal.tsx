@@ -5,6 +5,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
+import { type CashPoint } from '../../types';
+import { createCashPoint, updateCashPoint } from '../billable-service.resource';
 
 type CashPointFormValues = {
   name: string;
@@ -13,11 +15,12 @@ type CashPointFormValues = {
 };
 
 interface AddCashPointModalProps {
+  cashPointToEdit?: CashPoint;
   closeModal: () => void;
   onCashPointAdded: () => void;
 }
 
-const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCashPointAdded }) => {
+const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, closeModal, onCashPointAdded }) => {
   const { t } = useTranslation();
   const [locations, setLocations] = useState([]);
 
@@ -41,9 +44,9 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
   } = useForm<CashPointFormValues>({
     resolver: zodResolver(cashPointSchema),
     defaultValues: {
-      name: '',
-      uuid: '',
-      location: '',
+      name: cashPointToEdit?.name || '',
+      uuid: cashPointToEdit?.uuid || '',
+      location: cashPointToEdit?.location?.uuid || '',
     },
   });
 
@@ -70,19 +73,12 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
   }, [fetchLocations]);
 
   const onSubmit = async (data: CashPointFormValues) => {
+    const payload = {
+      name: data.name,
+      uuid: data.uuid,
+      location: { uuid: data.location },
+    };
     try {
-      await openmrsFetch(`${restBaseUrl}/billing/cashPoint`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: {
-          name: data.name,
-          uuid: data.uuid,
-          location: { uuid: data.location },
-        },
-      });
-
       showSnackbar({
         title: t('success', 'Success'),
         subtitle: t('cashPointSaved', 'Cash point was successfully saved.'),
@@ -90,7 +86,16 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
       });
 
       closeModal();
-      reset({ name: '', uuid: '', location: '' });
+      reset({
+        name: cashPointToEdit?.name || '',
+        uuid: cashPointToEdit?.uuid || '',
+        location: cashPointToEdit?.location.uuid || '',
+      });
+      if (cashPointToEdit) {
+        await updateCashPoint(cashPointToEdit.uuid, payload);
+      } else {
+        await createCashPoint(payload);
+      }
       onCashPointAdded();
     } catch (err) {
       showSnackbar({

@@ -31,7 +31,7 @@ interface Location {
   links: LocationLink[];
 }
 
-interface CashPoint {
+export interface CashPoint {
   uuid: string;
   name: string;
   description: string;
