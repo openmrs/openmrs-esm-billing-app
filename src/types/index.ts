@@ -41,6 +41,14 @@ export interface CashPoint {
   location: Location;
 }
 
+export interface CashPointPayload {
+  uuid: string;
+  name: string;
+  location: {
+    uuid: string;
+  };
+}
+
 interface ProviderLink {
   rel: string;
   uri: string;
