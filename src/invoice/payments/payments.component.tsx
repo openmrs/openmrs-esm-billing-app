@@ -114,17 +114,17 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
         <div className={styles.divider} />
         <div className={styles.paymentTotals}>
           <InvoiceBreakDown
-            label={t('totalAmount', 'Total Amount')}
+            label={t('totalAmount', 'Total amount')}
             value={convertToCurrency(bill.totalAmount, defaultCurrency)}
           />
           <InvoiceBreakDown
-            label={t('totalTendered', 'Total Tendered')}
+            label={t('totalTendered', 'Total tendered')}
             value={convertToCurrency(bill.tenderedAmount, defaultCurrency)}
           />
           <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
           <InvoiceBreakDown
             hasBalance={amountDue < 0}
-            label={t('amountDue', 'Amount Due')}
+            label={t('amountDue', 'Amount due')}
             value={convertToCurrency(amountDue < 0 ? -amountDue : amountDue, defaultCurrency)}
           />
           <div className={styles.processPayments}>

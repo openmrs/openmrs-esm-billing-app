@@ -94,24 +94,24 @@ describe('EditBillItem', () => {
   test('renders the form with correct fields and default values', () => {
     render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
 
-    expect(screen.getByText('Edit bill line item')).toBeInTheDocument();
+    expect(screen.getByText(/edit bill line item/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
     expect(screen.getByText(/Main Cashpoint/)).toBeInTheDocument();
     expect(screen.getByText(/123456/)).toBeInTheDocument();
-    expect(screen.getByRole('spinbutton', { name: /Quantity/ })).toHaveValue(2);
-    expect(screen.getByLabelText(/Unit Price/)).toHaveValue('100');
-    expect(screen.getByText(/Total/)).toHaveTextContent(/200/);
+    expect(screen.getByRole('spinbutton', { name: /quantity/i })).toHaveValue(2);
+    expect(screen.getByLabelText(/unit price/i)).toHaveValue('100');
+    expect(screen.getByText(/total/i)).toHaveTextContent(/200/);
   });
 
   test('updates total when quantity is changed', async () => {
     const user = userEvent.setup();
     render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
 
-    const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
+    const quantityInput = screen.getByRole('spinbutton', { name: /quantity/i });
     await user.clear(quantityInput);
     await user.type(quantityInput, '3');
 
-    expect(screen.getByText(/Total/)).toHaveTextContent(/300/);
+    expect(screen.getByText(/total/i)).toHaveTextContent(/300/);
   });
 
   test('submits the form and shows a success notification', async () => {
@@ -120,7 +120,7 @@ describe('EditBillItem', () => {
 
     render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
 
-    await user.click(screen.getByText(/Save/));
+    await user.click(screen.getByText(/save/i));
 
     await waitFor(() => {
       expect(mockUpdateBillItems).toHaveBeenCalled();

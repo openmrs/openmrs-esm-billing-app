@@ -61,9 +61,9 @@ const CashPointConfiguration: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <CardHeader title={t('cashPointHistory', 'Cash Point History')}>
+        <CardHeader title={t('cashPointHistory', 'Cash point history')}>
           <Button renderIcon={Add} onClick={handleAddCashPoint} kind="ghost">
-            {t('addNewCashPoint', 'Add New Cash Point')}
+            {t('addNewCashPoint', 'Add new cash point')}
           </Button>
         </CardHeader>
         <div>

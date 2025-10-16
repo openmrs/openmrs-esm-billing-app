@@ -61,7 +61,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
   }, [debouncedSearchTerm, lineItems]);
 
   const tableHeaders = [
-    { header: t('number', 'No'), key: 'no', width: 7 }, // Width as a percentage
+    { header: t('number', 'Number'), key: 'no', width: 7 }, // Width as a percentage
     { header: t('billItem', 'Bill item'), key: 'billItem', width: 25 },
     { header: t('billCode', 'Bill code'), key: 'billCode', width: 20 },
     { header: t('status', 'Status'), key: 'status', width: 25 },
@@ -147,7 +147,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
             />
             <Table
               {...getTableProps()}
-              aria-label="Invoice line items"
+              aria-label={t('invoiceLineItems', 'Invoice line items')}
               className={`${styles.invoiceTable} billingTable`}>
               <TableHead>
                 <TableRow>

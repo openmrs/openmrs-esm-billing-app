@@ -191,7 +191,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                     className={styles.controlField}
                     helperText={t('unitPriceHelperText', 'This is the unit price for this item')}
                     id="priceInput"
-                    labelText={t('price', 'Unit Price')}
+                    labelText={t('unitPrice', 'Unit price')}
                     readOnly
                     value={value}
                   />

@@ -38,8 +38,8 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
 
   const tableHeaders = [
     { header: t('date', 'Date'), key: 'date' },
-    { header: t('billableService', 'Billable Service'), key: 'billableService' },
-    { header: t('totalAmount', 'Total Amount'), key: 'totalAmount' },
+    { header: t('billableService', 'Billable service'), key: 'billableService' },
+    { header: t('totalAmount', 'Total amount'), key: 'totalAmount' },
   ];
 
   const tableRows = bills.map((bill) => ({
@@ -58,7 +58,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
               <div className={styles.illo}>
                 <EmptyDataIllustration />
               </div>
-              <p className={styles.content}>{t('noBilltoDisplay', 'There are no bills to display for this patient')}</p>
+              <p className={styles.content}>{t('noBillToDisplay', 'There are no bills to display for this patient')}</p>
             </Tile>
           </Layer>
         </div>
@@ -84,13 +84,13 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
           getTableContainerProps,
         }) => (
           <TableContainer
-            title={t('patientBills', 'Patient bill')}
+            title={t('patientBills', 'Patient bills')}
             description={t('patientBillsDescription', 'List of patient bills')}
             {...getTableContainerProps()}>
-            <Table {...getTableProps()} aria-label="sample table">
+            <Table {...getTableProps()} aria-label={t('billsTable', 'Bills table')}>
               <TableHead>
                 <TableRow>
-                  <TableExpandHeader enableToggle={true} {...getExpandHeaderProps()} />
+                  <TableExpandHeader enableToggle {...getExpandHeaderProps()} />
                   {headers.map((header, i) => (
                     <TableHeader
                       key={i}

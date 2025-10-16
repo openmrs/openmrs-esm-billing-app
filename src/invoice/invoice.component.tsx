@@ -67,11 +67,11 @@ const Invoice: React.FC = () => {
 
   // Do not remove this comment. Adds the translation keys for the invoice details
   /**
-   * t('totalAmount', 'Total Amount')
-   * t('amountTendered', 'Amount Tendered')
-   * t('invoiceNumber', 'Invoice Number')
-   * t('dateAndTime', 'Date And Time')
-   * t('invoiceStatus', 'Invoice Status')
+   * t('totalAmount', 'Total amount')
+   * t('amountTendered', 'Amount tendered')
+   * t('invoiceNumber', 'Invoice #')
+   * t('dateAndTime', 'Date and time')
+   * t('invoiceStatus', 'Invoice status')
    */
   const invoiceDetails = {
     'Total Amount': convertToCurrency(bill?.totalAmount, defaultCurrency),
@@ -86,9 +86,7 @@ const Invoice: React.FC = () => {
       <div className={styles.invoiceContainer}>
         <InlineLoading
           className={styles.loader}
-          status="active"
-          iconDescription="Loading"
-          description={t('loadingBillInfo', 'Loading bill information...')}
+          description={`${t('loadingBillInfo', 'Loading bill information')}...`}
         />
       </div>
     );
@@ -116,7 +114,7 @@ const Invoice: React.FC = () => {
             disabled={isPrinting || isLoadingPatient || isLoadingBill}
             onClick={handlePrint}
             renderIcon={(props) => <Printer size={24} {...props} />}
-            iconDescription="Print bill"
+            iconDescription={t('printBill', 'Print bill')}
             size="md">
             {t('printBill', 'Print bill')}
           </Button>

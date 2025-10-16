@@ -79,7 +79,7 @@ const createBillableServiceSchema = (t: TFunction) => {
       if (isNaN(numValue) || numValue <= 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: t('priceMustBeGreaterThanZero', 'Price must be greater than 0'),
+          message: t('priceMustBePositive', 'Price must be greater than 0'),
         });
       }
     }),
@@ -246,7 +246,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
       <InlineLoading
         status="active"
         iconDescription={t('loadingDescription', 'Loading')}
-        description={t('loadingData', 'Loading data') + '...'}
+        description={t('loading', 'Loading data') + '...'}
       />
     );
   }
@@ -256,8 +256,8 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
       <Stack gap={5}>
         <h4>
           {serviceToEdit
-            ? t('editBillableServices', 'Edit Billable Services')
-            : t('addBillableServices', 'Add Billable Services')}
+            ? t('editBillableService', 'Edit billable service')
+            : t('addBillableService', 'Add billable service')}
         </h4>
         <section>
           {serviceToEdit ? (
@@ -294,7 +294,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                   value={field.value || ''}
                   id="serviceShortName"
                   type="text"
-                  labelText={t('serviceShortName', 'Short Name')}
+                  labelText={t('shortName', 'Short name')}
                   placeholder={t('enterServiceShortName', 'Enter service short name')}
                   maxLength={MAX_NAME_LENGTH}
                   invalid={!!errors.shortName}
@@ -310,7 +310,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
             <Search
               ref={searchInputRef}
               id="conceptsSearch"
-              labelText={t('enterConcept', 'Associated concept')}
+              labelText={t('associatedConcept', 'Associated concept')}
               placeholder={t('searchConcepts', 'Search associated concept')}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               onClear={() => {
@@ -349,9 +349,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
             return (
               <Layer>
                 <Tile className={styles.emptyResults}>
-                  <span>
-                    {t('noResultsFor', 'No results for')} <strong>"{debouncedSearchTerm}"</strong>
-                  </span>
+                  <span>{t('noResultsFor', 'No results for {searchTerm}', { searchTerm: debouncedSearchTerm })}</span>
                 </Tile>
               </Layer>
             );
@@ -413,7 +411,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                         id={`price-${index}`}
                         invalid={!!errors?.payment?.[index]?.price}
                         invalidText={errors?.payment?.[index]?.price?.message}
-                        label={t('sellingPrice', 'Selling Price')}
+                        label={t('sellingPrice', 'Selling price')}
                         placeholder={t('enterSellingPrice', 'Enter selling price')}
                         min={0}
                         step={0.01}
