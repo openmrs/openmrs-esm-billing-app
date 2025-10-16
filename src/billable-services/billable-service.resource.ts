@@ -2,10 +2,10 @@ import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import type {
- BillableService,
- ConceptSearchResult,
- CreateBillableServicePayload,
- UpdateBillableServicePayload,
+  BillableService,
+  ConceptSearchResult,
+  CreateBillableServicePayload,
+  UpdateBillableServicePayload,
 } from '../types';
 import type { BillingConfig } from '../config-schema';
 
@@ -15,7 +15,7 @@ type ResponseObject = {
 
 export const useBillableServices = () => {
   const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display,uuid),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
-  const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService[]>(url);
+  const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService>(url);
 
   return {
     billableServices: data ?? [],
