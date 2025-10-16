@@ -5,8 +5,8 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
-import { type CashPoint } from '../../types';
 import { createCashPoint, updateCashPoint } from '../billable-service.resource';
+import type { CashPoint, CashPointPayload } from '../../types';
 
 type CashPointFormValues = {
   name: string;
