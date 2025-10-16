@@ -73,7 +73,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
   }, [fetchLocations]);
 
   const onSubmit = async (data: CashPointFormValues) => {
-    const payload = {
+    const payload: CashPointPayload = {
       name: data.name,
       uuid: data.uuid,
       location: { uuid: data.location },
