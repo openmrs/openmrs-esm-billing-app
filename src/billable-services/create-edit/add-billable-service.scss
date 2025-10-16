@@ -68,9 +68,7 @@
 }
 
 .loader {
-  &:global(.cds--inline-loading) {
-    min-height: layout.$spacing-05;
-  }
+  padding: layout.$spacing-04 layout.$spacing-03;
 }
 
 .serviceNameLabel {
