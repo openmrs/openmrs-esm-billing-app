@@ -30,8 +30,13 @@ export default function MetricsCards() {
   }
 
   if (error) {
-    return <ErrorState headerTitle={t('billMetrics', 'Bill metrics')} error={error} />;
+    return (
+      <div className={styles.errorContainer}>
+        <ErrorState headerTitle={t('billMetrics', 'Bill metrics')} error={error} />
+      </div>
+    );
   }
+
   return (
     <section className={styles.container}>
       {cards.map((card) => (

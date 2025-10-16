@@ -5,7 +5,6 @@ import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { useBillableServices } from '../billable-service.resource';
 import Card from '../../metrics-cards/card.component';
 import styles from '../../metrics-cards/metrics-cards.scss';
-import { ExtensionSlot } from '@openmrs/esm-framework';
 
 export default function ServiceMetrics() {
   const { t } = useTranslation();
@@ -29,7 +28,11 @@ export default function ServiceMetrics() {
   }
 
   if (error) {
-    return <ErrorState headerTitle={t('serviceMetrics', 'Service Metrics')} error={error} />;
+    return (
+      <div className={styles.errorContainer}>
+        <ErrorState headerTitle={t('serviceMetrics', 'Service Metrics')} error={error} />
+      </div>
+    );
   }
   return (
     <section className={styles.container}>
