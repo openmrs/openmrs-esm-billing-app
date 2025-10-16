@@ -100,22 +100,14 @@ export const updateBillableService = (uuid: string, payload: UpdateBillableServi
   });
 };
 
-export const createCashPoint = (payload: any) => {
-  const url = `${apiBasePath}cashPoint`;
+export const updateCashPoint = (uuid: string | null, payload: CashPointPayload) => {
+  let url = `${apiBasePath}/cashPoint`;
+  if (uuid) {
+    url = `${apiBasePath}/cashPoint/${uuid}`;
+  }
   return openmrsFetch(url, {
-    method: 'POST',
+    method: uuid ? 'POST' : 'PUT',
     body: payload,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-};
-
-export const updateCashPoint = (uuid: string, payload: any) => {
-  const url = `${apiBasePath}/cashPoint/${uuid}`;
-  return openmrsFetch(url, {
-    method: 'POST',
-    body: JSON.stringify(payload),
     headers: {
       'Content-Type': 'application/json',
     },
