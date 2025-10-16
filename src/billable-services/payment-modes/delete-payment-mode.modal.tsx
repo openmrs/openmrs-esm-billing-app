@@ -53,7 +53,9 @@ const DeletePaymentModeModal: React.FC<DeletePaymentModeModalProps> = ({
         <p>{t('confirmDeleteMessage', 'Are you sure you want to delete this payment mode? Proceed cautiously.')}</p>
         {paymentModeName && (
           <p>
-            <strong>{t('paymentModeName', 'Payment Mode Name: {{paymentModeName}}', { paymentModeName })}</strong>
+            <strong>
+              {t('paymentModeNameToDelete', 'Payment Mode Name: {{paymentModeName}}', { paymentModeName })}
+            </strong>
           </p>
         )}
       </ModalBody>
