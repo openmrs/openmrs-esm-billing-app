@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { InlineLoading } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
+import { getCoreTranslation } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { useBillMetrics } from './metrics.resource';
 import Card from './card.component';
@@ -24,7 +25,11 @@ export default function MetricsCards() {
   if (isLoading) {
     return (
       <section className={styles.container}>
-        <InlineLoading status="active" iconDescription="Loading" description="Loading bill metrics..." />
+        <InlineLoading
+          status="active"
+          iconDescription={getCoreTranslation('loading')}
+          description={t('loadingBillMetrics', 'Loading bill metrics') + '...'}
+        />
       </section>
     );
   }

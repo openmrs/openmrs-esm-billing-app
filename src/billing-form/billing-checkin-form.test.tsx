@@ -132,8 +132,8 @@ describe('BillingCheckInForm', () => {
     mockUseCashPoint.mockReturnValueOnce({ cashPoints: [], isLoading: false, error });
     renderBillingCheckinForm();
 
-    expect(screen.getByText('Bill service error')).toBeInTheDocument();
-    expect(screen.getByText('Error loading bill services')).toBeInTheDocument();
+    expect(screen.getByText(/billing service error/i)).toBeInTheDocument();
+    expect(screen.getByText(/error loading bill services/i)).toBeInTheDocument();
   });
 
   test('should render the form correctly and generate the required payload', async () => {

@@ -134,9 +134,9 @@ describe('Payments', () => {
 
   it('renders payment form and history', () => {
     render(<Payments bill={mockBill} mutate={mockMutate} />);
-    expect(screen.getByText('Payments')).toBeInTheDocument();
-    expect(screen.getByText('Total Amount:')).toBeInTheDocument();
-    expect(screen.getByText('Total Tendered:')).toBeInTheDocument();
+    expect(screen.getByText(/payments/i)).toBeInTheDocument();
+    expect(screen.getByText(/total amount:/i)).toBeInTheDocument();
+    expect(screen.getByText(/total tendered:/i)).toBeInTheDocument();
   });
 
   it('displays formatted currency amounts', () => {
@@ -191,7 +191,7 @@ describe('Payments', () => {
 
     render(<Payments bill={billWithBalance} mutate={mockMutate} />);
 
-    expect(screen.getByText('Amount Due:')).toBeInTheDocument();
+    expect(screen.getByText(/amount due:/i)).toBeInTheDocument();
     // The amount due section should be visible for bills with remaining balance
     const formattedAmounts = screen.getAllByText('$1000.00');
     expect(formattedAmounts.length).toBeGreaterThan(0);
@@ -207,7 +207,7 @@ describe('Payments', () => {
     render(<Payments bill={billWithOverpayment} mutate={mockMutate} />);
 
     // Even with negative amount due (overpayment), the display should show positive value
-    expect(screen.getByText('Amount Due:')).toBeInTheDocument();
+    expect(screen.getByText(/amount due:/i)).toBeInTheDocument();
     const formattedAmounts = screen.getAllByText('$1000.00');
     expect(formattedAmounts.length).toBeGreaterThan(0);
   });

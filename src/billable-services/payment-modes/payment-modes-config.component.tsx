@@ -71,9 +71,9 @@ const PaymentModesConfig: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <CardHeader title={t('paymentModeHistory', 'Payment Mode History')}>
+        <CardHeader title={t('paymentModeHistory', 'Payment mode history')}>
           <Button renderIcon={Add} onClick={handleAddPaymentMode} kind="ghost">
-            {t('addNewPaymentMode', 'Add New Payment Mode')}
+            {t('addNewPaymentMode', 'Add new payment mode')}
           </Button>
         </CardHeader>
         <DataTable rows={rowData} headers={headerData} isSortable size="lg">

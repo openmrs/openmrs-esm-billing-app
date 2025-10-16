@@ -68,7 +68,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
           <section className={styles.billWaiverDescription}>
             <label className={styles.label}>{t('billItems', 'Bill Items')}</label>
             <p className={styles.value}>
-              {t('billName', ' {{billName}} ', {
+              {t('billName', '{{billName}}', {
                 billName: lineItems.map((item) => item.item || item.billableService).join(', ') ?? '--',
               })}
             </p>
@@ -80,7 +80,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
 
           <Layer className={styles.formControlLayer}>
             <NumberInput
-              label={t('amountToWaiveLabel', 'Amount to Waive')}
+              label={t('amountToWaiveLabel', 'Amount to waive')}
               helperText={t('amountToWaiveHelper', 'Specify the amount to be deducted from the bill')}
               aria-label={t('amountToWaiveAriaLabel', 'Enter amount to waive')}
               hideSteppers

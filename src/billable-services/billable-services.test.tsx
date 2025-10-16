@@ -57,10 +57,10 @@ describe('BillableService', () => {
     render(<BillableServices />);
 
     // Check table headers
-    expect(screen.getByText('Service Name')).toBeInTheDocument();
-    expect(screen.getByText('Short Name')).toBeInTheDocument();
-    expect(screen.getByText('Service Type')).toBeInTheDocument();
-    expect(screen.getByText('Service Status')).toBeInTheDocument();
+    expect(screen.getByText('Service name')).toBeInTheDocument();
+    expect(screen.getByText('Short name')).toBeInTheDocument();
+    expect(screen.getByText('Service type')).toBeInTheDocument();
+    expect(screen.getByText('Service status')).toBeInTheDocument();
 
     // Check service data
     expect(screen.getByText('Service 1')).toBeInTheDocument();
