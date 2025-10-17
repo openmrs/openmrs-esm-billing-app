@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
+  ButtonSet,
   ComboBox,
   Dropdown,
   Form,
+  FormGroup,
   FormLabel,
   InlineLoading,
   Layer,
@@ -19,7 +21,13 @@ import { useTranslation } from 'react-i18next';
 import { Add, TrashCan } from '@carbon/react/icons';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCoreTranslation, navigate, ResponsiveWrapper, showSnackbar, useDebounce } from '@openmrs/esm-framework';
+import {
+  getCoreTranslation,
+  ResponsiveWrapper,
+  showSnackbar,
+  useDebounce,
+  useLayoutType,
+} from '@openmrs/esm-framework';
 import type { BillableService, ServicePrice } from '../../types';
 import {
   createBillableService,
@@ -28,13 +36,14 @@ import {
   usePaymentModes,
   useServiceTypes,
 } from '../billable-service.resource';
-import styles from './add-billable-service.scss';
+import styles from './billable-service-form.scss';
 
-interface AddBillableServiceProps {
+interface BillableServiceFormWorkspaceProps {
   serviceToEdit?: BillableService;
-  onClose: () => void;
-  onServiceUpdated?: () => void;
-  isModal?: boolean;
+  closeWorkspace: () => void;
+  closeWorkspaceWithSavedChanges?: () => void;
+  promptBeforeClosing?: (testFcn: () => boolean) => void;
+  onWorkspaceClose?: () => void;
 }
 
 interface BillableServiceFormData {
@@ -163,13 +172,15 @@ const createBillableServiceSchema = (t: TFunction) => {
   });
 };
 
-const AddBillableService: React.FC<AddBillableServiceProps> = ({
+const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> = ({
   serviceToEdit,
-  onClose,
-  onServiceUpdated,
-  isModal = false,
+  closeWorkspace,
+  closeWorkspaceWithSavedChanges,
+  onWorkspaceClose,
 }) => {
   const { t } = useTranslation();
+  const layout = useLayoutType();
+  const isTablet = layout === 'tablet';
   const { paymentModes, isLoadingPaymentModes } = usePaymentModes();
   const { serviceTypes, isLoadingServiceTypes } = useServiceTypes();
 
@@ -192,16 +203,12 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
   const handleRemovePaymentMode = (index: number) => remove(index);
 
   const searchInputRef = useRef(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const selectedConcept = useWatch({ control, name: 'concept' });
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm.trim());
   const { searchResults, isSearching } = useConceptsSearch(debouncedSearchTerm);
-
-  const handleNavigateToServiceDashboard = () =>
-    navigate({
-      to: window.getOpenmrsSpaBase() + 'billable-services',
-    });
 
   // Re-initialize form when editing and dependencies load
   // Needed because serviceTypes/paymentModes may not be available during initial render
@@ -212,6 +219,8 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
   }, [serviceToEdit, isLoadingPaymentModes, isLoadingServiceTypes, reset]);
 
   const onSubmit = async (data: BillableServiceFormData) => {
+    setIsSubmitting(true);
+
     const payload = {
       name: data.name,
       shortName: data.shortName || '',
@@ -236,27 +245,34 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
       }
 
       showSnackbar({
-        title: t('billableService', 'Billable service'),
+        title: serviceToEdit
+          ? t('billableServiceUpdated', 'Billable service updated')
+          : t('billableServiceCreated', 'Billable service created'),
         subtitle: serviceToEdit
-          ? t('updatedSuccessfully', 'Billable service updated successfully')
-          : t('createdSuccessfully', 'Billable service created successfully'),
+          ? t('billableServiceUpdatedSuccessfully', 'Billable service updated successfully')
+          : t('billableServiceCreatedSuccessfully', 'Billable service created successfully'),
         kind: 'success',
       });
 
-      if (serviceToEdit) {
-        onClose();
+      // Call onWorkspaceClose callback to refresh data in parent component
+      if (onWorkspaceClose) {
+        onWorkspaceClose();
       }
 
-      if (onServiceUpdated) {
-        onServiceUpdated();
+      // Close the workspace
+      if (closeWorkspaceWithSavedChanges) {
+        closeWorkspaceWithSavedChanges();
+      } else {
+        closeWorkspace();
       }
-      handleNavigateToServiceDashboard();
     } catch (error) {
       showSnackbar({
         title: t('billPaymentError', 'Bill payment error'),
         kind: 'error',
         subtitle: error instanceof Error ? error.message : String(error),
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -279,14 +295,13 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
   }
 
   return (
-    <Form id="billable-service-form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-      <Stack gap={5}>
-        <h4>
-          {serviceToEdit
-            ? t('editBillableService', 'Edit billable service')
-            : t('addBillableService', 'Add billable service')}
-        </h4>
-        <section>
+    <Form
+      aria-label={t('billableServiceForm', 'Billable service form')}
+      className={styles.form}
+      id="billable-service-form"
+      onSubmit={handleSubmit(onSubmit)}>
+      <Stack className={styles.stack} gap={5}>
+        <FormGroup className={styles.formGroup}>
           {serviceToEdit ? (
             <FormLabel className={styles.serviceNameLabel}>{serviceToEdit.name}</FormLabel>
           ) : (
@@ -310,8 +325,8 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
               )}
             />
           )}
-        </section>
-        <section>
+        </FormGroup>
+        <FormGroup>
           <Controller
             name="shortName"
             control={control}
@@ -332,8 +347,8 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
               </Layer>
             )}
           />
-        </section>
-        <section>
+        </FormGroup>
+        <FormGroup>
           <FormLabel className={styles.conceptLabel}>{t('associatedConcept', 'Associated concept')}</FormLabel>
           <ResponsiveWrapper>
             <Search
@@ -386,8 +401,8 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
               </Layer>
             );
           })()}
-        </section>
-        <section>
+        </FormGroup>
+        <FormGroup>
           <Controller
             name="serviceType"
             control={control}
@@ -409,7 +424,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
               </Layer>
             )}
           />
-        </section>
+        </FormGroup>
         <section>
           <div>
             {fields.map((field, index) => (
@@ -440,6 +455,7 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
                     <Layer>
                       <NumberInput
                         allowEmpty
+                        disableWheel
                         id={`price-${index}`}
                         invalid={!!errors?.payment?.[index]?.price}
                         invalidText={errors?.payment?.[index]?.price?.message}
@@ -473,16 +489,16 @@ const AddBillableService: React.FC<AddBillableServiceProps> = ({
           </div>
         </section>
       </Stack>
-      {!isModal && (
-        <section>
-          <Button kind="secondary" onClick={onClose}>
-            {getCoreTranslation('cancel')}
-          </Button>
-          <Button type="submit">{getCoreTranslation('save')}</Button>
-        </section>
-      )}
+      <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
+        <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={closeWorkspace}>
+          {getCoreTranslation('cancel')}
+        </Button>
+        <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">
+          {isSubmitting ? <InlineLoading description={t('saving', 'Saving') + '...'} /> : getCoreTranslation('save')}
+        </Button>
+      </ButtonSet>
     </Form>
   );
 };
 
-export default AddBillableService;
+export default BillableServiceFormWorkspace;

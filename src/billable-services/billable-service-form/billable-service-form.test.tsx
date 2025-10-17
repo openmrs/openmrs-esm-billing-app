@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
-import { navigate, type FetchResponse } from '@openmrs/esm-framework';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { type FetchResponse } from '@openmrs/esm-framework';
 import {
   createBillableService,
   updateBillableService,
@@ -10,7 +10,10 @@ import {
   usePaymentModes,
   useServiceTypes,
 } from '../billable-service.resource';
-import AddBillableService, { transformServiceToFormData, normalizePrice } from './add-billable-service.component';
+import BillableServiceFormWorkspace, {
+  transformServiceToFormData,
+  normalizePrice,
+} from './billable-service-form.workspace';
 import type { BillableService } from '../../types';
 
 const mockUseBillableServices = jest.mocked(useBillableServices);
@@ -55,7 +58,7 @@ const mockServiceTypes = [
   { uuid: 'a487a743-62ce-4f93-a66b-c5154ee8987d', display: 'Adherence counselling  service' },
 ];
 
-// Test helpers (canonical pattern)
+// Test helpers
 const setupMocks = () => {
   mockUseBillableServices.mockReturnValue({
     billableServices: [],
@@ -69,13 +72,14 @@ const setupMocks = () => {
   mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
 };
 
-const renderAddBillableService = (props = {}) => {
+const renderBillableServicesForm = (props = {}) => {
   const defaultProps = {
-    onClose: jest.fn(),
+    closeWorkspace: jest.fn(),
+    closeWorkspaceWithSavedChanges: jest.fn(),
     ...props,
   };
   setupMocks();
-  return render(<AddBillableService {...defaultProps} />);
+  return render(<BillableServiceFormWorkspace {...defaultProps} />);
 };
 
 interface FillOptions {
@@ -106,24 +110,22 @@ const fillRequiredFields = async (user, options: FillOptions = {}) => {
   }
 };
 
-const submitForm = async (user) => {
-  const saveBtn = screen.getByRole('button', { name: /save/i });
-  await user.click(saveBtn);
+const submitForm = async () => {
+  const user = userEvent.setup();
+  const saveButton = screen.getByRole('button', { name: /save/i });
+  await user.click(saveButton);
 };
 
-describe('AddBillableService', () => {
+describe('BillableServiceFormWorkspace', () => {
   test('should render billable services form and generate correct payload', async () => {
     const user = userEvent.setup();
-    const mockOnClose = jest.fn();
-    renderAddBillableService({ onClose: mockOnClose });
-
-    const formTitle = screen.getByRole('heading', { name: /Add billable service/i });
-    expect(formTitle).toBeInTheDocument();
+    const mockCloseWorkspace = jest.fn();
+    renderBillableServicesForm({ closeWorkspace: mockCloseWorkspace });
 
     await fillRequiredFields(user);
     mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
-    await submitForm(user);
+    await submitForm();
 
     expect(mockCreateBillableService).toHaveBeenCalledTimes(1);
     expect(mockCreateBillableService).toHaveBeenCalledWith({
@@ -140,25 +142,125 @@ describe('AddBillableService', () => {
       serviceStatus: 'ENABLED',
       concept: undefined,
     });
-    expect(navigate).toHaveBeenCalledTimes(1);
-    expect(navigate).toHaveBeenCalledWith({ to: '/openmrs/spa/billable-services' });
   });
 
-  test("should navigate back to billable services dashboard when 'Cancel' button is clicked", async () => {
-    const user = userEvent.setup();
-    const mockOnClose = jest.fn();
-    renderAddBillableService({ onClose: mockOnClose });
+  describe('Workspace Interactions', () => {
+    test('should call closeWorkspace when Cancel button is clicked', async () => {
+      const user = userEvent.setup();
+      const mockCloseWorkspace = jest.fn();
+      renderBillableServicesForm({ closeWorkspace: mockCloseWorkspace });
 
-    const cancelBtn = screen.getByRole('button', { name: /cancel/i });
-    await user.click(cancelBtn);
+      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      await user.click(cancelButton);
 
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
+      expect(mockCloseWorkspace).toHaveBeenCalledTimes(1);
+    });
+
+    test('should call closeWorkspaceWithSavedChanges after successful save', async () => {
+      const user = userEvent.setup();
+      const mockCloseWorkspaceWithSavedChanges = jest.fn();
+      renderBillableServicesForm({ closeWorkspaceWithSavedChanges: mockCloseWorkspaceWithSavedChanges });
+
+      await fillRequiredFields(user);
+      mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
+      await submitForm();
+
+      // Wait for async submission
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(mockCloseWorkspaceWithSavedChanges).toHaveBeenCalledTimes(1);
+    });
+
+    test('should disable buttons during submission', async () => {
+      const user = userEvent.setup();
+      let resolveCreate: (value: any) => void;
+      const createPromise = new Promise((resolve) => {
+        resolveCreate = resolve;
+      });
+      mockCreateBillableService.mockReturnValue(createPromise as any);
+
+      renderBillableServicesForm();
+
+      await fillRequiredFields(user);
+      const saveButton = screen.getByRole('button', { name: /save/i });
+      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+
+      // Click save to trigger submission
+      await user.click(saveButton);
+
+      // Buttons should be disabled during submission
+      expect(saveButton).toBeDisabled();
+      expect(cancelButton).toBeDisabled();
+
+      // Resolve the promise to complete submission
+      resolveCreate!({} as FetchResponse<any>);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    test('should show loading indicator in save button during submission', async () => {
+      const user = userEvent.setup();
+      let resolveCreate: (value: any) => void;
+      const createPromise = new Promise((resolve) => {
+        resolveCreate = resolve;
+      });
+      mockCreateBillableService.mockReturnValue(createPromise as any);
+
+      renderBillableServicesForm();
+
+      await fillRequiredFields(user);
+      const saveButton = screen.getByRole('button', { name: /save/i });
+
+      await user.click(saveButton);
+
+      // Should show loading indicator
+      expect(await screen.findByText(/saving/i)).toBeInTheDocument();
+
+      // Resolve the promise
+      resolveCreate!({} as FetchResponse<any>);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    test('should call onWorkspaceClose callback after successful edit', async () => {
+      const mockOnWorkspaceClose = jest.fn();
+      const mockServiceToEdit: BillableService = {
+        uuid: 'test-uuid',
+        name: 'Test Service',
+        shortName: 'TS',
+        serviceStatus: 'ENABLED',
+        serviceType: {
+          uuid: 'type-uuid',
+          display: 'Lab service',
+        },
+        concept: null,
+        servicePrices: [
+          {
+            uuid: 'price-uuid',
+            name: 'Cash',
+            price: 100,
+            paymentMode: {
+              uuid: '63eff7a4-6f82-43c4-a333-dbcc58fe9f74',
+              name: 'Cash',
+            },
+          },
+        ],
+      };
+
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose });
+
+      mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
+      await submitForm();
+
+      // Wait for async submission
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(mockOnWorkspaceClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Form Validation', () => {
     test('should accept form submission without short name (short name is optional)', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       // Fill required fields but skip short name
       await user.type(screen.getByRole('textbox', { name: /Service name/i }), 'Lab Test');
@@ -174,7 +276,7 @@ describe('AddBillableService', () => {
 
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
-      await submitForm(user);
+      await submitForm();
 
       expect(mockCreateBillableService).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -186,7 +288,7 @@ describe('AddBillableService', () => {
 
     test('should enforce 255 character limit on service name input', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       const longName = 'A'.repeat(300); // Try to type 300 characters
       const input = screen.getByRole('textbox', { name: /Service name/i });
@@ -198,7 +300,7 @@ describe('AddBillableService', () => {
 
     test('should enforce 255 character limit on short name input', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       const longShortName = 'B'.repeat(300); // Try to type 300 characters
       const input = screen.getByRole('textbox', { name: /Short name/i });
@@ -210,14 +312,14 @@ describe('AddBillableService', () => {
 
     test('should show "Price must be greater than 0" error for zero price', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await fillRequiredFields(user, { skipPrice: true });
 
       const priceInput = screen.getByRole('spinbutton', { name: /selling price/i });
       await user.type(priceInput, '0');
 
-      await submitForm(user);
+      await submitForm();
 
       expect(screen.getByText('Price must be greater than 0')).toBeInTheDocument();
       expect(mockCreateBillableService).not.toHaveBeenCalled();
@@ -225,14 +327,14 @@ describe('AddBillableService', () => {
 
     test('should show "Price must be greater than 0" error for negative price', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await fillRequiredFields(user, { skipPrice: true });
 
       const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
       await user.type(priceInput, '-10');
 
-      await submitForm(user);
+      await submitForm();
 
       expect(screen.getByText('Price must be greater than 0')).toBeInTheDocument();
       expect(mockCreateBillableService).not.toHaveBeenCalled();
@@ -240,7 +342,7 @@ describe('AddBillableService', () => {
 
     test('should show "Service name is required" error when service name is empty', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       // Fill all fields except service name
       await user.type(screen.getByRole('textbox', { name: /Short name/i }), 'Test Short Name');
@@ -254,15 +356,15 @@ describe('AddBillableService', () => {
       const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
       await user.type(priceInput, '100');
 
-      await submitForm(user);
+      await submitForm();
 
-      expect(screen.getByText('Service name is required')).toBeInTheDocument();
+      expect(await screen.findByText('Service name is required')).toBeInTheDocument();
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
     test('should accept valid decimal price values', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await fillRequiredFields(user, { skipPrice: true });
 
@@ -271,7 +373,7 @@ describe('AddBillableService', () => {
 
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
-      await submitForm(user);
+      await submitForm();
 
       expect(screen.queryByText('Price is required')).not.toBeInTheDocument();
       expect(screen.queryByText('Price must be greater than 0')).not.toBeInTheDocument();
@@ -294,7 +396,7 @@ describe('AddBillableService', () => {
 
     test('should show "Service type is required" error when not selected', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await user.type(screen.getByRole('textbox', { name: /Service name/i }), 'Test Service');
       await user.type(screen.getByRole('textbox', { name: /Short name/i }), 'Test Short Name');
@@ -305,15 +407,15 @@ describe('AddBillableService', () => {
       const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
       await user.type(priceInput, '100');
 
-      await submitForm(user);
+      await submitForm();
 
-      expect(screen.getByText('Service type is required')).toBeInTheDocument();
+      expect(await screen.findByText('Service type is required')).toBeInTheDocument();
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
     test('should show "Payment mode is required" error when not selected', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await user.type(screen.getByRole('textbox', { name: /Service name/i }), 'Test Service');
       await user.type(screen.getByRole('textbox', { name: /Short name/i }), 'Test Short Name');
@@ -324,21 +426,21 @@ describe('AddBillableService', () => {
       const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
       await user.type(priceInput, '100');
 
-      await submitForm(user);
+      await submitForm();
 
-      expect(screen.getByText('Payment mode is required')).toBeInTheDocument();
+      expect(await screen.findByText('Payment mode is required')).toBeInTheDocument();
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
     test('should show "Price is required" error when price field is empty', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await fillRequiredFields(user, { skipPrice: true });
 
-      await submitForm(user);
+      await submitForm();
 
-      expect(screen.getByText('Price is required')).toBeInTheDocument();
+      expect(await screen.findByText('Price is required')).toBeInTheDocument();
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
   });
@@ -368,17 +470,16 @@ describe('AddBillableService', () => {
     };
 
     test('should populate form with existing service data', () => {
-      renderAddBillableService({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
 
-      expect(screen.getByText('Edit billable service')).toBeInTheDocument();
       expect(screen.getByText('X-Ray Service')).toBeInTheDocument(); // Service name shown as label
       expect(screen.getByDisplayValue('XRay')).toBeInTheDocument(); // Short name
     });
 
     test('should call updateBillableService instead of createBillableService', async () => {
       const user = userEvent.setup();
-      const mockOnClose = jest.fn();
-      renderAddBillableService({ serviceToEdit: mockServiceToEdit, onClose: mockOnClose });
+      const mockCloseWorkspace = jest.fn();
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, closeWorkspace: mockCloseWorkspace });
 
       const shortNameInput = screen.getByDisplayValue('XRay');
       await user.clear(shortNameInput);
@@ -386,7 +487,7 @@ describe('AddBillableService', () => {
 
       mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
-      await submitForm(user);
+      await submitForm();
 
       expect(mockUpdateBillableService).toHaveBeenCalledTimes(1);
       expect(mockUpdateBillableService).toHaveBeenCalledWith('existing-service-uuid', {
@@ -404,23 +505,21 @@ describe('AddBillableService', () => {
         concept: undefined,
       });
       expect(mockCreateBillableService).not.toHaveBeenCalled();
-      expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    test('should call onServiceUpdated callback after successful edit', async () => {
-      const user = userEvent.setup();
-      const mockOnServiceUpdated = jest.fn();
-      renderAddBillableService({ serviceToEdit: mockServiceToEdit, onServiceUpdated: mockOnServiceUpdated });
+    test('should call onWorkspaceClose callback after successful edit', async () => {
+      const mockOnWorkspaceClose = jest.fn();
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose });
 
       mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
-      await submitForm(user);
+      await submitForm();
 
-      expect(mockOnServiceUpdated).toHaveBeenCalledTimes(1);
+      expect(mockOnWorkspaceClose).toHaveBeenCalledTimes(1);
     });
 
     test('should not allow editing service name in edit mode', () => {
-      renderAddBillableService({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
 
       // Service name should be displayed as a label, not an editable input
       expect(screen.getByText('X-Ray Service')).toBeInTheDocument();
@@ -431,12 +530,11 @@ describe('AddBillableService', () => {
       // Scenario: User opens edit form, but payment modes/service types haven't loaded yet
       // The form should wait for dependencies to load, then populate correctly
 
-      renderAddBillableService({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
 
-      // After dependencies load (handled by renderAddBillableService's setupMocks),
+      // After dependencies load (handled by renderBillableServicesForm's setupMocks),
       // form should display with populated data
-      await screen.findByText('Edit billable service');
-      expect(screen.getByText('X-Ray Service')).toBeInTheDocument();
+      expect(await screen.findByText('X-Ray Service')).toBeInTheDocument();
       expect(screen.getByDisplayValue('XRay')).toBeInTheDocument();
 
       // This test verifies the useEffect that calls reset() when dependencies load
@@ -448,7 +546,7 @@ describe('AddBillableService', () => {
   describe('Dynamic Payment Options', () => {
     test('should add new payment option when clicking "Add payment option" button', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       const addButton = screen.getByRole('button', { name: /Add payment option/i });
       await user.click(addButton);
@@ -459,7 +557,7 @@ describe('AddBillableService', () => {
 
     test('should be able to add multiple payment options', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       // Add a second payment option
       const addButton = screen.getByRole('button', { name: /Add payment option/i });
@@ -471,7 +569,7 @@ describe('AddBillableService', () => {
 
     test('should allow adding multiple payment options with different payment modes', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       // Add second payment option
       const addButton = screen.getByRole('button', { name: /Add payment option/i });
@@ -497,7 +595,7 @@ describe('AddBillableService', () => {
       await user.click(screen.getByRole('option', { name: /Lab service/i }));
 
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
-      await submitForm(user);
+      await submitForm();
 
       expect(mockCreateBillableService).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -519,7 +617,7 @@ describe('AddBillableService', () => {
 
     test('should validate each payment option independently', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       // Add second payment option
       const addButton = screen.getByRole('button', { name: /Add payment option/i });
@@ -543,10 +641,10 @@ describe('AddBillableService', () => {
       await user.click(screen.getByRole('combobox', { name: /Service type/i }));
       await user.click(screen.getByRole('option', { name: /Lab service/i }));
 
-      await submitForm(user);
+      await submitForm();
 
       // Should show error for the second payment option's missing price
-      const priceErrors = screen.getAllByText('Price is required');
+      const priceErrors = await screen.findAllByText('Price is required');
       expect(priceErrors.length).toBeGreaterThan(0);
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
@@ -555,20 +653,19 @@ describe('AddBillableService', () => {
   describe('Error Handling', () => {
     test('should display error snackbar when create API call fails', async () => {
       const user = userEvent.setup();
-      renderAddBillableService();
+      renderBillableServicesForm();
 
       await fillRequiredFields(user);
 
       const errorMessage = 'Network error';
       mockCreateBillableService.mockRejectedValue(new Error(errorMessage));
 
-      await submitForm(user);
+      await submitForm();
 
-      // Wait for async operations
-      await screen.findByRole('button', { name: /save/i });
+      // Wait for async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(mockCreateBillableService).toHaveBeenCalledTimes(1);
-      expect(navigate).not.toHaveBeenCalled();
     });
 
     test('should display error snackbar when update API call fails', async () => {
@@ -596,18 +693,17 @@ describe('AddBillableService', () => {
         ],
       };
 
-      renderAddBillableService({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
 
       const errorMessage = 'Update failed';
       mockUpdateBillableService.mockRejectedValue(new Error(errorMessage));
 
-      await submitForm(user);
+      await submitForm();
 
-      // Wait for async operations
-      await screen.findByRole('button', { name: /save/i });
+      // Wait for async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
       expect(mockUpdateBillableService).toHaveBeenCalledTimes(1);
-      expect(navigate).not.toHaveBeenCalled();
     });
   });
 });

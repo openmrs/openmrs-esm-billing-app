@@ -14,7 +14,6 @@ import BillableServicesCardLink from './billable-services-admin-card-link.compon
 import BillHistory from './bill-history/bill-history.component';
 import BillingCheckInForm from './billing-form/billing-checkin-form.component';
 import DeletePaymentModeModal from './billable-services/payment-modes/delete-payment-mode.modal';
-import EditBillableServiceModal from './billable-services/create-edit/edit-billable-service.modal';
 import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
 import RequirePaymentModal from './modal/require-payment.modal';
 import RootComponent from './root.component';
@@ -48,6 +47,7 @@ export const billingSummaryDashboardLink = getSyncLifecycle(
   options,
 );
 
+// t('billableServices', 'Billable services')
 export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);
 
 export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
@@ -66,8 +66,6 @@ export const deletePaymentModeModal = getSyncLifecycle(DeletePaymentModeModal, o
 
 export const addCashPointModal = getSyncLifecycle(AddCashPointModal, options);
 
-export const editBillableServiceModal = getSyncLifecycle(EditBillableServiceModal, options);
-
 export const editBillLineItemModal = getSyncLifecycle(EditBillLineItemModal, options);
 
 export const root = getSyncLifecycle(RootComponent, options);
@@ -77,7 +75,13 @@ export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 // t('billingForm', 'Billing form')
 export const billingFormWorkspace = getAsyncLifecycle(() => import('./billing-form/billing-form.component'), options);
 
-// t('billableServices', 'Billable Services')
+// t('billableServiceForm', 'Billable service form')
+export const billableServiceFormWorkspace = getAsyncLifecycle(
+  () => import('./billable-services/billable-service-form/billable-service-form.workspace'),
+  options,
+);
+
+// t('billableServices', 'Billable services')
 export const billableServicesLeftPanelLink = getSyncLifecycle(
   createBillableServicesLeftPanelLink({
     name: 'billable-services',
