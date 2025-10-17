@@ -63,17 +63,6 @@ export const usePaymentModes = () => {
   };
 };
 
-export const createBillableService = (payload: CreateBillableServicePayload) => {
-  const url = `${apiBasePath}api/billable-service`;
-  return openmrsFetch(url, {
-    method: 'POST',
-    body: payload,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-};
-
 export function useConceptsSearch(conceptToLookup: string) {
   const conditionsSearchUrl = `${restBaseUrl}/conceptsearch?q=${conceptToLookup}`;
 
@@ -89,11 +78,22 @@ export function useConceptsSearch(conceptToLookup: string) {
   };
 }
 
-export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
-  const url = `${apiBasePath}/billableService/${uuid}`;
+export const createBillableService = (payload: CreateBillableServicePayload) => {
+  const url = `${apiBasePath}api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
+  const url = `${apiBasePath}billableService/${uuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
     headers: {
       'Content-Type': 'application/json',
     },
