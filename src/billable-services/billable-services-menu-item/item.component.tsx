@@ -1,16 +1,17 @@
-import { ClickableTile } from '@carbon/react';
 import React from 'react';
-import styles from './item.scss';
+import { useTranslation } from 'react-i18next';
+import { ClickableTile } from '@carbon/react';
 import { Receipt } from '@carbon/react/icons';
+import styles from './item.scss';
 
 const Item = () => {
-  // items
+  const { t } = useTranslation();
   const openmrsSpaBase = window['getOpenmrsSpaBase']();
 
   return (
     <ClickableTile className={styles.customTile} id="menu-item" href={`${openmrsSpaBase}billable-services`}>
       <div className="customTileTitle">{<Receipt size={24} />}</div>
-      <div>Billable Services</div>
+      <div>{t('billableServices', 'Billable services')}</div>
     </ClickableTile>
   );
 };
