@@ -1,3 +1,4 @@
+@use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
 @use '@openmrs/esm-styleguide/src/vars' as *;
@@ -219,4 +220,29 @@
 
 .menuItem {
   max-width: none;
+}
+
+.pageWrapper {
+  display: flex;
+}
+
+.pageContent {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  margin: 0;
+  // Full vertical height minus the primary navigation menu height
+  height: calc(100vh - layout.$spacing-09);
+  // Ensure the width is fixed and does not expand based on children
+  width: calc(100% - 16rem);
+  background-color: colors.$gray-10;
+
+  & a {
+    width: 100%;
+  }
+
+  &.hasLeftNav {
+    // Make space for the left nav menu
+    margin-inline-start: 16rem;
+  }
 }

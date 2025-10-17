@@ -1,9 +1,8 @@
 import React from 'react';
+import classNames from 'classnames';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { SideNav, SideNavItems, SideNavLink, SideNavMenu, SideNavMenuItem } from '@carbon/react';
-import { Wallet, Money, Settings } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { UserHasAccess, navigate } from '@openmrs/esm-framework';
+import { useLeftNav, navigate, WorkspaceContainer, useLayoutType, isDesktop } from '@openmrs/esm-framework';
 import AddBillableService from './create-edit/add-billable-service.component';
 import BillWaiver from './bill-waiver/bill-waiver.component';
 import BillableServicesDashboard from './dashboard/dashboard.component';
@@ -14,43 +13,20 @@ import styles from './billable-services.scss';
 
 const BillableServiceHome: React.FC = () => {
   const { t } = useTranslation();
+  const layout = useLayoutType();
   const basePath = `${window.spaBase}/billable-services`;
 
-  const handleNavigation = (path: string) => {
-    navigate({ to: `${basePath}/${path}` });
-  };
+  useLeftNav({ name: 'billable-services-left-panel-slot', basePath });
 
   const handleCloseAddService = () => {
     navigate({ to: `${basePath}` });
   };
 
   return (
-    <BrowserRouter basename={`${window.spaBase}/billable-services`}>
-      <main className={styles.mainSection}>
-        <section>
-          <SideNav>
-            <SideNavItems>
-              <SideNavLink onClick={() => handleNavigation('')} renderIcon={Wallet} isActive>
-                {t('billableServices', 'Billable Services')}
-              </SideNavLink>
-              <UserHasAccess privilege="coreapps.systemAdministration">
-                <SideNavLink onClick={() => handleNavigation('waive-bill')} renderIcon={Money}>
-                  {t('billWaiver', 'Bill waiver')}
-                </SideNavLink>
-                <SideNavMenu title={t('billingSettings', 'Billing settings')} renderIcon={Settings}>
-                  <SideNavMenuItem onClick={() => handleNavigation('cash-point-config')}>
-                    {t('cashPointConfig', 'Cash point configuration')}
-                  </SideNavMenuItem>
-                  <SideNavMenuItem onClick={() => handleNavigation('payment-modes-config')}>
-                    {t('paymentModesConfig', 'Payment modes configuration')}
-                  </SideNavMenuItem>
-                </SideNavMenu>
-              </UserHasAccess>
-            </SideNavItems>
-          </SideNav>
-        </section>
-        <section>
-          <BillingHeader title={t('billServicesManagement', 'Bill services management')} />
+    <BrowserRouter basename={basePath}>
+      <div className={styles.pageWrapper}>
+        <main className={classNames(styles.pageContent, { [styles.hasLeftNav]: isDesktop(layout) })}>
+          <BillingHeader title={t('billableServicesManagement', 'Billable services management')} />
           <Routes>
             <Route path="/" element={<BillableServicesDashboard />} />
             <Route path="/add-service" element={<AddBillableService onClose={handleCloseAddService} />} />
@@ -58,8 +34,9 @@ const BillableServiceHome: React.FC = () => {
             <Route path="/cash-point-config" element={<CashPointConfiguration />} />
             <Route path="/payment-modes-config" element={<PaymentModesConfig />} />
           </Routes>
-        </section>
-      </main>
+        </main>
+      </div>
+      <WorkspaceContainer contextKey="billable-services" />
     </BrowserRouter>
   );
 };
