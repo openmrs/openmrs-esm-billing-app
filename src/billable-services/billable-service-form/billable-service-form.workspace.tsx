@@ -245,10 +245,12 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
       }
 
       showSnackbar({
-        title: t('billableService', 'Billable service'),
+        title: serviceToEdit
+          ? t('billableServiceUpdated', 'Billable service updated')
+          : t('billableServiceCreated', 'Billable service created'),
         subtitle: serviceToEdit
-          ? t('updatedSuccessfully', 'Billable service updated successfully')
-          : t('createdSuccessfully', 'Billable service created successfully'),
+          ? t('billableServiceUpdatedSuccessfully', 'Billable service updated successfully')
+          : t('billableServiceCreatedSuccessfully', 'Billable service created successfully'),
         kind: 'success',
       });
 
