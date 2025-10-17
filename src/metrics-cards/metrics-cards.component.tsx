@@ -15,11 +15,11 @@ export default function MetricsCards() {
 
   const cards = useMemo(
     () => [
-      { title: 'Cumulative Bills', count: cumulativeBills },
-      { title: 'Pending Bills', count: pendingBills },
-      { title: 'Paid Bills', count: paidBills },
+      { title: t('cumulativeBills', 'Cumulative bills'), count: cumulativeBills },
+      { title: t('pendingBills', 'Pending bills'), count: pendingBills },
+      { title: t('paidBills', 'Paid bills'), count: paidBills },
     ],
-    [cumulativeBills, pendingBills, paidBills],
+    [cumulativeBills, pendingBills, paidBills, t],
   );
 
   if (isLoading) {
