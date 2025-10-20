@@ -24,17 +24,16 @@ import {
   ErrorState,
   getCoreTranslation,
   isDesktop,
-  navigate,
-  showModal,
+  launchWorkspace,
   useConfig,
   useLayoutType,
   usePagination,
   type LayoutType,
 } from '@openmrs/esm-framework';
 import { EmptyState } from '@openmrs/esm-patient-common-lib';
-import { type BillableService } from '../types/index';
+import { type BillableService } from '../types';
+import { type BillingConfig } from '../config-schema';
 import { useBillableServices } from './billable-service.resource';
-import type { BillingConfig } from '../config-schema';
 import styles from './billable-services.scss';
 
 interface FilterableTableHeaderProps {
@@ -79,8 +78,10 @@ const BillableServices = () => {
   ];
 
   const launchBillableServiceForm = useCallback(() => {
-    navigate({ to: window.getOpenmrsSpaBase() + 'billable-services/add-service' });
-  }, []);
+    launchWorkspace('billable-service-form', {
+      workspaceTitle: t('addBillableService', 'Add billable service'),
+    });
+  }, [t]);
 
   const searchResults: BillableService[] = useMemo(() => {
     const flatBillableServices = Array.isArray(billableServices) ? billableServices.flat() : billableServices;
@@ -127,13 +128,13 @@ const BillableServices = () => {
 
   const handleEditService = useCallback(
     (service: BillableService) => {
-      const dispose = showModal('edit-billable-service-modal', {
+      launchWorkspace('billable-service-form', {
+        workspaceTitle: t('editBillableService', 'Edit billable service'),
         serviceToEdit: service,
-        onServiceUpdated: mutate,
-        closeModal: () => dispose(),
+        onWorkspaceClose: mutate,
       });
     },
-    [mutate],
+    [mutate, t],
   );
 
   if (isLoading) {
@@ -282,7 +283,9 @@ function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveS
           kind="primary"
           renderIcon={(props) => <ArrowRight size={16} {...props} />}
           onClick={() => {
-            navigate({ to: window.getOpenmrsSpaBase() + 'billable-services/add-service' });
+            launchWorkspace('billable-service-form', {
+              workspaceTitle: t('addBillableService', 'Add billable service'),
+            });
           }}
           iconDescription={t('addNewBillableService', 'Add new billable service')}>
           {t('addNewService', 'Add new service')}
