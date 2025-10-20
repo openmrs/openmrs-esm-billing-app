@@ -1,12 +1,12 @@
 import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
-import {
-  type BillableService,
-  type ServiceConcept,
-  type CreateBillableServicePayload,
-  type UpdateBillableServicePayload,
-  type CashPointPayload,
+import type {
+  BillableService,
+  ConceptSearchResult,
+  CreateBillableServicePayload,
+  UpdateBillableServicePayload,
+  CashPointPayload,
 } from '../types';
 import type { BillingConfig } from '../config-schema';
 
@@ -15,7 +15,7 @@ type ResponseObject = {
 };
 
 export const useBillableServices = () => {
-  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
+  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display,uuid),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
   const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService>(url);
 
   return {
@@ -64,21 +64,10 @@ export const usePaymentModes = () => {
   };
 };
 
-export const createBillableService = (payload: CreateBillableServicePayload) => {
-  const url = `${apiBasePath}api/billable-service`;
-  return openmrsFetch(url, {
-    method: 'POST',
-    body: payload,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-};
-
 export function useConceptsSearch(conceptToLookup: string) {
   const conditionsSearchUrl = `${restBaseUrl}/conceptsearch?q=${conceptToLookup}`;
 
-  const { data, error, isLoading } = useSWR<{ data: { results: Array<ServiceConcept> } }, Error>(
+  const { data, error, isLoading } = useSWR<{ data: { results: Array<ConceptSearchResult> } }, Error>(
     conceptToLookup ? conditionsSearchUrl : null,
     openmrsFetch,
   );
@@ -90,11 +79,22 @@ export function useConceptsSearch(conceptToLookup: string) {
   };
 }
 
-export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
-  const url = `${apiBasePath}/billableService/${uuid}`;
+export const createBillableService = (payload: CreateBillableServicePayload) => {
+  const url = `${apiBasePath}api/billable-service`;
   return openmrsFetch(url, {
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
+  const url = `${apiBasePath}billableService/${uuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
     headers: {
       'Content-Type': 'application/json',
     },

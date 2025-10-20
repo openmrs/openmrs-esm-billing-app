@@ -3,6 +3,9 @@ import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
 import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
+import { Wallet, Money, Settings } from '@carbon/react/icons';
+import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
+import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
 import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
 import AddPaymentModeModal from './billable-services/payment-modes/add-payment-mode.modal';
 import appMenu from './billable-services/billable-services-menu-item/item.component';
@@ -15,7 +18,6 @@ import EditBillableServiceModal from './billable-services/create-edit/edit-billa
 import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
 import RequirePaymentModal from './modal/require-payment.modal';
 import RootComponent from './root.component';
-import ServiceMetrics from './billable-services/dashboard/service-metrics.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 
 const moduleName = '@openmrs/esm-billing-app';
@@ -70,9 +72,54 @@ export const editBillLineItemModal = getSyncLifecycle(EditBillLineItemModal, opt
 
 export const root = getSyncLifecycle(RootComponent, options);
 
-export const serviceMetrics = getSyncLifecycle(ServiceMetrics, options);
-
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 
 // t('billingForm', 'Billing form')
 export const billingFormWorkspace = getAsyncLifecycle(() => import('./billing-form/billing-form.component'), options);
+
+// t('billableServices', 'Billable Services')
+export const billableServicesLeftPanelLink = getSyncLifecycle(
+  createBillableServicesLeftPanelLink({
+    name: 'billable-services',
+    title: 'Billable Services',
+    path: '',
+    icon: Wallet,
+  }),
+  options,
+);
+
+// t('billWaiver', 'Bill waiver')
+export const billWaiverLeftPanelLink = getSyncLifecycle(
+  createBillableServicesLeftPanelLink({
+    name: 'bill-waiver',
+    title: 'Bill waiver',
+    path: 'waive-bill',
+    icon: Money,
+    privilege: 'coreapps.systemAdministration',
+  }),
+  options,
+);
+
+// t('billingSettings', 'Billing settings')
+// t('cashPointConfig', 'Cash point configuration')
+// t('paymentModesConfig', 'Payment modes configuration')
+export const billingSettingsLeftPanelMenu = getSyncLifecycle(
+  createBillableServicesLeftPanelMenu({
+    title: 'Billing settings',
+    icon: Settings,
+    privilege: 'coreapps.systemAdministration',
+    items: [
+      {
+        name: 'cash-point-config',
+        title: 'Cash point configuration',
+        path: 'cash-point-config',
+      },
+      {
+        name: 'payment-modes-config',
+        title: 'Payment modes configuration',
+        path: 'payment-modes-config',
+      },
+    ],
+  }),
+  options,
+);
