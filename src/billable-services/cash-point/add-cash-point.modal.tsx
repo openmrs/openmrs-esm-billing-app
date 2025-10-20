@@ -79,23 +79,18 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
       location: { uuid: data.location },
     };
     try {
+      if (cashPointToEdit) {
+        await updateOrCreateCashPoint(cashPointToEdit.uuid, payload);
+      } else {
+        await updateOrCreateCashPoint(null, payload);
+      }
       showSnackbar({
         title: t('success', 'Success'),
         subtitle: t('cashPointSaved', 'Cash point was successfully saved.'),
         kind: 'success',
       });
 
-      if (cashPointToEdit) {
-        await updateOrCreateCashPoint(cashPointToEdit.uuid, payload);
-      } else {
-        await updateOrCreateCashPoint(null, payload);
-      }
       closeModal();
-      reset({
-        name: cashPointToEdit?.name || '',
-        uuid: cashPointToEdit?.uuid || '',
-        location: cashPointToEdit?.location.uuid || '',
-      });
       onCashPointAdded();
     } catch (err) {
       showSnackbar({
@@ -109,7 +104,10 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
 
   return (
     <>
-      <ModalHeader closeModal={closeModal} title={t('addCashPoint', 'Add Cash Point')} />
+      <ModalHeader
+        closeModal={closeModal}
+        title={cashPointToEdit ? t('editCashPoint', 'Edit Cash Point') : t('addCashPoint', 'Add Cash Point')}
+      />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
           <Controller
@@ -136,6 +134,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
                 placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
                 invalid={!!errors.uuid}
                 invalidText={errors.uuid?.message}
+                disabled={!!cashPointToEdit}
                 {...field}
               />
             )}

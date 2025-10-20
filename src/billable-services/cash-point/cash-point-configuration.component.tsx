@@ -112,7 +112,12 @@ const CashPointConfiguration: React.FC = () => {
                             <OverflowMenuItem
                               className={styles.menuItem}
                               itemText={t('editCashPoint', 'Edit cash point')}
-                              onClick={() => handleEditCashPoint(cashPoints.find((point) => point.uuid === row.id))}
+                              onClick={() => {
+                                const cashPoint = cashPoints.find((point) => point.uuid === row.id);
+                                if (cashPoint) {
+                                  handleEditCashPoint(cashPoint);
+                                }
+                              }}
                             />
                           </OverflowMenu>
                         </TableCell>
