@@ -438,7 +438,14 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
                         id={`paymentMode-${index}`}
                         invalid={!!errors?.payment?.[index]?.paymentMode}
                         invalidText={errors?.payment?.[index]?.paymentMode?.message}
-                        items={paymentModes ?? []}
+                        items={
+                          paymentModes.filter((mode) => {
+                            const selectedUUIDs = fields
+                              .map((f, i) => (i !== index ? f.paymentMode : null))
+                              .filter(Boolean);
+                            return !selectedUUIDs.includes(mode.uuid) || mode.uuid === field.value;
+                          }) ?? []
+                        }
                         itemToString={(item) => (item ? item.name : '')}
                         label={t('selectPaymentMode', 'Select payment mode')}
                         onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
