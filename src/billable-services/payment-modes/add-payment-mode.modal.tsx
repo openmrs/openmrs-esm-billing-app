@@ -7,6 +7,7 @@ import { Button, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } f
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 
 type PaymentModeFormValues = {
+  uuid: string;
   name: string;
   description: string;
 };
@@ -14,9 +15,14 @@ type PaymentModeFormValues = {
 interface AddPaymentModeModalProps {
   closeModal: () => void;
   onPaymentModeAdded: () => void;
+  editPaymentMode?: PaymentModeFormValues;
 }
 
-const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, onPaymentModeAdded }) => {
+const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
+  closeModal,
+  onPaymentModeAdded,
+  editPaymentMode,
+}) => {
   const { t } = useTranslation();
 
   const paymentModeSchema = z.object({
@@ -32,15 +38,19 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
   } = useForm<PaymentModeFormValues>({
     resolver: zodResolver(paymentModeSchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: editPaymentMode?.name,
+      description: editPaymentMode?.description,
     },
   });
 
   const onSubmit = async (data: PaymentModeFormValues) => {
     try {
-      await openmrsFetch(`${restBaseUrl}/billing/paymentMode`, {
-        method: 'POST',
+      let url = `${restBaseUrl}/billing/paymentMode`;
+      if (editPaymentMode) {
+        url = `${restBaseUrl}/billing/paymentMode/${editPaymentMode.uuid}`;
+      }
+      await openmrsFetch(url, {
+        method: editPaymentMode?.uuid ? 'POST' : 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -71,7 +81,10 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
 
   return (
     <>
-      <ModalHeader closeModal={closeModal} title={t('addPaymentMode', 'Add Payment Mode')} />
+      <ModalHeader
+        closeModal={closeModal}
+        title={editPaymentMode ? t('editPaymentMode', 'Edit Payment Mode') : t('addPaymentMode', 'Add Payment Mode')}
+      />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
           <Stack gap={5}>

@@ -80,6 +80,7 @@
   "discountAmount": "Discount amount",
   "editBillableService": "Edit billable service",
   "editBillLineItem": "Edit bill line item",
+  "editPaymentMode": "Edit payment mode",
   "editThisBillItem": "Edit this bill item",
   "enterAmount": "Enter amount",
   "enterReferenceNumber": "Enter reference number",

@@ -56,6 +56,14 @@ const PaymentModesConfig: React.FC = () => {
     });
   };
 
+  const handleEditPaymentMode = (paymentMode) => {
+    const dispose = showModal('add-payment-mode-modal', {
+      onPaymentModeAdded: fetchPaymentModes,
+      editPaymentMode: paymentMode,
+      closeModal: () => dispose(),
+    });
+  };
+
   const rowData = paymentModes.map((mode) => ({
     id: mode.uuid,
     name: mode.name,
@@ -98,6 +106,14 @@ const PaymentModesConfig: React.FC = () => {
                         ) : (
                           <TableCell key={cell.id}>
                             <OverflowMenu>
+                              <OverflowMenuItem
+                                className={styles.menuItem}
+                                itemText={getCoreTranslation('edit')}
+                                onClick={() => {
+                                  const selected = paymentModes.find((p) => p.uuid === row.id);
+                                  handleEditPaymentMode(selected);
+                                }}
+                              />
                               <OverflowMenuItem
                                 className={styles.menuItem}
                                 itemText={getCoreTranslation('delete')}
