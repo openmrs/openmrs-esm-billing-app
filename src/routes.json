@@ -112,10 +112,6 @@
       "component": "editBillLineItemModal"
     },
     {
-      "name": "edit-billable-service-modal",
-      "component": "editBillableServiceModal"
-    },
-    {
       "name": "require-billing-modal",
       "component": "requirePaymentModal"
     }
@@ -126,6 +122,13 @@
       "title": "billingForm",
       "component": "billingFormWorkspace",
       "type": "form"
+    },
+    {
+      "name": "billable-service-form",
+      "title": "billableServiceForm",
+      "component": "billableServiceFormWorkspace",
+      "type": "form",
+      "width": "wider"
     }
   ],
   "featureFlags": []

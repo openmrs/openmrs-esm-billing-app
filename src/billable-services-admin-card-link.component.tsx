@@ -12,7 +12,7 @@ const BillableServicesCardLink: React.FC = () => {
       <ClickableTile href={`${window.spaBase}/billable-services`} target="_blank" rel="noopener noreferrer">
         <div>
           <div className="heading">{header}</div>
-          <div className="content">{t('billableServices', 'Billable Services')}</div>
+          <div className="content">{t('billableServices', 'Billable services')}</div>
         </div>
         <div className="iconWrapper">
           <ArrowRight size={16} />
