@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, TextInput } from '@carbon/react';
+import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 import { updateOrCreateCashPoint } from '../billable-service.resource';
 import type { CashPoint, CashPointPayload } from '../../types';
@@ -110,51 +110,54 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
       />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
-          <Controller
-            name="name"
-            control={control}
-            render={({ field }) => (
-              <TextInput
-                id="cash-point-name"
-                labelText={t('cashPointName', 'Cash Point Name')}
-                placeholder={t('cashPointNamePlaceholder', 'For example, Pharmacy Cash Point')}
-                invalid={!!errors.name}
-                invalidText={errors.name?.message}
-                {...field}
-              />
-            )}
-          />
-          <Controller
-            name="uuid"
-            control={control}
-            render={({ field }) => (
-              <TextInput
-                id="cash-point-uuid"
-                labelText={t('cashPointUuid', 'Cash Point UUID')}
-                placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
-                invalid={!!errors.uuid}
-                invalidText={errors.uuid?.message}
-                disabled={!!cashPointToEdit}
-                {...field}
-              />
-            )}
-          />
-          <Controller
-            name="location"
-            control={control}
-            render={({ field }) => (
-              <Dropdown
-                id="cash-point-location"
-                label={t('selectLocation', 'Select Location')}
-                titleText={t('cashPointLocation', 'Cash Point Location')}
-                items={locations}
-                selectedItem={locations.find((loc) => loc.id === field.value)}
-                onChange={({ selectedItem }) => field.onChange(selectedItem?.id)}
-                invalid={!!errors.location}
-                invalidText={errors.location?.message}
-              />
-            )}
-          />
+          <Stack gap={5}>
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  id="cash-point-name"
+                  labelText={t('cashPointName', 'Cash Point Name')}
+                  placeholder={t('cashPointNamePlaceholder', 'For example, Pharmacy Cash Point')}
+                  invalid={!!errors.name}
+                  invalidText={errors.name?.message}
+                  {...field}
+                />
+              )}
+            />
+            <Controller
+              name="uuid"
+              control={control}
+              render={({ field }) => (
+                <TextInput
+                  id="cash-point-uuid"
+                  labelText={t('cashPointUuid', 'Cash Point UUID')}
+                  placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
+                  invalid={!!errors.uuid}
+                  invalidText={errors.uuid?.message
+                  disabled={!!cashPointToEdit}             
+                  {...field}
+                />
+              )}
+            />
+            <Controller
+              name="location"
+              control={control}
+              render={({ field }) => (
+                <Dropdown
+                  id="cash-point-location"
+                  label={t('selectLocation', 'Select Location')}
+                  titleText={t('cashPointLocation', 'Cash Point Location')}
+                  items={locations}
+                  selectedItem={locations.find((loc) => loc.id === field.value)}
+                  onChange={({ selectedItem }) => field.onChange(selectedItem?.id)}
+                  invalid={!!errors.location}
+                  invalidText={errors.location?.message}
+                />
+              )}
+            />
+          </Stack>
+                
         </ModalBody>
         <ModalFooter>
           <Button kind="secondary" onClick={closeModal}>

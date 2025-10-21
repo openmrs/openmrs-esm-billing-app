@@ -23,7 +23,7 @@ function BillableServicesMenuExtension({ config }: { config: BillableServicesMen
   };
 
   const menu = (
-    <SideNavMenu title={title} renderIcon={Icon}>
+    <SideNavMenu defaultExpanded title={title} renderIcon={Icon}>
       {items.map((item) => (
         <SideNavMenuItem key={item.name} onClick={() => handleNavigation(item.path)}>
           {item.title}
