@@ -134,8 +134,8 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
                   labelText={t('cashPointUuid', 'Cash Point UUID')}
                   placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
                   invalid={!!errors.uuid}
-                  invalidText={errors.uuid?.message
-                  disabled={!!cashPointToEdit}             
+                  invalidText={errors.uuid?.message}
+                  disabled={!!cashPointToEdit}
                   {...field}
                 />
               )}
@@ -157,7 +157,6 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
               )}
             />
           </Stack>
-                
         </ModalBody>
         <ModalFooter>
           <Button kind="secondary" onClick={closeModal}>
