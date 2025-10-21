@@ -45,6 +45,8 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
         <div className={styles.billDetails}>
           <p className={styles.itemHeading}>{t('billedTo', 'Billed to')}</p>
           <p className={styles.itemLabel}>{patientDetails?.name}</p>
+          {patientDetails?.gender ? <p className={styles.itemLabel}>{`Gender: ` + patientDetails.gender}</p> : ''}
+          {patientDetails?.age ? <p className={styles.itemLabel}>{`Age: ` + patientDetails.age}</p> : ''}
           <p className={styles.itemLabel}>{patientDetails?.county}</p>
           <p className={styles.itemLabel}>
             {patientDetails?.subCounty}

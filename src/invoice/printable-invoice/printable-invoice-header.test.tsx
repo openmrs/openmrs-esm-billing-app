@@ -44,6 +44,8 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText('Westlands, Nairobi')).toBeInTheDocument();
     expect(screen.getByText('MTRH')).toBeInTheDocument();
     expect(screen.getByText('Kenya')).toBeInTheDocument();
+    expect(screen.getByText('Age: 45')).toBeInTheDocument();
+    expect(screen.getByText('Gender: Male')).toBeInTheDocument();
   });
 
   test('should display the logo when logo is provided', () => {
