@@ -67,6 +67,8 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
       payments: [],
     };
 
+    handleCreateExtraVisitInfo(createBillPayload);
+
     setExtraVisitInfo({
       createBillPayload,
       handleCreateExtraVisitInfo: () => handleCreateExtraVisitInfo(createBillPayload),
