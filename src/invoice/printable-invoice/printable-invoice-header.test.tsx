@@ -18,7 +18,7 @@ const testProps = {
     county: 'Nairobi',
     subCounty: 'Westlands',
     city: 'Nairobi',
-    age: '45',
+    birthDate: '1989-07-21',
     gender: 'Male',
   },
 };
@@ -44,7 +44,6 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText('Westlands, Nairobi')).toBeInTheDocument();
     expect(screen.getByText('MTRH')).toBeInTheDocument();
     expect(screen.getByText('Kenya')).toBeInTheDocument();
-    expect(screen.getByText('Age: 45')).toBeInTheDocument();
     expect(screen.getByText('Gender: Male')).toBeInTheDocument();
   });
 

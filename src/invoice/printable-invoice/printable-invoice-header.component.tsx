@@ -1,6 +1,7 @@
 import React from 'react';
 import { type PatientDetails } from '../../types';
 import { type SessionLocation, useConfig, interpolateUrl } from '@openmrs/esm-framework';
+import { age, formatPartialDate } from '@openmrs/esm-utils';
 import { useTranslation } from 'react-i18next';
 import type { BillingConfig } from '../../config-schema';
 import styles from './printable-invoice-header.scss';
@@ -45,8 +46,23 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
         <div className={styles.billDetails}>
           <p className={styles.itemHeading}>{t('billedTo', 'Billed to')}</p>
           <p className={styles.itemLabel}>{patientDetails?.name}</p>
-          {patientDetails?.gender ? <p className={styles.itemLabel}>{`Gender: ` + patientDetails.gender}</p> : ''}
-          {patientDetails?.age ? <p className={styles.itemLabel}>{`Age: ` + patientDetails.age}</p> : ''}
+          {patientDetails?.gender ? (
+            <p className={styles.itemLabel}>{t('gender', 'Gender') + `: ` + patientDetails.gender}</p>
+          ) : (
+            ''
+          )}
+          {patientDetails?.birthDate ? (
+            <p className={styles.itemLabel}>
+              {t('birthDate', 'Date Of Birth') +
+                `: ` +
+                formatPartialDate(patientDetails.birthDate, { time: false }) +
+                ' ( ' +
+                age(patientDetails.birthDate) +
+                ' )'}
+            </p>
+          ) : (
+            ''
+          )}
           <p className={styles.itemLabel}>{patientDetails?.county}</p>
           <p className={styles.itemLabel}>
             {patientDetails?.subCounty}
