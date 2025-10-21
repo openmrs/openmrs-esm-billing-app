@@ -24,8 +24,8 @@ import {
   useLayoutType,
 } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
-import styles from './cash-point-configuration.scss';
 import { type CashPoint } from '../../types/index';
+import styles from './cash-point-configuration.scss';
 
 const CashPointConfiguration: React.FC = () => {
   const { t } = useTranslation();

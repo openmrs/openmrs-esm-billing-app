@@ -91,6 +91,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
       });
 
       closeModal();
+      reset({ name: '', uuid: '', location: '' });
       onCashPointAdded();
     } catch (err) {
       showSnackbar({
@@ -106,7 +107,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
     <>
       <ModalHeader
         closeModal={closeModal}
-        title={cashPointToEdit ? t('editCashPoint', 'Edit Cash Point') : t('addCashPoint', 'Add Cash Point')}
+        title={cashPointToEdit ? t('editCashPoint', 'Edit cash point') : t('addCashPoint', 'Add cash point')}
       />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
