@@ -7,7 +7,7 @@ import { Button, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } f
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 
 type PaymentModeFormValues = {
-  uuid: string;
+  uuid?: string;
   name: string;
   description: string;
 };
@@ -50,7 +50,7 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
         url = `${restBaseUrl}/billing/paymentMode/${editPaymentMode.uuid}`;
       }
       await openmrsFetch(url, {
-        method: editPaymentMode?.uuid ? 'POST' : 'PUT',
+        method: editPaymentMode?.uuid ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
