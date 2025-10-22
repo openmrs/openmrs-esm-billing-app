@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
-import { updateOrCreateCashPoint } from '../billable-service.resource';
+import { createCashPoint, updateCashPoint } from '../billable-service.resource';
 import type { CashPoint, CashPointPayload } from '../../types';
 
 type CashPointFormValues = {
@@ -44,9 +44,9 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
   } = useForm<CashPointFormValues>({
     resolver: zodResolver(cashPointSchema),
     defaultValues: {
-      name: cashPointToEdit?.name || '',
-      uuid: cashPointToEdit?.uuid || '',
-      location: cashPointToEdit?.location?.uuid || '',
+      name: cashPointToEdit?.name ?? '',
+      uuid: cashPointToEdit?.uuid ?? '',
+      location: cashPointToEdit?.location?.uuid ?? '',
     },
   });
 
@@ -80,9 +80,9 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
     };
     try {
       if (cashPointToEdit) {
-        await updateOrCreateCashPoint(cashPointToEdit.uuid, payload);
+        await updateCashPoint(cashPointToEdit.uuid, payload);
       } else {
-        await updateOrCreateCashPoint(null, payload);
+        await createCashPoint(payload);
       }
       showSnackbar({
         title: t('success', 'Success'),
