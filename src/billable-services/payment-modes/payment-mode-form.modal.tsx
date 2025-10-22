@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSWRConfig } from 'swr';
 import { Button, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
 import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
-import type { PaymentModePayload } from '../../types';
+import { type PaymentModePayload } from '../../types';
+import { apiBasePath } from '../../constants';
 import { createPaymentMode, updatePaymentMode } from '../billable-service.resource';
 
 type PaymentModeFormValues = {
@@ -14,21 +16,17 @@ type PaymentModeFormValues = {
   description: string;
 };
 
-interface AddPaymentModeModalProps {
+interface PaymentModeFormModalProps {
   closeModal: () => void;
-  onPaymentModeAdded: () => void;
   editPaymentMode?: PaymentModeFormValues;
 }
 
-const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
-  closeModal,
-  onPaymentModeAdded,
-  editPaymentMode,
-}) => {
+const PaymentModeFormModal: React.FC<PaymentModeFormModalProps> = ({ closeModal, editPaymentMode }) => {
   const { t } = useTranslation();
+  const { mutate } = useSWRConfig();
 
   const paymentModeSchema = z.object({
-    name: z.string().min(1, t('paymentModeNameRequired', 'Payment Mode Name is required')),
+    name: z.string().min(1, t('paymentModeNameRequired', 'Payment mode name is required')),
     description: z.string().optional(),
   });
 
@@ -46,16 +44,20 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
   });
 
   const onSubmit = async (data: PaymentModeFormValues) => {
+    const url = `${apiBasePath}paymentMode`;
     try {
       const payload: PaymentModePayload = {
         name: data.name,
         description: data.description,
       };
-      if (editPaymentMode) {
+      if (editPaymentMode?.uuid) {
         await updatePaymentMode(editPaymentMode.uuid, payload);
       } else {
         await createPaymentMode(payload);
       }
+
+      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+
       showSnackbar({
         title: t('success', 'Success'),
         subtitle: t('paymentModeSaved', 'Payment mode was successfully saved.'),
@@ -64,7 +66,6 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
 
       closeModal();
       reset({ name: '', description: '' });
-      onPaymentModeAdded();
     } catch (err) {
       showSnackbar({
         title: getCoreTranslation('error'),
@@ -90,7 +91,7 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
               render={({ field }) => (
                 <TextInput
                   id="payment-mode-name"
-                  labelText={t('paymentModeNameLabel', 'Payment Mode Name')}
+                  labelText={t('paymentModeNameLabel', 'Payment mode name')}
                   placeholder={t('paymentModeNamePlaceholder', 'For example, Cash, Credit Card')}
                   invalid={!!errors.name}
                   invalidText={errors.name?.message}
@@ -127,4 +128,4 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
   );
 };
 
-export default AddPaymentModeModal;
+export default PaymentModeFormModal;

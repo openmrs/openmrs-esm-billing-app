@@ -48,16 +48,21 @@ export function useServiceTypes() {
   };
 }
 
+export interface PaymentMode extends OpenmrsResource {
+  name: string;
+  description: string;
+}
+
 export const usePaymentModes = () => {
   const url = `${apiBasePath}paymentMode`;
 
-  const { data, error, isLoading, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
+  const { data, error, isLoading, mutate } = useSWR<{ data: { results: PaymentMode[] } }>(url, openmrsFetch);
   const sortedPaymentModes = data?.data.results
     ? [...data.data.results].sort((a, b) => a.name.localeCompare(b.name))
     : [];
 
   return {
-    paymentModes: sortedPaymentModes,
+    paymentModes: sortedPaymentModes as PaymentMode[],
     error,
     isLoadingPaymentModes: isLoading,
     mutate,

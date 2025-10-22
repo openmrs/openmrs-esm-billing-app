@@ -96,8 +96,8 @@
       "component": "addCashPointModal"
     },
     {
-      "name": "add-payment-mode-modal",
-      "component": "addPaymentModeModal"
+      "name": "payment-mode-form-modal",
+      "component": "paymentModeFormModal"
     },
     {
       "name": "delete-payment-mode-modal",

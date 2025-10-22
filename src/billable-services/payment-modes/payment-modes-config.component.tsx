@@ -17,32 +17,29 @@ import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
 import { showModal, getCoreTranslation, ErrorState } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
+import { usePaymentModes, type PaymentMode } from '../billable-service.resource';
 import styles from './payment-modes-config.scss';
-import { usePaymentModes } from '../billable-service.resource';
 
 const PaymentModesConfig: React.FC = () => {
   const { t } = useTranslation();
-  const { paymentModes, error, isLoadingPaymentModes, mutate } = usePaymentModes();
+  const { paymentModes, error, isLoadingPaymentModes } = usePaymentModes();
 
   const handleAddPaymentMode = () => {
-    const dispose = showModal('add-payment-mode-modal', {
-      onPaymentModeAdded: mutate,
+    const dispose = showModal('payment-mode-form-modal', {
       closeModal: () => dispose(),
     });
   };
 
-  const handleDeletePaymentMode = (paymentMode: any) => {
+  const handleDeletePaymentMode = (paymentMode: PaymentMode) => {
     const dispose = showModal('delete-payment-mode-modal', {
       paymentModeUuid: paymentMode.uuid,
       paymentModeName: paymentMode.name,
-      onPaymentModeDeleted: mutate,
       closeModal: () => dispose(),
     });
   };
 
-  const handleEditPaymentMode = (paymentMode: any) => {
-    const dispose = showModal('add-payment-mode-modal', {
-      onPaymentModeAdded: mutate,
+  const handleEditPaymentMode = (paymentMode: PaymentMode) => {
+    const dispose = showModal('payment-mode-form-modal', {
       editPaymentMode: paymentMode,
       closeModal: () => dispose(),
     });
@@ -108,7 +105,9 @@ const PaymentModesConfig: React.FC = () => {
                                 itemText={getCoreTranslation('edit')}
                                 onClick={() => {
                                   const selected = paymentModes.find((p) => p.uuid === row.id);
-                                  handleEditPaymentMode(selected);
+                                  if (selected) {
+                                    handleEditPaymentMode(selected);
+                                  }
                                 }}
                               />
                               <OverflowMenuItem
@@ -116,7 +115,9 @@ const PaymentModesConfig: React.FC = () => {
                                 itemText={getCoreTranslation('delete')}
                                 onClick={() => {
                                   const selected = paymentModes.find((p) => p.uuid === row.id);
-                                  handleDeletePaymentMode(selected);
+                                  if (selected) {
+                                    handleDeletePaymentMode(selected);
+                                  }
                                 }}
                               />
                             </OverflowMenu>
