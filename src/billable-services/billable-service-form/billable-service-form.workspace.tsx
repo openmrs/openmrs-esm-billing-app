@@ -276,6 +276,17 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
     }
   };
 
+  const getAvailablePaymentModes = <T extends { uuid: string }>(
+    allModes: T[],
+    allFields: PaymentModeForm[],
+    currentIndex: number,
+    currentValue: string,
+  ): T[] => {
+    const selectedUUIDs = allFields.map((f, i) => (i !== currentIndex ? f.paymentMode : null)).filter(Boolean);
+
+    return allModes.filter((mode) => !selectedUUIDs.includes(mode.uuid) || mode.uuid === currentValue);
+  };
+
   const getPaymentErrorMessage = () => {
     const paymentError = errors.payment;
     if (paymentError && typeof paymentError.message === 'string') {
@@ -438,14 +449,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
                         id={`paymentMode-${index}`}
                         invalid={!!errors?.payment?.[index]?.paymentMode}
                         invalidText={errors?.payment?.[index]?.paymentMode?.message}
-                        items={
-                          paymentModes.filter((mode) => {
-                            const selectedUUIDs = fields
-                              .map((f, i) => (i !== index ? f.paymentMode : null))
-                              .filter(Boolean);
-                            return !selectedUUIDs.includes(mode.uuid) || mode.uuid === field.value;
-                          }) ?? []
-                        }
+                        items={getAvailablePaymentModes(paymentModes, fields, index, field.value)}
                         itemToString={(item) => (item ? item.name : '')}
                         label={t('selectPaymentMode', 'Select payment mode')}
                         onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
