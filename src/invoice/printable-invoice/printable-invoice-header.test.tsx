@@ -18,7 +18,7 @@ const testProps = {
     county: 'Nairobi',
     subCounty: 'Westlands',
     city: 'Nairobi',
-    birthDate: '1989-07-21',
+    birthDate: '',
     gender: 'Male',
   },
 };
