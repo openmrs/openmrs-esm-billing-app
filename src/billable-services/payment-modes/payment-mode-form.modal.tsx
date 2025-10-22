@@ -3,24 +3,30 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useSWRConfig } from 'swr';
 import { Button, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
-import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
+import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import { type PaymentModePayload } from '../../types';
+import { apiBasePath } from '../../constants';
+import { createPaymentMode, updatePaymentMode } from '../billable-service.resource';
 
 type PaymentModeFormValues = {
+  uuid?: string;
   name: string;
   description: string;
 };
 
-interface AddPaymentModeModalProps {
+interface PaymentModeFormModalProps {
   closeModal: () => void;
-  onPaymentModeAdded: () => void;
+  editPaymentMode?: PaymentModeFormValues;
 }
 
-const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, onPaymentModeAdded }) => {
+const PaymentModeFormModal: React.FC<PaymentModeFormModalProps> = ({ closeModal, editPaymentMode }) => {
   const { t } = useTranslation();
+  const { mutate } = useSWRConfig();
 
   const paymentModeSchema = z.object({
-    name: z.string().min(1, t('paymentModeNameRequired', 'Payment Mode Name is required')),
+    name: z.string().min(1, t('paymentModeNameRequired', 'Payment mode name is required')),
     description: z.string().optional(),
   });
 
@@ -32,23 +38,25 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
   } = useForm<PaymentModeFormValues>({
     resolver: zodResolver(paymentModeSchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: editPaymentMode?.name ?? '',
+      description: editPaymentMode?.description ?? '',
     },
   });
 
   const onSubmit = async (data: PaymentModeFormValues) => {
+    const url = `${apiBasePath}paymentMode`;
     try {
-      await openmrsFetch(`${restBaseUrl}/billing/paymentMode`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: {
-          name: data.name,
-          description: data.description || '',
-        },
-      });
+      const payload: PaymentModePayload = {
+        name: data.name,
+        description: data.description,
+      };
+      if (editPaymentMode?.uuid) {
+        await updatePaymentMode(editPaymentMode.uuid, payload);
+      } else {
+        await createPaymentMode(payload);
+      }
+
+      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
 
       showSnackbar({
         title: t('success', 'Success'),
@@ -58,7 +66,6 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
 
       closeModal();
       reset({ name: '', description: '' });
-      onPaymentModeAdded();
     } catch (err) {
       showSnackbar({
         title: getCoreTranslation('error'),
@@ -71,7 +78,10 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
 
   return (
     <>
-      <ModalHeader closeModal={closeModal} title={t('addPaymentMode', 'Add Payment Mode')} />
+      <ModalHeader
+        closeModal={closeModal}
+        title={editPaymentMode ? t('editPaymentMode', 'Edit payment mode') : t('addPaymentMode', 'Add payment mode')}
+      />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
           <Stack gap={5}>
@@ -81,7 +91,7 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
               render={({ field }) => (
                 <TextInput
                   id="payment-mode-name"
-                  labelText={t('paymentModeNameLabel', 'Payment Mode Name')}
+                  labelText={t('paymentModeNameLabel', 'Payment mode name')}
                   placeholder={t('paymentModeNamePlaceholder', 'For example, Cash, Credit Card')}
                   invalid={!!errors.name}
                   invalidText={errors.name?.message}
@@ -118,4 +128,4 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({ closeModal, o
   );
 };
 
-export default AddPaymentModeModal;
+export default PaymentModeFormModal;

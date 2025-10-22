@@ -1,30 +1,34 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSWRConfig } from 'swr';
 import { Button, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
+import { apiBasePath } from '../../constants';
 
 interface DeletePaymentModeModalProps {
   closeModal: () => void;
   paymentModeUuid: string;
   paymentModeName: string;
-  onPaymentModeDeleted: () => void;
 }
 
 const DeletePaymentModeModal: React.FC<DeletePaymentModeModalProps> = ({
   closeModal,
   paymentModeUuid,
   paymentModeName,
-  onPaymentModeDeleted,
 }) => {
   const { t } = useTranslation();
+  const { mutate } = useSWRConfig();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
+    const url = `${apiBasePath}paymentMode`;
     try {
       await openmrsFetch(`${restBaseUrl}/billing/paymentMode/${paymentModeUuid}`, {
         method: 'DELETE',
       });
+
+      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
 
       showSnackbar({
         title: t('success', 'Success'),
@@ -33,7 +37,6 @@ const DeletePaymentModeModal: React.FC<DeletePaymentModeModalProps> = ({
       });
 
       closeModal();
-      onPaymentModeDeleted();
     } catch (err) {
       showSnackbar({
         title: getCoreTranslation('error'),
