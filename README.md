@@ -36,7 +36,7 @@ yarn start
 
 Once the dev server launches, log in and select a location. You will get redirected to the home page. Once there:
 
-- Go to the Implementers tools, under the feature flags, toggle on the Billing Module feature flag to access billing functionalities.
+- Navigate to the Billing dashboard on the left panel to view the billing history. Additional billing functionality exists in the Patient Chart. You'll also find the Billable Services dashboard in the System Administration page.
 - For more information on how to navigate and use the billing module, please refer to this [documentation](https://www.notion.so/ucsf-ighs/Billing-User-Manual-7f0427617e714b7db14432312cbb7cad)
 
 ## Running tests
