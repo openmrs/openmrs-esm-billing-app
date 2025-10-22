@@ -252,3 +252,8 @@ export type CreateBillableServicePayload = {
 };
 
 export type UpdateBillableServicePayload = Partial<CreateBillableServicePayload>;
+
+export type PaymentModePayload = {
+  name: string;
+  description: string;
+};

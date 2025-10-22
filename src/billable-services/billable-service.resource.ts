@@ -5,6 +5,7 @@ import type {
   BillableService,
   ConceptSearchResult,
   CreateBillableServicePayload,
+  PaymentModePayload,
   UpdateBillableServicePayload,
 } from '../types';
 import type { BillingConfig } from '../config-schema';
@@ -50,8 +51,7 @@ export function useServiceTypes() {
 export const usePaymentModes = () => {
   const url = `${apiBasePath}paymentMode`;
 
-  const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
-
+  const { data, error, isLoading, mutate } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
   const sortedPaymentModes = data?.data.results
     ? [...data.data.results].sort((a, b) => a.name.localeCompare(b.name))
     : [];
@@ -60,6 +60,7 @@ export const usePaymentModes = () => {
     paymentModes: sortedPaymentModes,
     error,
     isLoadingPaymentModes: isLoading,
+    mutate,
   };
 };
 
@@ -91,6 +92,28 @@ export const createBillableService = (payload: CreateBillableServicePayload) => 
 
 export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
   const url = `${apiBasePath}billableService/${uuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const createPaymentMode = (payload: PaymentModePayload) => {
+  const url = `${restBaseUrl}/billing/paymentMode`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const updatePaymentMode = (uuid: string, payload: PaymentModePayload) => {
+  const url = `${restBaseUrl}/billing/paymentMode/${uuid}`;
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import {
   Button,
   DataTable,
+  InlineLoading,
   OverflowMenu,
   OverflowMenuItem,
   Table,
@@ -14,51 +15,34 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, openmrsFetch, restBaseUrl, showModal, getCoreTranslation } from '@openmrs/esm-framework';
+import { showModal, getCoreTranslation, ErrorState } from '@openmrs/esm-framework';
 import { CardHeader } from '@openmrs/esm-patient-common-lib';
 import styles from './payment-modes-config.scss';
+import { usePaymentModes } from '../billable-service.resource';
 
 const PaymentModesConfig: React.FC = () => {
   const { t } = useTranslation();
-  const [paymentModes, setPaymentModes] = useState([]);
-
-  const fetchPaymentModes = useCallback(async () => {
-    try {
-      const response = await openmrsFetch(`${restBaseUrl}/billing/paymentMode?v=full`);
-      setPaymentModes(response.data.results || []);
-    } catch (err) {
-      showSnackbar({
-        title: getCoreTranslation('error'),
-        subtitle: t('errorFetchingPaymentModes', 'An error occurred while fetching payment modes.'),
-        kind: 'error',
-        isLowContrast: false,
-      });
-    }
-  }, [t]);
-
-  useEffect(() => {
-    fetchPaymentModes();
-  }, [fetchPaymentModes]);
+  const { paymentModes, error, isLoadingPaymentModes, mutate } = usePaymentModes();
 
   const handleAddPaymentMode = () => {
     const dispose = showModal('add-payment-mode-modal', {
-      onPaymentModeAdded: fetchPaymentModes,
+      onPaymentModeAdded: mutate,
       closeModal: () => dispose(),
     });
   };
 
-  const handleDeletePaymentMode = (paymentMode) => {
+  const handleDeletePaymentMode = (paymentMode: any) => {
     const dispose = showModal('delete-payment-mode-modal', {
       paymentModeUuid: paymentMode.uuid,
       paymentModeName: paymentMode.name,
-      onPaymentModeDeleted: fetchPaymentModes,
+      onPaymentModeDeleted: mutate,
       closeModal: () => dispose(),
     });
   };
 
-  const handleEditPaymentMode = (paymentMode) => {
+  const handleEditPaymentMode = (paymentMode: any) => {
     const dispose = showModal('add-payment-mode-modal', {
-      onPaymentModeAdded: fetchPaymentModes,
+      onPaymentModeAdded: mutate,
       editPaymentMode: paymentMode,
       closeModal: () => dispose(),
     });
@@ -76,6 +60,19 @@ const PaymentModesConfig: React.FC = () => {
     { key: 'actions', header: getCoreTranslation('actions') },
   ];
 
+  if (isLoadingPaymentModes) {
+    return (
+      <InlineLoading
+        status="active"
+        iconDescription={getCoreTranslation('loading')}
+        description={t('loading', 'Loading data') + '...'}
+      />
+    );
+  }
+
+  if (error) {
+    return <ErrorState headerTitle={t('paymentMode', 'Payment mode')} error={error} />;
+  }
   return (
     <div className={styles.container}>
       <div className={styles.card}>

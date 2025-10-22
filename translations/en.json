@@ -91,7 +91,6 @@
   "errorDeletingPaymentMode": "An error occurred while deleting the payment mode.",
   "errorFetchingCashPoints": "An error occurred while fetching cash points.",
   "errorFetchingLocations": "An error occurred while fetching locations.",
-  "errorFetchingPaymentModes": "An error occurred while fetching payment modes.",
   "errorLoadingBillableServices": "Error loading billable services",
   "errorLoadingBillServices": "Error loading bill services",
   "errorLoadingPaymentModes": "Payment modes error",

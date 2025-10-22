@@ -4,7 +4,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
-import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
+import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import type { PaymentModePayload } from '../../types';
+import { createPaymentMode, updatePaymentMode } from '../billable-service.resource';
 
 type PaymentModeFormValues = {
   uuid?: string;
@@ -38,28 +40,22 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
   } = useForm<PaymentModeFormValues>({
     resolver: zodResolver(paymentModeSchema),
     defaultValues: {
-      name: editPaymentMode?.name,
-      description: editPaymentMode?.description,
+      name: editPaymentMode?.name ?? '',
+      description: editPaymentMode?.description ?? '',
     },
   });
 
   const onSubmit = async (data: PaymentModeFormValues) => {
     try {
-      let url = `${restBaseUrl}/billing/paymentMode`;
+      const payload: PaymentModePayload = {
+        name: data.name,
+        description: data.description,
+      };
       if (editPaymentMode) {
-        url = `${restBaseUrl}/billing/paymentMode/${editPaymentMode.uuid}`;
+        await updatePaymentMode(editPaymentMode.uuid, payload);
+      } else {
+        await createPaymentMode(payload);
       }
-      await openmrsFetch(url, {
-        method: editPaymentMode?.uuid ? 'PUT' : 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: {
-          name: data.name,
-          description: data.description || '',
-        },
-      });
-
       showSnackbar({
         title: t('success', 'Success'),
         subtitle: t('paymentModeSaved', 'Payment mode was successfully saved.'),
@@ -83,7 +79,7 @@ const AddPaymentModeModal: React.FC<AddPaymentModeModalProps> = ({
     <>
       <ModalHeader
         closeModal={closeModal}
-        title={editPaymentMode ? t('editPaymentMode', 'Edit Payment Mode') : t('addPaymentMode', 'Add Payment Mode')}
+        title={editPaymentMode ? t('editPaymentMode', 'Edit payment mode') : t('addPaymentMode', 'Add payment mode')}
       />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <ModalBody>
