@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
@@ -41,7 +41,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     [t],
   );
 
-  const handleBillingService = ({ selectedItem }) => {
+  const handleBillingService = (selectedItem) => {
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
     const itemUuid = selectedItem?.uuid ?? '';
 
@@ -67,14 +67,18 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
       payments: [],
     };
 
-    handleCreateExtraVisitInfo(createBillPayload);
-
     setExtraVisitInfo({
-      createBillPayload,
       handleCreateExtraVisitInfo: () => handleCreateExtraVisitInfo(createBillPayload),
       attributes,
     });
   };
+
+  useEffect(() => {
+    setExtraVisitInfo({
+      handleCreateExtraVisitInfo: () => {},
+      attributes,
+    });
+  }, [attributes, setExtraVisitInfo]);
 
   if (isLoadingLineItems || isLoadingCashPoints) {
     return (
@@ -118,7 +122,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
           <div className={styles.sectionField}></div>
           <Dropdown
             label={t('selectBillableService', 'Select a billable service')}
-            onChange={handleBillingService}
+            onChange={({ selectedItem }) => handleBillingService(selectedItem)}
             id="billable-items"
             items={lineList}
             itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
