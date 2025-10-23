@@ -4,13 +4,17 @@ export class PaymentPage {
   constructor(readonly page: Page) {}
 
   readonly addPaymentButton = () => this.page.getByRole('button', { name: /add payment/i });
-  readonly paymentMethodCombobox = () => this.page.getByRole('combobox', { name: /payment method/i }).first();
+  readonly paymentMethodCombobox = () => this.page.getByRole('button', { name: /select payment method/i }).first();
   readonly amountInput = () => this.page.getByLabel(/amount/i).first();
   readonly referenceCodeInput = () => this.page.getByLabel(/reference number/i).first();
   readonly processPaymentButton = () => this.page.getByRole('button', { name: /process payment/i });
   readonly paymentHistorySection = () =>
     this.page.getByRole('table').filter({ has: this.page.getByText('Date of payment') });
   readonly removePaymentButton = () => this.page.getByRole('button', { name: /remove/i });
+
+  async waitForPaymentForm() {
+    await this.paymentMethodCombobox().waitFor({ state: 'visible' });
+  }
 
   async addPayment(paymentMethod: string, amount: number, referenceCode?: string) {
     // Select payment method

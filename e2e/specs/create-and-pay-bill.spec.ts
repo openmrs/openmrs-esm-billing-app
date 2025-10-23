@@ -83,6 +83,7 @@ test.describe('Create and Pay Bill', () => {
     });
 
     await test.step('When I process full payment', async () => {
+      await paymentPage.waitForPaymentForm();
       const totalAmount = await invoicePage.getTotalAmount();
       const totalValue = extractNumericValue(totalAmount);
       await paymentPage.addPayment('Cash', totalValue);
@@ -269,6 +270,7 @@ test.describe('Create and Pay Bill', () => {
     });
 
     await test.step('And I make a partial payment (50% of total)', async () => {
+      await paymentPage.waitForPaymentForm();
       const totalAmount = await invoicePage.getTotalAmount();
       const totalValue = extractNumericValue(totalAmount);
       const partialAmount = totalValue / 2;
@@ -296,6 +298,7 @@ test.describe('Create and Pay Bill', () => {
     });
 
     await test.step('When I complete the remaining payment', async () => {
+      await paymentPage.waitForPaymentForm();
       const amountDue = await invoicePage.getAmountDue();
       const remainingAmount = extractNumericValue(amountDue);
 
