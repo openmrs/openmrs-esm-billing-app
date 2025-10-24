@@ -3,7 +3,7 @@ import { test } from '../core/test';
 import { BillingFormPage, InvoicePage, PaymentPage } from '../pages';
 import { deleteBill, waitForSuccessNotification, extractNumericValue, getBillableService } from '../commands';
 
-test.describe('Create and Pay Bill', () => {
+test.describe('Bill Management and Payment Processing', () => {
   let billUuid: string;
   let testServiceName: string;
 
@@ -24,7 +24,7 @@ test.describe('Create and Pay Bill', () => {
     }
   });
 
-  test('Create a bill with single line item and process full payment', async ({ page, api, patient }) => {
+  test('Create bill, verify receipt number, and process full payment', async ({ page, api, patient }) => {
     const billingFormPage = new BillingFormPage(page);
     const invoicePage = new InvoicePage(page);
     const paymentPage = new PaymentPage(page);
@@ -39,7 +39,7 @@ test.describe('Create and Pay Bill', () => {
       await createBillButton.click();
     });
 
-    await test.step('And I add a billable service', async () => {
+    await test.step('And I search for and select a billable service', async () => {
       await billingFormPage.searchAndSelectBillableService(testServiceName);
       await expect(billingFormPage.billableServicesCombobox()).toBeVisible();
       await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
@@ -71,15 +71,19 @@ test.describe('Create and Pay Bill', () => {
       await invoicePage.waitForInvoiceToLoad();
     });
 
-    await test.step('Then I should see the invoice details', async () => {
+    await test.step('Then I should see the invoice details including receipt number', async () => {
       const invoiceStatus = await invoicePage.getInvoiceStatus();
       expect(invoiceStatus).toBe('PENDING');
 
       const totalAmount = await invoicePage.getTotalAmount();
-      expect(totalAmount).toBeTruthy();
-
       const amountDue = await invoicePage.getAmountDue();
+      expect(totalAmount).toBeTruthy();
       expect(amountDue).toEqual(totalAmount);
+
+      const receiptNumber = await invoicePage.getInvoiceNumber();
+      expect(receiptNumber).toBeTruthy();
+
+      await expect(invoicePage.invoiceNumberLabel()).toBeVisible();
     });
 
     await test.step('When I process full payment', async () => {
@@ -128,7 +132,7 @@ test.describe('Create and Pay Bill', () => {
       await createBillButton.click();
     });
 
-    await test.step('And I add a billable service and update quantity to 2', async () => {
+    await test.step('And I search for and select a billable service and update quantity to 2', async () => {
       await billingFormPage.searchAndSelectBillableService(testServiceName);
       await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
       await billingFormPage.selectPaymentMethodIfVisible();
@@ -180,7 +184,7 @@ test.describe('Create and Pay Bill', () => {
       await createBillButton.click();
     });
 
-    await test.step('And I add a billable service', async () => {
+    await test.step('And I search for and select a billable service', async () => {
       await billingFormPage.searchAndSelectBillableService(testServiceName);
       await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
       await billingFormPage.selectPaymentMethodIfVisible();
@@ -214,7 +218,7 @@ test.describe('Create and Pay Bill', () => {
       await createBillButton.click();
     });
 
-    await test.step('And I add a billable service', async () => {
+    await test.step('And I search for and select a billable service', async () => {
       await billingFormPage.searchAndSelectBillableService(testServiceName);
       await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
       await billingFormPage.selectPaymentMethodIfVisible();
@@ -229,9 +233,13 @@ test.describe('Create and Pay Bill', () => {
     });
 
     await test.step('When I remove the line item', async () => {
+      const initialCount = await billingFormPage.getLineItemsCount();
+      expect(initialCount).toBe(1);
+
       await billingFormPage.removeItem(0);
-      // Wait for the item card to actually be removed from the DOM
-      await expect(billingFormPage.selectedItemCards().first()).toBeHidden();
+
+      // Wait for the item count to decrease from 1 to 0
+      await expect.poll(async () => await billingFormPage.getLineItemsCount()).toBe(0);
     });
 
     await test.step('Then the line item should be removed and save button disabled', async () => {
@@ -251,7 +259,7 @@ test.describe('Create and Pay Bill', () => {
     const paymentPage = new PaymentPage(page);
     const patientUuid = patient.uuid;
 
-    await test.step('Given I have created a bill', async () => {
+    await test.step('Given I have created and saved a bill', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
