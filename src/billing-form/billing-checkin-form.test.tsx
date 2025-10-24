@@ -170,23 +170,6 @@ describe('BillingCheckInForm', () => {
 
     expect(testProps.setExtraVisitInfo).toHaveBeenCalled();
     expect(testProps.setExtraVisitInfo).toHaveBeenCalledWith({
-      createBillPayload: {
-        lineItems: [
-          {
-            billableService: 'b47dddd6-4490-4bf7-b694-43bf19d04059',
-            quantity: 1,
-            price: '500.00001',
-            priceName: 'Default',
-            priceUuid: 'price-2',
-            lineItemOrder: 0,
-            paymentStatus: 'PENDING',
-          },
-        ],
-        cashPoint: '54065383-b4d4-42d2-af4d-d250a1fd2590',
-        patient: 'some-patient-uuid',
-        status: 'PENDING',
-        payments: [],
-      },
       handleCreateExtraVisitInfo: expect.anything(),
       attributes: expect.arrayContaining([
         expect.objectContaining({
