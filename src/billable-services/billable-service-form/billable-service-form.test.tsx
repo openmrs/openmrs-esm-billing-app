@@ -13,6 +13,7 @@ import {
 import BillableServiceFormWorkspace, {
   transformServiceToFormData,
   normalizePrice,
+  getAvailablePaymentModes,
 } from './billable-service-form.workspace';
 import type { BillableService } from '../../types';
 
@@ -653,6 +654,65 @@ describe('BillableServiceFormWorkspace', () => {
       expect(priceErrors.length).toBeGreaterThan(0);
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
+
+    test('should allow selecting different payment modes in multiple fields', async () => {
+      const user = userEvent.setup();
+      renderBillableServicesForm();
+
+      // Add second and third payment options
+      const addButton = screen.getByRole('button', { name: /Add payment option/i });
+      await user.click(addButton);
+      await user.click(addButton);
+
+      // Select different payment modes in each field
+      const paymentModeDropdowns = screen.getAllByRole('combobox', { name: /Payment mode/i });
+
+      await user.click(paymentModeDropdowns[0]);
+      await user.click(screen.getByRole('option', { name: /Cash/i }));
+
+      await user.click(paymentModeDropdowns[1]);
+      await user.click(screen.getByRole('option', { name: /Insurance/i }));
+
+      await user.click(paymentModeDropdowns[2]);
+      await user.click(screen.getByRole('option', { name: /MPESA/i }));
+
+      const priceInputs = screen.getAllByRole('spinbutton', { name: /Selling Price/i });
+      await user.type(priceInputs[0], '100');
+      await user.type(priceInputs[1], '80');
+      await user.type(priceInputs[2], '90');
+
+      // Fill other required fields
+      await user.type(screen.getByRole('textbox', { name: /Service name/i }), 'Multi-mode Service');
+      await user.type(screen.getByRole('textbox', { name: /Short name/i }), 'MMS');
+      await user.click(screen.getByRole('combobox', { name: /Service type/i }));
+      await user.click(screen.getByRole('option', { name: /Lab service/i }));
+
+      mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
+      await submitForm();
+
+      // Verify all three payment modes were submitted
+      expect(mockCreateBillableService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          servicePrices: [
+            {
+              paymentMode: '63eff7a4-6f82-43c4-a333-dbcc58fe9f74',
+              price: 100,
+              name: 'Cash',
+            },
+            {
+              paymentMode: 'beac329b-f1dc-4a33-9e7c-d95821a137a6',
+              price: 80,
+              name: 'Insurance',
+            },
+            {
+              paymentMode: '28989582-e8c3-46b0-96d0-c249cb06d5c6',
+              price: 90,
+              name: 'MPESA',
+            },
+          ],
+        }),
+      );
+    });
   });
 
   describe('Error Handling', () => {
@@ -893,6 +953,96 @@ describe('Helper Functions', () => {
 
     test('should handle invalid string by converting to NaN', () => {
       expect(normalizePrice('invalid')).toBeNaN();
+    });
+  });
+
+  describe('getAvailablePaymentModes', () => {
+    const allPaymentModes = [
+      { uuid: 'cash-uuid', name: 'Cash' },
+      { uuid: 'insurance-uuid', name: 'Insurance' },
+      { uuid: 'mpesa-uuid', name: 'MPESA' },
+    ];
+
+    test('should return all payment modes when no modes are selected', () => {
+      const fields = [{ paymentMode: '', price: '' }];
+      const result = getAvailablePaymentModes(allPaymentModes, fields, 0, '');
+
+      expect(result).toEqual(allPaymentModes);
+    });
+
+    test('should exclude already-selected payment modes from other fields', () => {
+      const fields = [
+        { paymentMode: 'cash-uuid', price: '100' },
+        { paymentMode: '', price: '' },
+      ];
+      const result = getAvailablePaymentModes(allPaymentModes, fields, 1, '');
+
+      expect(result).toEqual([
+        { uuid: 'insurance-uuid', name: 'Insurance' },
+        { uuid: 'mpesa-uuid', name: 'MPESA' },
+      ]);
+      expect(result).not.toContainEqual({ uuid: 'cash-uuid', name: 'Cash' });
+    });
+
+    test('should keep current field selection visible even if selected elsewhere', () => {
+      const fields = [
+        { paymentMode: 'cash-uuid', price: '100' },
+        { paymentMode: 'insurance-uuid', price: '80' },
+      ];
+      // Field 0 should still see "Cash" as an option
+      const result = getAvailablePaymentModes(allPaymentModes, fields, 0, 'cash-uuid');
+
+      expect(result).toContainEqual({ uuid: 'cash-uuid', name: 'Cash' });
+      expect(result).not.toContainEqual({ uuid: 'insurance-uuid', name: 'Insurance' });
+      expect(result).toContainEqual({ uuid: 'mpesa-uuid', name: 'MPESA' });
+    });
+
+    test('should filter multiple selected payment modes', () => {
+      const fields = [
+        { paymentMode: 'cash-uuid', price: '100' },
+        { paymentMode: 'insurance-uuid', price: '80' },
+        { paymentMode: '', price: '' },
+      ];
+      const result = getAvailablePaymentModes(allPaymentModes, fields, 2, '');
+
+      expect(result).toEqual([{ uuid: 'mpesa-uuid', name: 'MPESA' }]);
+    });
+
+    test('should handle empty payment mode values correctly', () => {
+      const fields = [
+        { paymentMode: '', price: '' },
+        { paymentMode: 'cash-uuid', price: '100' },
+        { paymentMode: '', price: '' },
+      ];
+      // Field 0 should see all modes except Cash
+      const result = getAvailablePaymentModes(allPaymentModes, fields, 0, '');
+
+      expect(result).toEqual([
+        { uuid: 'insurance-uuid', name: 'Insurance' },
+        { uuid: 'mpesa-uuid', name: 'MPESA' },
+      ]);
+    });
+
+    test('should work with generic types having uuid property', () => {
+      const customModes = [
+        { uuid: 'a', customProp: 'value1' },
+        { uuid: 'b', customProp: 'value2' },
+      ];
+      const fields = [
+        { paymentMode: 'a', price: '50' },
+        { paymentMode: '', price: '' },
+      ];
+
+      const result = getAvailablePaymentModes(customModes, fields, 1, '');
+
+      expect(result).toEqual([{ uuid: 'b', customProp: 'value2' }]);
+    });
+
+    test('should return all modes when only current field has a selection', () => {
+      const fields = [{ paymentMode: 'cash-uuid', price: '100' }];
+      const result = getAvailablePaymentModes(allPaymentModes, fields, 0, 'cash-uuid');
+
+      expect(result).toEqual(allPaymentModes);
     });
   });
 });
