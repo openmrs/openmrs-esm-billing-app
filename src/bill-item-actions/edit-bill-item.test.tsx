@@ -308,4 +308,23 @@ describe('EditBillItem', () => {
       expect(screen.queryByText(/Quantity must be at least 1/)).not.toBeInTheDocument();
     });
   });
+
+  test('shows validation error when quantity field is left empty', async () => {
+    const user = userEvent.setup();
+    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+
+    const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
+    await user.clear(quantityInput);
+
+    // Try to submit with empty field
+    await user.click(screen.getByText(/save/i));
+
+    // Should show validation error (empty string coerces to 0, triggering min validation)
+    await waitFor(() => {
+      expect(screen.getByText(/Quantity must be at least 1/)).toBeInTheDocument();
+    });
+
+    // Should NOT call the update function
+    expect(mockUpdateBillItems).not.toHaveBeenCalled();
+  });
 });

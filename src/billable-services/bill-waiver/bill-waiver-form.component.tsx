@@ -80,16 +80,17 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
 
           <Layer className={styles.formControlLayer}>
             <NumberInput
-              label={t('amountToWaiveLabel', 'Amount to waive')}
-              helperText={t('amountToWaiveHelper', 'Specify the amount to be deducted from the bill')}
+              allowEmpty
               aria-label={t('amountToWaiveAriaLabel', 'Enter amount to waive')}
-              hideSteppers
               disableWheel
-              min={0}
-              max={totalAmount}
+              helperText={t('amountToWaiveHelper', 'Specify the amount to be deducted from the bill')}
+              hideSteppers
               invalidText={t('invalidWaiverAmount', 'Invalid waiver amount')}
-              value={waiverAmount}
+              label={t('amountToWaiveLabel', 'Amount to waive')}
+              max={totalAmount}
+              min={0}
               onChange={(event) => setWaiverAmount(event.target.value)}
+              value={waiverAmount}
             />
           </Layer>
         </FormGroup>

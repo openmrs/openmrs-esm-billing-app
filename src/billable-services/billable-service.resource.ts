@@ -5,6 +5,7 @@ import type {
   BillableService,
   ConceptSearchResult,
   CreateBillableServicePayload,
+  PaymentModePayload,
   UpdateBillableServicePayload,
   CashPointPayload,
 } from '../types';
@@ -48,19 +49,24 @@ export function useServiceTypes() {
   };
 }
 
+export interface PaymentMode extends OpenmrsResource {
+  name: string;
+  description: string;
+}
+
 export const usePaymentModes = () => {
   const url = `${apiBasePath}paymentMode`;
 
-  const { data, error, isLoading } = useSWR<{ data: ResponseObject }>(url, openmrsFetch);
-
+  const { data, error, isLoading, mutate } = useSWR<{ data: { results: PaymentMode[] } }>(url, openmrsFetch);
   const sortedPaymentModes = data?.data.results
     ? [...data.data.results].sort((a, b) => a.name.localeCompare(b.name))
     : [];
 
   return {
-    paymentModes: sortedPaymentModes,
+    paymentModes: sortedPaymentModes as PaymentMode[],
     error,
     isLoadingPaymentModes: isLoading,
+    mutate,
   };
 };
 
@@ -113,6 +119,28 @@ export const createCashPoint = (payload: CashPointPayload) => {
 
 export const updateCashPoint = (uuid: string, payload: CashPointPayload) => {
   return openmrsFetch(`${apiBasePath}cashPoint/${uuid}`, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const createPaymentMode = (payload: PaymentModePayload) => {
+  const url = `${restBaseUrl}/billing/paymentMode`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const updatePaymentMode = (uuid: string, payload: PaymentModePayload) => {
+  const url = `${restBaseUrl}/billing/paymentMode/${uuid}`;
+  return openmrsFetch(url, {
     method: 'POST',
     body: payload,
     headers: {

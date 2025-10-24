@@ -67,7 +67,12 @@ const setupMocks = () => {
     mutate: jest.fn(),
     isValidating: false,
   });
-  mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoadingPaymentModes: false });
+  mockUsePaymentModes.mockReturnValue({
+    paymentModes: mockPaymentModes,
+    error: null,
+    isLoadingPaymentModes: false,
+    mutate: jest.fn(),
+  });
   mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoadingServiceTypes: false });
   mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
 };

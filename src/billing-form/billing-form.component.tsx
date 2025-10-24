@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import { Button, ButtonSet, ComboBox, Form, NumberInput, InlineLoading, InlineNotification } from '@carbon/react';
-import { TrashCan } from '@carbon/react/icons';
-import { useConfig, useLayoutType, showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import {
+  Button,
+  ButtonSet,
+  ComboBox,
+  IconButton,
+  InlineLoading,
+  InlineNotification,
+  Form,
+  NumberInput,
+} from '@carbon/react';
+import { useConfig, useLayoutType, showSnackbar, getCoreTranslation, TrashCanIcon } from '@openmrs/esm-framework';
 import { processBillItems, useBillableServices } from '../billing.resource';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
@@ -181,13 +189,13 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
               <div key={item.uuid} className={styles.itemCard}>
                 <div className={styles.itemHeader}>
                   <span className={styles.itemName}>{item.display}</span>
-                  <Button
+                  <IconButton
+                    align="top-end"
                     kind="ghost"
-                    size="sm"
-                    renderIcon={TrashCan}
-                    iconDescription={t('remove', 'Remove')}
-                    onClick={() => removeSelectedBillableItem(item.uuid)}
-                  />
+                    label={t('remove', 'Remove')}
+                    onClick={() => removeSelectedBillableItem(item.uuid)}>
+                    <TrashCanIcon size={16} />
+                  </IconButton>
                 </div>
 
                 <div className={styles.itemControls}>
@@ -197,7 +205,6 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                       <ComboBox
                         id={`payment-method-${item.uuid}`}
                         items={item.availablePaymentMethods}
-                        size="md"
                         itemToString={(method: ServicePrice) =>
                           method
                             ? `${method.name} - ${convertToCurrency(
@@ -226,16 +233,16 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
                   <div className={styles.controlSection}>
                     <label>{t('quantity', 'Quantity')}</label>
                     <NumberInput
+                      allowEmpty
                       disableWheel
                       hideSteppers
                       id={`quantity-${item.uuid}`}
                       min={1}
-                      value={item.quantity}
-                      size="md"
                       onChange={(_, { value }) => {
                         const number = parseFloat(String(value));
                         updateQuantity(item.uuid, isNaN(number) ? 1 : number);
                       }}
+                      value={item.quantity}
                     />
                   </div>
 
