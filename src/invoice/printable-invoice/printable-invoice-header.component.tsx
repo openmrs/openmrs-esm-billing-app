@@ -50,7 +50,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
           )}
           {patientDetails?.birthDate && (
             <p className={styles.itemLabel}>
-              {`${t('birthDate', 'Date Of birth')}: ${formatPartialDate(patientDetails.birthDate, { time: false })}`}
+              {`${t('dateOfBirth', 'Date of birth')}: ${formatPartialDate(patientDetails.birthDate, { time: false })}`}
             </p>
           )}
           <p className={styles.itemLabel}>{patientDetails?.county}</p>
