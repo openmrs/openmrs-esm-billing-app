@@ -4,7 +4,7 @@ export class PaymentPage {
   constructor(readonly page: Page) {}
 
   readonly addPaymentButton = () => this.page.getByRole('button', { name: /add payment/i });
-  readonly paymentMethodCombobox = () => this.page.getByRole('button', { name: /select payment method/i }).first();
+  readonly paymentMethodCombobox = () => this.page.getByRole('combobox', { name: /payment method/i }).first();
   readonly amountInput = () => this.page.getByLabel(/amount/i).first();
   readonly referenceCodeInput = () => this.page.getByLabel(/reference number/i).first();
   readonly processPaymentButton = () => this.page.getByRole('button', { name: /process payment/i });
@@ -13,10 +13,16 @@ export class PaymentPage {
   readonly removePaymentButton = () => this.page.getByRole('button', { name: /remove/i });
 
   async waitForPaymentForm() {
-    await this.paymentMethodCombobox().waitFor({ state: 'visible' });
+    // Wait for the "Add payment method" button to be visible
+    // This confirms payment modes have loaded (otherwise form shows skeleton)
+    await this.addPaymentButton().waitFor({ state: 'visible', timeout: 30000 });
   }
 
   async addPayment(paymentMethod: string, amount: number, referenceCode?: string) {
+    // For single line item bills, a payment row should already exist automatically
+    // Just wait for the payment method dropdown to be available and interact with it
+    await this.paymentMethodCombobox().waitFor({ state: 'visible', timeout: 10000 });
+
     // Select payment method
     await this.paymentMethodCombobox().click();
     await this.page.getByRole('option', { name: new RegExp(paymentMethod, 'i') }).click();
@@ -33,10 +39,6 @@ export class PaymentPage {
   async addMultiplePayments(payments: Array<{ method: string; amount: number; referenceCode?: string }>) {
     for (const payment of payments) {
       await this.addPayment(payment.method, payment.amount, payment.referenceCode);
-      // Add another payment row if not the last payment
-      if (payments.indexOf(payment) < payments.length - 1) {
-        await this.addPaymentButton().click();
-      }
     }
   }
 

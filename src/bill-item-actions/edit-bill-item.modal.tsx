@@ -12,7 +12,7 @@ import {
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
-import { mutate } from 'swr';
+import { useSWRConfig } from 'swr';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getCoreTranslation, showSnackbar, useConfig } from '@openmrs/esm-framework';
@@ -36,6 +36,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   const { defaultCurrency } = useConfig<BillingConfig>();
   const { billableServices } = useBillableServices();
   const [total, setTotal] = useState(0);
+  const { mutate } = useSWRConfig();
 
   const schema = useMemo(
     () =>

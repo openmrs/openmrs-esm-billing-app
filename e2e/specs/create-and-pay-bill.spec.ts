@@ -136,6 +136,7 @@ test.describe('Create and Pay Bill', () => {
       // Update quantity to 2
       const quantityInput = page.locator('input[type="number"]').first();
       await expect(quantityInput).toHaveValue('1');
+
       await quantityInput.fill('2');
       await expect(quantityInput).toHaveValue('2');
     });
@@ -229,6 +230,8 @@ test.describe('Create and Pay Bill', () => {
 
     await test.step('When I remove the line item', async () => {
       await billingFormPage.removeItem(0);
+      // Wait for the item card to actually be removed from the DOM
+      await expect(billingFormPage.selectedItemCards().first()).toBeHidden();
     });
 
     await test.step('Then the line item should be removed and save button disabled', async () => {
