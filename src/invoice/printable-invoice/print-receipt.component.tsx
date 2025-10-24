@@ -33,7 +33,6 @@ const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
     <Button
       kind="secondary"
       className={styles.button}
-      size="md"
       renderIcon={(props) => <Printer size={24} {...props} />}
       onClick={handlePrintReceiptClick}
       disabled={isRedirecting}>

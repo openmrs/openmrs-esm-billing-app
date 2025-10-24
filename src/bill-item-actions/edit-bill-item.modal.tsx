@@ -168,6 +168,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <NumberInput
+                    allowEmpty
                     disableWheel
                     className={styles.controlField}
                     hideSteppers
