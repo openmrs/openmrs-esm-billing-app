@@ -59,7 +59,7 @@ describe('PaymentForm Component', () => {
       </Wrapper>,
     );
 
-    expect(screen.getByText(/payment modes error/i)).toBeInTheDocument();
+    expect(screen.getByText(/error loading payment modes/i)).toBeInTheDocument();
   });
 
   test('should append default payment when isSingleLineItem is true', () => {

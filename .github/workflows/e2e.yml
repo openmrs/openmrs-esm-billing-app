@@ -8,56 +8,60 @@ on:
     branches:
       - main
 
+env:
+  TURBO_API: 'http://127.0.0.1:9080'
+  TURBO_TOKEN: 'turbo-token'
+  TURBO_TEAM: ${{ github.repository_owner }}
+
 jobs:
-  main:
+  run_e2e_tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     steps:
-      - name: Checkout repo
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: Copy test environment variables
+      - name: 📋 Copy test environment variables
         run: cp example.env .env
 
-      - name: Setup node
+      - name: 🛠️ Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20.x'
+          cache: 'yarn'
 
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v4
-        with:
-          path: '**/node_modules'
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: 📦 Install dependencies
         run: yarn install --immutable
 
-      - name: Install Playwright Browsers
+      - name: 🎭 Install Playwright Browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Build apps
+      - name: 🚀 Setup local cache server for Turborepo
+        uses: felixmosh/turborepo-gh-artifacts@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          server-token: ${{ env.TURBO_TOKEN }}
+
+      - name: 🏗️ Build apps
         run: yarn turbo run build --color --concurrency=5
 
-      - name: Run dev server
+      - name: 🖥️ Run dev server
         run: bash e2e/support/github/run-e2e-docker-env.sh
 
-      - name: Wait for OpenMRS instance to start
+      - name: ⏳ Wait for OpenMRS instance to start
         run: while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/openmrs/login.htm)" != "200" ]]; do sleep 10; done
 
-      - name: Run E2E tests
-        run: yarn test-e2e
+      - name: 🧪 Run E2E tests
+        run: yarn playwright test
 
-      - name: Stop dev server
+      - name: 🛑 Stop dev server
         if: '!cancelled()'
         run: docker stop $(docker ps -a -q)
 
-      - name: Upload report
+      - name: 📤 Upload report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 30
+          overwrite: true
