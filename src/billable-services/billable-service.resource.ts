@@ -7,7 +7,8 @@ import type {
   CreateBillableServicePayload,
   PaymentModePayload,
   UpdateBillableServicePayload,
-  CashPointPayload,
+  CreateCashPointPayload,
+  UpdateCashPointPayload,
 } from '../types';
 import type { BillingConfig } from '../config-schema';
 
@@ -107,7 +108,7 @@ export const updateBillableService = (uuid: string, payload: UpdateBillableServi
   });
 };
 
-export const createCashPoint = (payload: CashPointPayload) => {
+export const createCashPoint = (payload: CreateCashPointPayload) => {
   return openmrsFetch(`${apiBasePath}cashPoint`, {
     method: 'POST',
     body: payload,
@@ -117,7 +118,7 @@ export const createCashPoint = (payload: CashPointPayload) => {
   });
 };
 
-export const updateCashPoint = (uuid: string, payload: CashPointPayload) => {
+export const updateCashPoint = (uuid: string, payload: UpdateCashPointPayload) => {
   return openmrsFetch(`${apiBasePath}cashPoint/${uuid}`, {
     method: 'POST',
     body: payload,

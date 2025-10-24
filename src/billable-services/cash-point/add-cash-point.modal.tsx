@@ -6,11 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dropdown, Form, ModalBody, ModalFooter, ModalHeader, Stack, TextInput } from '@carbon/react';
 import { showSnackbar, openmrsFetch, restBaseUrl, getCoreTranslation } from '@openmrs/esm-framework';
 import { createCashPoint, updateCashPoint } from '../billable-service.resource';
-import type { CashPoint, CashPointPayload } from '../../types';
+import type { CashPoint, CreateCashPointPayload, UpdateCashPointPayload } from '../../types';
 
 type CashPointFormValues = {
   name: string;
-  uuid: string;
   location: string;
 };
 
@@ -26,13 +25,6 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
 
   const cashPointSchema = z.object({
     name: z.string().min(1, t('cashPointNameRequired', 'Cash Point Name is required')),
-    uuid: z
-      .string()
-      .min(1, t('uuidRequired', 'UUID is required'))
-      .regex(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
-        t('invalidUuidFormat', 'Invalid UUID format'),
-      ),
     location: z.string().min(1, t('locationRequired', 'Location is required')),
   });
 
@@ -45,7 +37,6 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
     resolver: zodResolver(cashPointSchema),
     defaultValues: {
       name: cashPointToEdit?.name ?? '',
-      uuid: cashPointToEdit?.uuid ?? '',
       location: cashPointToEdit?.location?.uuid ?? '',
     },
   });
@@ -73,16 +64,19 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
   }, [fetchLocations]);
 
   const onSubmit = async (data: CashPointFormValues) => {
-    const payload: CashPointPayload = {
-      name: data.name,
-      uuid: data.uuid,
-      location: { uuid: data.location },
-    };
     try {
       if (cashPointToEdit) {
-        await updateCashPoint(cashPointToEdit.uuid, payload);
+        const updatePayload: UpdateCashPointPayload = {
+          name: data.name,
+          location: { uuid: data.location },
+        };
+        await updateCashPoint(cashPointToEdit.uuid, updatePayload);
       } else {
-        await createCashPoint(payload);
+        const createPayload: CreateCashPointPayload = {
+          name: data.name,
+          location: { uuid: data.location },
+        };
+        await createCashPoint(createPayload);
       }
       showSnackbar({
         title: t('success', 'Success'),
@@ -91,7 +85,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
       });
 
       closeModal();
-      reset({ name: '', uuid: '', location: '' });
+      reset({ name: '', location: '' });
       onCashPointAdded();
     } catch (err) {
       showSnackbar({
@@ -122,21 +116,6 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ cashPointToEdit, 
                   placeholder={t('cashPointNamePlaceholder', 'For example, Pharmacy Cash Point')}
                   invalid={!!errors.name}
                   invalidText={errors.name?.message}
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="uuid"
-              control={control}
-              render={({ field }) => (
-                <TextInput
-                  id="cash-point-uuid"
-                  labelText={t('cashPointUuid', 'Cash Point UUID')}
-                  placeholder={t('cashPointUuidPlaceholder', 'Enter UUID')}
-                  invalid={!!errors.uuid}
-                  invalidText={errors.uuid?.message}
-                  disabled={!!cashPointToEdit}
                   {...field}
                 />
               )}
