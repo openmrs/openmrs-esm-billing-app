@@ -13,16 +13,14 @@ export class PaymentPage {
   readonly removePaymentButton = () => this.page.getByRole('button', { name: /remove/i });
 
   async waitForPaymentForm() {
-    // Wait for the "Add payment method" button to be visible
-    // This confirms payment modes have loaded (otherwise form shows skeleton)
-    await this.addPaymentButton().waitFor({ state: 'visible', timeout: 30000 });
+    // For single line item bills, wait for the auto-created payment row to be interactive
+    // The payment method combobox only appears after payment modes have loaded
+    // (while loading, the form shows a skeleton instead)
+    await this.paymentMethodCombobox().waitFor({ state: 'visible', timeout: 30000 });
   }
 
   async addPayment(paymentMethod: string, amount: number, referenceCode?: string) {
-    // For single line item bills, a payment row should already exist automatically
-    // Just wait for the payment method dropdown to be available and interact with it
-    await this.paymentMethodCombobox().waitFor({ state: 'visible', timeout: 10000 });
-
+    // waitForPaymentForm() should be called before this to ensure the form is ready
     // Select payment method
     await this.paymentMethodCombobox().click();
     await this.page.getByRole('option', { name: new RegExp(paymentMethod, 'i') }).click();
