@@ -107,6 +107,17 @@ export const normalizePrice = (price: string | number | undefined): number => {
   return parseFloat(String(price));
 };
 
+export const getAvailablePaymentModes = <T extends { uuid: string }>(
+  allModes: T[],
+  allFields: PaymentModeForm[],
+  currentIndex: number,
+  currentValue: string,
+): T[] => {
+  const selectedUUIDs = allFields.map((f, i) => (i !== currentIndex ? f.paymentMode : null)).filter(Boolean);
+
+  return allModes.filter((mode) => !selectedUUIDs.includes(mode.uuid) || mode.uuid === currentValue);
+};
+
 const createBillableServiceSchema = (t: TFunction) => {
   const servicePriceSchema = z.object({
     paymentMode: z
@@ -274,17 +285,6 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const getAvailablePaymentModes = <T extends { uuid: string }>(
-    allModes: T[],
-    allFields: PaymentModeForm[],
-    currentIndex: number,
-    currentValue: string,
-  ): T[] => {
-    const selectedUUIDs = allFields.map((f, i) => (i !== currentIndex ? f.paymentMode : null)).filter(Boolean);
-
-    return allModes.filter((mode) => !selectedUUIDs.includes(mode.uuid) || mode.uuid === currentValue);
   };
 
   const getPaymentErrorMessage = () => {
