@@ -1,6 +1,6 @@
 import React from 'react';
 import { type PatientDetails } from '../../types';
-import { type SessionLocation, useConfig, interpolateUrl } from '@openmrs/esm-framework';
+import { type SessionLocation, useConfig, interpolateUrl, formatDate, parseDate } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import type { BillingConfig } from '../../config-schema';
 import styles from './printable-invoice-header.scss';
@@ -45,6 +45,14 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
         <div className={styles.billDetails}>
           <p className={styles.itemHeading}>{t('billedTo', 'Billed to')}</p>
           <p className={styles.itemLabel}>{patientDetails?.name}</p>
+          {patientDetails?.gender && (
+            <p className={styles.itemLabel}>{`${t('gender', 'Gender')}: ${patientDetails.gender}`}</p>
+          )}
+          {patientDetails?.birthDate && (
+            <p className={styles.itemLabel}>
+              {`${t('birthDate', 'Date of birth')}: ${formatDate(parseDate(patientDetails.birthDate), { time: false })}`}
+            </p>
+          )}
           <p className={styles.itemLabel}>{patientDetails?.county}</p>
           <p className={styles.itemLabel}>
             {patientDetails?.subCounty}
