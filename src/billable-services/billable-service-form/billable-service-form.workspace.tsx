@@ -160,6 +160,7 @@ const createBillableServiceSchema = (t: TFunction) => {
       ),
     shortName: z
       .string()
+      .trim()
       .max(
         MAX_NAME_LENGTH,
         t('shortNameExceedsLimit', 'Short name cannot exceed {{MAX_NAME_LENGTH}} characters', { MAX_NAME_LENGTH }),
@@ -233,8 +234,8 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
     setIsSubmitting(true);
 
     const payload = {
-      name: data.name,
-      shortName: data.shortName || '',
+      name: data.name.trim(),
+      shortName: (data.shortName || '').trim(),
       serviceType: data.serviceType!.uuid,
       servicePrices: data.payment.map((payment) => {
         const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
