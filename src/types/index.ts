@@ -162,7 +162,7 @@ export interface PatientInvoice {
 
 export interface PatientDetails {
   name: string;
-  age: string;
+  birthDate: string;
   gender: string;
   city: string;
   county: string;

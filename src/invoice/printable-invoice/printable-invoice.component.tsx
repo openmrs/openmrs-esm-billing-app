@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableCell,
 } from '@carbon/react';
-import { age, isDesktop, type SessionLocation, useLayoutType } from '@openmrs/esm-framework';
+import { isDesktop, type SessionLocation, useLayoutType } from '@openmrs/esm-framework';
 import { getGender } from '../../helpers';
 import { type MappedBill } from '../../types';
 import { useTranslation } from 'react-i18next';
@@ -56,7 +56,7 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
   const patientDetails = useMemo(() => {
     return {
       name: `${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
-      age: age(patient?.birthDate),
+      birthDate: patient?.birthDate,
       gender: getGender(patient?.gender, t),
       city: patient?.address?.[0].city,
       county: patient?.address?.[0].district,
