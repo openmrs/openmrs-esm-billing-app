@@ -1,0 +1,112 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+
+.container {
+  background-color: colors.$white;
+  border-bottom: 1px solid colors.$gray-20;
+  padding: layout.$spacing-05 layout.$spacing-05;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: layout.$spacing-05;
+  max-width: 100%;
+}
+
+.clockInInfo {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-03;
+}
+
+.clockIcon {
+  color: colors.$gray-70;
+  flex-shrink: 0;
+}
+
+.clockInText {
+  @include type.type-style('body-compact-01');
+  color: colors.$gray-100;
+  white-space: nowrap;
+}
+
+.durationTag {
+  margin-left: layout.$spacing-02;
+}
+
+.rightSection {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-06;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: layout.$spacing-02;
+}
+
+.userName {
+  @include type.type-style('body-compact-01');
+  color: colors.$gray-100;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.locationInfo {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-02;
+}
+
+.locationIcon {
+  color: colors.$gray-70;
+  flex-shrink: 0;
+}
+
+.locationText {
+  @include type.type-style('body-compact-01');
+  color: colors.$gray-70;
+  white-space: nowrap;
+}
+
+.cashPointDropdown {
+  min-width: 250px;
+  max-width: 350px;
+  
+  :global(.cds--list-box__field) {
+    background-color: colors.$white;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: layout.$spacing-04;
+  }
+
+  .clockInText {
+    white-space: normal;
+  }
+
+  .rightSection {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: layout.$spacing-04;
+  }
+
+  .userInfo {
+    align-items: flex-start;
+  }
+
+  .cashPointDropdown {
+    width: 100%;
+    max-width: 100%;
+  }
+}

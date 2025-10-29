@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useId, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import {
   DataTable,
@@ -28,6 +28,7 @@ import {
 } from '@openmrs/esm-framework';
 import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
 import { useBills } from '../billing.resource';
+import SelectedCashPointContext from '../hooks/selectedCashPointContext';
 import styles from './bills-table.scss';
 
 const BillsTable = () => {
@@ -41,6 +42,7 @@ const BillsTable = () => {
   const [pageSize, setPageSize] = useState(config?.bills?.pageSize ?? 10);
   const { bills, isLoading, isValidating, error } = useBills('', '');
   const [searchString, setSearchString] = useState('');
+  const { selectedCashPoint } = useContext(SelectedCashPointContext);
 
   const headerData = [
     {
@@ -75,15 +77,16 @@ const BillsTable = () => {
         return bill;
       })
       .filter((bill) => {
+        const cashPointMatch = !selectedCashPoint || bill.cashPointUuid === selectedCashPoint.uuid;
         const statusMatch = billPaymentStatus === '' ? true : bill.status === billPaymentStatus;
         const searchMatch = !searchString
           ? true
           : bill.patientName.toLowerCase().includes(searchString.toLowerCase()) ||
             bill.identifier.toLowerCase().includes(searchString.toLowerCase());
 
-        return statusMatch && searchMatch;
+        return cashPointMatch && statusMatch && searchMatch;
       });
-  }, [bills, searchString, billPaymentStatus]);
+  }, [bills, searchString, billPaymentStatus, selectedCashPoint]);
 
   const { paginated, goTo, results, currentPage } = usePagination(searchResults, pageSize);
 
