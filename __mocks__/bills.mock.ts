@@ -1,4 +1,4 @@
-import { restBaseUrl } from '@openmrs/esm-framework';
+const restBaseUrl = '/ws/rest/v1';
 
 export const mockPatient = {
   uuid: 'dda9b65f-0037-11ec-85e7-04ed33c79a3e',

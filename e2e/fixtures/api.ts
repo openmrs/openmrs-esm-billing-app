@@ -1,4 +1,3 @@
-import { restBaseUrl } from '@openmrs/esm-framework';
 import { type APIRequestContext, type PlaywrightWorkerArgs, type WorkerFixture } from '@playwright/test';
 
 /**
@@ -15,6 +14,7 @@ import { type APIRequestContext, type PlaywrightWorkerArgs, type WorkerFixture }
  * ```
  */
 export const api: WorkerFixture<APIRequestContext, PlaywrightWorkerArgs> = async ({ playwright }, use) => {
+  const restBaseUrl = '/ws/rest/v1';
   const ctx = await playwright.request.newContext({
     baseURL: `${process.env.E2E_BASE_URL}${restBaseUrl}/`,
     httpCredentials: {
