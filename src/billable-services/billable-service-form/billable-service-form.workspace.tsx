@@ -234,8 +234,8 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
     setIsSubmitting(true);
 
     const payload = {
-      name: data.name.trim(),
-      shortName: (data.shortName || '').trim(),
+      name: data.name,
+      shortName: data.shortName ?? '',
       serviceType: data.serviceType!.uuid,
       servicePrices: data.payment.map((payment) => {
         const mode = paymentModes.find((m) => m.uuid === payment.paymentMode);
