@@ -46,8 +46,12 @@ const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
     payments: bill.payments,
     display: bill?.display,
-    totalAmount: activeLineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
-    tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),
+    totalAmount: activeLineItems
+      .map((item) => (item.price ?? 0) * (item.quantity ?? 0))
+      .reduce((prev, curr) => prev + curr, 0),
+    tenderedAmount: (bill?.payments ?? [])
+      .map((item) => item.amountTendered ?? 0)
+      .reduce((prev, curr) => prev + curr, 0),
   };
 };
 
