@@ -68,7 +68,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
     return null;
   }
 
-  const amountDue = bill.totalAmount - bill.tenderedAmount;
+  const amountDue = (bill.totalAmount ?? 0) - (bill.tenderedAmount ?? 0);
 
   const handleProcessPayment = async () => {
     const amountBeingTendered = formValues?.reduce((acc, curr) => acc + (curr.amount || 0), 0);
@@ -115,11 +115,11 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
         <div className={styles.paymentTotals}>
           <InvoiceBreakDown
             label={t('totalAmount', 'Total amount')}
-            value={convertToCurrency(bill.totalAmount, defaultCurrency)}
+            value={convertToCurrency(bill.totalAmount ?? 0, defaultCurrency)}
           />
           <InvoiceBreakDown
             label={t('totalTendered', 'Total tendered')}
-            value={convertToCurrency(bill.tenderedAmount, defaultCurrency)}
+            value={convertToCurrency(bill.tenderedAmount ?? 0, defaultCurrency)}
           />
           <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
           <InvoiceBreakDown
