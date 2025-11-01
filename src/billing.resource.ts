@@ -19,11 +19,11 @@ import type {
   UpdateBillPayload,
 } from './types';
 
-const mapBillProperties = (bill: PatientInvoice): MappedBill => {
+export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
   const status =
-    activeLineItems.length > 1
+    activeLineItems.length > 0
       ? activeLineItems.some((item) => item.paymentStatus === 'PENDING')
         ? 'PENDING'
         : 'PAID'
