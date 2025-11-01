@@ -32,8 +32,8 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   return {
     id: bill?.id,
     uuid: bill?.uuid,
-    patientName: bill?.patient?.display.split('-')?.[1],
-    identifier: bill?.patient?.display.split('-')?.[0],
+    patientName: bill?.patient?.display?.split('-')?.[1],
+    identifier: bill?.patient?.display?.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
     status,
     receiptNumber: bill?.receiptNumber,
