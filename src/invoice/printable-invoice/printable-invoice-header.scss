@@ -3,43 +3,45 @@
 @use '@carbon/type';
 
 .container {
-  padding: 0 1rem 2rem;
-  border-bottom: 1px solid #ebedf2;
-  margin-bottom: 2rem;
+  padding: layout.$spacing-07;
 }
 
 .printableBody {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  .detailsContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: layout.$spacing-07;
+  }
+  border-bottom: solid 0.1pt colors.$cool-gray-30;
+  padding: layout.$spacing-02;
 }
 
 .printableHeader {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: layout.$spacing-02;
+  margin-bottom: layout.$spacing-02;
+}
+
+.logo {
+  flex: 1;
 }
 
 .img {
-  display: flex;
-  margin-left: auto;
-}
-
-.billDetails {
-  display: flex;
-  width: 50%;
-  flex-direction: column;
+  height: auto;
 }
 
 .facilityDetails {
-  display: flex;
-  flex-flow: column wrap;
+  flex: 1;
   text-align: right;
 }
 
-.heading {
-  font-size: 40px;
+.invoiceHeading {
+  @include type.type-style('heading-04');
   text-transform: uppercase;
-  margin-bottom: layout.$spacing-05;
+  text-align: center;
+  font-size: 40px;
 }
 
 .facilityName {
@@ -48,14 +50,13 @@
   color: colors.$green-70;
 }
 
-.itemHeading {
-  @include type.type-style('body-compact-02');
-  margin-bottom: 0.25rem;
-  font-weight: bold;
-  color: colors.$cool-gray-90;
+.sectionHeading {
+  @include type.type-style('heading-compact-02');
+  margin-bottom: layout.$spacing-04;
+  padding-bottom: layout.$spacing-03;
 }
 
 .itemLabel {
-  @include type.type-style('body-compact-02');
-  color: colors.$cool-gray-90;
+  @include type.type-style('body-compact-01');
+  margin-bottom: layout.$spacing-01;
 }
