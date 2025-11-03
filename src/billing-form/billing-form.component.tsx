@@ -35,6 +35,11 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
+  const [duplicateWarning, setDuplicateWarning] = useState<{ show: boolean; itemName: string; itemUuid: string }>({
+    show: false,
+    itemName: '',
+    itemUuid: '',
+  });
   const { data, error, isLoading } = useBillableServices();
 
   const selectBillableItem = (item: BillableItem) => {
@@ -42,10 +47,12 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
 
     const existingItem = selectedItems.find((selectedItem) => selectedItem.uuid === item.uuid);
     if (existingItem) {
-      const updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
-      setSelectedItems(
-        [...selectedItems].map((selectedItem) => (selectedItem.uuid === item.uuid ? updatedItem : selectedItem)),
-      );
+      // Show warning instead of silently adding
+      setDuplicateWarning({
+        show: true,
+        itemName: item.name || item.commonName || 'This service',
+        itemUuid: item.uuid,
+      });
       return;
     }
 
@@ -82,6 +89,25 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const removeSelectedBillableItem = (uuid: string) => {
     const updatedItems = [...selectedItems].filter((item) => item.uuid !== uuid);
     setSelectedItems(updatedItems);
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (duplicateWarning.itemUuid) {
+      const existingItem = selectedItems.find((item) => item.uuid === duplicateWarning.itemUuid);
+      if (existingItem) {
+        const updatedItem = { ...existingItem, quantity: existingItem.quantity + 1 };
+        setSelectedItems(
+          [...selectedItems].map((selectedItem) =>
+            selectedItem.uuid === duplicateWarning.itemUuid ? updatedItem : selectedItem,
+          ),
+        );
+      }
+    }
+    setDuplicateWarning({ show: false, itemName: '', itemUuid: '' });
+  };
+
+  const handleDismissWarning = () => {
+    setDuplicateWarning({ show: false, itemName: '', itemUuid: '' });
   };
 
   const updatePaymentMethod = (itemUuid: string, paymentMethod: ServicePrice) => {
@@ -181,6 +207,29 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
             items={data ?? []}
             titleText={t('searchItems', 'Search items and services')}
           />
+        )}
+        {duplicateWarning.show && (
+          <div className={styles.notificationContainer}>
+            <InlineNotification
+              kind="warning"
+              lowContrast
+              title={t('duplicateServiceWarning', 'Duplicate service detected')}
+              subtitle={t(
+                'duplicateServiceMessage',
+                '{{itemName}} is already in this bill. Would you like to increase the quantity?',
+                { itemName: duplicateWarning.itemName },
+              )}
+              onCloseButtonClick={handleDismissWarning}
+            />
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', marginLeft: '3rem' }}>
+              <Button kind="primary" size="sm" onClick={handleIncreaseQuantity}>
+                {t('increaseQuantity', 'Yes, increase quantity')}
+              </Button>
+              <Button kind="secondary" size="sm" onClick={handleDismissWarning}>
+                {t('cancel', 'Cancel')}
+              </Button>
+            </div>
+          </div>
         )}
         {selectedItems && selectedItems.length > 0 && (
           <div className={styles.selectedItemsContainer}>
