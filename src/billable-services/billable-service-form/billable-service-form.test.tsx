@@ -292,6 +292,36 @@ describe('BillableServiceFormWorkspace', () => {
       );
     });
 
+    test('should trim leading and trailing whitespace from service name and short name', async () => {
+      const user = userEvent.setup();
+      renderBillableServicesForm();
+
+      // Add service name and short name with leading and trailing spaces
+      await user.type(screen.getByRole('textbox', { name: /Service name/i }), '  Lab Test  ');
+      await user.type(screen.getByRole('textbox', { name: /Short name/i }), '  LT  ');
+
+      await user.click(screen.getByRole('combobox', { name: /Service type/i }));
+      await user.click(screen.getByRole('option', { name: /Lab service/i }));
+
+      await user.click(screen.getByRole('combobox', { name: /Payment mode/i }));
+      await user.click(screen.getByRole('option', { name: /Cash/i }));
+
+      const priceInput = screen.getByRole('spinbutton', { name: /Selling Price/i });
+      await user.type(priceInput, '100');
+
+      mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
+
+      await submitForm();
+
+      // Verify that the whitespace is trimmed before submission
+      expect(mockCreateBillableService).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Lab Test',
+          shortName: 'LT',
+        }),
+      );
+    });
+
     test('should enforce 255 character limit on service name input', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
@@ -511,6 +541,28 @@ describe('BillableServiceFormWorkspace', () => {
         concept: undefined,
       });
       expect(mockCreateBillableService).not.toHaveBeenCalled();
+    });
+
+    test('should trim whitespace from short name when updating service', async () => {
+      const user = userEvent.setup();
+      const mockCloseWorkspace = jest.fn();
+      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, closeWorkspace: mockCloseWorkspace });
+
+      const shortNameInput = screen.getByDisplayValue('XRay');
+      await user.clear(shortNameInput);
+      await user.type(shortNameInput, '  X-RAY  ');
+
+      mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
+
+      await submitForm();
+
+      expect(mockUpdateBillableService).toHaveBeenCalledWith(
+        'existing-service-uuid',
+        expect.objectContaining({
+          name: 'X-Ray Service',
+          shortName: 'X-RAY', // Should be trimmed
+        }),
+      );
     });
 
     test('should call onWorkspaceClose callback after successful edit', async () => {
