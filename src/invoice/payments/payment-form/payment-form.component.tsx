@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { TrashCan, Add } from '@carbon/react/icons';
-import { Button, IconButton, Dropdown, NumberInputSkeleton, TextInput, NumberInput } from '@carbon/react';
+import { Add, TrashCan } from '@carbon/react/icons';
+import { Button, Dropdown, IconButton, NumberInput, NumberInputSkeleton, TextInput } from '@carbon/react';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { type PaymentFormValue } from '../payments.component';
 import { usePaymentModes } from '../payment.resource';
@@ -55,7 +55,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
   if (error) {
     return (
       <div className={styles.errorPaymentContainer}>
-        <ErrorState headerTitle={t('errorLoadingPaymentModes', 'Payment modes error')} error={error} />
+        <ErrorState headerTitle={t('errorLoadingPaymentModes', 'Error loading payment modes')} error={error} />
       </div>
     );
   }
@@ -120,7 +120,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ disablePayment, isSingleLineI
             />
             <div className={styles.removeButtonContainer}>
               <IconButton
-                kind="danger--tertiary"
+                kind="ghost"
                 label={t('removePaymentMethod', 'Remove payment method')}
                 onClick={() => handleRemovePaymentMode(index)}>
                 <TrashCan />

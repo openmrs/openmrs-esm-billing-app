@@ -1,4 +1,4 @@
-import { devices, PlaywrightTestConfig } from '@playwright/test';
+import { devices, type PlaywrightTestConfig } from '@playwright/test';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
   testDir: './e2e/specs',
   timeout: 3 * 60 * 1000,
   expect: {
-    timeout: 40 * 1000,
+    timeout: 20 * 1000,
   },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
@@ -16,8 +16,10 @@ const config: PlaywrightTestConfig = {
   globalSetup: require.resolve('./e2e/core/global-setup'),
   use: {
     baseURL: `${process.env.E2E_BASE_URL}/spa/`,
+    locale: 'en-US',
     storageState: 'e2e/storageState.json',
     video: 'retain-on-failure',
+    trace: 'retain-on-failure',
   },
   projects: [
     {
