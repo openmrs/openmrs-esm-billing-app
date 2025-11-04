@@ -104,7 +104,7 @@ You can customize billing behavior using OpenMRS frontend config overrides.
       "billing": {
         "defaultCurrency": "UGX",
         "pageSize": 20,
-        "patientCatergory": {
+        "patientCategory": {
           "paymentDetails": "fbc0702d-...",
           "insuranceScheme": "aac48226-..."
         },
