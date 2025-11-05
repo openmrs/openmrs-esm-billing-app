@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { useBills } from '../billing.resource';
+import { usePaginatedBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
 jest.mock('@openmrs/esm-framework', () => {
@@ -23,15 +23,16 @@ jest.mock('@openmrs/esm-framework', () => {
 });
 
 jest.mock('../billing.resource', () => ({
-  useBills: jest.fn(() => ({
+  usePaginatedBills: jest.fn(() => ({
     bills: mockBillsData,
     isLoading: false,
     isValidating: false,
     error: null,
+    mutate: jest.fn(),
   })),
 }));
 
-const mockBills = jest.mocked(useBills);
+const mockBills = jest.mocked(usePaginatedBills);
 
 const mockBillsData = [
   {
@@ -122,10 +123,10 @@ describe('BillsTable', () => {
   test('renders data table with pending bills', () => {
     render(<BillsTable />);
 
-    expect(screen.getByText('Visit time')).toBeInTheDocument();
-    expect(screen.getByText('Identifier')).toBeInTheDocument();
+    expect(screen.getByText(/visit time/i)).toBeInTheDocument();
+    expect(screen.getByText(/patient identifier/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
-    expect(screen.getByText('12345678')).toBeInTheDocument();
+    expect(screen.getByText(/12345678/i)).toBeInTheDocument();
   });
 
   test('displays empty state when there are no bills', () => {

@@ -8,6 +8,7 @@ import {
   useVisit,
   type SessionLocation,
   useOpenmrsFetchAll,
+  useOpenmrsPagination,
 } from '@openmrs/esm-framework';
 import { apiBasePath } from './constants';
 import type {
@@ -48,28 +49,41 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   };
 };
 
-export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  // Build URL with status parameter if provided
-  const buildUrl = () => {
-    let url = `${apiBasePath}bill?v=full`;
+export const usePaginatedBills = (pageSize: number) => {
+  const customRepresentation =
+    '(uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,voided,paymentStatus,price,quantity,item,billableService),payments:(amountTendered));';
 
-    if (patientUuid) {
-      url += `&patientUuid=${patientUuid}`;
-    }
+  const url = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=${pageSize}`;
 
-    if (billStatus) {
-      url += `&status=${billStatus}`;
-    }
+  const { data, error, isLoading, isValidating, mutate } = useOpenmrsPagination<PatientInvoice>(url, pageSize);
 
-    return url;
+  const sortedBills = sortBy(data ?? [], ['dateCreated']).reverse();
+  const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
+
+  return {
+    bills: mappedResults,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
   };
+};
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
-    buildUrl(),
-    openmrsFetch,
-  );
+export const useBills = (patientUuid?: string, billStatus?: string) => {
+  // Build URL with status parameter if provided
+  let url = `${apiBasePath}bill?v=full`;
 
-  const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
+  if (patientUuid) {
+    url += `&patientUuid=${patientUuid}`;
+  }
+
+  if (billStatus) {
+    url += `&status=${billStatus}`;
+  }
+
+  const { data, error, isLoading, isValidating, mutate } = useOpenmrsFetchAll<PatientInvoice>(url);
+
+  const sortedBills = sortBy(data ?? [], ['dateCreated']).reverse();
   const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
 
   return {
