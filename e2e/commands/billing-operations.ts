@@ -14,13 +14,13 @@ interface PaymentMode {
  *
  * @param api - Playwright API request context
  * @param serviceUuid - UUID of the billable service
- * @param defaultPrice - Default price to set for Cash payment mode (default: 30.00)
+ * @param defaultPrice - Default price to set for Cash payment mode
  * @returns The billable service with Cash price configured
  */
 export async function ensureServiceHasPrices(
   api: APIRequestContext,
   serviceUuid: string,
-  defaultPrice: number = 30.0,
+  defaultPrice: number,
 ): Promise<BillableService> {
   // Get the service first
   let service = await getBillableService(api, serviceUuid);
