@@ -152,6 +152,8 @@
   "patientBillsDescription": "List of patient bills",
   "patientCategory": "Patient category",
   "paying": "Paying",
+  "patientIdentifier": "Patient identifier",
+  "patientName": "Patient name",
   "paymentAmountCannotExceedAmountDue": "Payment amount cannot exceed amount due",
   "paymentDetails": "Payment details",
   "paymentMethod": "Payment method",

@@ -1,4 +1,4 @@
-import React, { useCallback, useId, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import {
   DataTable,
@@ -21,39 +21,50 @@ import { useTranslation } from 'react-i18next';
 import {
   useLayoutType,
   isDesktop,
-  useConfig,
   usePagination,
   ErrorState,
   ConfigurableLink,
+  useConfig,
 } from '@openmrs/esm-framework';
-import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
-import { useBills } from '../billing.resource';
+import { EmptyDataIllustration, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { usePaginatedBills } from '../billing.resource';
+import type { MappedBill } from '../types';
+import type { BillingConfig } from '../config-schema';
 import styles from './bills-table.scss';
 
-const BillsTable = () => {
+interface BillDisplayItem extends MappedBill {
+  patientNameDisplay: React.ReactNode;
+  billedItems: string;
+}
+
+const BillsTable: React.FC = () => {
   const { t } = useTranslation();
-  const id = useId();
-  const config = useConfig();
   const layout = useLayoutType();
+  const { pageSize: defaultPageSize } = useConfig<BillingConfig>();
+  const [pageSize, setPageSize] = useState(defaultPageSize);
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const [billPaymentStatus, setBillPaymentStatus] = useState('PENDING');
-  const pageSizes = config?.bills?.pageSizes ?? [10, 20, 30, 40, 50];
-  const [pageSize, setPageSize] = useState(config?.bills?.pageSize ?? 10);
-  const { bills, isLoading, isValidating, error } = useBills('', '');
   const [searchString, setSearchString] = useState('');
+  const { bills, error, isLoading, isValidating } = usePaginatedBills(pageSize);
+
+  const billPaymentStatusFilterItems = [
+    { id: '', text: t('allBills', 'All bills') },
+    { id: 'PENDING', text: t('pendingBills', 'Pending bills') },
+    { id: 'PAID', text: t('paidBills', 'Paid bills') },
+  ];
 
   const headerData = [
     {
       header: t('visitTime', 'Visit time'),
-      key: 'visitTime',
+      key: 'dateCreated',
     },
     {
-      header: t('identifier', 'Identifier'),
+      header: t('patientIdentifier', 'Patient identifier'),
       key: 'identifier',
     },
     {
-      header: t('name', 'Name'),
-      key: 'patientName',
+      header: t('patientName', 'Patient name'),
+      key: 'patientNameDisplay',
     },
     {
       header: t('billedItems', 'Billed Items'),
@@ -61,49 +72,46 @@ const BillsTable = () => {
     },
   ];
 
-  const searchResults = useMemo(() => {
-    if (!bills?.length) return bills;
+  const mapLineItems = (bill: MappedBill) =>
+    bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
 
-    return bills.filter((bill) => {
-      const statusMatch =
-        billPaymentStatus === '' ||
-        billPaymentStatus === bill.status ||
-        (billPaymentStatus === 'PENDING' && bill.status === 'POSTED');
+  const billList: Array<BillDisplayItem> = useMemo(() => {
+    const billingUrl = '${openmrsSpaBase}/home/billing/patient/${patientUuid}/${uuid}';
+
+    return bills?.map((bill) => {
+      const object = {
+        ...bill,
+        patientNameDisplay: (
+          <ConfigurableLink
+            style={{ textDecoration: 'none', maxWidth: '50%' }}
+            to={billingUrl}
+            templateParams={{ patientUuid: bill.patientUuid, uuid: bill.uuid }}>
+            {bill.patientName}
+          </ConfigurableLink>
+        ),
+        billedItems: mapLineItems(bill),
+      };
+      return object;
+    });
+  }, [bills]);
+
+  const searchResults = useMemo(() => {
+    if (!billList?.length) return billList;
+
+    return billList.filter((bill) => {
+      const statusMatch = billPaymentStatus === '' ? true : bill.status === billPaymentStatus;
       const searchMatch = !searchString
         ? true
-        : bill.patientName.toLowerCase().includes(searchString.toLowerCase()) ||
-          bill.identifier.toLowerCase().includes(searchString.toLowerCase());
+        : bill.patientName?.toLowerCase().includes(searchString.toLowerCase()) ||
+          bill.identifier?.toLowerCase().includes(searchString.toLowerCase());
 
       return statusMatch && searchMatch;
     });
-  }, [bills, searchString, billPaymentStatus]);
+  }, [billList, searchString, billPaymentStatus]);
 
   const { paginated, goTo, results, currentPage } = usePagination(searchResults, pageSize);
 
-  const setBilledItems = (bill) =>
-    bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
-
-  const billingUrl = '${openmrsSpaBase}/home/billing/patient/${patientUuid}/${uuid}';
-
-  const rowData = results?.map((bill, index) => {
-    return {
-      id: `${index}`,
-      uuid: bill.uuid,
-      patientName: (
-        <ConfigurableLink
-          style={{ textDecoration: 'none', maxWidth: '50%' }}
-          to={billingUrl}
-          templateParams={{ patientUuid: bill.patientUuid, uuid: bill.uuid }}>
-          {bill.patientName}
-        </ConfigurableLink>
-      ),
-      visitTime: bill.dateCreated,
-      identifier: bill.identifier,
-      department: '--',
-      billedItems: setBilledItems(bill),
-      billingPrice: '--',
-    };
-  });
+  const { pageSizes } = usePaginationInfo(pageSize, searchResults?.length, currentPage, results?.length);
 
   const handleSearch = useCallback(
     (e) => {
@@ -112,12 +120,6 @@ const BillsTable = () => {
     },
     [goTo, setSearchString],
   );
-
-  const filterItems = [
-    { id: '', text: t('allBills', 'All bills') },
-    { id: 'PENDING', text: t('pendingBills', 'Pending bills') },
-    { id: 'PAID', text: t('paidBills', 'Paid bills') },
-  ];
 
   const handleFilterChange = ({ selectedItem }) => {
     setBillPaymentStatus(selectedItem.id);
@@ -154,9 +156,9 @@ const BillsTable = () => {
         <Dropdown
           className={styles.filterDropdown}
           direction="bottom"
-          id={`filter-${id}`}
-          initialSelectedItem={filterItems[1]}
-          items={filterItems}
+          id="bill-payment-status-filter"
+          initialSelectedItem={billPaymentStatusFilterItems[1]}
+          items={billPaymentStatusFilterItems}
           itemToString={(item) => (item ? item.text : '')}
           label=""
           onChange={handleFilterChange}
@@ -166,7 +168,7 @@ const BillsTable = () => {
         />
       </div>
 
-      {bills?.length > 0 ? (
+      {billList?.length > 0 ? (
         <div className={styles.billListContainer}>
           <FilterableTableHeader
             handleSearch={handleSearch}
@@ -177,10 +179,10 @@ const BillsTable = () => {
           />
           <DataTable
             isSortable
-            rows={rowData}
+            rows={results}
             headers={headerData}
             size={responsiveSize}
-            useZebraStyles={rowData?.length > 1 ? true : false}>
+            useZebraStyles={results?.length > 1 ? true : false}>
             {({ rows, headers, getRowProps, getTableProps }) => (
               <TableContainer>
                 <Table {...getTableProps()} aria-label={t('billList', 'Bill list')}>

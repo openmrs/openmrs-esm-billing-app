@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { omrsDateFormat } from '../constants';
+import dayjs from 'dayjs';
 import BillingHeader from '../billing-header/billing-header.component';
 import BillsTable from '../bills-table/bills-table.component';
-import MetricsCards from '../metrics-cards/metrics-cards.component';
 import SelectedDateContext from '../hooks/selectedDateContext';
+import { omrsDateFormat } from '../constants';
 import styles from './billing-dashboard.scss';
 
 export function BillingDashboard() {
@@ -24,7 +23,12 @@ export function BillingDashboard() {
   return (
     <SelectedDateContext.Provider value={{ selectedDate, setSelectedDate }}>
       <BillingHeader title={t('home', 'Home')} />
-      <MetricsCards />
+      {/**
+       *
+       * TODO: Add this back when the backend has an endpoint to get the metrics
+       * The metrics are too intensive to calulate on the frontend since it requires fetching all the bills
+       * <MetricsCards />
+       **/}
       <section className={styles.billsTableContainer}>
         <BillsTable />
       </section>
