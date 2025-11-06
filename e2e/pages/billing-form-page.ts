@@ -71,7 +71,10 @@ export class BillingFormPage {
 
     if (isVisible) {
       await dropdown.click();
-      await this.page.getByRole('option', { name: new RegExp(paymentMethodName, 'i') }).click();
+      await this.page
+        .getByRole('option', { name: new RegExp(paymentMethodName, 'i') })
+        .first()
+        .click();
     }
   }
 }
