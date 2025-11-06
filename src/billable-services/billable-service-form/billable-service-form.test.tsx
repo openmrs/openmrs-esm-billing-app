@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { type FetchResponse } from '@openmrs/esm-framework';
 import {
   createBillableService,
@@ -94,7 +94,7 @@ interface FillOptions {
   skipPrice?: boolean;
 }
 
-const fillRequiredFields = async (user, options: FillOptions = {}) => {
+const fillRequiredFields = async (user: ReturnType<typeof userEvent.setup>, options: FillOptions = {}) => {
   const { serviceName = 'Test Service Name', shortName = 'Test Short Name', skipPrice = false } = options;
 
   if (serviceName) {
@@ -786,7 +786,6 @@ describe('BillableServiceFormWorkspace', () => {
     });
 
     test('should display error snackbar when update API call fails', async () => {
-      const user = userEvent.setup();
       const mockServiceToEdit: BillableService = {
         uuid: 'service-uuid',
         name: 'Test Service',

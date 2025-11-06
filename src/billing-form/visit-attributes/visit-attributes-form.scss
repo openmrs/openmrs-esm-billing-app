@@ -1,6 +1,6 @@
+@use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
-@use '@carbon/colors';
 
 .sectionContainer {
   margin: 0 layout.$spacing-03;
@@ -11,12 +11,25 @@
   color: colors.$gray-70;
   margin: 0 0 layout.$spacing-03 0;
 }
+
 .visitAttributesContainer {
   row-gap: layout.$spacing-03;
   display: flex;
   flex-direction: column;
 }
 
-.sectionField {
-  margin-top: layout.$spacing-03;
+.radioButtonGroup {
+  :global(.cds--radio-button-group) {
+    :global(.cds--radio-button-wrapper) {
+      margin-bottom: layout.$spacing-03;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+.stack {
+  margin-bottom: layout.$spacing-05;
 }

@@ -97,7 +97,7 @@ describe('BillingCheckInForm', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     mockUseConfig.mockReturnValue({
-      patientCatergory: {
+      patientCategory: {
         paymentDetails: 'fbc0702d-b4c9-4968-be63-af8ad3ad6239',
         paymentMethods: '8553afa0-bdb9-4d3c-8a98-05fa9350aa85',
         policyNumber: '3a988e33-a6c0-4b76-b924-01abb998944b',
@@ -105,7 +105,7 @@ describe('BillingCheckInForm', () => {
         patientCategory: '3b9dfac8-9e4d-11ee-8c90-0242ac120002',
         formPayloadPending: '919b51c9-8e2e-468f-8354-181bf3e55786',
       },
-      catergoryConcepts: {
+      categoryConcepts: {
         payingDetails: '44b34972-6630-4e5a-a9f6-a6eb0f109650',
         nonPayingDetails: 'f3fb2d88-cccd-422c-8766-be101ba7bd2e',
         insuranceDetails: 'beac329b-f1dc-4a33-9e7c-d95821a137a6',
@@ -142,7 +142,7 @@ describe('BillingCheckInForm', () => {
     mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
     renderBillingCheckinForm();
 
-    const paymentTypeSelect = screen.getByRole('group', { name: 'Payment Details' });
+    const paymentTypeSelect = screen.getByRole('group', { name: /payment details/i });
     expect(paymentTypeSelect).toBeInTheDocument();
 
     // Select "Paying" radio button
@@ -151,7 +151,7 @@ describe('BillingCheckInForm', () => {
     await user.click(paymentTypeRadio);
 
     // Wait for payment methods dropdown to appear and select a payment method
-    const paymentMethodsDropdown = await screen.findByRole('combobox', { name: /Payment methods/i });
+    const paymentMethodsDropdown = await screen.findByRole('combobox', { name: /payment method/i });
     expect(paymentMethodsDropdown).toBeInTheDocument();
     await user.click(paymentMethodsDropdown);
 
@@ -160,12 +160,12 @@ describe('BillingCheckInForm', () => {
     await user.click(insuranceOption);
 
     // Now select billable service
-    const billableSelect = screen.getByRole('combobox', { name: 'Billable service' });
+    const billableSelect = screen.getByRole('combobox', { name: /billable service/i });
     expect(billableSelect).toBeInTheDocument();
     await user.click(billableSelect);
 
     // Click on Lab Testing option
-    const labTestingOption = await screen.findByText(/Lab Testing \(Default:500\.00001\)/);
+    const labTestingOption = await screen.findByText(/Lab Testing \(Default: 500\.00001\)/);
     await user.click(labTestingOption);
 
     expect(testProps.setExtraVisitInfo).toHaveBeenCalled();

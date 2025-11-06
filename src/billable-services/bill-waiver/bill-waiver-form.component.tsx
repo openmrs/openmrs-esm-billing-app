@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Stack, FormGroup, Layer, Button, NumberInput } from '@carbon/react';
+import { Button, Form, FormGroup, Layer, NumberInput, Stack } from '@carbon/react';
 import { TaskAdd } from '@carbon/react/icons';
-import { mutate } from 'swr';
+import { useSWRConfig } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { createBillWaiverPayload } from './utils';
@@ -24,6 +24,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
   const { lineItems: billableLineItems } = useBillableItems();
   const totalAmount = calculateTotalAmount(lineItems);
   const { defaultCurrency } = useConfig();
+  const { mutate } = useSWRConfig();
 
   if (lineItems?.length === 0) {
     return null;

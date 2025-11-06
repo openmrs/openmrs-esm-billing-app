@@ -93,7 +93,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   const setServicePrice = (prices) => {
     const matchingPrice = prices.find((p) => p.paymentMode?.uuid === paymentMethod);
-    return matchingPrice ? `(${matchingPrice.name}:${matchingPrice.price})` : '';
+    return matchingPrice ? `(${matchingPrice.name}: ${matchingPrice.price})` : '';
   };
 
   if (cashError || lineError) {
@@ -111,18 +111,14 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     <section className={styles.sectionContainer}>
       <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
       {
-        <>
-          <div className={styles.sectionTitle}>{t('billing', 'Billing')}</div>
-          <div className={styles.sectionField}></div>
-          <Dropdown
-            label={t('selectBillableService', 'Select a billable service')}
-            onChange={handleBillingService}
-            id="billable-items"
-            items={lineList}
-            itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
-            titleText={t('billableService', 'Billable service')}
-          />
-        </>
+        <Dropdown
+          id="billable-items"
+          items={lineList}
+          itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
+          label={t('selectBillableService', 'Select a billable service')}
+          onChange={handleBillingService}
+          titleText={t('billableService', 'Billable service')}
+        />
       }
     </section>
   );

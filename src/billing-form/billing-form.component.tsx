@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import { useSWRConfig } from 'swr';
 import {
   Button,
   ButtonSet,
   ComboBox,
+  Form,
   IconButton,
   InlineLoading,
   InlineNotification,
-  Form,
   NumberInput,
 } from '@carbon/react';
 import { useConfig, useLayoutType, showSnackbar, getCoreTranslation, TrashCanIcon } from '@openmrs/esm-framework';
@@ -30,6 +30,7 @@ type BillingFormProps = {
 };
 
 const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }) => {
+  const { mutate } = useSWRConfig();
   const isTablet = useLayoutType() === 'tablet';
   const { t } = useTranslation();
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
@@ -38,7 +39,9 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const { data, error, isLoading } = useBillableServices();
 
   const selectBillableItem = (item: BillableItem) => {
-    if (!item) return;
+    if (!item) {
+      return;
+    }
 
     const existingItem = selectedItems.find((selectedItem) => selectedItem.uuid === item.uuid);
     if (existingItem) {
@@ -144,9 +147,11 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     try {
       await processBillItems(bill);
       closeWorkspace();
+
       mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+
       showSnackbar({
-        title: t('saveBill', 'Save bill'),
+        title: t('billProcessed', 'Bill processed'),
         subtitle: t('billProcessedSuccessfully', 'Bill processed successfully'),
         kind: 'success',
       });
