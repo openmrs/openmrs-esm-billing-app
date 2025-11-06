@@ -8,6 +8,7 @@ export class InvoicePage {
   readonly amountTenderedLabel = () => this.page.getByText(/amount tendered/i);
   readonly amountDueLabel = () => this.page.getByText(/amount due/i);
   readonly invoiceStatusLabel = () => this.page.getByText(/invoice status/i);
+  readonly dateAndTimeLabel = () => this.page.getByText(/date and time/i);
   readonly printBillButton = () => this.page.getByRole('button', { name: /print bill/i });
   readonly printReceiptButton = () => this.page.getByRole('button', { name: /print receipt/i });
   readonly invoiceTable = () => this.page.getByRole('table').first();
@@ -64,16 +65,23 @@ export class InvoicePage {
     return value?.trim();
   }
 
+  async getDateAndTime() {
+    const parent = this.dateAndTimeLabel().locator('..');
+    const value = await parent.locator('[class*="value"]').textContent();
+    return value?.trim();
+  }
+
   async getLineItems() {
     const rows = await this.invoiceTable().locator('tbody tr').all();
     const items = [];
 
-    // Get header indices dynamically
     const headers = await this.invoiceTable().locator('thead th').allTextContents();
     const itemIndex = headers.findIndex((h) => h.includes('Bill item'));
     const quantityIndex = headers.findIndex((h) => h.includes('Quantity'));
     const priceIndex = headers.findIndex((h) => h.includes('Price'));
     const totalIndex = headers.findIndex((h) => h.includes('Total'));
+    // Look for "Status" column (case-insensitive, handles "Status" or "Service status")
+    const statusIndex = headers.findIndex((h) => h.toLowerCase().includes('status'));
 
     for (const row of rows) {
       const cells = await row.locator('td').allTextContents();
@@ -82,6 +90,7 @@ export class InvoicePage {
         quantity: cells[quantityIndex],
         price: cells[priceIndex],
         total: cells[totalIndex],
+        status: statusIndex >= 0 && cells[statusIndex] ? cells[statusIndex].trim() : undefined,
       });
     }
     return items;

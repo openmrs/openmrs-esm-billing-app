@@ -66,7 +66,6 @@ export class BillingFormPage {
   }
 
   async selectPaymentMethodIfVisible(paymentMethodName: string = 'Cash') {
-    // Find any visible payment method dropdown by its placeholder text
     const dropdown = this.page.getByPlaceholder('Select payment method').first();
     const isVisible = await dropdown.isVisible().catch(() => false);
 
