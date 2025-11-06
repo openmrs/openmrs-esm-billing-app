@@ -63,49 +63,57 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
       header: t('amountPaid', 'Amount paid'),
     },
     {
-      key: 'balanceDue',
-      header: t('balanceDue', 'Balance due'),
-    },
-    {
       key: 'dateCreated',
       header: t('dateOfPayment', 'Date of payment'),
     },
   ];
 
   const paymentHistoryRows = useMemo(() => {
-    const rows = [];
     if (bill) {
-      rows.push({
-        no: 1,
-        id: 'initial-bill',
-        paymentMethod: t('billTotal', 'Bill total'),
-        amountPaid: `${defaultCurrency} ${bill.tenderedAmount}`,
-        balanceDue: `${defaultCurrency} ${bill?.totalAmount - bill?.tenderedAmount}`,
-        dateCreated: null,
-      });
-
-      bill.payments?.forEach((payment, index) => {
-        rows.push({
-          no: index + 2,
+      return bill.payments?.map((payment, index) => {
+        return {
+          no: index + 1,
           id: `${payment.uuid}-${index}`,
           paymentMethod: payment.instanceType.name,
           amountPaid: `${defaultCurrency} ${payment.amountTendered.toFixed(2)}`,
-          balanceDue: `${defaultCurrency} ${bill?.totalAmount - bill?.tenderedAmount}`,
           dateCreated: formatDate(new Date(payment.dateCreated)),
-        });
+        };
       });
     }
-    return rows;
-  }, [bill, defaultCurrency, t]);
+    return [];
+  }, [bill, defaultCurrency]);
+
+  const summaryHeaders = [
+    { key: 'total', header: t('totalAmount', 'Total Amount') },
+    { key: 'paid', header: t('totalPaid', 'Total Paid') },
+    { key: 'balance', header: t('amountBalance', 'Amount Balance') },
+  ];
+
+  const summaryRowData = useMemo(() => {
+    if (!bill) {
+      return [];
+    }
+    const balance = bill.totalAmount - bill.tenderedAmount;
+    return [
+      {
+        id: 'summary-1',
+        total: `${defaultCurrency} ${bill.totalAmount.toFixed(2)}`,
+        paid: `${defaultCurrency} ${bill.tenderedAmount.toFixed(2)}`,
+        balance: `${defaultCurrency} ${balance.toFixed(2)}`,
+      },
+    ];
+  }, [bill, defaultCurrency]);
 
   const patientDetails = useMemo(() => {
+    const address = patient?.address?.[0];
+    const addressParts = [address?.line?.join(' '), address?.city, address?.district, address?.state].filter(Boolean);
+    const formattedAddress = addressParts.join(', ');
+
     return {
       name: `${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
       birthDate: patient?.birthDate,
       gender: getGender(patient?.gender, t),
-      city: patient?.address?.[0].city,
-      county: patient?.address?.[0].district,
-      subCounty: patient?.address?.[0].state,
+      address: formattedAddress,
     };
   }, [patient, t]);
 
@@ -143,11 +151,11 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
               </TableContainer>
             )}
           </DataTable>
-          <div className={styles.paymentHistoryContainer}>
-            <DataTable rows={paymentHistoryRows} headers={paymentHistoryHeaders} size={responsiveSize}>
+          <div className={styles.summaryContainer}>
+            <DataTable rows={summaryRowData} headers={summaryHeaders} size={responsiveSize}>
               {({ rows, headers, getRowProps, getTableProps }) => (
                 <TableContainer>
-                  <Table {...getTableProps()} aria-label={t('paymentHistory', 'Payment History')}>
+                  <Table {...getTableProps()} aria-label={t('invoiceSummary', 'Invoice Summary')}>
                     <TableHead>
                       <TableRow>
                         {headers.map((header) => (
@@ -169,11 +177,41 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
               )}
             </DataTable>
           </div>
+          {bill?.payments?.length > 0 && (
+            <div className={styles.paymentHistoryContainer}>
+              <DataTable rows={paymentHistoryRows} headers={paymentHistoryHeaders} size={responsiveSize}>
+                {({ rows, headers, getRowProps, getTableProps }) => (
+                  <TableContainer>
+                    <Table {...getTableProps()} aria-label={t('paymentHistory', 'Payment History')}>
+                      <TableHead>
+                        <TableRow>
+                          {headers.map((header) => (
+                            <TableHeader key={header.key}>{header.header}</TableHeader>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {rows.map((row) => (
+                          <TableRow key={row.id} {...getRowProps({ row })}>
+                            {row.cells.map((cell) => (
+                              <TableCell key={cell.id}>{cell.value}</TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </DataTable>
+            </div>
+          )}
           <div className={styles.balanceContainer}>
             <span className={styles.itemHeading}>{t('balance', 'Balance')}:</span>{' '}
             <span className={styles.itemLabel}>
               {' '}
-              {defaultCurrency} {bill?.totalAmount - bill?.tenderedAmount}
+              <strong>
+                {defaultCurrency} {bill?.totalAmount - bill?.tenderedAmount}
+              </strong>
             </span>
           </div>
         </div>
