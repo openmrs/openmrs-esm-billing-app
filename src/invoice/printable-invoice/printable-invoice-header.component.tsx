@@ -2,7 +2,7 @@ import React from 'react';
 import { formatDate, interpolateUrl, parseDate, type SessionLocation, useConfig } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
 import type { BillingConfig } from '../../config-schema';
-import { type MappedBill, type PatientDetails } from '../../types';
+import type { MappedBill, PatientDetails } from '../../types';
 import styles from './printable-invoice-header.scss';
 import isEmpty from 'lodash/isEmpty';
 
@@ -22,7 +22,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
     [t('totalAmount', 'Total Amount')]: `${defaultCurrency} ${bill?.totalAmount}`,
     [t('totalPaid', 'Total paid')]: `${defaultCurrency} ${bill?.tenderedAmount}`,
     [t('amountBalance', 'Amount balance')]: `${defaultCurrency} ${bill?.totalAmount - bill?.tenderedAmount}`,
-    ...(bill?.status && { [t('status', 'Status')]: bill.status }),
+    ...(bill?.status && { [t('invoiceStatus', 'Invoice status')]: bill.status }),
   };
 
   const patientInformation = {
@@ -31,9 +31,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
     ...(patientDetails.birthDate && {
       [t('birthDate', 'Date of birth')]: formatDate(parseDate(patientDetails.birthDate), { time: false }),
     }),
-    ...(patientDetails.county && { [t('county', 'County')]: patientDetails.county }),
-    ...(patientDetails.subCounty && { [t('subCounty', 'Sub-county')]: patientDetails.subCounty }),
-    ...(patientDetails.city && { [t('city', 'City')]: patientDetails.city }),
+    ...(patientDetails.address && { [t('address', 'Address')]: patientDetails.address }),
   };
 
   return (

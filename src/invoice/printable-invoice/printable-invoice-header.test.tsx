@@ -16,9 +16,7 @@ jest.mock('../../billing.resource', () => ({
 const testProps = {
   patientDetails: {
     name: 'John Doe',
-    county: 'Nairobi',
-    subCounty: 'Westlands',
-    city: 'Rongai',
+    address: 'Rongai, Nairobi, Westlands',
     birthDate: '1980-05-15',
     gender: 'Male',
   },
@@ -49,10 +47,8 @@ describe('PrintableInvoiceHeader', () => {
     expect(header).toBeInTheDocument();
 
     expect(screen.getByText(/john Doe/i)).toBeInTheDocument();
-    expect(screen.getByText(/nairobi/i)).toBeInTheDocument();
-    expect(screen.getByText(/Rongai/i)).toBeInTheDocument();
-    expect(screen.getByText(/westlands/i)).toBeInTheDocument();
     expect(screen.getByText(/mtrh/i)).toBeInTheDocument();
+    expect(screen.getByText(/Rongai, Nairobi, Westlands/i)).toBeInTheDocument();
     expect(screen.getByText(/kenya/i)).toBeInTheDocument();
     expect(screen.getByText(/male/i)).toBeInTheDocument();
     expect(screen.getByText(/15-May-1980/i)).toBeInTheDocument();
@@ -91,10 +87,7 @@ describe('PrintableInvoiceHeader', () => {
   test('should format birthDate correctly', () => {
     const propsWithDifferentDate = {
       patientDetails: {
-        name: 'Jane Doe',
-        county: 'Mombasa',
-        subCounty: 'Nyali',
-        city: 'Mombasa',
+        ...testProps.patientDetails,
         birthDate: '1995-12-25',
         gender: 'Female',
       },
@@ -106,11 +99,8 @@ describe('PrintableInvoiceHeader', () => {
   test('should not render birthDate and gender when not provided', () => {
     const propsWithoutBirthDateAndGender = {
       patientDetails: {
-        name: 'Jane Doe',
-        county: 'Mombasa',
-        subCounty: 'Nyali',
-        city: 'Mombasa',
-        birthDate: '',
+        ...testProps.patientDetails,
+        birthDate: null,
         gender: '',
       },
     };
@@ -120,27 +110,6 @@ describe('PrintableInvoiceHeader', () => {
 
     expect(screen.queryByText(/Date of birth:/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/Gender:/i)).not.toBeInTheDocument();
-  });
-
-  test('should render city with comma when provided', () => {
-    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} bill={bill} />);
-    expect(screen.getByText(/Westlands/i)).toBeInTheDocument();
-  });
-
-  test('should render subCounty without comma when city is not provided', () => {
-    const propsWithoutCity = {
-      patientDetails: {
-        name: 'Jane Doe',
-        county: 'Mombasa',
-        subCounty: 'Nyali',
-        city: '',
-        birthDate: '1990-01-01',
-        gender: 'Female',
-      },
-    };
-    render(<PrintableInvoiceHeader {...propsWithoutCity} defaultFacility={defaultFacility} bill={bill} />);
-    expect(screen.getByText(/Nyali/i)).toBeInTheDocument();
-    expect(screen.queryByText(/Nyali,/)).not.toBeInTheDocument();
   });
 
   test('should handle null defaultFacility gracefully', () => {
