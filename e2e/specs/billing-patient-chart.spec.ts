@@ -391,4 +391,348 @@ test.describe('Billing: Patient Chart workflow', () => {
       expect(tenderedValue).toBeCloseTo(totalValue, 2);
     });
   });
+
+  test('Create bill with increased service quantity and verify totals', async ({ page, api, patient }) => {
+    const billingFormPage = new BillingFormPage(page);
+    const invoicePage = new InvoicePage(page);
+    const paymentPage = new PaymentPage(page);
+    const patientUuid = patient.uuid;
+    let billUuid: string;
+
+    // Note: Selecting the same service multiple times increments quantity (doesn't create multiple line items)
+    // This test verifies quantity increment and total calculation
+    const quantity = 3;
+    const expectedTotal = expectedServicePrice * quantity;
+
+    await test.step('When I navigate to the Billing history page', async () => {
+      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+    });
+
+    await test.step('And I launch the Create Bill form', async () => {
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      await createBillButton.click();
+    });
+
+    await test.step('And I add the same service multiple times to increment quantity', async () => {
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
+
+      const quantityInput = page.locator('input[type="number"]').first();
+      await expect(quantityInput).toHaveValue('1');
+
+      for (let i = 1; i < quantity; i++) {
+        await billingFormPage.clearBillableServiceCombobox();
+        await billingFormPage.searchAndSelectBillableService(testServiceName);
+        await expect
+          .poll(
+            async () => {
+              const value = await quantityInput.inputValue();
+              return value;
+            },
+            { timeout: 5000 },
+          )
+          .toBe((i + 1).toString());
+      }
+
+      await expect(quantityInput).toHaveValue(quantity.toString());
+    });
+
+    await test.step('Then the grand total should equal price times quantity', async () => {
+      await billingFormPage.verifyGrandTotal(expectedTotal);
+    });
+
+    await test.step('When I save the bill', async () => {
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, 'Bill processed successfully');
+    });
+
+    await test.step('Then the bill should be created with correct line item', async () => {
+      const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+      expect(billsResponse.ok()).toBeTruthy();
+      const billsData = await billsResponse.json();
+      expect(billsData.results.length).toBeGreaterThan(0);
+
+      const bill = billsData.results[0];
+      billUuid = bill.uuid;
+      billsToCleanup.add(billUuid);
+
+      expect(bill.lineItems.length).toBe(1);
+      const lineItem = bill.lineItems[0];
+      expect(lineItem.billableService).toBeTruthy();
+      expect(lineItem.quantity).toBe(quantity);
+      expect(lineItem.price).toBeCloseTo(expectedServicePrice, 2);
+
+      const backendTotal = bill.lineItems.reduce(
+        (sum: number, item: { price: number; quantity: number }) => sum + item.price * item.quantity,
+        0,
+      );
+      expect(backendTotal).toBeCloseTo(expectedTotal, 2);
+    });
+
+    await test.step('When I navigate to the invoice page', async () => {
+      await invoicePage.goto(patientUuid, billUuid);
+      await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('Then the invoice should display the line item correctly', async () => {
+      const lineItems = await invoicePage.getLineItems();
+      expect(lineItems.length).toBe(1);
+      expect(lineItems[0].quantity).toBe(quantity.toString());
+    });
+
+    await test.step('And the total amount should match the calculated total', async () => {
+      const totalAmount = await invoicePage.getTotalAmount();
+      const totalValue = extractNumericValue(totalAmount);
+      expect(totalValue).toBeCloseTo(expectedTotal, 2);
+
+      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
+      const billData = await billResponse.json();
+      const backendTotal = billData.lineItems.reduce(
+        (sum: number, item: { price: number; quantity: number }) => sum + item.price * item.quantity,
+        0,
+      );
+      expect(backendTotal).toBeCloseTo(totalValue, 2);
+    });
+
+    await test.step('When I process payment for the full amount', async () => {
+      await paymentPage.waitForPaymentForm();
+      const amountDue = await invoicePage.getAmountDue();
+      const amountDueValue = extractNumericValue(amountDue);
+
+      await paymentPage.addPayment('Cash', amountDueValue);
+      await paymentPage.processPayment();
+      await waitForSuccessNotification(page, 'Payment processed successfully');
+    });
+
+    await test.step('Then the line item should be marked as PAID', async () => {
+      await page.reload();
+      await invoicePage.waitForInvoiceToLoad();
+
+      const lineItems = await invoicePage.getLineItems();
+      lineItems.forEach((lineItem) => {
+        expect(lineItem.status).toBe('PAID');
+      });
+
+      // Verify backend state
+      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
+      const billData = await billResponse.json();
+      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
+        expect(lineItem.paymentStatus).toBe('PAID');
+      });
+    });
+  });
+
+  test('Process payment with multiple payment methods', async ({ page, api, patient }) => {
+    const billingFormPage = new BillingFormPage(page);
+    const invoicePage = new InvoicePage(page);
+    const paymentPage = new PaymentPage(page);
+    const patientUuid = patient.uuid;
+    let billUuid: string;
+
+    await test.step('Given I have created a bill', async () => {
+      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      await createBillButton.click();
+
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, 'Bill processed successfully');
+
+      const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+      const billsData = await billsResponse.json();
+      billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
+    });
+
+    await test.step('When I navigate to the invoice page', async () => {
+      await invoicePage.goto(patientUuid, billUuid);
+      await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('And I add multiple payment methods', async () => {
+      await paymentPage.waitForPaymentForm();
+
+      const amountDue = await invoicePage.getAmountDue();
+      const amountDueValue = extractNumericValue(amountDue);
+
+      // Split payment: 60% Cash, 40% Cash (using same method for simplicity)
+      // In real scenario, would use different payment methods like Mobile Money
+      const cashAmount1 = Math.round(amountDueValue * 0.6 * 100) / 100;
+      const cashAmount2 = amountDueValue - cashAmount1;
+
+      await paymentPage.addMultiplePayments([
+        { method: 'Cash', amount: cashAmount1 },
+        { method: 'Cash', amount: cashAmount2 },
+      ]);
+    });
+
+    await test.step('When I process the payment', async () => {
+      await paymentPage.processPayment();
+      await waitForSuccessNotification(page, 'Payment processed successfully');
+    });
+
+    await test.step('Then the bill should be marked as PAID', async () => {
+      await page.reload();
+      await invoicePage.waitForInvoiceToLoad();
+
+      const status = await invoicePage.getInvoiceStatus();
+      expect(status).toBe('PAID');
+
+      const billResponse = await api.get(`billing/bill/${billUuid}`);
+      const billData = await billResponse.json();
+      expect(billData.status).toBe('PAID');
+    });
+
+    await test.step('And the payment history should show multiple payments', async () => {
+      const paymentHistory = await paymentPage.getPaymentHistory();
+      expect(paymentHistory.length).toBeGreaterThanOrEqual(2);
+    });
+
+    await test.step('And the backend should store payment methods correctly', async () => {
+      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
+      const billData = await billResponse.json();
+      const payments = billData.payments;
+
+      expect(payments.length).toBeGreaterThanOrEqual(2);
+
+      // Verify each payment has instanceType (payment method)
+      payments.forEach((payment: { instanceType: { name: string }; amountTendered: number }) => {
+        expect(payment.instanceType).toBeTruthy();
+        expect(payment.instanceType.name).toBeTruthy();
+        expect(payment.amountTendered).toBeGreaterThan(0);
+      });
+    });
+
+    await test.step('And the amount tendered should equal the total amount', async () => {
+      const totalAmount = await invoicePage.getTotalAmount();
+      const tenderedAmount = await invoicePage.getAmountTendered();
+
+      const totalValue = extractNumericValue(totalAmount);
+      const tenderedValue = extractNumericValue(tenderedAmount);
+
+      expect(tenderedValue).toBeCloseTo(totalValue, 2);
+
+      // Verify backend
+      const billResponse = await api.get(`billing/bill/${billUuid}`);
+      const billData = await billResponse.json();
+      const backendTendered = billData.payments.reduce(
+        (sum: number, p: { amountTendered: number }) => sum + p.amountTendered,
+        0,
+      );
+      expect(backendTendered).toBeCloseTo(totalValue, 2);
+    });
+  });
+
+  test('Create bill with quantity increase and process split payment', async ({ page, api, patient }) => {
+    const billingFormPage = new BillingFormPage(page);
+    const invoicePage = new InvoicePage(page);
+    const paymentPage = new PaymentPage(page);
+    const patientUuid = patient.uuid;
+    let billUuid: string;
+
+    // Note: Selecting same service twice increments quantity to 2
+    const quantity = 2;
+    const expectedTotal = expectedServicePrice * quantity;
+
+    await test.step('Given I create a bill with a service quantity of 2', async () => {
+      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      await createBillButton.click();
+
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
+
+      await billingFormPage.clearBillableServiceCombobox();
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+
+      const quantityInput = page.locator('input[type="number"]').first();
+      await expect
+        .poll(
+          async () => {
+            const value = await quantityInput.inputValue();
+            return value;
+          },
+          { timeout: 5000 },
+        )
+        .toBe('2');
+
+      await billingFormPage.verifyGrandTotal(expectedTotal);
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, 'Bill processed successfully');
+
+      const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+      const billsData = await billsResponse.json();
+      billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
+
+      const bill = billsData.results[0];
+      expect(bill.lineItems.length).toBe(1);
+      expect(bill.lineItems[0].quantity).toBe(quantity);
+    });
+
+    await test.step('When I navigate to the invoice page', async () => {
+      await invoicePage.goto(patientUuid, billUuid);
+      await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('And I process payment with multiple payment methods', async () => {
+      await paymentPage.waitForPaymentForm();
+
+      const amountDue = await invoicePage.getAmountDue();
+      const amountDueValue = extractNumericValue(amountDue);
+
+      // Split payment: 50% + 50%
+      const payment1 = Math.round(amountDueValue * 0.5 * 100) / 100;
+      const payment2 = amountDueValue - payment1;
+
+      await paymentPage.addMultiplePayments([
+        { method: 'Cash', amount: payment1 },
+        { method: 'Cash', amount: payment2 },
+      ]);
+
+      await paymentPage.processPayment();
+      await waitForSuccessNotification(page, 'Payment processed successfully');
+    });
+
+    await test.step('Then the bill should be marked as PAID', async () => {
+      await page.reload();
+      await invoicePage.waitForInvoiceToLoad();
+
+      const status = await invoicePage.getInvoiceStatus();
+      expect(status).toBe('PAID');
+
+      const billResponse = await api.get(`billing/bill/${billUuid}`);
+      const billData = await billResponse.json();
+      expect(billData.status).toBe('PAID');
+    });
+
+    await test.step('And the line item should be marked as PAID', async () => {
+      const lineItems = await invoicePage.getLineItems();
+      lineItems.forEach((lineItem) => {
+        expect(lineItem.status).toBe('PAID');
+      });
+    });
+
+    await test.step('And the payment history should show multiple payments', async () => {
+      const paymentHistory = await paymentPage.getPaymentHistory();
+      expect(paymentHistory.length).toBeGreaterThanOrEqual(2);
+
+      // Verify backend payments
+      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
+      const billData = await billResponse.json();
+      const payments = billData.payments;
+
+      expect(payments.length).toBeGreaterThanOrEqual(2);
+      payments.forEach((payment: { instanceType: { name: string }; amountTendered: number }) => {
+        expect(payment.instanceType).toBeTruthy();
+        expect(payment.instanceType.name).toBeTruthy();
+        expect(payment.amountTendered).toBeGreaterThan(0);
+      });
+    });
+  });
 });

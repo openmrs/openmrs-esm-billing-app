@@ -1,4 +1,5 @@
-import { type Page } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
+import { extractNumericValue } from '../commands';
 
 export class BillingFormPage {
   constructor(readonly page: Page) {}
@@ -14,7 +15,6 @@ export class BillingFormPage {
 
   async openBillingForm(patientUuid: string) {
     await this.page.goto(`patient/${patientUuid}/chart`);
-    // The billing form opens as a workspace
     await this.page.getByRole('button', { name: /add bill/i }).click();
   }
 
@@ -22,6 +22,34 @@ export class BillingFormPage {
     await this.billableServicesCombobox().click();
     await this.billableServicesCombobox().fill(serviceName);
     await this.page.getByRole('option', { name: new RegExp(serviceName, 'i') }).click();
+  }
+
+  async clearBillableServiceCombobox() {
+    const combobox = this.billableServicesCombobox();
+    // Carbon ComboBox has a clear button (X icon) - try to find it
+    // The button is typically inside the combobox container
+    const comboboxContainer = combobox.locator('..');
+    const clearButton = comboboxContainer
+      .getByRole('button', { name: /clear|close/i })
+      .or(comboboxContainer.locator('button[aria-label*="clear" i]'));
+
+    const isClearButtonVisible = await clearButton.isVisible().catch(() => false);
+
+    if (isClearButtonVisible) {
+      await clearButton.click();
+      await expect
+        .poll(async () => {
+          const value = await combobox.inputValue();
+          return value === '';
+        })
+        .toBe(true);
+    } else {
+      // Fallback: clear the input field directly by selecting all and deleting
+      await combobox.click();
+      await combobox.selectText();
+      await combobox.press('Backspace');
+      await combobox.press('Escape');
+    }
   }
 
   async updateQuantity(itemUuid: string, quantity: number) {
@@ -76,5 +104,11 @@ export class BillingFormPage {
         .first()
         .click();
     }
+  }
+
+  async verifyGrandTotal(expectedTotal: number) {
+    const grandTotal = await this.getGrandTotal();
+    const grandTotalValue = extractNumericValue(grandTotal || '');
+    expect(grandTotalValue).toBeCloseTo(expectedTotal, 2);
   }
 }
