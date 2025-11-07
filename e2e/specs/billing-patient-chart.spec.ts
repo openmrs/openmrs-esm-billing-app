@@ -3,16 +3,15 @@ import { test } from '../core/test';
 import { deleteBill, extractNumericValue, ensureServiceHasPrices, waitForSuccessNotification } from '../commands';
 import { BillingFormPage, InvoicePage, PaymentPage } from '../pages';
 
-test.describe('Billing and payment operations', () => {
+test.describe('Billing: Patient Chart workflow', () => {
   // Run tests serially to avoid race conditions when setting up service prices
   test.describe.configure({ mode: 'serial' });
 
-  let billUuid: string;
   let testServiceName: string;
   let expectedServicePrice: number;
+  const billsToCleanup = new Set<string>();
 
   test.beforeAll(async ({ api }) => {
-    // Get the configured test service details
     const serviceUuid = process.env.E2E_TEST_SERVICE_UUID;
     if (!serviceUuid) {
       throw new Error('E2E_TEST_SERVICE_UUID must be configured in .env file');
@@ -24,7 +23,6 @@ test.describe('Billing and payment operations', () => {
 
     testServiceName = service.name;
 
-    // Extract the Cash price for use in assertions
     const cashPrice = service.servicePrices.find((sp) => sp.name === 'Cash');
     if (!cashPrice) {
       throw new Error('Cash price not found for test service');
@@ -33,9 +31,16 @@ test.describe('Billing and payment operations', () => {
   });
 
   test.afterEach(async ({ api }) => {
-    if (billUuid) {
-      await deleteBill(api, billUuid);
+    // Cleanup: delete all bills created during tests
+    for (const billUuid of billsToCleanup) {
+      try {
+        await deleteBill(api, billUuid);
+      } catch (error) {
+        // Log but don't fail test if cleanup fails
+        console.error(`Failed to delete bill ${billUuid}:`, error);
+      }
     }
+    billsToCleanup.clear();
   });
 
   test('Create bill, verify receipt number, and process full payment', async ({ page, api, patient }) => {
@@ -43,6 +48,7 @@ test.describe('Billing and payment operations', () => {
     const invoicePage = new InvoicePage(page);
     const paymentPage = new PaymentPage(page);
     const patientUuid = patient.uuid;
+    let billUuid: string;
 
     await test.step('When I navigate to the Billing history page', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
@@ -81,6 +87,7 @@ test.describe('Billing and payment operations', () => {
 
       const bill = billsData.results[0];
       billUuid = bill.uuid;
+      billsToCleanup.add(billUuid);
     });
 
     await test.step('When I navigate to the invoice page', async () => {
@@ -89,21 +96,17 @@ test.describe('Billing and payment operations', () => {
     });
 
     await test.step('Then I should see the invoice details with correct initial state', async () => {
-      // Verify status is PENDING
       const invoiceStatus = await invoicePage.getInvoiceStatus();
       expect(invoiceStatus).toBe('PENDING');
 
-      // Verify amounts are correct for new bill
       const totalAmount = await invoicePage.getTotalAmount();
       const amountDue = await invoicePage.getAmountDue();
       expect(totalAmount).toBeTruthy();
       expect(amountDue).toEqual(totalAmount);
 
-      // Verify bill total matches the expected service price
       const totalValue = extractNumericValue(totalAmount);
       expect(totalValue).toBeCloseTo(expectedServicePrice, 2);
 
-      // Verify invoice number is displayed
       const receiptNumber = await invoicePage.getInvoiceNumber();
       expect(receiptNumber).toBeTruthy();
       await expect(invoicePage.invoiceNumberLabel()).toBeVisible();
@@ -123,11 +126,9 @@ test.describe('Billing and payment operations', () => {
       await page.reload();
       await invoicePage.waitForInvoiceToLoad();
 
-      // Verify UI shows PAID status
       const updatedStatus = await invoicePage.getInvoiceStatus();
       expect(updatedStatus).toBe('PAID');
 
-      // Verify backend also updated to PAID
       const billResponse = await api.get(`billing/bill/${billUuid}`);
       const billData = await billResponse.json();
       expect(billData.status).toBe('PAID');
@@ -151,6 +152,7 @@ test.describe('Billing and payment operations', () => {
     const billingFormPage = new BillingFormPage(page);
     const invoicePage = new InvoicePage(page);
     const patientUuid = patient.uuid;
+    let billUuid: string;
 
     await test.step('When I navigate to the patient billing history', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
@@ -166,7 +168,6 @@ test.describe('Billing and payment operations', () => {
       await expect(page.getByText(testServiceName, { exact: false })).toBeVisible();
       await billingFormPage.selectPaymentMethodIfVisible();
 
-      // Update quantity to 2
       const quantityInput = page.locator('input[type="number"]').first();
       await expect(quantityInput).toHaveValue('1');
 
@@ -183,6 +184,7 @@ test.describe('Billing and payment operations', () => {
       const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
       const billsData = await billsResponse.json();
       billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
 
       await invoicePage.goto(patientUuid, billUuid);
       await invoicePage.waitForInvoiceToLoad();
@@ -191,7 +193,6 @@ test.describe('Billing and payment operations', () => {
       expect(lineItems.length).toBe(1);
       expect(lineItems[0].quantity).toBe('2');
 
-      // Verify total amount is quantity * unit price
       const totalAmount = await invoicePage.getTotalAmount();
       const totalValue = extractNumericValue(totalAmount);
       expect(totalValue).toBeCloseTo(expectedServicePrice * 2, 2);
@@ -226,7 +227,6 @@ test.describe('Billing and payment operations', () => {
 
     await test.step('When I discard the bill', async () => {
       await billingFormPage.discardBill();
-      // Wait for the form to close by checking the discard button is hidden
       await expect(billingFormPage.discardButton()).toBeHidden();
     });
 
@@ -234,7 +234,6 @@ test.describe('Billing and payment operations', () => {
       const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
       expect(billsResponse.ok()).toBeTruthy();
       const billsData = await billsResponse.json();
-      // Bill count should remain the same (no new bill created)
       expect(billsData.results.length).toBe(initialBillCount);
     });
   });
@@ -259,7 +258,6 @@ test.describe('Billing and payment operations', () => {
     });
 
     await test.step('Then I should see one line item', async () => {
-      // Wait for the item card to be visible (indicates item is rendered)
       await expect(billingFormPage.selectedItemCards().first()).toBeVisible();
       const itemCount = await billingFormPage.getLineItemsCount();
       expect(itemCount).toBe(1);
@@ -269,7 +267,6 @@ test.describe('Billing and payment operations', () => {
     await test.step('When I remove the line item', async () => {
       await billingFormPage.removeItem(0);
 
-      // Wait for the item count to decrease to 0
       await expect.poll(async () => await billingFormPage.getLineItemsCount()).toBe(0);
     });
 
@@ -288,6 +285,7 @@ test.describe('Billing and payment operations', () => {
     const invoicePage = new InvoicePage(page);
     const paymentPage = new PaymentPage(page);
     const patientUuid = patient.uuid;
+    let billUuid: string;
     let partialAmount: number;
 
     await test.step('Given I have created and saved a bill', async () => {
@@ -304,6 +302,7 @@ test.describe('Billing and payment operations', () => {
       const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
       const billsData = await billsResponse.json();
       billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
     });
 
     await test.step('When I navigate to the invoice page', async () => {
@@ -322,13 +321,11 @@ test.describe('Billing and payment operations', () => {
 
       await paymentPage.addPayment('Cash', partialAmount);
 
-      // Verify amount entered correctly
       await expect(paymentPage.amountInput()).toHaveValue(partialAmount.toString());
 
       await paymentPage.processPayment();
       await waitForSuccessNotification(page, 'Payment processed successfully');
 
-      // Verify payment was actually recorded
       await expect
         .poll(async () => {
           const history = await paymentPage.getPaymentHistory();
@@ -356,7 +353,6 @@ test.describe('Billing and payment operations', () => {
       const amountDue = await invoicePage.getAmountDue();
       const amountDueValue = extractNumericValue(amountDue);
 
-      // Verify amount due = total - tendered
       expect(amountDueValue).toBeCloseTo(totalValue - partialAmount, 2);
     });
 
@@ -375,11 +371,9 @@ test.describe('Billing and payment operations', () => {
       await page.reload();
       await invoicePage.waitForInvoiceToLoad();
 
-      // Verify UI shows PAID status
       const status = await invoicePage.getInvoiceStatus();
       expect(status).toBe('PAID');
 
-      // Verify backend also updated to PAID
       const billResponse = await api.get(`billing/bill/${billUuid}`);
       const billData = await billResponse.json();
       expect(billData.status).toBe('PAID');
@@ -390,7 +384,6 @@ test.describe('Billing and payment operations', () => {
       const amountDueValue = extractNumericValue(amountDue);
       expect(amountDueValue).toBe(0);
 
-      // Verify total amount equals tendered amount
       const totalAmount = await invoicePage.getTotalAmount();
       const totalValue = extractNumericValue(totalAmount);
       const tenderedAmount = await invoicePage.getAmountTendered();

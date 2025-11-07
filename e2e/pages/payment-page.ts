@@ -21,14 +21,11 @@ export class PaymentPage {
 
   async addPayment(paymentMethod: string, amount: number, referenceCode?: string) {
     // waitForPaymentForm() should be called before this to ensure the form is ready
-    // Select payment method
     await this.paymentMethodCombobox().click();
     await this.page.getByRole('option', { name: new RegExp(paymentMethod, 'i') }).click();
 
-    // Enter amount
     await this.amountInput().fill(amount.toString());
 
-    // Enter reference code if provided
     if (referenceCode) {
       await this.referenceCodeInput().fill(referenceCode);
     }
@@ -42,6 +39,10 @@ export class PaymentPage {
 
   async processPayment() {
     await this.processPaymentButton().click();
+  }
+
+  async isProcessPaymentButtonEnabled() {
+    return await this.processPaymentButton().isEnabled();
   }
 
   async removePayment(index = 0) {
