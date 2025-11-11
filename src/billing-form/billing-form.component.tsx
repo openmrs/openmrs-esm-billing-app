@@ -124,10 +124,13 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     return true;
   };
 
-  const postBillItems = async (event?: React.FormEvent<HTMLFormElement>) => {
+  const postBillItems = async (event?: React.MouseEvent<HTMLButtonElement>) => {
     if (event) {
       event.preventDefault();
       event.stopPropagation();
+    }
+    if (selectedItems.length === 0) {
+      return;
     }
     if (!currentVisit) {
       showSnackbar({
@@ -305,7 +308,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
           kind="primary"
           onClick={(e) => {
             e.preventDefault();
-            e.stopPropagation(e);
+            e.stopPropagation();
             postBillItems(e);
           }}
           disabled={isSubmitting || selectedItems.length === 0}
