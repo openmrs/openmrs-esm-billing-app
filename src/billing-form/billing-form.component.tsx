@@ -11,7 +11,14 @@ import {
   InlineNotification,
   NumberInput,
 } from '@carbon/react';
-import { useConfig, useLayoutType, showSnackbar, getCoreTranslation, TrashCanIcon } from '@openmrs/esm-framework';
+import {
+  useConfig,
+  useLayoutType,
+  showSnackbar,
+  getCoreTranslation,
+  TrashCanIcon,
+  useVisit,
+} from '@openmrs/esm-framework';
 import { processBillItems, useBillableServices } from '../billing.resource';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
@@ -37,6 +44,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
   const { data, error, isLoading } = useBillableServices();
+  const { currentVisit } = useVisit(patientUuid);
 
   const selectBillableItem = (item: BillableItem) => {
     if (!item) {
@@ -116,7 +124,19 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
     return true;
   };
 
-  const postBillItems = async () => {
+  const postBillItems = async (event?: React.FormEvent<HTMLFormElement>) => {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    if (!currentVisit) {
+      showSnackbar({
+        title: t('validationError', 'Validation error'),
+        subtitle: t('activeVisitRequired', 'Patient must have an active visit before creating a bill'),
+        kind: 'error',
+      });
+      return;
+    }
     if (!validateSelectedItems()) {
       return;
     }
@@ -167,7 +187,12 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   };
 
   return (
-    <Form className={styles.form}>
+    <Form
+      className={styles.form}
+      onSubmit={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}>
       <div className={styles.grid}>
         {isLoading ? (
           <InlineLoading description={getCoreTranslation('loading') + '...'} />
@@ -278,9 +303,13 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
         <Button
           className={styles.button}
           kind="primary"
-          onClick={postBillItems}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation(e);
+            postBillItems(e);
+          }}
           disabled={isSubmitting || selectedItems.length === 0}
-          type="submit">
+          type="button">
           {isSubmitting ? (
             <InlineLoading description={t('saving', 'Saving') + '...'} />
           ) : (
