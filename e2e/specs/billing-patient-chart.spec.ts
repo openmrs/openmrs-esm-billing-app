@@ -334,11 +334,11 @@ test.describe('Billing: Patient Chart workflow', () => {
         .toBeGreaterThan(0);
     });
 
-    await test.step('Then the bill status should remain PENDING after partial payment', async () => {
+    await test.step('Then the bill status should be POSTED after partial payment', async () => {
       await page.reload();
       await invoicePage.waitForInvoiceToLoad();
       const status = await invoicePage.getInvoiceStatus();
-      expect(status).toBe('PENDING');
+      expect(status).toBe('POSTED');
     });
 
     await test.step('And the tendered amount should equal the partial payment', async () => {
