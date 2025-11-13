@@ -22,6 +22,7 @@ import type {
 
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
+  const isSpecialStatus = bill.status === 'POSTED';
 
   return {
     id: bill?.id,

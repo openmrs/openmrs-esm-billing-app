@@ -245,5 +245,7 @@
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
   "visitTime": "Visit time",
-  "waiverForm": "Waiver form"
+  "waiverForm": "Waiver form",
+  "cannotEditPostedBill" : "Cannot edit a posted bill",
+  "postedBillCannotBeModified": "This bill has been posted and its line items cannot be modified"
 }
