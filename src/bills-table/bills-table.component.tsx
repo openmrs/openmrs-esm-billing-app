@@ -42,10 +42,11 @@ const BillsTable: React.FC = () => {
   const layout = useLayoutType();
   const { pageSize: defaultPageSize } = useConfig<BillingConfig>();
   const [pageSize, setPageSize] = useState(defaultPageSize);
+  const pageSizes = [10, 20, 30, 40, 50];
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const [billPaymentStatus, setBillPaymentStatus] = useState('PENDING');
   const [searchString, setSearchString] = useState('');
-  const { bills, error, isLoading, isValidating } = usePaginatedBills(pageSize);
+  const { bills, error, isLoading, isValidating, currentPage, totalCount, goTo } = usePaginatedBills(pageSize);
 
   const billPaymentStatusFilterItems = [
     { id: '', text: t('allBills', 'All bills') },
@@ -78,7 +79,7 @@ const BillsTable: React.FC = () => {
   const billList: Array<BillDisplayItem> = useMemo(() => {
     const billingUrl = '${openmrsSpaBase}/home/billing/patient/${patientUuid}/${uuid}';
 
-    return bills?.map((bill) => {
+    const mappedBills = bills?.map((bill) => {
       const object = {
         ...bill,
         patientNameDisplay: (
@@ -93,6 +94,7 @@ const BillsTable: React.FC = () => {
       };
       return object;
     });
+    return mappedBills;
   }, [bills]);
 
   const searchResults = useMemo(() => {
@@ -109,9 +111,7 @@ const BillsTable: React.FC = () => {
     });
   }, [billList, searchString, billPaymentStatus]);
 
-  const { paginated, goTo, results, currentPage } = usePagination(searchResults, pageSize);
-
-  const { pageSizes } = usePaginationInfo(pageSize, searchResults?.length, currentPage, results?.length);
+  const { paginated, results } = usePagination(searchResults, pageSize);
 
   const handleSearch = useCallback(
     (e) => {
@@ -168,7 +168,7 @@ const BillsTable: React.FC = () => {
         />
       </div>
 
-      {billList?.length > 0 ? (
+      {results?.length > 0 ? (
         <div className={styles.billListContainer}>
           <FilterableTableHeader
             handleSearch={handleSearch}
@@ -222,26 +222,20 @@ const BillsTable: React.FC = () => {
               </Layer>
             </div>
           )}
-          {paginated && (
-            <Pagination
-              forwardText="Next page"
-              backwardText="Previous page"
-              page={currentPage}
-              pageSize={pageSize}
-              pageSizes={pageSizes}
-              totalItems={searchResults?.length}
-              className={styles.pagination}
-              size={responsiveSize}
-              onChange={({ pageSize: newPageSize, page: newPage }) => {
-                if (newPageSize !== pageSize) {
-                  setPageSize(newPageSize);
-                }
-                if (newPage !== currentPage) {
-                  goTo(newPage);
-                }
-              }}
-            />
-          )}
+          <Pagination
+            forwardText={t('nextPage', 'Next page')}
+            backwardText={t('previousPage', 'Previous page')}
+            page={currentPage}
+            pageSize={pageSize}
+            pageSizes={pageSizes}
+            totalItems={totalCount}
+            onChange={({ pageSize, page }) => {
+              setPageSize(pageSize);
+              if (page !== currentPage) {
+                goTo(page);
+              }
+            }}
+          />
         </div>
       ) : (
         <Layer className={styles.emptyStateContainer}>

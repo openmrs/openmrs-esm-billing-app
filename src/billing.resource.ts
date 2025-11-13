@@ -51,11 +51,12 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
 
 export const usePaginatedBills = (pageSize: number) => {
   const customRepresentation =
-    '(uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,voided,paymentStatus,price,quantity,item,billableService),payments:(amountTendered));';
+    '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems,payments:(amountTendered));';
 
   const url = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=${pageSize}`;
 
-  const { data, error, isLoading, isValidating, mutate } = useOpenmrsPagination<PatientInvoice>(url, pageSize);
+  const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
+    useOpenmrsPagination<PatientInvoice>(url, pageSize);
 
   const sortedBills = sortBy(data ?? [], ['dateCreated']).reverse();
   const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
@@ -66,6 +67,9 @@ export const usePaginatedBills = (pageSize: number) => {
     isLoading,
     isValidating,
     mutate,
+    currentPage,
+    totalCount,
+    goTo,
   };
 };
 
