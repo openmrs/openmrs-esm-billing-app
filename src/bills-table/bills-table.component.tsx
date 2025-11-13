@@ -111,8 +111,6 @@ const BillsTable: React.FC = () => {
     });
   }, [billList, searchString, billPaymentStatus]);
 
-  const { paginated, results } = usePagination(searchResults, pageSize);
-
   const handleSearch = useCallback(
     (e) => {
       goTo(1);
@@ -168,7 +166,7 @@ const BillsTable: React.FC = () => {
         />
       </div>
 
-      {results?.length > 0 ? (
+      {searchResults?.length > 0 ? (
         <div className={styles.billListContainer}>
           <FilterableTableHeader
             handleSearch={handleSearch}
@@ -179,10 +177,10 @@ const BillsTable: React.FC = () => {
           />
           <DataTable
             isSortable
-            rows={results}
+            rows={searchResults}
             headers={headerData}
             size={responsiveSize}
-            useZebraStyles={results?.length > 1 ? true : false}>
+            useZebraStyles={searchResults?.length > 1 ? true : false}>
             {({ rows, headers, getRowProps, getTableProps }) => (
               <TableContainer>
                 <Table {...getTableProps()} aria-label={t('billList', 'Bill list')}>
@@ -243,7 +241,7 @@ const BillsTable: React.FC = () => {
             <div className={styles.illo}>
               <EmptyDataIllustration />
             </div>
-            <p className={styles.content}>There are no bills to display.</p>
+            <p className={styles.content}>{t('noBillsToDisplay', 'There are no bills to display.')}</p>
           </Tile>
         </Layer>
       )}

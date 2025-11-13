@@ -235,7 +235,7 @@ describe('BillsTable', () => {
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
     await user.click(paidBillsOption);
 
-    expect(screen.getByText('No matching bills to display')).toBeInTheDocument();
+    expect(screen.getByText(/there are no bills to display\./i)).toBeInTheDocument();
   });
 
   test('should show loading state during background updates', () => {
