@@ -117,6 +117,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 10,
+      goTo: jest.fn(),
     }));
   });
 
@@ -136,10 +139,14 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
     expect(screen.getByText('There are no bills to display.')).toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
   test('should show the loading spinner while retrieving data', () => {
@@ -149,6 +156,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -165,6 +175,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: new Error('Error in fetching data'),
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -209,6 +222,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -229,6 +245,9 @@ describe('BillsTable', () => {
       isValidating: true,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
