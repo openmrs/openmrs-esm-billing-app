@@ -75,7 +75,10 @@ const BillsTable = () => {
         return bill;
       })
       .filter((bill) => {
-        const statusMatch = billPaymentStatus === '' ? true : bill.status === billPaymentStatus;
+        const statusMatch =
+          billPaymentStatus === '' ||
+          billPaymentStatus === bill.status ||
+          (billPaymentStatus === 'PENDING' && bill.status === 'POSTED');
         const searchMatch = !searchString
           ? true
           : bill.patientName.toLowerCase().includes(searchString.toLowerCase()) ||
