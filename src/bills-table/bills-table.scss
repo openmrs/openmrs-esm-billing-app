@@ -75,14 +75,6 @@
   text-decoration: none;
 }
 
-.pagination {
-  overflow: hidden;
-
-  &:global(.cds--pagination) {
-    border-top: none;
-  }
-}
-
 .hiddenRow {
   display: none;
 }
