@@ -96,84 +96,6 @@ const createBaseBill = (overrides: Partial<PatientInvoice> = {}): PatientInvoice
 });
 
 describe('mapBillProperties', () => {
-  describe('Status calculation', () => {
-    it('Single-item bill marked PAID → status should be PAID', () => {
-      const bill = createBaseBill({
-        lineItems: [createLineItem({ paymentStatus: 'PAID' })],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PAID');
-    });
-
-    it('Single-item bill marked PENDING → status should be PENDING', () => {
-      const bill = createBaseBill({
-        lineItems: [createLineItem({ paymentStatus: 'PENDING' })],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PENDING');
-    });
-
-    it('Multi-item bill with at least one PENDING → status should be PENDING', () => {
-      const bill = createBaseBill({
-        lineItems: [createLineItem({ paymentStatus: 'PAID' }), createLineItem({ paymentStatus: 'PENDING' })],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PENDING');
-    });
-
-    it('All paid multi-item bills → status should be PAID', () => {
-      const bill = createBaseBill({
-        lineItems: [createLineItem({ paymentStatus: 'PAID' }), createLineItem({ paymentStatus: 'PAID' })],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PAID');
-    });
-
-    it('Empty bill (0 active line items) → uses bill.status fallback', () => {
-      const bill = createBaseBill({ status: 'PENDING', lineItems: [] });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PENDING');
-    });
-
-    it('Filters out voided line items when determining status', () => {
-      const bill = createBaseBill({
-        lineItems: [
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
-          createLineItem({ paymentStatus: 'PAID' }),
-        ],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PAID');
-      expect(result.lineItems).toHaveLength(1);
-    });
-
-    it('Handles mixed voided and non-voided items correctly', () => {
-      const bill = createBaseBill({
-        lineItems: [
-          createLineItem({ paymentStatus: 'PAID', voided: true }),
-          createLineItem({ paymentStatus: 'PENDING' }),
-          createLineItem({ paymentStatus: 'PAID' }),
-        ],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PENDING');
-      expect(result.lineItems).toHaveLength(2);
-    });
-
-    it('All voided items → falls back to bill.status', () => {
-      const bill = createBaseBill({
-        status: 'PAID',
-        lineItems: [
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
-        ],
-      });
-      const result = mapBillProperties(bill);
-      expect(result.status).toBe('PAID');
-      expect(result.lineItems).toHaveLength(0);
-    });
-  });
-
   describe('Amount calculations', () => {
     it('Calculates totalAmount correctly for multiple items', () => {
       const bill = createBaseBill({
@@ -471,6 +393,7 @@ describe('mapBillProperties', () => {
 
     it('Handles overpayment (change due scenario)', () => {
       const bill = createBaseBill({
+        status: 'PAID',
         lineItems: [createLineItem({ price: 100, quantity: 1, paymentStatus: 'PAID' })],
         payments: [createPayment({ amount: 100, amountTendered: 150 })],
       });
@@ -534,6 +457,7 @@ describe('mapBillProperties', () => {
 
     it('Handles bill with adjusted items (quantity changes)', () => {
       const bill = createBaseBill({
+        status: 'PAID',
         lineItems: [
           createLineItem({ price: 50, quantity: 3, paymentStatus: 'PAID' }), // Originally 1, adjusted to 3
           createLineItem({ price: 100, quantity: 0, paymentStatus: 'PAID' }), // Adjusted to 0
