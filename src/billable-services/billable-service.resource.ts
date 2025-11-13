@@ -7,6 +7,8 @@ import type {
   CreateBillableServicePayload,
   PaymentModePayload,
   UpdateBillableServicePayload,
+  CreateCashPointPayload,
+  UpdateCashPointPayload,
 } from '../types';
 import type { BillingConfig } from '../config-schema';
 
@@ -98,6 +100,26 @@ export const createBillableService = (payload: CreateBillableServicePayload) => 
 export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
   const url = `${apiBasePath}billableService/${uuid}`;
   return openmrsFetch(url, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const createCashPoint = (payload: CreateCashPointPayload) => {
+  return openmrsFetch(`${apiBasePath}cashPoint`, {
+    method: 'POST',
+    body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const updateCashPoint = (uuid: string, payload: UpdateCashPointPayload) => {
+  return openmrsFetch(`${apiBasePath}cashPoint/${uuid}`, {
     method: 'POST',
     body: payload,
     headers: {
