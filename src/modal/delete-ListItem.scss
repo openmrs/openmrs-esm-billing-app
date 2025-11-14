@@ -14,7 +14,6 @@
   padding-bottom: layout.$spacing-05;
 }
 .sectionTitle {
-  @include type.type-style('heading-compact-02');
   color: colors.$gray-70;
   margin-bottom: layout.$spacing-04;
 }
