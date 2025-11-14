@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { useBills } from '../billing.resource';
+import { usePaginatedBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
 jest.mock('@openmrs/esm-framework', () => {
@@ -23,15 +23,16 @@ jest.mock('@openmrs/esm-framework', () => {
 });
 
 jest.mock('../billing.resource', () => ({
-  useBills: jest.fn(() => ({
+  usePaginatedBills: jest.fn(() => ({
     bills: mockBillsData,
     isLoading: false,
     isValidating: false,
     error: null,
+    mutate: jest.fn(),
   })),
 }));
 
-const mockBills = jest.mocked(useBills);
+const mockBills = jest.mocked(usePaginatedBills);
 
 const mockBillsData = [
   {
@@ -116,16 +117,19 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 10,
+      goTo: jest.fn(),
     }));
   });
 
   test('renders data table with pending bills', () => {
     render(<BillsTable />);
 
-    expect(screen.getByText('Visit time')).toBeInTheDocument();
-    expect(screen.getByText('Identifier')).toBeInTheDocument();
+    expect(screen.getByText(/visit time/i)).toBeInTheDocument();
+    expect(screen.getByText(/patient identifier/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
-    expect(screen.getByText('12345678')).toBeInTheDocument();
+    expect(screen.getByText(/12345678/i)).toBeInTheDocument();
   });
 
   test('displays empty state when there are no bills', () => {
@@ -135,10 +139,14 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
     expect(screen.getByText('There are no bills to display.')).toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
   test('should show the loading spinner while retrieving data', () => {
@@ -148,6 +156,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -164,6 +175,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: new Error('Error in fetching data'),
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -208,6 +222,9 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -218,7 +235,7 @@ describe('BillsTable', () => {
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
     await user.click(paidBillsOption);
 
-    expect(screen.getByText('No matching bills to display')).toBeInTheDocument();
+    expect(screen.getByText(/there are no bills to display\./i)).toBeInTheDocument();
   });
 
   test('should show loading state during background updates', () => {
@@ -228,6 +245,9 @@ describe('BillsTable', () => {
       isValidating: true,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
