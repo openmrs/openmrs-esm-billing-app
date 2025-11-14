@@ -85,7 +85,7 @@ export const billableServiceFormWorkspace = getAsyncLifecycle(
 export const billableServicesLeftPanelLink = getSyncLifecycle(
   createBillableServicesLeftPanelLink({
     name: 'billable-services',
-    title: 'Billable Services',
+    title: 'billableServices',
     path: '',
     icon: Wallet,
   }),
@@ -96,7 +96,7 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
 export const billWaiverLeftPanelLink = getSyncLifecycle(
   createBillableServicesLeftPanelLink({
     name: 'bill-waiver',
-    title: 'Bill waiver',
+    title: 'billWaiver',
     path: 'waive-bill',
     icon: Money,
     privilege: 'coreapps.systemAdministration',
@@ -109,18 +109,18 @@ export const billWaiverLeftPanelLink = getSyncLifecycle(
 // t('paymentModesConfig', 'Payment modes configuration')
 export const billingSettingsLeftPanelMenu = getSyncLifecycle(
   createBillableServicesLeftPanelMenu({
-    title: 'Billing settings',
+    title: 'billingSettings',
     icon: Settings,
     privilege: 'coreapps.systemAdministration',
     items: [
       {
         name: 'cash-point-config',
-        title: 'Cash point configuration',
+        title: 'cashPointConfig',
         path: 'cash-point-config',
       },
       {
         name: 'payment-modes-config',
-        title: 'Payment modes configuration',
+        title: 'paymentModesConfig',
         path: 'payment-modes-config',
       },
     ],

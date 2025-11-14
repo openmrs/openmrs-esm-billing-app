@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
 import { SideNavMenu, SideNavMenuItem } from '@carbon/react';
 import { navigate, UserHasAccess } from '@openmrs/esm-framework';
@@ -16,6 +17,7 @@ export interface BillableServicesMenuConfig {
 
 function BillableServicesMenuExtension({ config }: { config: BillableServicesMenuConfig }) {
   const { title, icon: Icon, items, privilege } = config;
+  const { t } = useTranslation();
   const spaBasePath = `${window.spaBase}/billable-services`;
 
   const handleNavigation = (path: string) => {
@@ -23,10 +25,10 @@ function BillableServicesMenuExtension({ config }: { config: BillableServicesMen
   };
 
   const menu = (
-    <SideNavMenu defaultExpanded title={title} renderIcon={Icon}>
+    <SideNavMenu defaultExpanded title={t(title)} renderIcon={Icon}>
       {items.map((item) => (
         <SideNavMenuItem key={item.name} onClick={() => handleNavigation(item.path)}>
-          {item.title}
+          {t(item.title)}
         </SideNavMenuItem>
       ))}
     </SideNavMenu>
