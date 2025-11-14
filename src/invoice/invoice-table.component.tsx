@@ -85,6 +85,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
   const tableRows: Array<typeof DataTableRow> = useMemo(
     () =>
       filteredLineItems?.map((item, index) => {
+        const isBillPosted = bill?.status === 'POSTED';
         return {
           no: `${index + 1}`,
           id: `${item.uuid}`,
@@ -96,20 +97,32 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
           total: convertToCurrency(item.price * item.quantity, defaultCurrency),
           actionButton: (
             <span>
-              <Button
-                data-testid={`edit-button-${item.uuid}`}
-                renderIcon={Edit}
-                hasIconOnly
-                kind="ghost"
-                iconDescription={t('editThisBillItem', 'Edit this bill item')}
-                tooltipPosition="left"
-                onClick={() => handleSelectBillItem(item)}
-              />
+              {!isBillPosted ? (
+                <Button
+                  data-testid={`edit-button-${item.uuid}`}
+                  renderIcon={Edit}
+                  hasIconOnly
+                  kind="ghost"
+                  iconDescription={t('editThisBillItem', 'Edit this bill item')}
+                  tooltipPosition="left"
+                  onClick={() => handleSelectBillItem(item)}
+                />
+              ) : (
+                <Button
+                  data-tested={`edit-button-${item.uuid}`}
+                  renderIcon={Edit}
+                  hasIconOnly
+                  kind="ghost"
+                  disabled
+                  iconDescription={t('cannotEditPostedBill', 'Can not edit line items of a posted Bill')}
+                  tooltipPosition="left"
+                />
+              )}
             </span>
           ),
         };
       }) ?? [],
-    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem],
+    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem, bill?.status],
   );
 
   if (isLoadingBill) {
