@@ -22,20 +22,13 @@ import type {
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
-  const status =
-    activeLineItems.length > 0
-      ? activeLineItems.some((item) => item.paymentStatus === 'PENDING')
-        ? 'PENDING'
-        : 'PAID'
-      : bill.status;
-
   return {
     id: bill?.id,
     uuid: bill?.uuid,
     patientName: bill?.patient?.display?.split('-')?.[1],
     identifier: bill?.patient?.display?.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
-    status,
+    status: bill?.status,
     receiptNumber: bill?.receiptNumber,
     cashier: bill?.cashier,
     cashPointUuid: bill?.cashPoint?.uuid,
