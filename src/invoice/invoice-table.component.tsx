@@ -53,7 +53,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
     return debouncedSearchTerm
       ? fuzzy
           .filter(debouncedSearchTerm, lineItems, {
-            extract: (lineItem: LineItem) => `${lineItem.item}`,
+            extract: (lineItem: LineItem) => `${lineItem.billableService} ${lineItem.item}`,
           })
           .sort((r1, r2) => r1.score - r2.score)
           .map((result) => result.original)

@@ -2,22 +2,12 @@
 @use '@carbon/layout';
 @use '@carbon/type';
 
-.printableInvoiceContainer {
-  display: flex;
-  flex-direction: row;
-}
 
 .itemsContainer {
   display: flex;
   flex-direction: column;
-  width: 80%;
   padding: layout.$spacing-05;
   margin: layout.$spacing-05;
-}
-
-.detailsContainer {
-  margin: layout.$spacing-05 0;
-  width: 20%;
 }
 
 .tableContainer {
@@ -47,4 +37,19 @@
 
 .itemLabel {
   float: right;
+}
+
+.summaryContainer {
+ margin-top: layout.$spacing-05;
+}
+
+.paymentHistoryContainer{
+    margin-top: layout.$spacing-05;
+}
+
+.balanceContainer{
+  padding: layout.$spacing-02;
+  margin-top: layout.$spacing-05;
+  border-top: solid 0.1pt colors.$cool-gray-30;
+  border-bottom: solid 0.1pt colors.$cool-gray-30;
 }
