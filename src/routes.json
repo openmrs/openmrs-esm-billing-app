@@ -114,6 +114,10 @@
     {
       "name": "require-billing-modal",
       "component": "requirePaymentModal"
+    },
+    {
+      "name":"ListItem-delete-confirmation-modal",
+      "component": "deleteListItemConfirmationModal"
     }
   ],
   "workspaces": [
