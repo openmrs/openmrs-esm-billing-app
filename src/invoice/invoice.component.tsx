@@ -76,7 +76,7 @@ const Invoice: React.FC = () => {
   const invoiceDetails = {
     [t('totalAmount', 'Total amount')]: convertToCurrency(bill?.totalAmount, defaultCurrency),
     [t('amountTendered', 'Amount tendered')]: convertToCurrency(bill?.tenderedAmount, defaultCurrency),
-    [t('invoiceNumber', 'Invoice ')]: bill?.receiptNumber,
+    [t('invoiceNumber', 'Invoice number')]: bill?.receiptNumber,
     [t('dateAndTime', 'Date and time')]: bill?.dateCreated,
     [t('invoiceStatus', 'Invoice status')]: bill?.status,
   };
