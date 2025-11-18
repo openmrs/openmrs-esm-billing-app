@@ -151,31 +151,13 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
               </TableContainer>
             )}
           </DataTable>
-          <div className={styles.summaryContainer}>
-            <DataTable rows={summaryRowData} headers={summaryHeaders} size={responsiveSize}>
-              {({ rows, headers, getRowProps, getTableProps }) => (
-                <TableContainer>
-                  <Table {...getTableProps()} aria-label={t('invoiceSummary', 'Invoice Summary')}>
-                    <TableHead>
-                      <TableRow>
-                        {headers.map((header) => (
-                          <TableHeader key={header.key}>{header.header}</TableHeader>
-                        ))}
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {rows.map((row) => (
-                        <TableRow key={row.id} {...getRowProps({ row })}>
-                          {row.cells.map((cell) => (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
-            </DataTable>
+          <div className={styles.balanceContainer}>
+            <span className={styles.itemHeading}>{t('totalAmount', 'Total Amount')}:</span>{' '}
+            <span className={styles.itemLabel}>
+              <strong>
+                {defaultCurrency} {bill?.totalAmount}
+              </strong>
+            </span>
           </div>
           {bill?.payments?.length > 0 && (
             <div className={styles.paymentHistoryContainer}>
@@ -206,9 +188,16 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
             </div>
           )}
           <div className={styles.balanceContainer}>
-            <span className={styles.itemHeading}>{t('balance', 'Balance')}:</span>{' '}
+            <span className={styles.itemHeading}>{t('totalTendered', 'Total tendered')}:</span>
             <span className={styles.itemLabel}>
-              {' '}
+              <strong>
+                {defaultCurrency} {bill?.tenderedAmount}
+              </strong>
+            </span>
+          </div>
+          <div className={styles.balanceContainer}>
+            <span className={styles.itemHeading}>{t('balance', 'Balance')}:</span>
+            <span className={styles.itemLabel}>
               <strong>
                 {defaultCurrency} {bill?.totalAmount - bill?.tenderedAmount}
               </strong>
