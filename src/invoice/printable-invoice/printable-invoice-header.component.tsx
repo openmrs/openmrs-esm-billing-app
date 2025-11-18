@@ -73,7 +73,8 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
 
             {Object.entries(patientInformation).map(([key, val]) => (
               <p className={styles.itemLabel} key={key}>
-                <strong>{key}</strong> <span>: {val}</span>
+                <strong>{key}</strong>
+                <span>: {val}</span>
               </p>
             ))}
           </div>
@@ -82,7 +83,8 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
             <h2 className={styles.sectionHeading}>{t('invoiceSummary', 'Invoice Summary')}</h2>
             {Object.entries(invoiceDetails).map(([key, val]) => (
               <p className={styles.itemLabel} key={key}>
-                <strong>{key}</strong> <span>: {val}</span>
+                <strong>{key}</strong>
+                <span>: {val}</span>
               </p>
             ))}
           </div>
