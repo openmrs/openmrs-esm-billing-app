@@ -26,16 +26,16 @@ const options = {
   moduleName,
 };
 
-// t('billing', 'Billing')
+export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
+
 export const billingDashboardLink = getSyncLifecycle(
+  // t('billing', 'Billing')
   createLeftPanelLink({
     name: 'billing',
-    title: 'Billing',
+    title: 'billing',
   }),
   options,
 );
-
-export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
 
 export function startupApp() {
   defineConfigSchema(moduleName, configSchema);

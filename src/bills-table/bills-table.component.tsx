@@ -114,9 +114,9 @@ const BillsTable = () => {
   );
 
   const filterItems = [
-    { id: '', text: 'All bills' },
-    { id: 'PENDING', text: 'Pending bills' },
-    { id: 'PAID', text: 'Paid bills' },
+    { id: '', text: t('allBills', 'All bills') },
+    { id: 'PENDING', text: t('pendingBills', 'Pending bills') },
+    { id: 'PAID', text: t('paidBills', 'Paid bills') },
   ];
 
   const handleFilterChange = ({ selectedItem }) => {
