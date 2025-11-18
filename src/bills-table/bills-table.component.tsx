@@ -18,15 +18,8 @@ import {
   Tile,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import {
-  useLayoutType,
-  isDesktop,
-  usePagination,
-  ErrorState,
-  ConfigurableLink,
-  useConfig,
-} from '@openmrs/esm-framework';
-import { EmptyDataIllustration, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import { useLayoutType, isDesktop, ErrorState, ConfigurableLink, useConfig } from '@openmrs/esm-framework';
+import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
 import { usePaginatedBills } from '../billing.resource';
 import type { MappedBill } from '../types';
 import type { BillingConfig } from '../config-schema';
@@ -37,6 +30,12 @@ interface BillDisplayItem extends MappedBill {
   billedItems: string;
 }
 
+interface BillPaymentStatusFilterItem {
+  id: string;
+  text: string;
+  status: string;
+}
+
 const BillsTable: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();
@@ -44,15 +43,23 @@ const BillsTable: React.FC = () => {
   const [pageSize, setPageSize] = useState(defaultPageSize);
   const pageSizes = [10, 20, 30, 40, 50];
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const [billPaymentStatus, setBillPaymentStatus] = useState('PENDING');
-  const [searchString, setSearchString] = useState('');
-  const { bills, error, isLoading, isValidating, currentPage, totalCount, goTo } = usePaginatedBills(pageSize);
 
-  const billPaymentStatusFilterItems = [
-    { id: '', text: t('allBills', 'All bills') },
-    { id: 'PENDING', text: t('pendingBills', 'Pending bills') },
-    { id: 'PAID', text: t('paidBills', 'Paid bills') },
-  ];
+  const billPaymentStatusFilterItems: BillPaymentStatusFilterItem[] = useMemo(
+    () => [
+      { id: '', text: t('allBills', 'All bills'), status: '' },
+      { id: 'PENDING', text: t('pendingBills', 'Pending bills'), status: 'PENDING,POSTED' },
+      { id: 'PAID', text: t('paidBills', 'Paid bills'), status: 'PAID' },
+    ],
+    [t],
+  );
+  const [billPaymentStatus, setBillPaymentStatus] = useState<BillPaymentStatusFilterItem>(
+    billPaymentStatusFilterItems[1],
+  );
+  const [searchString, setSearchString] = useState('');
+  const { bills, error, isLoading, isValidating, currentPage, totalCount, goTo } = usePaginatedBills(
+    pageSize,
+    billPaymentStatus.status,
+  );
 
   const headerData = [
     {
@@ -101,15 +108,14 @@ const BillsTable: React.FC = () => {
     if (!billList?.length) return billList;
 
     return billList.filter((bill) => {
-      const statusMatch = billPaymentStatus === '' ? true : bill.status === billPaymentStatus;
       const searchMatch = !searchString
         ? true
         : bill.patientName?.toLowerCase().includes(searchString.toLowerCase()) ||
           bill.identifier?.toLowerCase().includes(searchString.toLowerCase());
 
-      return statusMatch && searchMatch;
+      return searchMatch;
     });
-  }, [billList, searchString, billPaymentStatus]);
+  }, [billList, searchString]);
 
   const handleSearch = useCallback(
     (e) => {
@@ -119,9 +125,13 @@ const BillsTable: React.FC = () => {
     [goTo, setSearchString],
   );
 
-  const handleFilterChange = ({ selectedItem }) => {
-    setBillPaymentStatus(selectedItem.id);
-  };
+  const handleFilterChange = useCallback(
+    ({ selectedItem }) => {
+      setBillPaymentStatus(selectedItem);
+      goTo(1);
+    },
+    [goTo],
+  );
 
   if (isLoading) {
     return (
@@ -156,8 +166,9 @@ const BillsTable: React.FC = () => {
           direction="bottom"
           id="bill-payment-status-filter"
           initialSelectedItem={billPaymentStatusFilterItems[1]}
+          selectedItem={billPaymentStatus}
           items={billPaymentStatusFilterItems}
-          itemToString={(item) => (item ? item.text : '')}
+          itemToString={(item: BillPaymentStatusFilterItem) => (item ? item.text : '')}
           label=""
           onChange={handleFilterChange}
           size={responsiveSize}
@@ -166,7 +177,7 @@ const BillsTable: React.FC = () => {
         />
       </div>
 
-      {searchResults?.length > 0 ? (
+      {billList?.length > 0 ? (
         <div className={styles.billListContainer}>
           <FilterableTableHeader
             handleSearch={handleSearch}

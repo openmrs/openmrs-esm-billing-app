@@ -216,8 +216,21 @@ describe('BillsTable', () => {
   test('should filter bills by payment status', async () => {
     const user = userEvent.setup();
 
+    // First call: initial render with PENDING filter (default)
     mockBills.mockImplementationOnce(() => ({
       bills: mockBillsData.map((bill) => ({ ...bill, status: 'PENDING' })),
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: jest.fn(),
+    }));
+
+    // Second call: after filter changes to PAID, return empty bills
+    mockBills.mockImplementationOnce(() => ({
+      bills: [],
       isLoading: false,
       isValidating: false,
       error: null,
