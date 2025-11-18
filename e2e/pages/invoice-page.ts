@@ -3,7 +3,7 @@ import { type Page } from '@playwright/test';
 export class InvoicePage {
   constructor(readonly page: Page) {}
 
-  readonly invoiceNumberLabel = () => this.page.getByText(/invoice number/i);
+  readonly invoiceNumberLabel = () => this.page.getByRole('heading', { name: /invoice #/i });
   readonly totalAmountLabel = () => this.page.getByText(/total amount/i).first();
   readonly amountTenderedLabel = () => this.page.getByText(/amount tendered/i);
   readonly amountDueLabel = () => this.page.getByText(/amount due/i);
@@ -36,8 +36,11 @@ export class InvoicePage {
   }
 
   async getInvoiceNumber() {
+    await this.invoiceNumberLabel().waitFor({ state: 'visible' });
     const parent = this.invoiceNumberLabel().locator('..');
-    const value = await parent.locator('[class*="value"]').textContent();
+    const valueElement = parent.locator('[class*="value"]');
+    await valueElement.waitFor({ state: 'visible' });
+    const value = await valueElement.textContent();
     return value?.trim();
   }
 
