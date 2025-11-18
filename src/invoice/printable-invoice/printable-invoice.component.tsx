@@ -89,21 +89,6 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
     { key: 'balance', header: t('amountBalance', 'Amount Balance') },
   ];
 
-  const summaryRowData = useMemo(() => {
-    if (!bill) {
-      return [];
-    }
-    const balance = bill.totalAmount - bill.tenderedAmount;
-    return [
-      {
-        id: 'summary-1',
-        total: `${defaultCurrency} ${bill.totalAmount.toFixed(2)}`,
-        paid: `${defaultCurrency} ${bill.tenderedAmount.toFixed(2)}`,
-        balance: `${defaultCurrency} ${balance.toFixed(2)}`,
-      },
-    ];
-  }, [bill, defaultCurrency]);
-
   const patientDetails = useMemo(() => {
     const address = patient?.address?.[0];
     const addressParts = [address?.line?.join(' '), address?.city, address?.district, address?.state].filter(Boolean);

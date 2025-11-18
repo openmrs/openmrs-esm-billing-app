@@ -1,10 +1,10 @@
 import React from 'react';
-import { formatDate, interpolateUrl, parseDate, type SessionLocation, useConfig } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
+import isEmpty from 'lodash/isEmpty';
+import { formatDate, interpolateUrl, parseDate, type SessionLocation, useConfig } from '@openmrs/esm-framework';
 import type { BillingConfig } from '../../config-schema';
 import type { MappedBill, PatientDetails } from '../../types';
 import styles from './printable-invoice-header.scss';
-import isEmpty from 'lodash/isEmpty';
 
 interface PrintableInvoiceHeaderProps {
   patientDetails: PatientDetails;
@@ -80,7 +80,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
           </div>
 
           <div>
-            <h2 className={styles.sectionHeading}>{t('invoiceSummary', 'Invoice Summary')}</h2>
+            <h2 className={styles.sectionHeading}>{t('invoiceSummary', 'Invoice summary')}</h2>
             {Object.entries(invoiceDetails).map(([key, val]) => (
               <p className={styles.itemLabel} key={key}>
                 <strong>{key}</strong>
