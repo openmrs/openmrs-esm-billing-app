@@ -227,5 +227,6 @@
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
   "visitTime": "Visit time",
-  "waiverForm": "Waiver form"
+  "waiverForm": "Waiver form",
+  "activeVisitRequired": "Patient must have an active visit before creating a bill"
 }

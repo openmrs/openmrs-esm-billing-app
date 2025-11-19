@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import { showSnackbar, getCoreTranslation, useVisit } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import styles from './billing-checkin-form.scss';
@@ -19,10 +19,19 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
   const [attributes, setAttributes] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState<any>();
+  const { currentVisit } = useVisit(patientUuid);
   let lineList = [];
 
   const handleCreateExtraVisitInfo = useCallback(
     async (createBillPayload) => {
+      if (!currentVisit) {
+        showSnackbar({
+          title: t('validationError', 'Validation error'),
+          subtitle: t('activeVisitRequired', 'Patient must have an active visit before creating a bill'),
+          kind: 'error',
+        });
+        return;
+      }
       try {
         await createPatientBill(createBillPayload);
         showSnackbar({
@@ -38,7 +47,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         });
       }
     },
-    [t],
+    [t, currentVisit],
   );
 
   const handleBillingService = ({ selectedItem }) => {
