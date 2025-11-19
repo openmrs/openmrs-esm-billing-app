@@ -10,6 +10,7 @@
   "addPaymentMethod": "Add payment method",
   "addPaymentMode": "Add payment mode",
   "addPaymentOption": "Add payment option",
+  "allBills": "All bills",
   "amount": "Suma",
   "amountDue": "Amount due",
   "amountMustBePositive": "Amount must be greater than 0",
