@@ -10,6 +10,7 @@
   "addPaymentMethod": "添加付款方式",
   "addPaymentMode": "Add payment mode",
   "addPaymentOption": "添加付款选项",
+  "allBills": "All bills",
   "amount": "量",
   "amountDue": "Amount due",
   "amountMustBePositive": "数量必须大于0",

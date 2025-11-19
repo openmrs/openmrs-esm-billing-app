@@ -10,6 +10,7 @@
   "addPaymentMethod": "Ajouter une méthode de paiement",
   "addPaymentMode": "Ajouter un mode de paiement",
   "addPaymentOption": "Ajouter une option de paiement",
+  "allBills": "Toutes les factures",
   "amount": "Montant",
   "amountDue": "Montant dû",
   "amountMustBePositive": "Le montant doit être supérieur à zéro (0)",
