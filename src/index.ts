@@ -92,18 +92,6 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
   options,
 );
 
-// t('billWaiver', 'Bill waiver')
-export const billWaiverLeftPanelLink = getSyncLifecycle(
-  createBillableServicesLeftPanelLink({
-    name: 'bill-waiver',
-    title: 'billWaiver',
-    path: 'waive-bill',
-    icon: Money,
-    privilege: 'coreapps.systemAdministration',
-  }),
-  options,
-);
-
 // t('billingSettings', 'Billing settings')
 // t('cashPointConfig', 'Cash point configuration')
 // t('paymentModesConfig', 'Payment modes configuration')
