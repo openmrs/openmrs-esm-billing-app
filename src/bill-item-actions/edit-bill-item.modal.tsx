@@ -89,6 +89,14 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
 
   const onSubmit = async (data: BillLineItemForm) => {
     const url = `${apiBasePath}bill`;
+    if (bill?.status === 'PENDING') {
+      showSnackbar({
+        title: t('cannotEditBill', 'This bill can not be edited'),
+        subtitle: t('onlyPendingBillsCanBeEdited', 'Only pending bills can be editted'),
+        kind: 'error',
+      });
+    }
+    return;
 
     const newItem = {
       ...item,

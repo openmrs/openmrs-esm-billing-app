@@ -227,5 +227,7 @@
   "validationError": "Validation error",
   "visitTime": "Visit time",
   "waiverForm": "Waiver form",
-  "activeVisitRequired": "Patient must have an active visit before creating a bill"
+  "activeVisitRequired": "Patient must have an active visit before creating a bill",
+  "cannotEditBill": "cannot edit this bill",
+  "onlyPendingBillsCanBeEdited" : "Only pending bills can be edited"
 }
