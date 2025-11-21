@@ -155,9 +155,7 @@ export interface PatientDetails {
   name: string;
   birthDate: string;
   gender: string;
-  city: string;
-  county: string;
-  subCounty: string;
+  address: string;
 }
 
 export interface FacilityDetail {
