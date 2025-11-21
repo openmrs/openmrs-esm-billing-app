@@ -49,7 +49,7 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   };
 };
 
-export const usePaginatedBills = (pageSize: number, status?: string) => {
+export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
   const customRepresentation =
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
@@ -57,12 +57,15 @@ export const usePaginatedBills = (pageSize: number, status?: string) => {
   if (status) {
     url += `&status=${status}`;
   }
+  if (patientName) {
+    url += `&patientName=${encodeURIComponent(patientName)}`;
+  }
 
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
     useOpenmrsPagination<PatientInvoice>(url, pageSize);
 
-  const sortedBills = sortBy(data ?? [], ['dateCreated']).reverse();
-  const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
+  // Backend already sorts by ID descending (newest first), so no need to sort on frontend
+  const mappedResults = data?.map((bill) => mapBillProperties(bill));
 
   return {
     bills: mappedResults,

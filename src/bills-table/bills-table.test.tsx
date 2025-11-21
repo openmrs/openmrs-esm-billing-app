@@ -19,6 +19,7 @@ jest.mock('@openmrs/esm-framework', () => {
       resolvedTo = resolvedTo.replace(/^\/openmrs\/spa/, '');
       return <a href={resolvedTo}>{children}</a>;
     },
+    useDebounce: jest.fn((value) => value),
   };
 });
 
@@ -132,7 +133,7 @@ describe('BillsTable', () => {
     expect(screen.getByText(/12345678/i)).toBeInTheDocument();
   });
 
-  test('displays empty state when there are no bills', () => {
+  test('displays empty state when there are no bills with default filter', () => {
     mockBills.mockImplementationOnce(() => ({
       bills: [],
       isLoading: false,
@@ -145,8 +146,11 @@ describe('BillsTable', () => {
     }));
 
     render(<BillsTable />);
-    expect(screen.getByText('There are no bills to display.')).toBeInTheDocument();
-    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+
+    // With default "Pending bills" filter, shows "No matching bills" not empty state
+    expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
+    expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
   });
 
   test('should show the loading spinner while retrieving data', () => {
@@ -163,9 +167,9 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    const dataTableSkeleton = screen.getByRole('table');
-    expect(dataTableSkeleton).toBeInTheDocument();
-    expect(dataTableSkeleton).toHaveClass('cds--skeleton cds--data-table cds--data-table--zebra');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByText(/filter by/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending bills/i)).toBeInTheDocument();
   });
 
   test('should display an error state if there is a problem loading bill data', () => {
@@ -184,10 +188,25 @@ describe('BillsTable', () => {
 
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(screen.getByText(/filter by/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending bills/i)).toBeInTheDocument();
   });
 
-  test('should filter bills by search term', async () => {
+  test('should pass search term to backend API', async () => {
     const user = userEvent.setup();
+    const mockGoTo = jest.fn();
+
+    mockBills.mockImplementation((pageSize, status, patientName) => ({
+      bills: patientName === 'John' ? [mockBillsData[0]] : mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: patientName === 'John' ? 1 : 2,
+      goTo: mockGoTo,
+    }));
+
     render(<BillsTable />);
 
     const searchInput = screen.getByRole('searchbox');
@@ -196,12 +215,13 @@ describe('BillsTable', () => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('Mary Smith')).toBeInTheDocument();
 
-    await user.type(searchInput, 'John Doe');
+    await user.type(searchInput, 'John');
+
     await waitFor(() => {
-      expect(screen.queryByText('Mary Smith')).not.toBeInTheDocument();
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING,POSTED', 'John');
     });
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(mockGoTo).toHaveBeenCalledWith(1);
   });
 
   test('should render patient name as a link', () => {
@@ -248,7 +268,11 @@ describe('BillsTable', () => {
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
     await user.click(paidBillsOption);
 
-    expect(screen.getByText(/there are no bills to display\./i)).toBeInTheDocument();
+    // With "Paid bills" filter active and no results, shows "No matching bills"
+    await waitFor(() => {
+      expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
   });
 
   test('should show loading state during background updates', () => {
@@ -267,5 +291,26 @@ describe('BillsTable', () => {
 
     const loadingIndicator = screen.getByTitle('loading');
     expect(loadingIndicator).toBeInTheDocument();
+  });
+
+  test('should show search box and empty state message when search returns no results', () => {
+    mockBills.mockImplementationOnce(() => ({
+      bills: [],
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
+    }));
+
+    render(<BillsTable />);
+
+    // With active filters, shows search box even with no results
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
+    expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
+    expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
+    expect(screen.queryByText(/next page/i)).not.toBeInTheDocument();
   });
 });

@@ -18,14 +18,23 @@ import {
   Tile,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { useLayoutType, isDesktop, ErrorState, ConfigurableLink, useConfig } from '@openmrs/esm-framework';
+import {
+  useLayoutType,
+  isDesktop,
+  ErrorState,
+  ConfigurableLink,
+  useConfig,
+  useDebounce,
+  type LayoutType,
+} from '@openmrs/esm-framework';
 import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
 import { usePaginatedBills } from '../billing.resource';
 import type { MappedBill } from '../types';
 import type { BillingConfig } from '../config-schema';
 import styles from './bills-table.scss';
 
-interface BillDisplayItem extends MappedBill {
+interface BillDisplayItem extends Omit<MappedBill, 'id'> {
+  id: string;
   patientNameDisplay: React.ReactNode;
   billedItems: string;
 }
@@ -36,11 +45,14 @@ interface BillPaymentStatusFilterItem {
   status: string;
 }
 
+const mapLineItems = (bill: MappedBill) =>
+  bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
+
 const BillsTable: React.FC = () => {
   const { t } = useTranslation();
   const layout = useLayoutType();
   const { pageSize: defaultPageSize } = useConfig<BillingConfig>();
-  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [pageSize, setPageSize] = useState(defaultPageSize ?? 10);
   const pageSizes = [10, 20, 30, 40, 50];
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
 
@@ -56,9 +68,11 @@ const BillsTable: React.FC = () => {
     billPaymentStatusFilterItems[1],
   );
   const [searchString, setSearchString] = useState('');
+  const debouncedSearchString = useDebounce(searchString);
   const { bills, error, isLoading, isValidating, currentPage, totalCount, goTo } = usePaginatedBills(
     pageSize,
     billPaymentStatus.status,
+    debouncedSearchString || undefined,
   );
 
   const headerData = [
@@ -80,15 +94,13 @@ const BillsTable: React.FC = () => {
     },
   ];
 
-  const mapLineItems = (bill: MappedBill) =>
-    bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
-
   const billList: Array<BillDisplayItem> = useMemo(() => {
     const billingUrl = '${openmrsSpaBase}/home/billing/patient/${patientUuid}/${uuid}';
 
     const mappedBills = bills?.map((bill) => {
       const object = {
         ...bill,
+        id: String(bill.id),
         patientNameDisplay: (
           <ConfigurableLink
             style={{ textDecoration: 'none', maxWidth: '50%' }}
@@ -101,21 +113,15 @@ const BillsTable: React.FC = () => {
       };
       return object;
     });
+
     return mappedBills;
   }, [bills]);
 
-  const searchResults = useMemo(() => {
-    if (!billList?.length) return billList;
+  // Server-side search is now handled by the API, so we just use the bills directly
+  const searchResults = billList;
 
-    return billList.filter((bill) => {
-      const searchMatch = !searchString
-        ? true
-        : bill.patientName?.toLowerCase().includes(searchString.toLowerCase()) ||
-          bill.identifier?.toLowerCase().includes(searchString.toLowerCase());
-
-      return searchMatch;
-    });
-  }, [billList, searchString]);
+  // Check if user has applied any filters (not "All bills") or search
+  const hasActiveFiltersOrSearch = searchString.trim() !== '' || billPaymentStatus.id !== '';
 
   const handleSearch = useCallback(
     (e) => {
@@ -132,31 +138,6 @@ const BillsTable: React.FC = () => {
     },
     [goTo],
   );
-
-  if (isLoading) {
-    return (
-      <div className={styles.loaderContainer}>
-        <DataTableSkeleton
-          rowCount={pageSize}
-          showHeader={false}
-          showToolbar={false}
-          zebra
-          columnCount={headerData?.length}
-          size={responsiveSize}
-        />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.errorContainer}>
-        <Layer>
-          <ErrorState error={error} headerTitle={t('billList', 'Bill list')} />
-        </Layer>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -177,13 +158,31 @@ const BillsTable: React.FC = () => {
         />
       </div>
 
-      {billList?.length > 0 ? (
+      {isLoading && !bills?.length ? (
+        <div className={styles.loaderContainer} role="progressbar" aria-label={t('loading', 'Loading')}>
+          <DataTableSkeleton
+            rowCount={pageSize}
+            showHeader={false}
+            showToolbar={false}
+            zebra
+            columnCount={headerData?.length}
+            size={responsiveSize}
+          />
+        </div>
+      ) : error ? (
+        <div className={styles.errorContainer}>
+          <Layer>
+            <ErrorState error={error} headerTitle={t('billList', 'Bill list')} />
+          </Layer>
+        </div>
+      ) : billList?.length > 0 || hasActiveFiltersOrSearch ? (
         <div className={styles.billListContainer}>
           <FilterableTableHeader
             handleSearch={handleSearch}
             isValidating={isValidating}
             layout={layout}
             responsiveSize={responsiveSize}
+            searchString={searchString}
             t={t}
           />
           <DataTable
@@ -231,20 +230,22 @@ const BillsTable: React.FC = () => {
               </Layer>
             </div>
           )}
-          <Pagination
-            forwardText={t('nextPage', 'Next page')}
-            backwardText={t('previousPage', 'Previous page')}
-            page={currentPage}
-            pageSize={pageSize}
-            pageSizes={pageSizes}
-            totalItems={totalCount}
-            onChange={({ pageSize, page }) => {
-              setPageSize(pageSize);
-              if (page !== currentPage) {
-                goTo(page);
-              }
-            }}
-          />
+          {totalCount > 0 && (
+            <Pagination
+              forwardText={t('nextPage', 'Next page')}
+              backwardText={t('previousPage', 'Previous page')}
+              page={currentPage}
+              pageSize={pageSize}
+              pageSizes={pageSizes}
+              totalItems={totalCount}
+              onChange={({ pageSize, page }) => {
+                setPageSize(pageSize);
+                if (page !== currentPage) {
+                  goTo(page);
+                }
+              }}
+            />
+          )}
         </div>
       ) : (
         <Layer className={styles.emptyStateContainer}>
@@ -260,7 +261,23 @@ const BillsTable: React.FC = () => {
   );
 };
 
-function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveSize, t }) {
+interface FilterableTableHeaderProps {
+  layout: LayoutType;
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isValidating: boolean;
+  responsiveSize: 'sm' | 'md' | 'lg' | 'xl';
+  searchString: string;
+  t: (key: string, fallback: string) => string;
+}
+
+function FilterableTableHeader({
+  layout,
+  handleSearch,
+  isValidating,
+  responsiveSize,
+  searchString,
+  t,
+}: FilterableTableHeaderProps) {
   return (
     <>
       <div className={styles.headerContainer}>
@@ -278,6 +295,7 @@ function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveS
       <Search
         labelText=""
         placeholder={t('filterTable', 'Filter table')}
+        value={searchString}
         onChange={handleSearch}
         size={responsiveSize}
       />
