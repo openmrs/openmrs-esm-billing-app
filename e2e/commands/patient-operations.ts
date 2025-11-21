@@ -1,3 +1,4 @@
+import { deleteAllBillsForPatient } from './billing-operations';
 import { type APIRequestContext, expect } from '@playwright/test';
 import { type Patient } from './types';
 
@@ -62,8 +63,13 @@ export const generateRandomPatient = async (api: APIRequestContext, locationUuid
 
 /**
  * Deletes a patient using the OpenMRS API
+ * First deletes all bills associated with the patient
  */
 export async function deletePatient(api: APIRequestContext, patientUuid: string) {
+  // First, delete all bills for this patient
+  await deleteAllBillsForPatient(api, patientUuid);
+
+  // Now delete the patient
   const response = await api.delete(`patient/${patientUuid}?purge=true`);
   if (!response.ok()) {
     console.warn(`Failed to delete patient ${patientUuid}: ${await response.text()}`);
