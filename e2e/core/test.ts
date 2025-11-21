@@ -24,6 +24,9 @@ export const test = base.extend<CustomTestFixtures, CustomWorkerFixtures>({
     async ({ api }, use) => {
       const patient = await generateRandomPatient(api);
       await use(patient);
+      // Note: deletePatient now deletes all bills for the patient before deleting the patient
+      // Tests that create bills should clean them up in their own afterEach hooks
+      // to avoid race conditions with parallel test execution
       await deletePatient(api, patient.uuid);
     },
     { scope: 'test' },
