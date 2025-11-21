@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { type FetchResponse } from '@openmrs/esm-framework';
 import {
   createBillableService,
@@ -171,10 +171,9 @@ describe('BillableServiceFormWorkspace', () => {
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
       await submitForm();
 
-      // Wait for async submission
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      expect(mockCloseWorkspaceWithSavedChanges).toHaveBeenCalledTimes(1);
+      await waitFor(() => {
+        expect(mockCloseWorkspaceWithSavedChanges).toHaveBeenCalledTimes(1);
+      });
     });
 
     test('should disable buttons during submission', async () => {

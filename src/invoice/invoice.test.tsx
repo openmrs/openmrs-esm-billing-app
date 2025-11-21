@@ -4,9 +4,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { useReactToPrint } from 'react-to-print';
 import { getDefaultsFromConfigSchema, useConfig, usePatient } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
-import { mockBill, mockPatient } from '../../__mocks__/bills.mock';
+import { mockBill, mockPatient } from 'mocks/bills.mock';
 import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
+import { waitForLoadingToFinish } from 'tools/test-helpers';
 import Invoice from './invoice.component';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
@@ -155,8 +156,9 @@ describe('Invoice', () => {
     expect(screen.getByText(/invoice error/i)).toBeInTheDocument();
   });
 
-  it('should render invoice details correctly', () => {
+  it('should render invoice details correctly', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     expect(screen.getAllByText(/total amount/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/amount tendered/i).length).toBeGreaterThan(0);
@@ -167,20 +169,22 @@ describe('Invoice', () => {
     expect(screen.getAllByText('PENDING').length).toBeGreaterThan(0);
   });
 
-  it('should render invoice table with line items', () => {
+  it('should render invoice table with line items', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     expect(screen.getByText(/line items/i)).toBeInTheDocument();
     expect(screen.getByText('Test Service')).toBeInTheDocument();
   });
 
-  it('should render payments section', () => {
+  it('should render payments section', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     expect(screen.getByText(/payments/i)).toBeInTheDocument();
   });
 
-  it('should show print receipt button for paid bills', () => {
+  it('should show print receipt button for paid bills', async () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
@@ -194,10 +198,12 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
+
     expect(screen.getByTestId('mock-print-receipt')).toBeInTheDocument();
   });
 
-  it('should show print receipt button for bills with tendered amount', () => {
+  it('should show print receipt button for bills with tendered amount', async () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
@@ -211,11 +217,15 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
+
     expect(screen.getByTestId('mock-print-receipt')).toBeInTheDocument();
   });
 
-  it('should not show print receipt button for unpaid bills', () => {
+  it('should not show print receipt button for unpaid bills', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
+
     expect(screen.queryByTestId('mock-print-receipt')).not.toBeInTheDocument();
   });
 
@@ -234,15 +244,17 @@ describe('Invoice', () => {
     });
   });
 
-  it('should disable print button while printing', () => {
+  it('should disable print button while printing', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     const printButton = screen.getByRole('button', { name: /print bill/i });
     expect(printButton).toBeEnabled();
   });
 
-  it('should render patient header when patient data is available', () => {
+  it('should render patient header when patient data is available', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // Patient header is rendered via ExtensionSlot
     expect(screen.getByText(/line items/i)).toBeInTheDocument();
@@ -295,6 +307,7 @@ describe('Invoice', () => {
 
     const user = userEvent.setup();
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     expect(screen.getByText('Lab Test')).toBeInTheDocument();
     expect(screen.getByText('X-Ray')).toBeInTheDocument();
@@ -308,7 +321,7 @@ describe('Invoice', () => {
     });
   });
 
-  it('should handle bill data updates via mutate', () => {
+  it('should handle bill data updates via mutate', async () => {
     const mockMutate = jest.fn();
     mockUseBill.mockReturnValue({
       bill: defaultBillData,
@@ -319,6 +332,7 @@ describe('Invoice', () => {
     });
 
     const { rerender } = render(<Invoice />);
+    await waitForLoadingToFinish();
 
     const updatedBill = {
       ...defaultBillData,
@@ -335,12 +349,14 @@ describe('Invoice', () => {
     });
 
     rerender(<Invoice />);
+    await waitForLoadingToFinish();
 
     expect(screen.getByText('PAID')).toBeInTheDocument();
   });
 
-  it('should display correct currency formatting', () => {
+  it('should display correct currency formatting', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // convertToCurrency is mocked to return "USD ${amount}"
     expect(screen.getAllByText('USD 1000').length).toBeGreaterThan(0);
@@ -362,7 +378,7 @@ describe('Invoice', () => {
     expect(screen.getByText(/loading bill information/i)).toBeInTheDocument();
   });
 
-  it('should not render PrintableInvoice when bill is missing', () => {
+  it('should not render PrintableInvoice when bill is missing', async () => {
     mockUseBill.mockReturnValue({
       bill: null,
       isLoading: false,
@@ -379,6 +395,7 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // PrintableInvoice should not be rendered when bill is null
     // Since it's in a hidden div, we can't easily assert its absence
@@ -386,7 +403,7 @@ describe('Invoice', () => {
     expect(screen.queryByTestId('mock-printable-invoice')).not.toBeInTheDocument();
   });
 
-  it('should not render PrintableInvoice when patient is missing', () => {
+  it('should not render PrintableInvoice when patient is missing', async () => {
     mockUsePatient.mockReturnValue({
       patient: null as any,
       isLoading: false,
@@ -395,27 +412,30 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // PrintableInvoice requires both bill and patient
     expect(screen.queryByTestId('mock-printable-invoice')).not.toBeInTheDocument();
   });
 
-  it('should render PrintableInvoice when both bill and patient exist', () => {
+  it('should render PrintableInvoice when both bill and patient exist', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // PrintableInvoice should be rendered with both bill and patient
     expect(screen.getByTestId('mock-printable-invoice')).toBeInTheDocument();
   });
 
-  it('should pass correct props to InvoiceTable', () => {
+  it('should pass correct props to InvoiceTable', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // Verify InvoiceTable is rendered with line items
     expect(screen.getByText('Test Service')).toBeInTheDocument();
     expect(screen.getByText(/line items/i)).toBeInTheDocument();
   });
 
-  it('should pass mutate function to Payments component', () => {
+  it('should pass mutate function to Payments component', async () => {
     const mockMutate = jest.fn();
     mockUseBill.mockReturnValue({
       bill: defaultBillData,
@@ -426,12 +446,13 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // Payments component should be rendered
     expect(screen.getByText(/payments/i)).toBeInTheDocument();
   });
 
-  it('should show print receipt for bills with partial payment', () => {
+  it('should show print receipt for bills with partial payment', async () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
@@ -446,18 +467,21 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
+
     expect(screen.getByTestId('mock-print-receipt')).toBeInTheDocument();
   });
 
-  it('should render ExtensionSlot when patient and patientUuid exist', () => {
+  it('should render ExtensionSlot when patient and patientUuid exist', async () => {
     render(<Invoice />);
+    await waitForLoadingToFinish();
 
     // The component renders, which includes the ExtensionSlot
     // We can verify this indirectly by checking the main content is present
     expect(screen.getByText(/invoice number/i)).toBeInTheDocument();
   });
 
-  it('should not show print receipt for bills with zero tendered amount', () => {
+  it('should not show print receipt for bills with zero tendered amount', async () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
@@ -471,6 +495,8 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
+    await waitForLoadingToFinish();
+
     expect(screen.queryByTestId('mock-print-receipt')).not.toBeInTheDocument();
   });
 });
