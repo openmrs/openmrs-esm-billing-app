@@ -26,7 +26,7 @@ export function BillingDashboard() {
       {/**
        *
        * TODO: Add this back when the backend has an endpoint to get the metrics
-       * The metrics are too intensive to calulate on the frontend since it requires fetching all the bills
+       * The metrics are too intensive to calculate on the frontend since it requires fetching all the bills
        * <MetricsCards />
        **/}
       <section className={styles.billsTableContainer}>

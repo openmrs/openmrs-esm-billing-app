@@ -54,13 +54,13 @@
   align-items: center;
   padding: layout.$spacing-04 layout.$spacing-05;
   background-color: $ui-02;
+  gap: layout.$spacing-05;
 }
 
 .backgroundDataFetchingIndicator {
   align-items: center;
   display: flex;
-  flex: 1;
-  justify-content: space-between;
+  justify-content: center;
 
   &:global(.cds--inline-loading) {
     max-height: layout.$spacing-05;
