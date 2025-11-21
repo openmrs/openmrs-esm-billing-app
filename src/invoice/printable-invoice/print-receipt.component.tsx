@@ -7,10 +7,10 @@ import { apiBasePath } from '../../constants';
 import styles from './print-receipt.scss';
 
 interface PrintReceiptProps {
-  billId: number;
+  billUuid: string;
 }
 
-const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
+const PrintReceipt: React.FC<PrintReceiptProps> = ({ billUuid }) => {
   const { t } = useTranslation();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const baseUrl = new URL(window.location.href);
@@ -18,10 +18,10 @@ const PrintReceipt: React.FC<PrintReceiptProps> = ({ billId }) => {
   const handlePrintReceiptClick = () => {
     setIsRedirecting(true);
     setTimeout(() => {
-      const pdfUrl = `${baseUrl.origin}/openmrs${apiBasePath}receipt?billId=${billId}`;
+      const pdfUrl = `${baseUrl.origin}/openmrs${apiBasePath}receipt?billUuid=${billUuid}`;
       const link = document.createElement('a');
       link.href = pdfUrl;
-      link.download = `receipt_${billId}.pdf`;
+      link.download = `receipt_${billUuid}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
