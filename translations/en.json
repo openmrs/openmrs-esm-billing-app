@@ -246,6 +246,6 @@
   "validationError": "Validation error",
   "visitTime": "Visit time",
   "waiverForm": "Waiver form",
-  "cannotEditPostedBill" : "Cannot edit a posted bill",
-  "postedBillCannotBeModified": "This bill has been posted and its line items cannot be modified"
+  "cannotEditThisBill" : "You can not edit this bill",
+  "onlyPendingBillsCanBeEdited": "Only PENDING bills can be edited"
 }

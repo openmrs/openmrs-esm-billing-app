@@ -86,22 +86,6 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   }, [quantity, price]);
 
   const onSubmit = async (data: BillLineItemForm) => {
-<<<<<<< HEAD
-=======
-    if (bill?.status === 'POSTED') {
-      showSnackbar({
-        title: t('cannotEditPostedBilled', 'Cannot edit posted bill'),
-        subtitle: t(
-          'postedBillCannotBeModified',
-          'This bill has been modfied and it cannot be modified. Contact administrator for help',
-        ),
-        kind: 'error',
-      });
-      return;
-    }
-    const url = `${apiBasePath}bill`;
-
->>>>>>> 63c080a (Added a validation to disable edit when bill is posted)
     const newItem = {
       ...item,
       quantity: data.quantity,
