@@ -92,6 +92,22 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
   options,
 );
 
+// t('billWaiver', 'Bill waiver')
+// Bill waiver feature disabled - O3-5057
+// The following export is commented out along with:
+// - BillWaiver component import and route in billable-services-home.component.tsx
+// - bill-waiver-left-panel-link extension removed from routes.json
+// export const billWaiverLeftPanelLink = getSyncLifecycle(
+//   createBillableServicesLeftPanelLink({
+//     name: 'bill-waiver',
+//     title: 'billWaiver',
+//     path: 'waive-bill',
+//     icon: Money,
+//     privilege: 'coreapps.systemAdministration',
+//   }),
+//   options,
+// );
+
 // t('billingSettings', 'Billing settings')
 // t('cashPointConfig', 'Cash point configuration')
 // t('paymentModesConfig', 'Payment modes configuration')
