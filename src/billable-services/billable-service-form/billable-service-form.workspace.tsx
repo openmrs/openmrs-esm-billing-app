@@ -5,7 +5,6 @@ import {
   ComboBox,
   Dropdown,
   Form,
-  FormGroup,
   FormLabel,
   InlineLoading,
   Layer,
@@ -313,7 +312,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
       id="billable-service-form"
       onSubmit={handleSubmit(onSubmit)}>
       <Stack className={styles.stack} gap={5}>
-        <FormGroup className={styles.formGroup}>
+        <div className={styles.formGroup}>
           {serviceToEdit ? (
             <FormLabel className={styles.serviceNameLabel}>{serviceToEdit.name}</FormLabel>
           ) : (
@@ -337,8 +336,8 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
               )}
             />
           )}
-        </FormGroup>
-        <FormGroup>
+        </div>
+        <div>
           <Controller
             name="shortName"
             control={control}
@@ -359,8 +358,8 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
               </Layer>
             )}
           />
-        </FormGroup>
-        <FormGroup>
+        </div>
+        <div>
           <FormLabel className={styles.conceptLabel}>{t('associatedConcept', 'Associated concept')}</FormLabel>
           <ResponsiveWrapper>
             <Search
@@ -413,8 +412,8 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
               </Layer>
             );
           })()}
-        </FormGroup>
-        <FormGroup>
+        </div>
+        <div>
           <Controller
             name="serviceType"
             control={control}
@@ -425,7 +424,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
                   items={serviceTypes ?? []}
                   titleText={t('serviceType', 'Service type')}
                   itemToString={(item: ServiceType) => item?.display || ''}
-                  selectedItem={field.value}
+                  selectedItem={field.value ?? null}
                   onChange={({ selectedItem }: { selectedItem: ServiceType | null }) => {
                     field.onChange(selectedItem);
                   }}
@@ -436,7 +435,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
               </Layer>
             )}
           />
-        </FormGroup>
+        </div>
         <section>
           <div>
             {fields.map((field, index) => (
@@ -454,7 +453,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
                         itemToString={(item) => (item ? item.name : '')}
                         label={t('selectPaymentMode', 'Select payment mode')}
                         onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
-                        selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
+                        selectedItem={paymentModes.find((mode) => mode.uuid === field.value) ?? null}
                         titleText={t('paymentMode', 'Payment mode')}
                       />
                     </Layer>
