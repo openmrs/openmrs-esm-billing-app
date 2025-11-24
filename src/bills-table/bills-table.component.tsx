@@ -1,11 +1,11 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, memo } from 'react';
 import classNames from 'classnames';
 import {
   DataTable,
   DataTableSkeleton,
   Dropdown,
-  InlineLoading,
   Layer,
+  InlineLoading,
   Pagination,
   Search,
   Table,
@@ -68,8 +68,8 @@ const BillsTable: React.FC = () => {
     billPaymentStatusFilterItems[1],
   );
   const [searchString, setSearchString] = useState('');
-  const debouncedSearchString = useDebounce(searchString);
-  const { bills, error, isLoading, isValidating, currentPage, totalCount, goTo } = usePaginatedBills(
+  const debouncedSearchString = useDebounce(searchString, 500);
+  const { bills, error, currentPage, isLoading, isValidating, totalCount, goTo } = usePaginatedBills(
     pageSize,
     billPaymentStatus.status,
     debouncedSearchString || undefined,
@@ -158,7 +158,7 @@ const BillsTable: React.FC = () => {
         />
       </div>
 
-      {isLoading && !bills?.length ? (
+      {isLoading ? (
         <div className={styles.loaderContainer} role="progressbar" aria-label={t('loading', 'Loading')}>
           <DataTableSkeleton
             rowCount={pageSize}
@@ -270,7 +270,7 @@ interface FilterableTableHeaderProps {
   t: (key: string, fallback: string) => string;
 }
 
-function FilterableTableHeader({
+const FilterableTableHeader = memo(function FilterableTableHeader({
   layout,
   handleSearch,
   isValidating,
@@ -288,12 +288,19 @@ function FilterableTableHeader({
           })}>
           <h4>{t('billList', 'Bill list')}</h4>
         </div>
-        <div className={styles.backgroundDataFetchingIndicator}>
-          <span>{isValidating ? <InlineLoading /> : null}</span>
-        </div>
+        {isValidating && (
+          <div className={styles.backgroundDataFetchingIndicator}>
+            <span>
+              <InlineLoading />
+            </span>
+          </div>
+        )}
       </div>
       <Search
-        labelText=""
+        autoFocus
+        closeButtonLabelText={t('clearSearch', 'Clear')}
+        data-testid="billsTableSearchBar"
+        labelText={t('searchForPatient', 'Search for a patient by name')}
         placeholder={t('filterTable', 'Filter table')}
         value={searchString}
         onChange={handleSearch}
@@ -301,6 +308,6 @@ function FilterableTableHeader({
       />
     </>
   );
-}
+});
 
 export default BillsTable;
