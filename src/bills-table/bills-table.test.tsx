@@ -196,7 +196,7 @@ describe('BillsTable', () => {
     const user = userEvent.setup();
     const mockGoTo = jest.fn();
 
-    mockBills.mockImplementation((pageSize, status, patientName) => ({
+    mockBills.mockImplementation((_pageSize, _status, patientName) => ({
       bills: patientName === 'John' ? [mockBillsData[0]] : mockBillsData,
       isLoading: false,
       isValidating: false,
@@ -312,5 +312,59 @@ describe('BillsTable', () => {
     expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
     expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
     expect(screen.queryByText(/next page/i)).not.toBeInTheDocument();
+  });
+
+  test('should reset to page 1 when page size changes', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = jest.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 3,
+      totalCount: 100,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    const pageSizeSelector = screen.getByRole('combobox', { name: /items per page/i });
+    expect(pageSizeSelector).toBeInTheDocument();
+
+    // Change the page size to 20
+    await user.selectOptions(pageSizeSelector, '20');
+
+    // Should call goTo(1) to reset to first page
+    await waitFor(() => {
+      expect(mockGoTo).toHaveBeenCalledWith(1);
+    });
+  });
+
+  test('should keep data visible during subsequent loads', () => {
+    mockBills.mockImplementationOnce(() => ({
+      bills: mockBillsData,
+      isLoading: true,
+      isValidating: true,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 2,
+      totalCount: 50,
+      goTo: jest.fn(),
+    }));
+
+    render(<BillsTable />);
+
+    // Should show data (not skeleton) since bills exist
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Mary Smith')).toBeInTheDocument();
+
+    // Should show background loading indicator
+    expect(screen.getByTitle('loading')).toBeInTheDocument();
+
+    // Should NOT show skeleton
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 });

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, memo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import {
   DataTable,
@@ -158,7 +158,7 @@ const BillsTable: React.FC = () => {
         />
       </div>
 
-      {isLoading ? (
+      {isLoading && !bills?.length ? (
         <div className={styles.loaderContainer} role="progressbar" aria-label={t('loading', 'Loading')}>
           <DataTableSkeleton
             rowCount={pageSize}
@@ -238,9 +238,13 @@ const BillsTable: React.FC = () => {
               pageSize={pageSize}
               pageSizes={pageSizes}
               totalItems={totalCount}
-              onChange={({ pageSize, page }) => {
-                setPageSize(pageSize);
-                if (page !== currentPage) {
+              onChange={({ pageSize: newPageSize, page }) => {
+                if (newPageSize !== pageSize) {
+                  // User changed page size, reset to page 1
+                  setPageSize(newPageSize);
+                  goTo(1);
+                } else if (page !== currentPage) {
+                  // User navigated to different page
                   goTo(page);
                 }
               }}
@@ -270,7 +274,7 @@ interface FilterableTableHeaderProps {
   t: (key: string, fallback: string) => string;
 }
 
-const FilterableTableHeader = memo(function FilterableTableHeader({
+function FilterableTableHeader({
   layout,
   handleSearch,
   isValidating,
@@ -300,14 +304,14 @@ const FilterableTableHeader = memo(function FilterableTableHeader({
         autoFocus
         closeButtonLabelText={t('clearSearch', 'Clear')}
         data-testid="billsTableSearchBar"
-        labelText={t('searchForPatient', 'Search for a patient by name')}
-        placeholder={t('filterTable', 'Filter table')}
+        labelText={t('searchForPatient', 'Search for a patient')}
+        placeholder={t('filterBillsByPatient', 'Filter bills by patient name or identifier')}
         value={searchString}
         onChange={handleSearch}
         size={responsiveSize}
       />
     </>
   );
-});
+}
 
 export default BillsTable;

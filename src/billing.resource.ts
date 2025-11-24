@@ -54,9 +54,11 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
   let url = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=${pageSize}`;
+
   if (status) {
     url += `&status=${status}`;
   }
+
   if (patientName) {
     url += `&patientName=${encodeURIComponent(patientName)}`;
   }

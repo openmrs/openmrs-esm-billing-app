@@ -103,6 +103,7 @@
   "errorProcessingPayment": "Error processing payment",
   "errorSavingCashPoint": "An error occurred while saving the cash point.",
   "errorSavingPaymentMode": "An error occurred while saving the payment mode.",
+  "filterBillsByPatient": "Filter bills by patient name or identifier",
   "filterBy": "Filter by:",
   "filterTable": "Filter table",
   "gender": "Gender",
