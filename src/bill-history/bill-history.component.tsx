@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   DataTable,
@@ -20,8 +22,6 @@ import {
 import { Add } from '@carbon/react/icons';
 import { launchWorkspace2, useConfig, usePagination } from '@openmrs/esm-framework';
 import { CardHeader, EmptyDataIllustration, ErrorState, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
 import InvoiceTable from '../invoice/invoice-table.component';
