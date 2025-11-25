@@ -78,10 +78,12 @@ const setupMocks = () => {
   mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
 };
 
-const renderBillableServicesForm = (props = {}) => {
+const renderBillableServicesForm = (props: any = {}) => {
+  const closeWorkspace = props.closeWorkspace || jest.fn();
   const defaultProps = {
-    closeWorkspace: jest.fn(),
-    closeWorkspaceWithSavedChanges: jest.fn(),
+    closeWorkspace,
+    groupProps: {},
+    windowProps: {},
     ...props,
   };
   setupMocks();
