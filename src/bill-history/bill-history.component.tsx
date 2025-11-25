@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   Button,
   DataTable,
@@ -20,10 +18,12 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
-import { launchWorkspace, useConfig, usePagination } from '@openmrs/esm-framework';
+import { launchWorkspace2, useConfig, usePagination } from '@openmrs/esm-framework';
 import { CardHeader, EmptyDataIllustration, ErrorState, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { convertToCurrency } from '../helpers';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useBills } from '../billing.resource';
+import { convertToCurrency } from '../helpers';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
 
@@ -96,7 +96,14 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             <EmptyDataIllustration />
           </div>
           <p className={styles.content}>{t('noBillsToDisplay', 'There are no bills to display.')}</p>
-          <Button onClick={() => launchWorkspace('billing-form-workspace', { onMutate: mutate })} kind="ghost">
+          <Button
+            onClick={() =>
+              launchWorkspace2('billing-form-workspace', {
+                patientUuid,
+                onMutate: mutate,
+              })
+            }
+            kind="ghost">
             {t('addBillItems', 'Add bill items')}
           </Button>
         </Tile>
@@ -114,7 +121,12 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
         )}
         <Button
           kind="ghost"
-          onClick={() => launchWorkspace('billing-form-workspace', { onMutate: mutate })}
+          onClick={() =>
+            launchWorkspace2('billing-form-workspace', {
+              patientUuid,
+              onMutate: mutate,
+            })
+          }
           renderIcon={Add}>
           {t('addBillItems', 'Add bill items')}
         </Button>

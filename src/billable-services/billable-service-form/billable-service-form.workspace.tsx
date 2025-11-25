@@ -1,4 +1,3 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   ButtonSet,
@@ -14,11 +13,7 @@ import {
   TextInput,
   Tile,
 } from '@carbon/react';
-import { type TFunction } from 'i18next';
-import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
 import { Add, TrashCan } from '@carbon/react/icons';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   getCoreTranslation,
@@ -26,7 +21,14 @@ import {
   showSnackbar,
   useDebounce,
   useLayoutType,
+  Workspace2,
+  type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
+import { type TFunction } from 'i18next';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 import type { BillableService, ServicePrice } from '../../types';
 import {
   createBillableService,
@@ -43,6 +45,7 @@ interface BillableServiceFormWorkspaceProps {
   closeWorkspaceWithSavedChanges?: () => void;
   promptBeforeClosing?: (testFcn: () => boolean) => void;
   onWorkspaceClose?: () => void;
+  customWorkspaceTitle?: string;
 }
 
 interface BillableServiceFormData {
@@ -182,12 +185,9 @@ const createBillableServiceSchema = (t: TFunction) => {
     payment: z.array(servicePriceSchema).min(1, t('paymentOptionRequired', 'At least one payment option is required')),
   });
 };
-
-const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> = ({
-  serviceToEdit,
+const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableServiceFormWorkspaceProps, {}, {}>> = ({
+  workspaceProps: { serviceToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose, customWorkspaceTitle },
   closeWorkspace,
-  closeWorkspaceWithSavedChanges,
-  onWorkspaceClose,
 }) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
@@ -274,7 +274,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
       if (closeWorkspaceWithSavedChanges) {
         closeWorkspaceWithSavedChanges();
       } else {
-        closeWorkspace();
+        closeWorkspace({ discardUnsavedChanges: true });
       }
     } catch (error) {
       showSnackbar({
@@ -424,7 +424,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
                   items={serviceTypes ?? []}
                   titleText={t('serviceType', 'Service type')}
                   itemToString={(item: ServiceType) => item?.display || ''}
-                  selectedItem={field.value ?? null}
+                  selectedItem={field.value}
                   onChange={({ selectedItem }: { selectedItem: ServiceType | null }) => {
                     field.onChange(selectedItem);
                   }}
@@ -453,7 +453,7 @@ const BillableServiceFormWorkspace: React.FC<BillableServiceFormWorkspaceProps> 
                         itemToString={(item) => (item ? item.name : '')}
                         label={t('selectPaymentMode', 'Select payment mode')}
                         onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
-                        selectedItem={paymentModes.find((mode) => mode.uuid === field.value) ?? null}
+                        selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
                         titleText={t('paymentMode', 'Payment mode')}
                       />
                     </Layer>
