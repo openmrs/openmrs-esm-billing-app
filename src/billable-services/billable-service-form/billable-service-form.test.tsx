@@ -80,10 +80,19 @@ const setupMocks = () => {
 
 const renderBillableServicesForm = (props: any = {}) => {
   const closeWorkspace = props.closeWorkspace || jest.fn();
+  const workspaceProps = {
+    serviceToEdit: props.serviceToEdit,
+    closeWorkspaceWithSavedChanges: props.closeWorkspaceWithSavedChanges,
+    onWorkspaceClose: props.onWorkspaceClose,
+    customWorkspaceTitle: props.customWorkspaceTitle,
+  };
+
   const defaultProps = {
     closeWorkspace,
+    workspaceProps,
     groupProps: {},
     windowProps: {},
+    workspaceName: 'billable-service-form-workspace',
     ...props,
   };
   setupMocks();
