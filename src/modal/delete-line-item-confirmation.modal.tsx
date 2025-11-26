@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { getCoreTranslation, showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
+import { getCoreTranslation, showSnackbar } from '@openmrs/esm-framework';
 import { useSWRConfig } from 'swr';
+import { deleteBillItem } from '../billing.resource';
 import { type LineItem, type MappedBill } from '../types';
-import styles from './delete-ListItem.scss';
+import styles from './delete-line-item-confirmation.scss';
 import { apiBasePath } from '../constants';
 
 interface DeleteListItemParams {
@@ -22,10 +23,8 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item }) =>
     setIsDeleting(true);
 
     try {
-      // delete the line item
-      await openmrsFetch(`${apiBasePath}billLineItem/${item.uuid}`, {
-        method: 'DELETE',
-      });
+      //  line item deleted using billing.resource request
+      await deleteBillItem(item.uuid);
 
       //update the listItem
       mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
@@ -58,11 +57,11 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item }) =>
       <ModalHeader
         className={styles.sectionTitle}
         closeModal={closeModal}
-        title={t('deleteListItem', 'Delete List Item')}
+        title={t('deleteLineItem', 'Delete line item')}
       />
 
       <ModalBody className={styles.modalBody}>
-        <p>{t('deleteConfirmation', 'Are you sure you want to delete this record ?')}</p>
+        <p>{t('deleteConfirmation', 'Are you sure you want to delete this line item ?')}</p>
       </ModalBody>
 
       <ModalFooter>
@@ -72,7 +71,7 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item }) =>
 
         <Button kind="danger" onClick={handleDeleteConfirm} disabled={isDeleting}>
           {isDeleting ? (
-            <InlineLoading className={styles.spinner} description="Deleting" />
+            <InlineLoading className={styles.spinner} description={t('deleting', 'Deleting')} />
           ) : (
             <span>{getCoreTranslation('delete')}</span>
           )}

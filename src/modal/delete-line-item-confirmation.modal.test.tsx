@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import DeleteListItem from './delete-ListItem.modal';
+import DeleteListItem from './delete-line-item-confirmation.modal';
 import { showSnackbar, openmrsFetch } from '@openmrs/esm-framework';
 import { useSWRConfig } from 'swr';
 import { apiBasePath } from '../constants';
@@ -9,16 +9,17 @@ import { type MappedBill } from '../types';
 
 jest.mock('@openmrs/esm-framework', () => ({
   showSnackbar: jest.fn(),
-  openmrsFetch: jest.fn(),
   getCoreTranslation: (key: string) => key,
+  openmrsFetch: jest.fn(),
 }));
 
 jest.mock('swr', () => ({
   useSWRConfig: jest.fn(),
 }));
 
+const mockOpenmrsFetch = jest.mocked(openmrsFetch);
+const mockUseSWRConfig = jest.mocked(useSWRConfig);
 const mockMutate = jest.fn();
-(useSWRConfig as jest.Mock).mockReturnValue({ mutate: mockMutate });
 
 const mockCloseModal = jest.fn();
 
@@ -78,14 +79,14 @@ const mockItem = {
 
 describe('DeleteListItem Modal', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockUseSWRConfig.mockReturnValue({ mutate: mockMutate } as any);
   });
 
   it('renders delete confirmation modal', () => {
     render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
 
-    expect(screen.getByText(/Delete list item/i)).toBeInTheDocument();
-    expect(screen.getByText(/Are you sure you want to delete this record/i)).toBeInTheDocument();
+    expect(screen.getByText(/Delete line item/i)).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure you want to delete this line item \?/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
@@ -103,7 +104,7 @@ describe('DeleteListItem Modal', () => {
   it('calls DELETE API and shows success snackbar', async () => {
     const user = userEvent.setup();
     // Mock successful API response
-    (openmrsFetch as jest.Mock).mockResolvedValueOnce({});
+    mockOpenmrsFetch.mockResolvedValueOnce({} as any);
 
     render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
 
@@ -112,7 +113,11 @@ describe('DeleteListItem Modal', () => {
     await waitFor(() => {
       expect(openmrsFetch).toHaveBeenCalledWith(`${apiBasePath}billLineItem/${mockItem.uuid}`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+
       expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), undefined, { revalidate: true });
       expect(showSnackbar).toHaveBeenCalledWith({
         kind: 'success',
@@ -126,7 +131,7 @@ describe('DeleteListItem Modal', () => {
   it('shows error snackbar when delete fails', async () => {
     const user = userEvent.setup();
 
-    (openmrsFetch as jest.Mock).mockRejectedValueOnce({ message: 'Delete failed' });
+    mockOpenmrsFetch.mockRejectedValueOnce({ message: 'Delete failed' });
 
     render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
 

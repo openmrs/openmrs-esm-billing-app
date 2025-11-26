@@ -110,7 +110,7 @@
       "component": "requirePaymentModal"
     },
     {
-      "name":"ListItem-delete-confirmation-modal",
+      "name":"delete-line-item-confirmation-modal",
       "component": "deleteListItemConfirmationModal"
     }
   ],

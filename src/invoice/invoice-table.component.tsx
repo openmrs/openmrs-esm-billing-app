@@ -75,7 +75,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
   ];
 
   const handleDeleteListItem = useCallback((row: LineItem) => {
-    const dispose = showModal('ListItem-delete-confirmation-modal', {
+    const dispose = showModal('delete-line-item-confirmation-modal', {
       item: row,
       closeModal: () => dispose(),
     });
