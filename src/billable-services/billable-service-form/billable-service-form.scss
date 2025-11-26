@@ -17,7 +17,7 @@
 .paymentMethodContainer {
   display: grid;
   grid-template-columns: repeat(4, minmax(auto, 1fr));
-  align-items: flex-start;
+  align-items: baseline;
   column-gap: layout.$spacing-05;
   margin: 0.625rem 0;
   width: 100%;
