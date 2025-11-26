@@ -1,5 +1,5 @@
 import { type APIRequestContext } from '@playwright/test';
-import { type BillableService } from './types';
+import type { BillableService, Bill } from './types';
 
 interface PaymentMode {
   uuid: string;
@@ -83,6 +83,35 @@ export async function deleteBill(api: APIRequestContext, billUuid: string) {
   const response = await api.delete(`billing/bill/${billUuid}?purge=true`);
   if (!response.ok()) {
     console.warn(`Failed to delete bill ${billUuid}: ${await response.text()}`);
+  }
+}
+
+/**
+ * Deletes all bills associated with a patient
+ * @param api - Playwright API request context
+ * @param patientUuid - UUID of the patient whose bills should be deleted
+ */
+export async function deleteAllBillsForPatient(api: APIRequestContext, patientUuid: string) {
+  try {
+    const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+    if (!billsResponse.ok()) {
+      console.warn(`Failed to fetch bills for patient ${patientUuid}: ${await billsResponse.text()}`);
+      return;
+    }
+
+    const billsData = await billsResponse.json();
+    const bills: Bill[] = billsData.results || [];
+
+    // Delete each bill
+    for (const bill of bills) {
+      try {
+        await deleteBill(api, bill.uuid);
+      } catch (error) {
+        console.warn(`Failed to delete bill ${bill.uuid} for patient ${patientUuid}:`, error);
+      }
+    }
+  } catch (error) {
+    console.warn(`Failed to fetch bills for patient ${patientUuid}:`, error);
   }
 }
 

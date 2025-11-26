@@ -9,7 +9,10 @@ const config: PlaywrightTestConfig = {
   expect: {
     timeout: 20 * 1000,
   },
-  fullyParallel: true,
+  // Run tests serially with a single worker to avoid race conditions
+  // with bill cleanup when patient fixture teardown runs
+  fullyParallel: false,
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: 0,
   reporter: process.env.CI ? [['junit', { outputFile: 'results.xml' }], ['html']] : [['html']],

@@ -8,6 +8,7 @@ import {
   useVisit,
   type SessionLocation,
   useOpenmrsFetchAll,
+  useOpenmrsPagination,
 } from '@openmrs/esm-framework';
 import { apiBasePath } from './constants';
 import type {
@@ -22,20 +23,13 @@ import type {
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
-  const status =
-    activeLineItems.length > 0
-      ? activeLineItems.some((item) => item.paymentStatus === 'PENDING')
-        ? 'PENDING'
-        : 'PAID'
-      : bill.status;
-
   return {
     id: bill?.id,
     uuid: bill?.uuid,
     patientName: bill?.patient?.display?.split('-')?.[1],
     identifier: bill?.patient?.display?.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
-    status,
+    status: bill?.status,
     receiptNumber: bill?.receiptNumber,
     cashier: bill?.cashier,
     cashPointUuid: bill?.cashPoint?.uuid,
@@ -55,28 +49,53 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   };
 };
 
-export const useBills = (patientUuid: string = '', billStatus: string = '') => {
-  // Build URL with status parameter if provided
-  const buildUrl = () => {
-    let url = `${apiBasePath}bill?v=full`;
+export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
+  const customRepresentation =
+    '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
-    if (patientUuid) {
-      url += `&patientUuid=${patientUuid}`;
-    }
+  let url = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=${pageSize}`;
 
-    if (billStatus) {
-      url += `&status=${billStatus}`;
-    }
+  if (status) {
+    url += `&status=${status}`;
+  }
 
-    return url;
+  if (patientName) {
+    url += `&patientName=${encodeURIComponent(patientName)}`;
+  }
+
+  const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
+    useOpenmrsPagination<PatientInvoice>(url, pageSize);
+
+  // Backend already sorts by ID descending (newest first), so no need to sort on frontend
+  const mappedResults = data?.map((bill) => mapBillProperties(bill));
+
+  return {
+    bills: mappedResults,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+    currentPage,
+    totalCount,
+    goTo,
   };
+};
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: Array<PatientInvoice> } }>(
-    buildUrl(),
-    openmrsFetch,
-  );
+export const useBills = (patientUuid?: string, billStatus?: string) => {
+  // Build URL with status parameter if provided
+  let url = `${apiBasePath}bill?v=full`;
 
-  const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
+  if (patientUuid) {
+    url += `&patientUuid=${patientUuid}`;
+  }
+
+  if (billStatus) {
+    url += `&status=${billStatus}`;
+  }
+
+  const { data, error, isLoading, isValidating, mutate } = useOpenmrsFetchAll<PatientInvoice>(url);
+
+  const sortedBills = sortBy(data ?? [], ['dateCreated']).reverse();
   const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
 
   return {

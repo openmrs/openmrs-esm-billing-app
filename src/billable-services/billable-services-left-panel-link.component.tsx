@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { SideNavLink } from '@carbon/react';
 import { navigate, UserHasAccess } from '@openmrs/esm-framework';
 
@@ -13,6 +14,7 @@ export interface BillableServicesLinkConfig {
 
 function BillableServicesLinkExtension({ config }: { config: BillableServicesLinkConfig }) {
   const { title, path, icon: Icon, privilege } = config;
+  const { t } = useTranslation();
   const location = useLocation();
   const spaBasePath = `${window.spaBase}/billable-services`;
 
@@ -30,7 +32,7 @@ function BillableServicesLinkExtension({ config }: { config: BillableServicesLin
 
   const link = (
     <SideNavLink onClick={handleNavigation} renderIcon={Icon} isActive={isActive}>
-      {title}
+      {t(title)}
     </SideNavLink>
   );
 

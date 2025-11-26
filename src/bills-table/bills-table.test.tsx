@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { useBills } from '../billing.resource';
+import { usePaginatedBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
 jest.mock('@openmrs/esm-framework', () => {
@@ -19,19 +19,21 @@ jest.mock('@openmrs/esm-framework', () => {
       resolvedTo = resolvedTo.replace(/^\/openmrs\/spa/, '');
       return <a href={resolvedTo}>{children}</a>;
     },
+    useDebounce: jest.fn((value) => value),
   };
 });
 
 jest.mock('../billing.resource', () => ({
-  useBills: jest.fn(() => ({
+  usePaginatedBills: jest.fn(() => ({
     bills: mockBillsData,
     isLoading: false,
     isValidating: false,
     error: null,
+    mutate: jest.fn(),
   })),
 }));
 
-const mockBills = jest.mocked(useBills);
+const mockBills = jest.mocked(usePaginatedBills);
 
 const mockBillsData = [
   {
@@ -116,29 +118,39 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 10,
+      goTo: jest.fn(),
     }));
   });
 
   test('renders data table with pending bills', () => {
     render(<BillsTable />);
 
-    expect(screen.getByText('Visit time')).toBeInTheDocument();
-    expect(screen.getByText('Identifier')).toBeInTheDocument();
+    expect(screen.getByText(/visit time/i)).toBeInTheDocument();
+    expect(screen.getByText(/patient identifier/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
-    expect(screen.getByText('12345678')).toBeInTheDocument();
+    expect(screen.getByText(/12345678/i)).toBeInTheDocument();
   });
 
-  test('displays empty state when there are no bills', () => {
+  test('displays empty state when there are no bills with default filter', () => {
     mockBills.mockImplementationOnce(() => ({
       bills: [],
       isLoading: false,
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
-    expect(screen.getByText('There are no bills to display.')).toBeInTheDocument();
+
+    // With default "Pending bills" filter, shows "No matching bills" not empty state
+    expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
+    expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
   });
 
   test('should show the loading spinner while retrieving data', () => {
@@ -148,13 +160,16 @@ describe('BillsTable', () => {
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
 
-    const dataTableSkeleton = screen.getByRole('table');
-    expect(dataTableSkeleton).toBeInTheDocument();
-    expect(dataTableSkeleton).toHaveClass('cds--skeleton cds--data-table cds--data-table--zebra');
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByText(/filter by/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending bills/i)).toBeInTheDocument();
   });
 
   test('should display an error state if there is a problem loading bill data', () => {
@@ -164,16 +179,34 @@ describe('BillsTable', () => {
       isValidating: false,
       error: new Error('Error in fetching data'),
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
 
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
+    expect(screen.getByText(/filter by/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending bills/i)).toBeInTheDocument();
   });
 
-  test('should filter bills by search term', async () => {
+  test('should pass search term to backend API', async () => {
     const user = userEvent.setup();
+    const mockGoTo = jest.fn();
+
+    mockBills.mockImplementation((_pageSize, _status, patientName) => ({
+      bills: patientName === 'John' ? [mockBillsData[0]] : mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: patientName === 'John' ? 1 : 2,
+      goTo: mockGoTo,
+    }));
+
     render(<BillsTable />);
 
     const searchInput = screen.getByRole('searchbox');
@@ -182,12 +215,13 @@ describe('BillsTable', () => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('Mary Smith')).toBeInTheDocument();
 
-    await user.type(searchInput, 'John Doe');
+    await user.type(searchInput, 'John');
+
     await waitFor(() => {
-      expect(screen.queryByText('Mary Smith')).not.toBeInTheDocument();
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING,POSTED', 'John');
     });
 
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(mockGoTo).toHaveBeenCalledWith(1);
   });
 
   test('should render patient name as a link', () => {
@@ -202,12 +236,28 @@ describe('BillsTable', () => {
   test('should filter bills by payment status', async () => {
     const user = userEvent.setup();
 
+    // First call: initial render with PENDING filter (default)
     mockBills.mockImplementationOnce(() => ({
       bills: mockBillsData.map((bill) => ({ ...bill, status: 'PENDING' })),
       isLoading: false,
       isValidating: false,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: jest.fn(),
+    }));
+
+    // Second call: after filter changes to PAID, return empty bills
+    mockBills.mockImplementationOnce(() => ({
+      bills: [],
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
@@ -218,7 +268,11 @@ describe('BillsTable', () => {
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
     await user.click(paidBillsOption);
 
-    expect(screen.getByText('No matching bills to display')).toBeInTheDocument();
+    // With "Paid bills" filter active and no results, shows "No matching bills"
+    await waitFor(() => {
+      expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
   });
 
   test('should show loading state during background updates', () => {
@@ -228,11 +282,89 @@ describe('BillsTable', () => {
       isValidating: true,
       error: null,
       mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
     }));
 
     render(<BillsTable />);
 
     const loadingIndicator = screen.getByTitle('loading');
     expect(loadingIndicator).toBeInTheDocument();
+  });
+
+  test('should show search box and empty state message when search returns no results', () => {
+    mockBills.mockImplementationOnce(() => ({
+      bills: [],
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: jest.fn(),
+    }));
+
+    render(<BillsTable />);
+
+    // With active filters, shows search box even with no results
+    expect(screen.getByRole('searchbox')).toBeInTheDocument();
+    expect(screen.getByText(/no matching bills to display/i)).toBeInTheDocument();
+    expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
+    expect(screen.queryByText(/next page/i)).not.toBeInTheDocument();
+  });
+
+  test('should reset to page 1 when page size changes', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = jest.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 3,
+      totalCount: 100,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    const pageSizeSelector = screen.getByRole('combobox', { name: /items per page/i });
+    expect(pageSizeSelector).toBeInTheDocument();
+
+    // Change the page size to 20
+    await user.selectOptions(pageSizeSelector, '20');
+
+    // Should call goTo(1) to reset to first page
+    await waitFor(() => {
+      expect(mockGoTo).toHaveBeenCalledWith(1);
+    });
+  });
+
+  test('should keep data visible during subsequent loads', () => {
+    mockBills.mockImplementationOnce(() => ({
+      bills: mockBillsData,
+      isLoading: true,
+      isValidating: true,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 2,
+      totalCount: 50,
+      goTo: jest.fn(),
+    }));
+
+    render(<BillsTable />);
+
+    // Should show data (not skeleton) since bills exist
+    expect(screen.getByText('John Doe')).toBeInTheDocument();
+    expect(screen.getByText('Mary Smith')).toBeInTheDocument();
+
+    // Should show background loading indicator
+    expect(screen.getByTitle('loading')).toBeInTheDocument();
+
+    // Should NOT show skeleton
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 });

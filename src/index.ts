@@ -26,16 +26,16 @@ const options = {
   moduleName,
 };
 
-// t('billing', 'Billing')
+export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
+
 export const billingDashboardLink = getSyncLifecycle(
+  // t('billing', 'Billing')
   createLeftPanelLink({
     name: 'billing',
-    title: 'Billing',
+    title: 'billing',
   }),
   options,
 );
-
-export const importTranslation = require.context('../translations', false, /.json$/, 'lazy');
 
 export function startupApp() {
   defineConfigSchema(moduleName, configSchema);
@@ -85,7 +85,7 @@ export const billableServiceFormWorkspace = getAsyncLifecycle(
 export const billableServicesLeftPanelLink = getSyncLifecycle(
   createBillableServicesLeftPanelLink({
     name: 'billable-services',
-    title: 'Billable Services',
+    title: 'billableServices',
     path: '',
     icon: Wallet,
   }),
@@ -93,34 +93,38 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
 );
 
 // t('billWaiver', 'Bill waiver')
-export const billWaiverLeftPanelLink = getSyncLifecycle(
-  createBillableServicesLeftPanelLink({
-    name: 'bill-waiver',
-    title: 'Bill waiver',
-    path: 'waive-bill',
-    icon: Money,
-    privilege: 'coreapps.systemAdministration',
-  }),
-  options,
-);
+// Bill waiver feature disabled - O3-5057
+// The following export is commented out along with:
+// - BillWaiver component import and route in billable-services-home.component.tsx
+// - bill-waiver-left-panel-link extension removed from routes.json
+// export const billWaiverLeftPanelLink = getSyncLifecycle(
+//   createBillableServicesLeftPanelLink({
+//     name: 'bill-waiver',
+//     title: 'billWaiver',
+//     path: 'waive-bill',
+//     icon: Money,
+//     privilege: 'coreapps.systemAdministration',
+//   }),
+//   options,
+// );
 
 // t('billingSettings', 'Billing settings')
 // t('cashPointConfig', 'Cash point configuration')
 // t('paymentModesConfig', 'Payment modes configuration')
 export const billingSettingsLeftPanelMenu = getSyncLifecycle(
   createBillableServicesLeftPanelMenu({
-    title: 'Billing settings',
+    title: 'billingSettings',
     icon: Settings,
     privilege: 'coreapps.systemAdministration',
     items: [
       {
         name: 'cash-point-config',
-        title: 'Cash point configuration',
+        title: 'cashPointConfig',
         path: 'cash-point-config',
       },
       {
         name: 'payment-modes-config',
-        title: 'Payment modes configuration',
+        title: 'paymentModesConfig',
         path: 'payment-modes-config',
       },
     ],

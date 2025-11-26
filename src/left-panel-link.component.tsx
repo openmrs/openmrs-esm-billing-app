@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import last from 'lodash-es/last';
 import { BrowserRouter, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import last from 'lodash-es/last';
 import { ConfigurableLink } from '@openmrs/esm-framework';
 
 export interface LinkConfig {
@@ -9,6 +10,7 @@ export interface LinkConfig {
 }
 
 export function LinkExtension({ config }: { config: LinkConfig }) {
+  const { t } = useTranslation();
   const { name, title } = config;
   const location = useLocation();
   const spaBasePath = window.getOpenmrsSpaBase() + 'home';
@@ -28,14 +30,13 @@ export function LinkExtension({ config }: { config: LinkConfig }) {
     <ConfigurableLink
       to={spaBasePath + '/' + name}
       className={`cds--side-nav__link ${name === urlSegment && 'active-left-nav-link'}`}>
-      {title}
+      {t(title)}
     </ConfigurableLink>
   );
 }
 
-export const createLeftPanelLink = (config: LinkConfig) => () =>
-  (
-    <BrowserRouter>
-      <LinkExtension config={config} />
-    </BrowserRouter>
-  );
+export const createLeftPanelLink = (config: LinkConfig) => () => (
+  <BrowserRouter>
+    <LinkExtension config={config} />
+  </BrowserRouter>
+);
