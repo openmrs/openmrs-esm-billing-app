@@ -61,7 +61,7 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item }) =>
       />
 
       <ModalBody className={styles.modalBody}>
-        <p>{t('deleteConfirmation', 'Are you sure you want to delete this line item ?')}</p>
+        <p>{t('deleteConfirmation', 'Are you sure you want to delete this line item?')}</p>
       </ModalBody>
 
       <ModalFooter>
