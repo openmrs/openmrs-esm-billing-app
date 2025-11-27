@@ -86,7 +86,7 @@ describe('DeleteListItem Modal', () => {
     render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
 
     expect(screen.getByText(/Delete line item/i)).toBeInTheDocument();
-    expect(screen.getByText(/Are you sure you want to delete this line item \?/i)).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure you want to delete this line item\?/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
