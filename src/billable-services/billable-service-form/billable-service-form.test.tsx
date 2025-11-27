@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { type FetchResponse } from '@openmrs/esm-framework';
+import { type Workspace2DefinitionProps, type FetchResponse } from '@openmrs/esm-framework';
 import {
   createBillableService,
   updateBillableService,
@@ -14,6 +14,7 @@ import BillableServiceFormWorkspace, {
   transformServiceToFormData,
   normalizePrice,
   getAvailablePaymentModes,
+  type BillableServiceFormWorkspaceProps,
 } from './billable-service-form.workspace';
 import type { BillableService } from '../../types';
 
@@ -78,22 +79,29 @@ const setupMocks = () => {
   mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
 };
 
-const renderBillableServicesForm = (props: any = {}) => {
+const renderBillableServicesForm = (
+  props: Partial<Workspace2DefinitionProps<BillableServiceFormWorkspaceProps, {}, {}>> &
+    Partial<BillableServiceFormWorkspaceProps> = {},
+) => {
   const closeWorkspace = props.closeWorkspace || jest.fn();
-  const workspaceProps = {
+  const workspaceProps: BillableServiceFormWorkspaceProps = {
     serviceToEdit: props.serviceToEdit,
     closeWorkspaceWithSavedChanges: props.closeWorkspaceWithSavedChanges,
     onWorkspaceClose: props.onWorkspaceClose,
-    customWorkspaceTitle: props.customWorkspaceTitle,
+    closeWorkspace,
+    promptBeforeClosing: props.promptBeforeClosing,
+    ...props.workspaceProps,
   };
 
-  const defaultProps = {
+  const defaultProps: Workspace2DefinitionProps<BillableServiceFormWorkspaceProps> = {
     closeWorkspace,
     workspaceProps,
-    groupProps: {},
-    windowProps: {},
-    workspaceName: 'billable-service-form-workspace',
-    ...props,
+    groupProps: props.groupProps || {},
+    windowProps: props.windowProps || {},
+    workspaceName: props.workspaceName || 'billable-service-form-workspace',
+    launchChildWorkspace: jest.fn(),
+    windowName: 'billable-service-form-window',
+    isRootWorkspace: false,
   };
   setupMocks();
   return render(<BillableServiceFormWorkspace {...defaultProps} />);

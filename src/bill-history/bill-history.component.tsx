@@ -99,7 +99,6 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             onClick={() =>
               launchWorkspace2('billing-form-workspace', {
                 patientUuid,
-                customWorkspaceTitle: t('addBill', 'Add bill items'),
               })
             }
             kind="ghost">
@@ -118,7 +117,6 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
           onClick={() =>
             launchWorkspace2('billing-form-workspace', {
               patientUuid,
-              customWorkspaceTitle: t('addBill', 'Add bill items'),
             })
           }
           kind="ghost">

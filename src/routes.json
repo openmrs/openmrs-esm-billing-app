@@ -129,17 +129,13 @@
     },
     {
       "name": "billable-service-form-workspace",
-      "group": "billableServiceFormWorkspace"
+      "group": "billingFormWorkspaceGroup"
     }
   ],
   "workspaceGroups2": [
     {
       "name": "billingFormWorkspaceGroup",
-      "overlay": true
-    },
-    {
-      "name": "billableServiceFormWorkspace",
-      "overlay": true
+      "overlay": false
     }
   ]
 }
