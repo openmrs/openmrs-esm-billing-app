@@ -35,11 +35,10 @@ interface ExtendedLineItem extends LineItem {
 type BillingFormProps = {
   patientUuid: string;
   closeWorkspace: () => void;
-  customWorkspaceTitle?: string;
 };
 
 const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps, {}, {}>> = ({
-  workspaceProps: { patientUuid, customWorkspaceTitle },
+  workspaceProps: { patientUuid },
   closeWorkspace,
 }) => {
   const { mutate } = useSWRConfig();
@@ -51,7 +50,6 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps, {}, {}>>
   const { data, error, isLoading } = useBillableServices();
 
   const selectBillableItem = (item: BillableItem) => {
-
     if (!item) {
       return;
     }
@@ -104,12 +102,12 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps, {}, {}>>
     const updatedItems = [...selectedItems].map((item) =>
       item.uuid === itemUuid
         ? {
-          ...item,
-          selectedPaymentMethod: paymentMethod,
-          price: typeof paymentMethod.price === 'number' ? paymentMethod.price : parseFloat(paymentMethod.price),
-          priceName: paymentMethod.name,
-          priceUuid: paymentMethod.uuid,
-        }
+            ...item,
+            selectedPaymentMethod: paymentMethod,
+            price: typeof paymentMethod.price === 'number' ? paymentMethod.price : parseFloat(paymentMethod.price),
+            priceName: paymentMethod.name,
+            priceUuid: paymentMethod.uuid,
+          }
         : item,
     );
     setSelectedItems(updatedItems);
@@ -178,7 +176,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps, {}, {}>>
   };
 
   return (
-    <Workspace2 title={customWorkspaceTitle ?? t('addBill', 'Add bill items')}>
+    <Workspace2 title={t('addBill', 'Add bill items')}>
       <Form className={styles.form}>
         <div className={styles.grid}>
           {isLoading ? (
@@ -225,9 +223,9 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps, {}, {}>>
                           itemToString={(method: ServicePrice) =>
                             method
                               ? `${method.name} - ${convertToCurrency(
-                                typeof method.price === 'number' ? method.price : parseFloat(method.price),
-                                defaultCurrency,
-                              )}`
+                                  typeof method.price === 'number' ? method.price : parseFloat(method.price),
+                                  defaultCurrency,
+                                )}`
                               : ''
                           }
                           selectedItem={item.selectedPaymentMethod}

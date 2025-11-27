@@ -1,3 +1,4 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Button,
   ButtonSet,
@@ -13,7 +14,11 @@ import {
   TextInput,
   Tile,
 } from '@carbon/react';
+import { type TFunction } from 'i18next';
+import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { Add, TrashCan } from '@carbon/react/icons';
+import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   getCoreTranslation,
@@ -24,11 +29,6 @@ import {
   Workspace2,
   type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
-import { type TFunction } from 'i18next';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Controller, useFieldArray, useForm, useWatch } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
 import type { BillableService, ServicePrice } from '../../types';
 import {
   createBillableService,
@@ -39,13 +39,12 @@ import {
 } from '../billable-service.resource';
 import styles from './billable-service-form.scss';
 
-interface BillableServiceFormWorkspaceProps {
+export interface BillableServiceFormWorkspaceProps {
   serviceToEdit?: BillableService;
   closeWorkspace: () => void;
   closeWorkspaceWithSavedChanges?: () => void;
   promptBeforeClosing?: (testFcn: () => boolean) => void;
   onWorkspaceClose?: () => void;
-  customWorkspaceTitle?: string;
 }
 
 interface BillableServiceFormData {
@@ -186,7 +185,7 @@ const createBillableServiceSchema = (t: TFunction) => {
   });
 };
 const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableServiceFormWorkspaceProps, {}, {}>> = ({
-  workspaceProps: { serviceToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose, customWorkspaceTitle },
+  workspaceProps: { serviceToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
 }) => {
   const { t } = useTranslation();
@@ -306,209 +305,222 @@ const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableS
   }
 
   return (
-    <Form
-      aria-label={t('billableServiceForm', 'Billable service form')}
-      className={styles.form}
-      id="billable-service-form"
-      onSubmit={handleSubmit(onSubmit)}>
-      <Stack className={styles.stack} gap={5}>
-        <div className={styles.formGroup}>
-          {serviceToEdit ? (
-            <FormLabel className={styles.serviceNameLabel}>{serviceToEdit.name}</FormLabel>
-          ) : (
+    <Workspace2
+      title={
+        serviceToEdit
+          ? t('editBillableService', 'Edit billable service')
+          : t('addBillableService', 'Add billable service')
+      }>
+      <Form
+        aria-label={t('billableServiceForm', 'Billable service form')}
+        className={styles.form}
+        id="billable-service-form"
+        onSubmit={handleSubmit(onSubmit)}>
+        <Stack className={styles.stack} gap={5}>
+          <div className={styles.formGroup}>
+            {serviceToEdit ? (
+              <FormLabel className={styles.serviceNameLabel}>{serviceToEdit.name}</FormLabel>
+            ) : (
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Layer>
+                    <TextInput
+                      {...field}
+                      enableCounter
+                      id="serviceName"
+                      invalid={!!errors.name}
+                      invalidText={errors.name?.message}
+                      labelText={t('serviceName', 'Service name')}
+                      maxCount={MAX_NAME_LENGTH}
+                      placeholder={t('enterServiceName', 'Enter service name')}
+                      type="text"
+                    />
+                  </Layer>
+                )}
+              />
+            )}
+          </div>
+          <div>
             <Controller
-              name="name"
+              name="shortName"
               control={control}
               render={({ field }) => (
                 <Layer>
                   <TextInput
                     {...field}
                     enableCounter
-                    id="serviceName"
-                    invalid={!!errors.name}
-                    invalidText={errors.name?.message}
-                    labelText={t('serviceName', 'Service name')}
+                    id="serviceShortName"
+                    invalid={!!errors.shortName}
+                    invalidText={errors.shortName?.message}
+                    labelText={t('shortName', 'Short name')}
                     maxCount={MAX_NAME_LENGTH}
-                    placeholder={t('enterServiceName', 'Enter service name')}
+                    placeholder={t('enterServiceShortName', 'Enter service short name')}
                     type="text"
+                    value={field.value || ''}
                   />
                 </Layer>
               )}
             />
-          )}
-        </div>
-        <div>
-          <Controller
-            name="shortName"
-            control={control}
-            render={({ field }) => (
-              <Layer>
-                <TextInput
-                  {...field}
-                  enableCounter
-                  id="serviceShortName"
-                  invalid={!!errors.shortName}
-                  invalidText={errors.shortName?.message}
-                  labelText={t('shortName', 'Short name')}
-                  maxCount={MAX_NAME_LENGTH}
-                  placeholder={t('enterServiceShortName', 'Enter service short name')}
-                  type="text"
-                  value={field.value || ''}
-                />
-              </Layer>
-            )}
-          />
-        </div>
-        <div>
-          <FormLabel className={styles.conceptLabel}>{t('associatedConcept', 'Associated concept')}</FormLabel>
-          <ResponsiveWrapper>
-            <Search
-              id="conceptsSearch"
-              labelText={t('associatedConcept', 'Associated concept')}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              onClear={() => {
-                setSearchTerm('');
-                setValue('concept', null);
-              }}
-              placeholder={t('searchConcepts', 'Search associated concept')}
-              ref={searchInputRef}
-              value={selectedConcept?.display || searchTerm}
-            />
-          </ResponsiveWrapper>
-
-          {(() => {
-            if (!debouncedSearchTerm || selectedConcept) {
-              return null;
-            }
-            if (isSearching) {
-              return <InlineLoading className={styles.loader} description={t('searching', 'Searching') + '...'} />;
-            }
-            if (searchResults && searchResults.length) {
-              return (
-                <ul className={styles.conceptsList}>
-                  {searchResults?.map((searchResult) => (
-                    <li
-                      className={styles.service}
-                      key={searchResult.concept.uuid}
-                      onClick={() => {
-                        setValue('concept', {
-                          uuid: searchResult.concept.uuid,
-                          display: searchResult.display,
-                        });
-                        setSearchTerm('');
-                      }}
-                      role="menuitem">
-                      {searchResult.display}
-                    </li>
-                  ))}
-                </ul>
-              );
-            }
-            return (
-              <Layer>
-                <Tile className={styles.emptyResults}>
-                  <span>{t('noResultsFor', 'No results for {{searchTerm}}', { searchTerm: debouncedSearchTerm })}</span>
-                </Tile>
-              </Layer>
-            );
-          })()}
-        </div>
-        <div>
-          <Controller
-            name="serviceType"
-            control={control}
-            render={({ field }) => (
-              <Layer>
-                <ComboBox
-                  id="serviceType"
-                  items={serviceTypes ?? []}
-                  titleText={t('serviceType', 'Service type')}
-                  itemToString={(item: ServiceType) => item?.display || ''}
-                  selectedItem={field.value}
-                  onChange={({ selectedItem }: { selectedItem: ServiceType | null }) => {
-                    field.onChange(selectedItem);
-                  }}
-                  placeholder={t('selectServiceType', 'Select service type')}
-                  invalid={!!errors.serviceType}
-                  invalidText={errors.serviceType?.message}
-                />
-              </Layer>
-            )}
-          />
-        </div>
-        <section>
-          <div>
-            {fields.map((field, index) => (
-              <div key={field.id} className={styles.paymentMethodContainer}>
-                <Controller
-                  control={control}
-                  name={`payment.${index}.paymentMode`}
-                  render={({ field }) => (
-                    <Layer>
-                      <Dropdown
-                        id={`paymentMode-${index}`}
-                        invalid={!!errors?.payment?.[index]?.paymentMode}
-                        invalidText={errors?.payment?.[index]?.paymentMode?.message}
-                        items={getAvailablePaymentModes(paymentModes, fields, index, field.value)}
-                        itemToString={(item) => (item ? item.name : '')}
-                        label={t('selectPaymentMode', 'Select payment mode')}
-                        onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
-                        selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
-                        titleText={t('paymentMode', 'Payment mode')}
-                      />
-                    </Layer>
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name={`payment.${index}.price`}
-                  render={({ field }) => (
-                    <Layer>
-                      <NumberInput
-                        allowEmpty
-                        disableWheel
-                        id={`price-${index}`}
-                        invalid={!!errors?.payment?.[index]?.price}
-                        invalidText={errors?.payment?.[index]?.price?.message}
-                        label={t('sellingPrice', 'Selling price')}
-                        min={0}
-                        onChange={(_, { value }) => {
-                          field.onChange(value === '' || value === undefined ? '' : value);
-                        }}
-                        placeholder={t('enterSellingPrice', 'Enter selling price')}
-                        step={0.01}
-                        value={field.value === undefined || field.value === null ? '' : field.value}
-                      />
-                    </Layer>
-                  )}
-                />
-                <div className={styles.removeButtonContainer}>
-                  <TrashCan onClick={() => handleRemovePaymentMode(index)} className={styles.removeButton} size={20} />
-                </div>
-              </div>
-            ))}
-            <Button
-              className={styles.paymentButtons}
-              iconDescription={t('add', 'Add')}
-              kind="tertiary"
-              onClick={handleAppendPaymentMode}
-              renderIcon={(props) => <Add size={24} {...props} />}
-              type="button">
-              {t('addPaymentOption', 'Add payment option')}
-            </Button>
-            {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
           </div>
-        </section>
-      </Stack>
-      <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-        <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={closeWorkspace}>
-          {getCoreTranslation('cancel')}
-        </Button>
-        <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">
-          {isSubmitting ? <InlineLoading description={t('saving', 'Saving') + '...'} /> : getCoreTranslation('save')}
-        </Button>
-      </ButtonSet>
-    </Form>
+          <div>
+            <FormLabel className={styles.conceptLabel}>{t('associatedConcept', 'Associated concept')}</FormLabel>
+            <ResponsiveWrapper>
+              <Search
+                id="conceptsSearch"
+                labelText={t('associatedConcept', 'Associated concept')}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                onClear={() => {
+                  setSearchTerm('');
+                  setValue('concept', null);
+                }}
+                placeholder={t('searchConcepts', 'Search associated concept')}
+                ref={searchInputRef}
+                value={selectedConcept?.display || searchTerm}
+              />
+            </ResponsiveWrapper>
+
+            {(() => {
+              if (!debouncedSearchTerm || selectedConcept) {
+                return null;
+              }
+              if (isSearching) {
+                return <InlineLoading className={styles.loader} description={t('searching', 'Searching') + '...'} />;
+              }
+              if (searchResults && searchResults.length) {
+                return (
+                  <ul className={styles.conceptsList}>
+                    {searchResults?.map((searchResult) => (
+                      <li
+                        className={styles.service}
+                        key={searchResult.concept.uuid}
+                        onClick={() => {
+                          setValue('concept', {
+                            uuid: searchResult.concept.uuid,
+                            display: searchResult.display,
+                          });
+                          setSearchTerm('');
+                        }}
+                        role="menuitem">
+                        {searchResult.display}
+                      </li>
+                    ))}
+                  </ul>
+                );
+              }
+              return (
+                <Layer>
+                  <Tile className={styles.emptyResults}>
+                    <span>
+                      {t('noResultsFor', 'No results for {{searchTerm}}', { searchTerm: debouncedSearchTerm })}
+                    </span>
+                  </Tile>
+                </Layer>
+              );
+            })()}
+          </div>
+          <div>
+            <Controller
+              name="serviceType"
+              control={control}
+              render={({ field }) => (
+                <Layer>
+                  <ComboBox
+                    id="serviceType"
+                    items={serviceTypes ?? []}
+                    titleText={t('serviceType', 'Service type')}
+                    itemToString={(item: ServiceType) => item?.display || ''}
+                    selectedItem={field.value}
+                    onChange={({ selectedItem }: { selectedItem: ServiceType | null }) => {
+                      field.onChange(selectedItem);
+                    }}
+                    placeholder={t('selectServiceType', 'Select service type')}
+                    invalid={!!errors.serviceType}
+                    invalidText={errors.serviceType?.message}
+                  />
+                </Layer>
+              )}
+            />
+          </div>
+          <section>
+            <div>
+              {fields.map((field, index) => (
+                <div key={field.id} className={styles.paymentMethodContainer}>
+                  <Controller
+                    control={control}
+                    name={`payment.${index}.paymentMode`}
+                    render={({ field }) => (
+                      <Layer>
+                        <Dropdown
+                          id={`paymentMode-${index}`}
+                          invalid={!!errors?.payment?.[index]?.paymentMode}
+                          invalidText={errors?.payment?.[index]?.paymentMode?.message}
+                          items={getAvailablePaymentModes(paymentModes, fields, index, field.value)}
+                          itemToString={(item) => (item ? item.name : '')}
+                          label={t('selectPaymentMode', 'Select payment mode')}
+                          onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
+                          selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
+                          titleText={t('paymentMode', 'Payment mode')}
+                        />
+                      </Layer>
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name={`payment.${index}.price`}
+                    render={({ field }) => (
+                      <Layer>
+                        <NumberInput
+                          allowEmpty
+                          disableWheel
+                          id={`price-${index}`}
+                          invalid={!!errors?.payment?.[index]?.price}
+                          invalidText={errors?.payment?.[index]?.price?.message}
+                          label={t('sellingPrice', 'Selling price')}
+                          min={0}
+                          onChange={(_, { value }) => {
+                            field.onChange(value === '' || value === undefined ? '' : value);
+                          }}
+                          placeholder={t('enterSellingPrice', 'Enter selling price')}
+                          step={0.01}
+                          value={field.value === undefined || field.value === null ? '' : field.value}
+                        />
+                      </Layer>
+                    )}
+                  />
+                  <div className={styles.removeButtonContainer}>
+                    <TrashCan
+                      onClick={() => handleRemovePaymentMode(index)}
+                      className={styles.removeButton}
+                      size={20}
+                    />
+                  </div>
+                </div>
+              ))}
+              <Button
+                className={styles.paymentButtons}
+                iconDescription={t('add', 'Add')}
+                kind="tertiary"
+                onClick={handleAppendPaymentMode}
+                renderIcon={(props) => <Add size={24} {...props} />}
+                type="button">
+                {t('addPaymentOption', 'Add payment option')}
+              </Button>
+              {getPaymentErrorMessage() && <div className={styles.errorMessage}>{getPaymentErrorMessage()}</div>}
+            </div>
+          </section>
+        </Stack>
+        <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
+          <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={closeWorkspace}>
+            {getCoreTranslation('cancel')}
+          </Button>
+          <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">
+            {isSubmitting ? <InlineLoading description={t('saving', 'Saving') + '...'} /> : getCoreTranslation('save')}
+          </Button>
+        </ButtonSet>
+      </Form>
+    </Workspace2>
   );
 };
 
