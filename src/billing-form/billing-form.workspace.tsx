@@ -37,7 +37,7 @@ type BillingFormProps = {
   closeWorkspace: () => void;
 };
 
-const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps, {}, {}>> = ({
+const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   workspaceProps: { patientUuid },
   closeWorkspace,
 }) => {

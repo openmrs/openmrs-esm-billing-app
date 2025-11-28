@@ -184,7 +184,7 @@ const createBillableServiceSchema = (t: TFunction) => {
     payment: z.array(servicePriceSchema).min(1, t('paymentOptionRequired', 'At least one payment option is required')),
   });
 };
-const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableServiceFormWorkspaceProps, {}, {}>> = ({
+const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableServiceFormWorkspaceProps>> = ({
   workspaceProps: { serviceToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
 }) => {

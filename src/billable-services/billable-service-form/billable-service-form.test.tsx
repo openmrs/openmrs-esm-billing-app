@@ -80,16 +80,15 @@ const setupMocks = () => {
 };
 
 const renderBillableServicesForm = (
-  props: Partial<Workspace2DefinitionProps<BillableServiceFormWorkspaceProps, {}, {}>> &
-    Partial<BillableServiceFormWorkspaceProps> = {},
+  props: Partial<Workspace2DefinitionProps<Partial<BillableServiceFormWorkspaceProps>>> = {},
 ) => {
   const closeWorkspace = props.closeWorkspace || jest.fn();
   const workspaceProps: BillableServiceFormWorkspaceProps = {
-    serviceToEdit: props.serviceToEdit,
-    closeWorkspaceWithSavedChanges: props.closeWorkspaceWithSavedChanges,
-    onWorkspaceClose: props.onWorkspaceClose,
+    serviceToEdit: props.workspaceProps?.serviceToEdit,
+    closeWorkspaceWithSavedChanges: props.workspaceProps?.closeWorkspaceWithSavedChanges,
+    onWorkspaceClose: props.workspaceProps?.onWorkspaceClose,
     closeWorkspace,
-    promptBeforeClosing: props.promptBeforeClosing,
+    promptBeforeClosing: props.workspaceProps?.promptBeforeClosing,
     ...props.workspaceProps,
   };
 
@@ -184,7 +183,9 @@ describe('BillableServiceFormWorkspace', () => {
     test('should call closeWorkspaceWithSavedChanges after successful save', async () => {
       const user = userEvent.setup();
       const mockCloseWorkspaceWithSavedChanges = jest.fn();
-      renderBillableServicesForm({ closeWorkspaceWithSavedChanges: mockCloseWorkspaceWithSavedChanges });
+      renderBillableServicesForm({
+        workspaceProps: { closeWorkspaceWithSavedChanges: mockCloseWorkspaceWithSavedChanges },
+      });
 
       await fillRequiredFields(user);
       mockCreateBillableService.mockResolvedValue({} as FetchResponse<any>);
@@ -269,7 +270,9 @@ describe('BillableServiceFormWorkspace', () => {
         ],
       };
 
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose });
+      renderBillableServicesForm({
+        workspaceProps: { serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose },
+      });
 
       mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
       await submitForm();
@@ -524,7 +527,7 @@ describe('BillableServiceFormWorkspace', () => {
     };
 
     test('should populate form with existing service data', () => {
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ workspaceProps: { serviceToEdit: mockServiceToEdit } });
 
       expect(screen.getByText('X-Ray Service')).toBeInTheDocument(); // Service name shown as label
       expect(screen.getByDisplayValue('XRay')).toBeInTheDocument(); // Short name
@@ -533,7 +536,10 @@ describe('BillableServiceFormWorkspace', () => {
     test('should call updateBillableService instead of createBillableService', async () => {
       const user = userEvent.setup();
       const mockCloseWorkspace = jest.fn();
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, closeWorkspace: mockCloseWorkspace });
+      renderBillableServicesForm({
+        closeWorkspace: mockCloseWorkspace,
+        workspaceProps: { serviceToEdit: mockServiceToEdit },
+      });
 
       const shortNameInput = screen.getByDisplayValue('XRay');
       await user.clear(shortNameInput);
@@ -564,7 +570,10 @@ describe('BillableServiceFormWorkspace', () => {
     test('should trim whitespace from short name when updating service', async () => {
       const user = userEvent.setup();
       const mockCloseWorkspace = jest.fn();
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, closeWorkspace: mockCloseWorkspace });
+      renderBillableServicesForm({
+        closeWorkspace: mockCloseWorkspace,
+        workspaceProps: { serviceToEdit: mockServiceToEdit },
+      });
 
       const shortNameInput = screen.getByDisplayValue('XRay');
       await user.clear(shortNameInput);
@@ -585,7 +594,9 @@ describe('BillableServiceFormWorkspace', () => {
 
     test('should call onWorkspaceClose callback after successful edit', async () => {
       const mockOnWorkspaceClose = jest.fn();
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose });
+      renderBillableServicesForm({
+        workspaceProps: { serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose },
+      });
 
       mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
 
@@ -595,7 +606,7 @@ describe('BillableServiceFormWorkspace', () => {
     });
 
     test('should not allow editing service name in edit mode', () => {
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ workspaceProps: { serviceToEdit: mockServiceToEdit } });
 
       // Service name should be displayed as a label, not an editable input
       expect(screen.getByText('X-Ray Service')).toBeInTheDocument();
@@ -606,7 +617,7 @@ describe('BillableServiceFormWorkspace', () => {
       // Scenario: User opens edit form, but payment modes/service types haven't loaded yet
       // The form should wait for dependencies to load, then populate correctly
 
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ workspaceProps: { serviceToEdit: mockServiceToEdit } });
 
       // After dependencies load (handled by renderBillableServicesForm's setupMocks),
       // form should display with populated data
@@ -827,7 +838,7 @@ describe('BillableServiceFormWorkspace', () => {
         ],
       };
 
-      renderBillableServicesForm({ serviceToEdit: mockServiceToEdit });
+      renderBillableServicesForm({ workspaceProps: { serviceToEdit: mockServiceToEdit } });
 
       const errorMessage = 'Update failed';
       mockUpdateBillableService.mockRejectedValue(new Error(errorMessage));
