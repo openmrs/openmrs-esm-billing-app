@@ -72,10 +72,8 @@ export const root = getSyncLifecycle(RootComponent, options);
 
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 
-// t('billingForm', 'Billing form')
-export const billingFormWorkspace = getAsyncLifecycle(() => import('./billing-form/billing-form.component'), options);
+export const billingFormWorkspace = getAsyncLifecycle(() => import('./billing-form/billing-form.workspace'), options);
 
-// t('billableServiceForm', 'Billable service form')
 export const billableServiceFormWorkspace = getAsyncLifecycle(
   () => import('./billable-services/billable-service-form/billable-service-form.workspace'),
   options,
