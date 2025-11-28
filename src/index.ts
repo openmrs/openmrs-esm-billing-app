@@ -131,3 +131,8 @@ export const billingSettingsLeftPanelMenu = getSyncLifecycle(
   }),
   options,
 );
+
+export const deleteListItemConfirmationModal = getAsyncLifecycle(
+  () => import('./modal/delete-line-item-confirmation.modal'),
+  options,
+);
