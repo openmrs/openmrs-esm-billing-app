@@ -114,21 +114,21 @@
     {
       "name": "billing-form-workspace",
       "component": "billingFormWorkspace",
-      "window": "billing-form-workspace"
+      "window": "billing-form-window"
     },
     {
       "name": "billable-service-form",
       "component": "billableServiceFormWorkspace",
-      "window": "billable-service-form-workspace"
+          "window": "billable-service-form-window"
     }
   ],
   "workspaceWindows2": [
     {
-      "name": "billing-form-workspace",
+      "name": "billing-form-window",
       "group": "billingFormWorkspaceGroup"
     },
     {
-      "name": "billable-service-form-workspace",
+      "name": "billable-service-form-window",
       "group": "billingFormWorkspaceGroup"
     }
   ],
