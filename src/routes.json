@@ -119,7 +119,7 @@
     {
       "name": "billable-service-form",
       "component": "billableServiceFormWorkspace",
-          "window": "billable-service-form-window"
+      "window": "billable-service-form-window"
     }
   ],
   "workspaceWindows2": [
