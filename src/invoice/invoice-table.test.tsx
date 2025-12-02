@@ -14,6 +14,8 @@ jest.mock('../helpers', () => ({
 }));
 
 describe('InvoiceTable', () => {
+  const mockOnMutate = jest.fn();
+
   const defaultBill: MappedBill = {
     uuid: 'bill-uuid',
     id: 123,
@@ -77,7 +79,7 @@ describe('InvoiceTable', () => {
   });
 
   it('should render table headers correctly', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     expect(screen.getByText(/line items/i)).toBeInTheDocument();
     expect(screen.getByText(/items to be billed/i)).toBeInTheDocument();
@@ -91,7 +93,7 @@ describe('InvoiceTable', () => {
   });
 
   it('should render line items correctly', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     expect(screen.getByText('Item 1')).toBeInTheDocument();
     expect(screen.getByText('Item 2')).toBeInTheDocument();
@@ -100,21 +102,21 @@ describe('InvoiceTable', () => {
   });
 
   it('should display loading skeleton when bill is loading', () => {
-    render(<InvoiceTable bill={defaultBill} isLoadingBill={true} />);
+    render(<InvoiceTable bill={defaultBill} isLoadingBill={true} onMutate={mockOnMutate} />);
 
     expect(screen.getByTestId('loader')).toBeInTheDocument();
     expect(screen.queryByText(/line items/i)).not.toBeInTheDocument();
   });
 
   it('should display payment status for each line item', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     expect(screen.getByText('PAID')).toBeInTheDocument();
     expect(screen.getByText('PENDING')).toBeInTheDocument();
   });
 
   it('should display correct quantities', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     // Item 1 has quantity 1, Item 2 has quantity 2
     const rows = screen.getAllByRole('row');
@@ -143,14 +145,14 @@ describe('InvoiceTable', () => {
       ],
     };
 
-    render(<InvoiceTable bill={billWithCalculation} />);
+    render(<InvoiceTable bill={billWithCalculation} onMutate={mockOnMutate} />);
 
     // Total should be 3 * 100 = 300
     expect(screen.getByText('USD 300')).toBeInTheDocument();
   });
 
   it('should render edit buttons for all line items', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     const editButton1 = screen.getByTestId('edit-button-1');
     const editButton2 = screen.getByTestId('edit-button-2');
@@ -161,7 +163,7 @@ describe('InvoiceTable', () => {
 
   it('should open edit modal when edit button is clicked', async () => {
     const user = userEvent.setup();
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     const editButton = screen.getByTestId('edit-button-1');
     await user.click(editButton);
@@ -172,13 +174,14 @@ describe('InvoiceTable', () => {
       expect.objectContaining({
         bill: defaultBill,
         item: expect.objectContaining({ uuid: '1' }),
+        onMutate: mockOnMutate,
       }),
     );
   });
 
   it('should filter line items based on search term', async () => {
     const user = userEvent.setup();
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     const searchInput = screen.getByPlaceholderText(/search this table/i);
     await user.type(searchInput, 'Item 2');
@@ -191,7 +194,7 @@ describe('InvoiceTable', () => {
 
   it('should show all items when search is cleared', async () => {
     const user = userEvent.setup();
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     const searchInput = screen.getByPlaceholderText(/search this table/i);
 
@@ -217,7 +220,7 @@ describe('InvoiceTable', () => {
       lineItems: [],
     };
 
-    render(<InvoiceTable bill={emptyBill} />);
+    render(<InvoiceTable bill={emptyBill} onMutate={mockOnMutate} />);
 
     expect(screen.getByText(/no matching items to display/i)).toBeInTheDocument();
     expect(screen.getByText(/check the filters above/i)).toBeInTheDocument();
@@ -225,7 +228,7 @@ describe('InvoiceTable', () => {
 
   it('should show empty state when search has no results', async () => {
     const user = userEvent.setup();
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     const searchInput = screen.getByPlaceholderText(/search this table/i);
     await user.type(searchInput, 'NonexistentItem');
@@ -258,7 +261,7 @@ describe('InvoiceTable', () => {
       ],
     };
 
-    render(<InvoiceTable bill={billWithZeroPrice} />);
+    render(<InvoiceTable bill={billWithZeroPrice} onMutate={mockOnMutate} />);
 
     // USD 0 appears for both price and total
     expect(screen.getAllByText('USD 0').length).toBeGreaterThan(0);
@@ -286,7 +289,7 @@ describe('InvoiceTable', () => {
       ],
     };
 
-    render(<InvoiceTable bill={billWithZeroQuantity} />);
+    render(<InvoiceTable bill={billWithZeroQuantity} onMutate={mockOnMutate} />);
 
     // Total should be 0 * 100 = 0
     expect(screen.getByText('USD 0')).toBeInTheDocument();
@@ -329,14 +332,14 @@ describe('InvoiceTable', () => {
       ],
     };
 
-    render(<InvoiceTable bill={billWithBillableService} />);
+    render(<InvoiceTable bill={billWithBillableService} onMutate={mockOnMutate} />);
 
     expect(screen.getByText('Billable Service Name')).toBeInTheDocument();
     expect(screen.getByText('Item Without Billable')).toBeInTheDocument();
   });
 
   it('should display line item numbers starting from 1', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     // Check the table body for numbered rows
     const rows = screen.getAllByRole('row');
@@ -345,7 +348,7 @@ describe('InvoiceTable', () => {
   });
 
   it('should pass correct currency to convertToCurrency helper', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     // Verify prices are formatted with USD - multiple occurrences expected
     expect(screen.getAllByText('USD 100').length).toBeGreaterThan(0);
@@ -353,7 +356,7 @@ describe('InvoiceTable', () => {
   });
 
   it('should render search input in expanded state', () => {
-    render(<InvoiceTable bill={defaultBill} />);
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
     const searchInput = screen.getByPlaceholderText(/search this table/i);
     expect(searchInput).toBeInTheDocument();

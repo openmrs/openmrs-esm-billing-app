@@ -34,9 +34,10 @@ import styles from './invoice-table.scss';
 type InvoiceTableProps = {
   bill: MappedBill;
   isLoadingBill?: boolean;
+  onMutate?: () => void;
 };
 
-const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
+const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMutate }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
@@ -77,9 +78,10 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill }) => {
         bill,
         item: row,
         closeModal: () => dispose(),
+        onMutate,
       });
     },
-    [bill],
+    [bill, onMutate],
   );
 
   const tableRows: Array<typeof DataTableRow> = useMemo(
