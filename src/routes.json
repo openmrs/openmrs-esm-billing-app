@@ -129,7 +129,8 @@
     },
     {
       "name": "billable-service-form-window",
-      "group": "billingFormWorkspaceGroup"
+      "group": "billingFormWorkspaceGroup",
+      "width": "wider"
     }
   ],
   "workspaceGroups2": [
