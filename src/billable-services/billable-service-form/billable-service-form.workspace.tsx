@@ -460,7 +460,7 @@ const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableS
                           itemToString={(item) => (item ? item.name : '')}
                           label={t('selectPaymentMode', 'Select payment mode')}
                           onChange={({ selectedItem }) => field.onChange(selectedItem.uuid)}
-                          selectedItem={paymentModes.find((mode) => mode.uuid === field.value)}
+                          selectedItem={paymentModes.find((mode) => mode.uuid === field.value) ?? null}
                           titleText={t('paymentMode', 'Payment mode')}
                         />
                       </Layer>

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSWRConfig } from 'swr';
 import {
   Button,
   ButtonSet,
@@ -24,7 +23,6 @@ import { processBillItems, useBillableServices } from '../billing.resource';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
 import type { BillableItem, LineItem, ServicePrice } from '../types';
-import { apiBasePath } from '../constants';
 import styles from './billing-form.scss';
 
 interface ExtendedLineItem extends LineItem {
@@ -35,13 +33,13 @@ interface ExtendedLineItem extends LineItem {
 type BillingFormProps = {
   patientUuid: string;
   closeWorkspace: () => void;
+  onMutate?: () => void;
 };
 
 const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
-  workspaceProps: { patientUuid },
+  workspaceProps: { patientUuid, onMutate },
   closeWorkspace,
 }) => {
-  const { mutate } = useSWRConfig();
   const isTablet = useLayoutType() === 'tablet';
   const { t } = useTranslation();
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
@@ -154,11 +152,13 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       bill.lineItems.push(lineItem);
     });
 
-    const url = `${apiBasePath}bill`;
     try {
       await processBillItems(bill);
       closeWorkspace({ discardUnsavedChanges: true });
-      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+
+      // Call the mutate function from parent to revalidate bill list
+      onMutate?.();
+
       showSnackbar({
         title: t('billProcessed', 'Bill processed'),
         subtitle: t('billProcessedSuccessfully', 'Bill processed successfully'),
@@ -176,7 +176,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   };
 
   return (
-    <Workspace2 title={t('addBill', 'Add bill items')}>
+    <Workspace2 title={t('addBillItems', 'Add bill items')}>
       <Form className={styles.form}>
         <div className={styles.grid}>
           {isLoading ? (
