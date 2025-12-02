@@ -1,4 +1,4 @@
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import type {
@@ -10,12 +10,10 @@ import type {
 } from '../types';
 import type { BillingConfig } from '../config-schema';
 
-type ResponseObject = {
-  results: Array<OpenmrsResource>;
-};
+const BILLABLE_SERVICES_URL = `billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display,uuid),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
 
 export const useBillableServices = () => {
-  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,concept:(uuid,display,name:(name)),serviceType:(display,uuid),servicePrices:(uuid,name,price,paymentMode:(uuid,name)))`;
+  const url = `${apiBasePath}${BILLABLE_SERVICES_URL}`;
   const { data, isLoading, isValidating, error, mutate } = useOpenmrsFetchAll<BillableService>(url);
 
   return {
@@ -84,26 +82,36 @@ export function useConceptsSearch(conceptToLookup: string) {
   };
 }
 
-export const createBillableService = (payload: CreateBillableServicePayload) => {
+export const createBillableService = async (payload: CreateBillableServicePayload) => {
   const url = `${apiBasePath}api/billable-service`;
-  return openmrsFetch(url, {
+  const response = await openmrsFetch(url, {
     method: 'POST',
     body: payload,
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  // Revalidate the billable services cache using the exact URL
+  await mutate(`${apiBasePath}${BILLABLE_SERVICES_URL}`);
+
+  return response;
 };
 
-export const updateBillableService = (uuid: string, payload: UpdateBillableServicePayload) => {
+export const updateBillableService = async (uuid: string, payload: UpdateBillableServicePayload) => {
   const url = `${apiBasePath}billableService/${uuid}`;
-  return openmrsFetch(url, {
+  const response = await openmrsFetch(url, {
     method: 'POST',
     body: payload,
     headers: {
       'Content-Type': 'application/json',
     },
   });
+
+  // Revalidate the billable services cache using the exact URL
+  await mutate(`${apiBasePath}${BILLABLE_SERVICES_URL}`);
+
+  return response;
 };
 
 export const createPaymentMode = (payload: PaymentModePayload) => {
