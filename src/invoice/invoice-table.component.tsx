@@ -2,9 +2,9 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import fuzzy from 'fuzzy';
 import {
-  Button,
   DataTable,
   DataTableSkeleton,
+  IconButton,
   Layer,
   Table,
   TableBody,
@@ -17,8 +17,9 @@ import {
   Tile,
   type DataTableRow,
 } from '@carbon/react';
-import { Edit } from '@carbon/react/icons';
 import {
+  EditIcon,
+  TrashCanIcon,
   isDesktop,
   showModal,
   useConfig,
@@ -72,6 +73,17 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
     { header: getCoreTranslation('actions'), key: 'actionButton' },
   ];
 
+  const handleDeleteLineItem = useCallback(
+    (row: LineItem) => {
+      const dispose = showModal('delete-line-item-confirmation-modal', {
+        item: row,
+        closeModal: () => dispose(),
+        onMutate,
+      });
+    },
+    [onMutate],
+  );
+
   const handleSelectBillItem = useCallback(
     (row: LineItem) => {
       const dispose = showModal('edit-bill-line-item-modal', {
@@ -97,21 +109,29 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
           price: convertToCurrency(item.price, defaultCurrency),
           total: convertToCurrency(item.price * item.quantity, defaultCurrency),
           actionButton: (
-            <span>
-              <Button
+            <div className={styles.actionButtons}>
+              <IconButton
                 data-testid={`edit-button-${item.uuid}`}
-                renderIcon={Edit}
-                hasIconOnly
+                label={t('editThisBillItem', 'Edit this bill item')}
                 kind="ghost"
-                iconDescription={t('editThisBillItem', 'Edit this bill item')}
                 tooltipPosition="left"
-                onClick={() => handleSelectBillItem(item)}
-              />
-            </span>
+                onClick={() => handleSelectBillItem(item)}>
+                <EditIcon size={16} />
+              </IconButton>
+
+              <IconButton
+                data-testid={`delete-button-${item.uuid}`}
+                label={t('deleteBillLineItem', 'Delete this bill line item')}
+                kind="ghost"
+                tooltipPosition="left"
+                onClick={() => handleDeleteLineItem(item)}>
+                <TrashCanIcon size={16} />
+              </IconButton>
+            </div>
           ),
         };
       }) ?? [],
-    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem],
+    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem, handleDeleteLineItem],
   );
 
   if (isLoadingBill) {
