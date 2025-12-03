@@ -31,7 +31,7 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item, onMu
 
       showSnackbar({
         title: t('lineItemDeleted', 'Line item deleted'),
-        subtitle: t('lineItemDeleteSuccess', 'The bill line item has been removed successfully'),
+        subtitle: t('lineItemDeleteSuccess', 'Bill line item deleted successfully'),
         kind: 'success',
       });
 
