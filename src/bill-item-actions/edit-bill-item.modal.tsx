@@ -12,11 +12,9 @@ import {
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { Controller, useForm } from 'react-hook-form';
-import { useSWRConfig } from 'swr';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getCoreTranslation, showSnackbar, useConfig } from '@openmrs/esm-framework';
-import { apiBasePath } from '../constants';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { type LineItem, type MappedBill } from '../types';
 import { updateBillItems } from '../billing.resource';
@@ -29,14 +27,14 @@ interface EditBillLineItemModalProps {
   bill: MappedBill;
   closeModal: () => void;
   item: LineItem;
+  onMutate?: () => void;
 }
 
-const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, closeModal, item }) => {
+const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, closeModal, item, onMutate }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
   const { billableServices } = useBillableServices();
   const [total, setTotal] = useState(0);
-  const { mutate } = useSWRConfig();
 
   const schema = useMemo(
     () =>
@@ -88,8 +86,6 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
   }, [quantity, price]);
 
   const onSubmit = async (data: BillLineItemForm) => {
-    const url = `${apiBasePath}bill`;
-
     const newItem = {
       ...item,
       quantity: data.quantity,
@@ -118,7 +114,10 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
 
     try {
       await updateBillItems(payload);
-      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+
+      // Call the mutate function from useBills to revalidate
+      onMutate?.();
+
       showSnackbar({
         title: t('lineItemUpdated', 'Line item updated'),
         subtitle: t('lineItemUpdateSuccess', 'The bill line item has been updated successfully'),

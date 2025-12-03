@@ -90,9 +90,12 @@ describe('EditBillItem', () => {
   });
 
   const mockCloseModal = jest.fn();
+  const mockOnMutate = jest.fn();
 
   test('renders the form with correct fields and default values', () => {
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     expect(screen.getByText(/edit bill line item/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
@@ -105,7 +108,9 @@ describe('EditBillItem', () => {
 
   test('updates total when quantity is changed', async () => {
     const user = userEvent.setup();
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     const quantityInput = screen.getByRole('spinbutton', { name: /quantity/i });
     await user.clear(quantityInput);
@@ -118,12 +123,15 @@ describe('EditBillItem', () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
 
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     await user.click(screen.getByText(/save/i));
 
     await waitFor(() => {
       expect(mockUpdateBillItems).toHaveBeenCalled();
+      expect(mockOnMutate).toHaveBeenCalled();
       expect(showSnackbar).toHaveBeenCalledWith({
         title: 'Line item updated',
         subtitle: 'The bill line item has been updated successfully',
@@ -137,7 +145,9 @@ describe('EditBillItem', () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockRejectedValueOnce({ message: 'Error occurred' });
 
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     await user.click(screen.getByText(/Save/));
 
@@ -209,7 +219,14 @@ describe('EditBillItem', () => {
     // Editing the Lab Test item (item-2)
     const itemToEdit = billWithMultipleItems.lineItems[1];
 
-    render(<EditBillLineItemModal bill={billWithMultipleItems} item={itemToEdit} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal
+        bill={billWithMultipleItems}
+        item={itemToEdit}
+        closeModal={mockCloseModal}
+        onMutate={mockOnMutate}
+      />,
+    );
 
     await user.click(screen.getByText(/Save/));
 
@@ -234,7 +251,9 @@ describe('EditBillItem', () => {
 
   test('shows validation error for quantity less than 1', async () => {
     const user = userEvent.setup();
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
     await user.clear(quantityInput);
@@ -254,7 +273,9 @@ describe('EditBillItem', () => {
 
   test('shows validation error for quantity greater than 100', async () => {
     const user = userEvent.setup();
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
     await user.clear(quantityInput);
@@ -270,7 +291,9 @@ describe('EditBillItem', () => {
 
   test('shows validation error for non-integer quantity', async () => {
     const user = userEvent.setup();
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
     await user.clear(quantityInput);
@@ -286,7 +309,9 @@ describe('EditBillItem', () => {
 
   test('clears validation error when valid quantity is entered', async () => {
     const user = userEvent.setup();
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
 
@@ -311,7 +336,9 @@ describe('EditBillItem', () => {
 
   test('shows validation error when quantity field is left empty', async () => {
     const user = userEvent.setup();
-    render(<EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} />);
+    render(
+      <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
+    );
 
     const quantityInput = screen.getByRole('spinbutton', { name: /Quantity/ });
     await user.clear(quantityInput);

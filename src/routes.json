@@ -114,19 +114,33 @@
       "component": "deleteListItemConfirmationModal"
     }
   ],
-  "workspaces": [
+  "workspaces2": [
     {
       "name": "billing-form-workspace",
-      "title": "billingForm",
       "component": "billingFormWorkspace",
-      "type": "form"
+      "window": "billing-form-window"
     },
     {
       "name": "billable-service-form",
-      "title": "billableServiceForm",
       "component": "billableServiceFormWorkspace",
-      "type": "form",
+      "window": "billable-service-form-window"
+    }
+  ],
+  "workspaceWindows2": [
+    {
+      "name": "billing-form-window",
+      "group": "billingFormWorkspaceGroup"
+    },
+    {
+      "name": "billable-service-form-window",
+      "group": "billingFormWorkspaceGroup",
       "width": "wider"
+    }
+  ],
+  "workspaceGroups2": [
+    {
+      "name": "billingFormWorkspaceGroup",
+      "overlay": false
     }
   ]
 }

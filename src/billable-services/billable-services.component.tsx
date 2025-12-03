@@ -24,7 +24,7 @@ import {
   ErrorState,
   getCoreTranslation,
   isDesktop,
-  launchWorkspace,
+  launchWorkspace2,
   useConfig,
   useLayoutType,
   usePagination,
@@ -78,10 +78,8 @@ const BillableServices = () => {
   ];
 
   const launchBillableServiceForm = useCallback(() => {
-    launchWorkspace('billable-service-form', {
-      workspaceTitle: t('addBillableService', 'Add billable service'),
-    });
-  }, [t]);
+    launchWorkspace2('billable-service-form');
+  }, []);
 
   const searchResults: BillableService[] = useMemo(() => {
     const flatBillableServices = Array.isArray(billableServices) ? billableServices.flat() : billableServices;
@@ -128,13 +126,12 @@ const BillableServices = () => {
 
   const handleEditService = useCallback(
     (service: BillableService) => {
-      launchWorkspace('billable-service-form', {
-        workspaceTitle: t('editBillableService', 'Edit billable service'),
+      launchWorkspace2('billable-service-form', {
         serviceToEdit: service,
         onWorkspaceClose: mutate,
       });
     },
-    [mutate, t],
+    [mutate],
   );
 
   if (isLoading) {
@@ -283,9 +280,7 @@ function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveS
           kind="primary"
           renderIcon={(props) => <ArrowRight size={16} {...props} />}
           onClick={() => {
-            launchWorkspace('billable-service-form', {
-              workspaceTitle: t('addBillableService', 'Add billable service'),
-            });
+            launchWorkspace2('billable-service-form', {});
           }}
           iconDescription={t('addNewBillableService', 'Add new billable service')}>
           {t('addNewService', 'Add new service')}

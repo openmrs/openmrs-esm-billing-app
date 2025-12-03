@@ -4,6 +4,7 @@ import {
   Button,
   DataTable,
   DataTableSkeleton,
+  InlineLoading,
   Layer,
   Pagination,
   Table,
@@ -19,10 +20,10 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
-import { launchWorkspace, useConfig, usePagination } from '@openmrs/esm-framework';
+import { launchWorkspace2, useConfig, usePagination } from '@openmrs/esm-framework';
 import { CardHeader, EmptyDataIllustration, ErrorState, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
-import { convertToCurrency } from '../helpers';
 import { useBills } from '../billing.resource';
+import { convertToCurrency } from '../helpers';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
 
@@ -32,7 +33,7 @@ interface BillHistoryProps {
 
 const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const { t } = useTranslation();
-  const { bills, isLoading, error } = useBills(patientUuid);
+  const { bills, error, isLoading, isValidating, mutate } = useBills(patientUuid);
   const { paginated, goTo, results, currentPage } = usePagination(bills);
   const { pageSize, defaultCurrency } = useConfig();
   const [currentPageSize, setCurrentPageSize] = useState(pageSize);
@@ -94,9 +95,16 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
           <div className={styles.illo}>
             <EmptyDataIllustration />
           </div>
-          <p className={styles.content}>There are no bills to display.</p>
-          <Button onClick={() => launchWorkspace('billing-form-workspace')} kind="ghost">
-            {t('launchBillForm', 'Launch bill form')}
+          <p className={styles.content}>{t('noBillsToDisplay', 'There are no bills to display.')}</p>
+          <Button
+            onClick={() =>
+              launchWorkspace2('billing-form-workspace', {
+                patientUuid,
+                onMutate: mutate,
+              })
+            }
+            kind="ghost">
+            {t('addBillItems', 'Add bill items')}
           </Button>
         </Tile>
       </Layer>
@@ -106,8 +114,21 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   return (
     <div>
       <CardHeader title={t('billingHistory', 'Billing History')}>
-        <Button renderIcon={Add} onClick={() => launchWorkspace('billing-form-workspace', {})} kind="ghost">
-          {t('addBill', 'Add bill items')}
+        {isValidating && (
+          <span>
+            <InlineLoading status="active" />
+          </span>
+        )}
+        <Button
+          kind="ghost"
+          onClick={() =>
+            launchWorkspace2('billing-form-workspace', {
+              patientUuid,
+              onMutate: mutate,
+            })
+          }
+          renderIcon={Add}>
+          {t('addBillItems', 'Add bill items')}
         </Button>
       </CardHeader>
       <div className={styles.billHistoryContainer}>
@@ -153,7 +174,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                         {row.isExpanded ? (
                           <TableExpandedRow colSpan={headers.length + 1}>
                             <div className={styles.container} key={i}>
-                              <InvoiceTable bill={currentBill} />
+                              <InvoiceTable bill={currentBill} onMutate={mutate} isLoadingBill={isValidating} />
                             </div>
                           </TableExpandedRow>
                         ) : (
