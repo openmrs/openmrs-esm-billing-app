@@ -83,7 +83,7 @@ describe('DeleteListItem Modal', () => {
   });
 
   it('renders delete confirmation modal', () => {
-    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
+    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
     expect(screen.getByText(/Delete line item/i)).toBeInTheDocument();
     expect(screen.getByText(/Are you sure you want to delete this line item\?/i)).toBeInTheDocument();
@@ -94,7 +94,7 @@ describe('DeleteListItem Modal', () => {
   it('Calls closeDeleteModal when cancel button is clicked', async () => {
     const user = userEvent.setup();
 
-    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
+    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
     await user.click(screen.getByRole('button', { name: /cancel/i }));
 
@@ -106,7 +106,7 @@ describe('DeleteListItem Modal', () => {
     // Mock successful API response
     mockOpenmrsFetch.mockResolvedValueOnce({} as any);
 
-    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
+    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -118,7 +118,8 @@ describe('DeleteListItem Modal', () => {
         },
       });
 
-      expect(mockMutate).toHaveBeenCalledWith(expect.any(Function), undefined, { revalidate: true });
+      expect(mockMutate).toHaveBeenCalled();
+
       expect(showSnackbar).toHaveBeenCalledWith({
         kind: 'success',
         subtitle: 'The bill line item has been removed successfully',
@@ -133,7 +134,7 @@ describe('DeleteListItem Modal', () => {
 
     mockOpenmrsFetch.mockRejectedValueOnce({ message: 'Delete failed' });
 
-    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} />);
+    render(<DeleteListItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 

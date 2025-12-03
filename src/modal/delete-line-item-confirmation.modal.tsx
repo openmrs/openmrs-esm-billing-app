@@ -11,11 +11,11 @@ import { apiBasePath } from '../constants';
 interface DeleteListItemParams {
   closeModal: () => void;
   item: LineItem;
+  onMutate?: () => void;
 }
 
-const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item }) => {
+const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item, onMutate }) => {
   const { t } = useTranslation();
-  const { mutate } = useSWRConfig();
   const [isDeleting, setIsDeleting] = useState(false);
   const url = `${apiBasePath}bill`;
 
@@ -27,7 +27,7 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item }) =>
       await deleteBillItem(item.uuid);
 
       //update the listItem
-      mutate((key) => typeof key === 'string' && key.startsWith(url), undefined, { revalidate: true });
+      onMutate?.();
 
       showSnackbar({
         title: t('lineItemDeleted', 'Line item deleted'),

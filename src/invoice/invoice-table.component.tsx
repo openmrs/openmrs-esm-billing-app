@@ -75,12 +75,16 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
     { header: getCoreTranslation('actions'), key: 'actionButton' },
   ];
 
-  const handleDeleteListItem = useCallback((row: LineItem) => {
-    const dispose = showModal('delete-line-item-confirmation-modal', {
-      item: row,
-      closeModal: () => dispose(),
-    });
-  }, []);
+  const handleDeleteListItem = useCallback(
+    (row: LineItem) => {
+      const dispose = showModal('delete-line-item-confirmation-modal', {
+        item: row,
+        closeModal: () => dispose(),
+        onMutate,
+      });
+    },
+    [onMutate],
+  );
 
   const handleSelectBillItem = useCallback(
     (row: LineItem) => {
