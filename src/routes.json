@@ -110,8 +110,8 @@
       "component": "requirePaymentModal"
     },
     {
-      "name":"delete-line-item-confirmation-modal",
-      "component": "deleteListItemConfirmationModal"
+      "name": "delete-line-item-confirmation-modal",
+      "component": "deleteLineItemConfirmationModal"
     }
   ],
   "workspaces2": [

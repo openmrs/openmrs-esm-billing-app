@@ -2,7 +2,6 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import fuzzy from 'fuzzy';
 import {
-  Button,
   DataTable,
   DataTableSkeleton,
   IconButton,
@@ -74,7 +73,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
     { header: getCoreTranslation('actions'), key: 'actionButton' },
   ];
 
-  const handleDeleteListItem = useCallback(
+  const handleDeleteLineItem = useCallback(
     (row: LineItem) => {
       const dispose = showModal('delete-line-item-confirmation-modal', {
         item: row,
@@ -122,17 +121,17 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
 
               <IconButton
                 data-testid={`delete-button-${item.uuid}`}
-                label={t('deleteitem', 'Delete item')}
+                label={t('deleteBillLineItem', 'Delete this bill line item')}
                 kind="ghost"
-                align="top"
-                onClick={() => handleDeleteListItem(item)}>
+                tooltipPosition="left"
+                onClick={() => handleDeleteLineItem(item)}>
                 <TrashCanIcon size={16} />
               </IconButton>
             </div>
           ),
         };
       }) ?? [],
-    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem, handleDeleteListItem],
+    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem, handleDeleteLineItem],
   );
 
   if (isLoadingBill) {

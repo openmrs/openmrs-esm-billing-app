@@ -2,31 +2,25 @@ import React, { useState } from 'react';
 import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { getCoreTranslation, showSnackbar } from '@openmrs/esm-framework';
-import { useSWRConfig } from 'swr';
 import { deleteBillItem } from '../billing.resource';
-import { type LineItem, type MappedBill } from '../types';
+import { type LineItem } from '../types';
 import styles from './delete-line-item-confirmation.scss';
-import { apiBasePath } from '../constants';
 
-interface DeleteListItemParams {
+interface DeleteLineItemParams {
   closeModal: () => void;
   item: LineItem;
   onMutate?: () => void;
 }
 
-const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item, onMutate }) => {
+const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMutate }) => {
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
-  const url = `${apiBasePath}bill`;
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
 
     try {
-      //  line item deleted using billing.resource request
       await deleteBillItem(item.uuid);
-
-      //update the listItem
       onMutate?.();
 
       showSnackbar({
@@ -71,7 +65,7 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item, onMu
 
         <Button kind="danger" onClick={handleDeleteConfirm} disabled={isDeleting}>
           {isDeleting ? (
-            <InlineLoading className={styles.spinner} description={t('deleting', 'Deleting')} />
+            <InlineLoading className={styles.spinner} description={t('deleting', 'Deleting') + '...'} />
           ) : (
             <span>{getCoreTranslation('delete')}</span>
           )}
@@ -81,4 +75,4 @@ const DeleteListItem: React.FC<DeleteListItemParams> = ({ closeModal, item, onMu
   );
 };
 
-export default DeleteListItem;
+export default DeleteLineItem;

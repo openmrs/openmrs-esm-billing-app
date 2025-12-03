@@ -31,6 +31,13 @@
   row-gap: layout.$spacing-06;
 }
 
+.actionsContainer {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-03;
+  margin: layout.$spacing-05;
+}
+
 .label {
   @include type.type-style('body-compact-02');
   color: colors.$gray-70;

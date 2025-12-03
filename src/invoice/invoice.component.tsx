@@ -5,14 +5,14 @@ import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
 import { ExtensionSlot, showSnackbar, useConfig, usePatient } from '@openmrs/esm-framework';
-import InvoiceTable from './invoice-table.component';
-import Payments from './payments/payments.component';
-import PrintReceipt from './printable-invoice/print-receipt.component';
-import PrintableInvoice from './printable-invoice/printable-invoice.component';
 import { ErrorState } from '@openmrs/esm-patient-common-lib';
 import { convertToCurrency } from '../helpers';
 import { useBill, useDefaultFacility } from '../billing.resource';
 import type { BillingConfig } from '../config-schema';
+import InvoiceTable from './invoice-table.component';
+import Payments from './payments/payments.component';
+import PrintReceipt from './printable-invoice/print-receipt.component';
+import PrintableInvoice from './printable-invoice/printable-invoice.component';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -25,7 +25,7 @@ const Invoice: React.FC = () => {
   const { data } = useDefaultFacility();
   const { billUuid, patientUuid } = useParams();
   const { patient, isLoading: isLoadingPatient } = usePatient(patientUuid);
-  const { bill, isLoading: isLoadingBill, error, mutate } = useBill(billUuid);
+  const { bill, isLoading: isLoadingBill, error, isValidating, mutate } = useBill(billUuid);
   const [isPrinting, setIsPrinting] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
@@ -109,7 +109,12 @@ const Invoice: React.FC = () => {
             <InvoiceDetails key={key} label={key} value={val} />
           ))}
         </section>
-        <div>
+        <div className={styles.actionsContainer}>
+          {isValidating && (
+            <span>
+              <InlineLoading status="active" />
+            </span>
+          )}
           <Button
             disabled={isPrinting || isLoadingPatient || isLoadingBill}
             onClick={handlePrint}
@@ -122,7 +127,7 @@ const Invoice: React.FC = () => {
       </div>
 
       <div className={styles.invoiceContent}>
-        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} />
+        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
         <Payments bill={bill} mutate={mutate} />
       </div>
 

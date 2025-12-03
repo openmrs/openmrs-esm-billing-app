@@ -3,7 +3,7 @@ import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
 import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
-import { Wallet, Money, Settings } from '@carbon/react/icons';
+import { Settings, Wallet } from '@carbon/react/icons';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
 import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
@@ -130,7 +130,7 @@ export const billingSettingsLeftPanelMenu = getSyncLifecycle(
   options,
 );
 
-export const deleteListItemConfirmationModal = getAsyncLifecycle(
+export const deleteLineItemConfirmationModal = getAsyncLifecycle(
   () => import('./modal/delete-line-item-confirmation.modal'),
   options,
 );
