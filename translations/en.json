@@ -245,7 +245,5 @@
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
   "visitTime": "Visit time",
-  "waiverForm": "Waiver form",
-  "cannotEditThisBill" : "You can not edit this bill",
-  "onlyPendingBillsCanBeEdited": "Only PENDING bills can be edited"
+  "waiverForm": "Waiver form"
 }
