@@ -163,7 +163,7 @@ describe('InvoiceTable', () => {
 
   it('should open edit modal when edit button is clicked', async () => {
     const user = userEvent.setup();
-    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
+    render(<InvoiceTable bill={{ ...defaultBill, status: 'PENDING' }} onMutate={mockOnMutate} />);
 
     const editButton = screen.getByTestId('edit-button-1');
     await user.click(editButton);
@@ -172,7 +172,7 @@ describe('InvoiceTable', () => {
     expect(mockShowModal).toHaveBeenCalledWith(
       'edit-bill-line-item-modal',
       expect.objectContaining({
-        bill: defaultBill,
+        bill: { ...defaultBill, status: 'PENDING' },
         item: expect.objectContaining({ uuid: '1' }),
         onMutate: mockOnMutate,
       }),
