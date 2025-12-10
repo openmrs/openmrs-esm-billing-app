@@ -115,7 +115,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                 label={t('editThisBillItem', 'Edit this bill item')}
                 kind="ghost"
                 tooltipPosition="left"
-                onClick={() => handleSelectBillItem(item)}>
+                onClick={() => handleSelectBillItem(item)}
+                disabled={bill?.status !== 'PENDING'}>
                 <EditIcon size={16} />
               </IconButton>
 
@@ -124,14 +125,23 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                 label={t('deleteBillLineItem', 'Delete this bill line item')}
                 kind="ghost"
                 tooltipPosition="left"
-                onClick={() => handleDeleteLineItem(item)}>
+                onClick={() => handleDeleteLineItem(item)}
+                disabled={bill?.status !== 'PENDING'}>
                 <TrashCanIcon size={16} />
               </IconButton>
             </div>
           ),
         };
       }) ?? [],
-    [filteredLineItems, bill?.receiptNumber, defaultCurrency, t, handleSelectBillItem, handleDeleteLineItem],
+    [
+      filteredLineItems,
+      bill?.receiptNumber,
+      defaultCurrency,
+      t,
+      handleSelectBillItem,
+      handleDeleteLineItem,
+      bill?.status,
+    ],
   );
 
   if (isLoadingBill) {
