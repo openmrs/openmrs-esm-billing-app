@@ -6,6 +6,5 @@ google-auth>=2.20.0
 google-api-python-client>=2.86.0
 protobuf>=4.25.1
 javalang>=0.13.0
-typescript-json-schema>=0.55.0
 esprima>=4.0.1
 jsonschema>=4.17.3
