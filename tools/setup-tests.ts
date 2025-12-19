@@ -11,3 +11,12 @@ window.openmrsBase = '/openmrs';
 window.spaBase = '/spa';
 window.getOpenmrsSpaBase = () => '/openmrs/spa/';
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
+
+// Suppress single-spa warnings in tests (these are expected when using framework mocks)
+const originalWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  if (typeof args[0] === 'string' && args[0].includes('single-spa')) {
+    return;
+  }
+  originalWarn(...args);
+};

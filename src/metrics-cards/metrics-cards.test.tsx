@@ -1,19 +1,24 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { useConfig } from '@openmrs/esm-framework';
+import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
 import { billsSummary } from '../../__mocks__/bills.mock';
 import { useBills } from '../billing.resource';
 import { type MappedBill } from '../types';
+import { configSchema, type BillingConfig } from '../config-schema';
 import MetricsCards from './metrics-cards.component';
 
-const mockUseBills = jest.mocked(useBills);
-const mockUseConfig = jest.mocked(useConfig);
+const mockUseBills = jest.mocked<typeof useBills>(useBills);
+const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 
 jest.mock('../billing.resource', () => ({
   useBills: jest.fn(),
 }));
 
 describe('MetricsCards', () => {
+  beforeEach(() => {
+    mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
+  });
+
   test('renders loading state', () => {
     mockUseBills.mockReturnValue({ isLoading: true, bills: [], error: null, isValidating: false, mutate: jest.fn() });
     renderMetricsCards();
@@ -44,7 +49,6 @@ describe('MetricsCards', () => {
       isValidating: false,
       mutate: jest.fn(),
     });
-    mockUseConfig.mockImplementation(() => ({ defaultCurrency: 'USD' }));
     renderMetricsCards();
     expect(screen.getByRole('heading', { name: /cumulative bills/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /pending bills/i })).toBeInTheDocument();

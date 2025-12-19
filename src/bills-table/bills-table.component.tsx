@@ -166,7 +166,6 @@ const BillsTable: React.FC = () => {
             showToolbar={false}
             zebra
             columnCount={headerData?.length}
-            size={responsiveSize}
           />
         </div>
       ) : error ? (
@@ -269,7 +268,7 @@ interface FilterableTableHeaderProps {
   layout: LayoutType;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isValidating: boolean;
-  responsiveSize: 'sm' | 'md' | 'lg' | 'xl';
+  responsiveSize: 'sm' | 'md' | 'lg';
   searchString: string;
   t: (key: string, fallback: string) => string;
 }

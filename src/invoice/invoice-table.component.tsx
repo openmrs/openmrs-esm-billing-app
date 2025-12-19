@@ -96,7 +96,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
     [bill, onMutate],
   );
 
-  const tableRows: Array<typeof DataTableRow> = useMemo(
+  const tableRows = useMemo(
     () =>
       filteredLineItems?.map((item, index) => {
         return {
@@ -114,7 +114,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                 data-testid={`edit-button-${item.uuid}`}
                 label={t('editThisBillItem', 'Edit this bill item')}
                 kind="ghost"
-                tooltipPosition="left"
                 onClick={() => handleSelectBillItem(item)}
                 disabled={bill?.status !== 'PENDING'}>
                 <EditIcon size={16} />
@@ -124,7 +123,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                 data-testid={`delete-button-${item.uuid}`}
                 label={t('deleteBillLineItem', 'Delete this bill line item')}
                 kind="ghost"
-                tooltipPosition="left"
                 onClick={() => handleDeleteLineItem(item)}
                 disabled={bill?.status !== 'PENDING'}>
                 <TrashCanIcon size={16} />
@@ -152,7 +150,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
           columnCount={tableHeaders.length}
           showHeader={false}
           showToolbar={false}
-          size={responsiveSize}
           zebra
         />
       </div>
