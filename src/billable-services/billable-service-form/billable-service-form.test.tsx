@@ -217,9 +217,10 @@ describe('BillableServiceFormWorkspace', () => {
       expect(saveButton).toBeDisabled();
       expect(cancelButton).toBeDisabled();
 
-      // Resolve the promise to complete submission
       resolveCreate!({} as FetchResponse<any>);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(saveButton).toBeDisabled();
+      });
     });
 
     test('should show loading indicator in save button during submission', async () => {
@@ -242,7 +243,9 @@ describe('BillableServiceFormWorkspace', () => {
 
       // Resolve the promise
       resolveCreate!({} as FetchResponse<any>);
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await waitFor(() => {
+        expect(screen.queryByText(/saving/i)).not.toBeInTheDocument();
+      });
     });
 
     test('should call onWorkspaceClose callback after successful edit', async () => {

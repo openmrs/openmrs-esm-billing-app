@@ -65,7 +65,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
     <Form className={styles.billWaiverForm} aria-label={t('waiverForm', 'Waiver form')}>
       <hr />
       <Stack gap={7}>
-        <FormGroup>
+        <FormGroup legendText="">
           <section className={styles.billWaiverDescription}>
             <label className={styles.label}>{t('billItems', 'Bill Items')}</label>
             <p className={styles.value}>
@@ -81,6 +81,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
 
           <Layer className={styles.formControlLayer}>
             <NumberInput
+              id="waiver-amount"
               allowEmpty
               aria-label={t('amountToWaiveAriaLabel', 'Enter amount to waive')}
               disableWheel
@@ -90,7 +91,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
               label={t('amountToWaiveLabel', 'Amount to waive')}
               max={totalAmount}
               min={0}
-              onChange={(event) => setWaiverAmount(event.target.value)}
+              onChange={(_, { value }) => setWaiverAmount(value as number)}
               value={waiverAmount}
             />
           </Layer>

@@ -512,7 +512,7 @@ const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableS
           </section>
         </Stack>
         <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
-          <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={closeWorkspace}>
+          <Button className={styles.button} kind="secondary" disabled={isSubmitting} onClick={() => closeWorkspace()}>
             {getCoreTranslation('cancel')}
           </Button>
           <Button className={styles.button} kind="primary" disabled={isSubmitting} type="submit">

@@ -7,7 +7,7 @@ import { useBills } from '../billing.resource';
 import BillHistory from './bill-history.component';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockUseBills = jest.mocked(useBills);
+const mockUseBills = jest.mocked<typeof useBills>(useBills);
 
 jest.mock('../billing.resource', () => ({
   useBills: jest.fn(() => ({

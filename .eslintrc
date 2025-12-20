@@ -19,16 +19,15 @@
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": true,
-    "tsconfigRootDir": "__dirname"
+    "project": true
   },
   "plugins": ["@typescript-eslint", "import", "jest-dom", "react-hooks", "testing-library"],
   "root": true,
   "rules": {
-    // The following rules need `noImplicitAny` to be set to `true` in our tsconfig. They are too restrictive for now, but should be reconsidered in future
     "@typescript-eslint/ban-types": "off",
     "@typescript-eslint/ban-ts-comment": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-wrapper-object-types": "off",
     "@typescript-eslint/no-floating-promises": "off",
     "@typescript-eslint/no-unsafe-argument": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
@@ -39,7 +38,6 @@
     "@typescript-eslint/unbound-method": "off",
     "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/consistent-type-exports": "error",
-    // Use `import type` instead of `import` for type imports
     "@typescript-eslint/consistent-type-imports": [
       "error",
       {
@@ -52,7 +50,6 @@
       "error",
       {
         "paths": [
-          // These two rules ensure that we're importing lodash and lodash-es correctly. Not doing so can bloat our bundle size significantly.
           {
             "name": "lodash",
             "message": "Import specific methods from `lodash`. e.g. `import map from 'lodash/map'`"
@@ -62,7 +59,6 @@
             "importNames": ["default"],
             "message": "Import specific methods from `lodash-es`. e.g. `import { map } from 'lodash-es'`"
           },
-          // These two rules ensure that we're importing Carbon components and icons from the correct packages (after v10). May be removed in the future.
           {
             "name": "carbon-components-react",
             "message": "Import from `@carbon/react` directly. e.g. `import { Toggle } from '@carbon/react'`"
