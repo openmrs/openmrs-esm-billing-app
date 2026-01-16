@@ -34,11 +34,7 @@ describe('MetricsCards', () => {
       mutate: jest.fn(),
     });
     renderMetricsCards();
-    expect(
-      screen.getByText(
-        /Sorry, there was a problem displaying this information. You can try to reload this page, or contact the site administrator and quote the error code above./i,
-      ),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/error state/i)).toBeInTheDocument();
   });
 
   test('renders metrics cards', () => {

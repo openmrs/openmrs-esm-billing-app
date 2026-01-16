@@ -1,8 +1,7 @@
 import { configSchema } from './config-schema';
-import { createDashboardLink } from '@openmrs/esm-patient-common-lib';
+import { createDashboard, defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
-import { defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { Settings, Wallet } from '@carbon/react/icons';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
@@ -42,10 +41,7 @@ export function startupApp() {
 }
 
 // t('billingHistory', 'Billing History')
-export const billingSummaryDashboardLink = getSyncLifecycle(
-  createDashboardLink({ ...dashboardMeta, moduleName }),
-  options,
-);
+export const billingSummaryDashboardLink = getSyncLifecycle(createDashboard(dashboardMeta), options);
 
 // t('billableServices', 'Billable services')
 export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);

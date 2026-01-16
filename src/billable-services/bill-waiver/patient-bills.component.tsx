@@ -15,8 +15,7 @@ import {
   Tile,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { useConfig } from '@openmrs/esm-framework';
-import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
+import { EmptyCardIllustration, useConfig } from '@openmrs/esm-framework';
 import { type MappedBill } from '../../types';
 import { convertToCurrency } from '../../helpers';
 import PatientBillsSelections from './bill-selection.component';
@@ -56,7 +55,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
           <Layer className={styles.emptyStateContainer}>
             <Tile className={styles.tile}>
               <div className={styles.illo}>
-                <EmptyDataIllustration />
+                <EmptyCardIllustration />
               </div>
               <p className={styles.content}>{t('noBillToDisplay', 'There are no bills to display for this patient')}</p>
             </Tile>

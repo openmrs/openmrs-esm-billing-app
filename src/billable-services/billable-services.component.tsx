@@ -21,6 +21,7 @@ import {
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
 import {
+  EmptyCard,
   ErrorState,
   getCoreTranslation,
   isDesktop,
@@ -30,7 +31,6 @@ import {
   usePagination,
   type LayoutType,
 } from '@openmrs/esm-framework';
-import { EmptyState } from '@openmrs/esm-patient-common-lib';
 import { type BillableService } from '../types';
 import { type BillingConfig } from '../config-schema';
 import { useBillableServices } from './billable-service.resource';
@@ -150,7 +150,7 @@ const BillableServices = () => {
 
   if (billableServices.length === 0) {
     return (
-      <EmptyState
+      <EmptyCard
         displayText={t('billableServices__lower', 'billable services')}
         headerTitle={t('billableService', 'Billable service')}
         launchForm={launchBillableServiceForm}

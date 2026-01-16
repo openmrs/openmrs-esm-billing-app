@@ -153,7 +153,7 @@ describe('Invoice', () => {
     });
 
     render(<Invoice />);
-    expect(screen.getByText(/invoice error/i)).toBeInTheDocument();
+    expect(screen.getByText(/error state/i)).toBeInTheDocument();
   });
 
   it('should render invoice details correctly', async () => {

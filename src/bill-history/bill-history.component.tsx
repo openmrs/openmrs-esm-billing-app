@@ -20,8 +20,15 @@ import {
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
-import { launchWorkspace2, useConfig, usePagination } from '@openmrs/esm-framework';
-import { CardHeader, EmptyDataIllustration, ErrorState, usePaginationInfo } from '@openmrs/esm-patient-common-lib';
+import {
+  CardHeader,
+  EmptyCardIllustration,
+  ErrorState,
+  launchWorkspace2,
+  useConfig,
+  usePagination,
+  usePaginationInfo,
+} from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
 import InvoiceTable from '../invoice/invoice-table.component';
@@ -93,7 +100,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
       <Layer className={styles.emptyStateContainer}>
         <Tile className={styles.tile}>
           <div className={styles.illo}>
-            <EmptyDataIllustration />
+            <EmptyCardIllustration />
           </div>
           <p className={styles.content}>{t('noBillsToDisplay', 'There are no bills to display.')}</p>
           <Button
