@@ -3,7 +3,7 @@ import { Controller, useFieldArray, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Add, TrashCan } from '@carbon/react/icons';
 import { Button, Dropdown, IconButton, NumberInput, NumberInputSkeleton, TextInput } from '@carbon/react';
-import { ErrorState } from '@openmrs/esm-patient-common-lib';
+import { ErrorState } from '@openmrs/esm-framework';
 import { type PaymentFormValue } from '../payments.component';
 import { usePaymentModes } from '../payment.resource';
 import styles from './payment-form.scss';

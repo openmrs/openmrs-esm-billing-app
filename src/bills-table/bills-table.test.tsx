@@ -4,25 +4,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
-jest.mock('@openmrs/esm-framework', () => {
-  const actual = jest.requireActual('@openmrs/esm-framework');
-  return {
-    ...actual,
-    ConfigurableLink: ({ children, to, templateParams }: any) => {
-      let resolvedTo = to as string;
-      if (templateParams) {
-        resolvedTo = resolvedTo
-          .replace('${patientUuid}', templateParams.patientUuid)
-          .replace('${uuid}', templateParams.uuid)
-          .replace('${openmrsSpaBase}', '/openmrs/spa');
-      }
-      resolvedTo = resolvedTo.replace(/^\/openmrs\/spa/, '');
-      return <a href={resolvedTo}>{children}</a>;
-    },
-    useDebounce: jest.fn((value) => value),
-  };
-});
-
 jest.mock('../billing.resource', () => ({
   usePaginatedBills: jest.fn(() => ({
     bills: mockBillsData,
@@ -230,7 +211,7 @@ describe('BillsTable', () => {
     const patientNameLink = screen.getByRole('link', { name: 'John Doe' });
     expect(patientNameLink).toBeInTheDocument();
 
-    expect(patientNameLink).toHaveAttribute('href', '/home/billing/patient/uuid1/1');
+    expect(patientNameLink).toHaveAttribute('href', '/openmrs/spa/home/billing/patient/uuid1/1');
   });
 
   test('should filter bills by payment status', async () => {

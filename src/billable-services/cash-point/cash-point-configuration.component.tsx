@@ -12,8 +12,14 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, openmrsFetch, restBaseUrl, showModal, getCoreTranslation } from '@openmrs/esm-framework';
-import { CardHeader } from '@openmrs/esm-patient-common-lib';
+import {
+  CardHeader,
+  getCoreTranslation,
+  openmrsFetch,
+  restBaseUrl,
+  showModal,
+  showSnackbar,
+} from '@openmrs/esm-framework';
 import styles from './cash-point-configuration.scss';
 
 const CashPointConfiguration: React.FC = () => {

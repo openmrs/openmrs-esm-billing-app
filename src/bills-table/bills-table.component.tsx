@@ -21,13 +21,13 @@ import { useTranslation } from 'react-i18next';
 import {
   useLayoutType,
   isDesktop,
+  EmptyCardIllustration,
   ErrorState,
   ConfigurableLink,
   useConfig,
   useDebounce,
   type LayoutType,
 } from '@openmrs/esm-framework';
-import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
 import { usePaginatedBills } from '../billing.resource';
 import type { MappedBill } from '../types';
 import type { BillingConfig } from '../config-schema';
@@ -254,7 +254,7 @@ const BillsTable: React.FC = () => {
         <Layer className={styles.emptyStateContainer}>
           <Tile className={styles.tile}>
             <div className={styles.illo}>
-              <EmptyDataIllustration />
+              <EmptyCardIllustration />
             </div>
             <p className={styles.content}>{t('noBillsToDisplay', 'There are no bills to display.')}</p>
           </Tile>

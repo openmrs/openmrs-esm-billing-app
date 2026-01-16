@@ -15,8 +15,7 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
 import { useTranslation } from 'react-i18next';
-import { showModal, getCoreTranslation, ErrorState } from '@openmrs/esm-framework';
-import { CardHeader } from '@openmrs/esm-patient-common-lib';
+import { CardHeader, ErrorState, getCoreTranslation, showModal } from '@openmrs/esm-framework';
 import { usePaymentModes, type PaymentMode } from '../billable-service.resource';
 import styles from './payment-modes-config.scss';
 
