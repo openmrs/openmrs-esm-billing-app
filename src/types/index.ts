@@ -33,13 +33,22 @@ interface Location {
   links: LocationLink[];
 }
 
-interface CashPoint {
+export interface CashPoint {
   uuid: string;
   name: string;
   description: string;
   retired: boolean;
   location: Location;
 }
+
+export interface CreateCashPointPayload {
+  name: string;
+  description?: string;
+  location: {
+    uuid: string;
+  };
+}
+export type UpdateCashPointPayload = Partial<CreateCashPointPayload>;
 
 interface ProviderLink {
   rel: string;
