@@ -101,6 +101,7 @@ const renderBillableServicesForm = (
     launchChildWorkspace: jest.fn(),
     windowName: 'billable-service-form-window',
     isRootWorkspace: false,
+    showActionMenu: true,
   };
   setupMocks();
   return render(<BillableServiceFormWorkspace {...defaultProps} />);
