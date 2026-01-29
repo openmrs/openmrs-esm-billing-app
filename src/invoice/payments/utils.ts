@@ -42,7 +42,6 @@ export const createPaymentPayload = (
     lineItems: updatedLineItems,
     payments: [...updatedPayments],
     patient: patientUuid,
-    status: paymentStatus,
   };
 
   return processedPayment;
