@@ -24,6 +24,9 @@ import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
 import type { BillableItem, LineItem, ServicePrice } from '../types';
 import styles from './billing-form.scss';
+import { useAutoBilling } from '../auto-billing/useAutoBilling';
+import BillPreview from '../auto-billing/bill-preview.component';
+import { ProposedBillItem } from '../auto-billing/types';
 
 interface ExtendedLineItem extends LineItem {
   selectedPaymentMethod?: ServicePrice;
@@ -46,6 +49,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
   const { data, error, isLoading } = useBillableServices();
+  const { proposedItems, showPreview, closePreview } = useAutoBilling(patientUuid, data);
 
   const selectBillableItem = (item: BillableItem) => {
     if (!item) {
@@ -84,6 +88,49 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     };
 
     setSelectedItems([...selectedItems, mappedItem]);
+  };
+
+  const handleAutoBillConfirm = (items: ProposedBillItem[]) => {
+    items.forEach((proposed) => {});
+
+    let newItems = [...selectedItems];
+
+    items.forEach((proposed) => {
+      const item = proposed.matchedBillableItem;
+
+      const existingItemIndex = newItems.findIndex((i) => i.uuid === item.uuid);
+      if (existingItemIndex > -1) {
+        newItems[existingItemIndex] = {
+          ...newItems[existingItemIndex],
+          quantity: newItems[existingItemIndex].quantity + 1,
+        };
+      } else {
+        const availablePaymentMethods = item.servicePrices || [];
+        let defaultPrice = 0;
+        let selectedPaymentMethod = null;
+
+        if (availablePaymentMethods.length === 1) {
+          const price = availablePaymentMethods[0].price;
+          defaultPrice = typeof price === 'number' ? price : parseFloat(price);
+          selectedPaymentMethod = availablePaymentMethods[0];
+        }
+
+        const mappedItem: ExtendedLineItem = {
+          uuid: item.uuid,
+          display: item.name,
+          quantity: 1,
+          price: defaultPrice,
+          billableService: item.uuid,
+          paymentStatus: 'PENDING',
+          lineItemOrder: 0,
+          selectedPaymentMethod: selectedPaymentMethod,
+          availablePaymentMethods: availablePaymentMethods,
+        };
+        newItems.push(mappedItem);
+      }
+    });
+
+    setSelectedItems(newItems);
   };
 
   const updateQuantity = (uuid: string, quantity: number) => {
@@ -156,7 +203,6 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       await processBillItems(bill);
       closeWorkspace({ discardUnsavedChanges: true });
 
-      // Call the mutate function from parent to revalidate bill list
       onMutate?.();
 
       showSnackbar({
@@ -177,6 +223,12 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 
   return (
     <Workspace2 title={t('addBillItems', 'Add bill items')}>
+      <BillPreview
+        isOpen={showPreview}
+        onClose={closePreview}
+        proposedItems={proposedItems}
+        onConfirm={handleAutoBillConfirm}
+      />
       <Form className={styles.form}>
         <div className={styles.grid}>
           {isLoading ? (
