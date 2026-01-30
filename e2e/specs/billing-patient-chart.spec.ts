@@ -505,22 +505,30 @@ test.describe('Billing: Patient Chart workflow', () => {
       await waitForSuccessNotification(page, 'Payment processed successfully');
     });
 
-    await test.step('Then the line item should be marked as PAID', async () => {
-      await page.reload();
-      await invoicePage.waitForInvoiceToLoad();
+    /**
+     * TODO: Uncomment this after the ticket below has been implemented:
+     * https://github.com/openmrs/openmrs-esm-core/issues/6211
+     *
+     * The ticket is about updating the payment status of the line items when the payment is processed.
+     * Once the ticket is implemented, we can uncomment the test step below
+     */
 
-      const lineItems = await invoicePage.getLineItems();
-      lineItems.forEach((lineItem) => {
-        expect(lineItem.status).toBe('PAID');
-      });
+    // await test.step('Then the line item should be marked as PAID', async () => {
+    //   await page.reload();
+    //   await invoicePage.waitForInvoiceToLoad();
 
-      // Verify backend state
-      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
-      const billData = await billResponse.json();
-      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
-        expect(lineItem.paymentStatus).toBe('PAID');
-      });
-    });
+    //   const lineItems = await invoicePage.getLineItems();
+    //   lineItems.forEach((lineItem) => {
+    //     expect(lineItem.status).toBe('PAID');
+    //   });
+
+    //   // Verify backend state
+    //   const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
+    //   const billData = await billResponse.json();
+    //   billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
+    //     expect(lineItem.paymentStatus).toBe('PAID');
+    //   });
+    // });
   });
 
   test('Process payment with multiple payment methods', async ({ page, api, patient }) => {

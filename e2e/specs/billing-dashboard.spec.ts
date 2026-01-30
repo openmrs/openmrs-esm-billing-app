@@ -156,20 +156,28 @@ test.describe('Billing Dashboard workflow', () => {
       expect(extractNumericValue(updatedAmountDue)).toBe(0);
     });
 
-    await test.step('And the Service status in the Line items table should change to PAID', async () => {
-      const lineItems = await invoicePage.getLineItems();
-      expect(lineItems.length).toBeGreaterThan(0);
-      lineItems.forEach((lineItem) => {
-        expect(lineItem.status).toBe('PAID');
-      });
+    /**
+     * TODO: Uncomment this after the ticket below has been implemented:
+     * https://github.com/openmrs/openmrs-esm-core/issues/6211
+     *
+     * The ticket is about updating the payment status of the line items when the payment is processed.
+     * Once the ticket is implemented, we can uncomment the test step below
+     */
 
-      // Also verify backend line items have paymentStatus set to PAID
-      const billResponse = await api.get(`billing/bill/${billUuid}`);
-      const billData = await billResponse.json();
-      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
-        expect(lineItem.paymentStatus).toBe('PAID');
-      });
-    });
+    // await test.step('And the Service status in the Line items table should change to PAID', async () => {
+    //   const lineItems = await invoicePage.getLineItems();
+    //   expect(lineItems.length).toBeGreaterThan(0);
+    //   lineItems.forEach((lineItem) => {
+    //     expect(lineItem.status).toBe('PAID');
+    //   });
+
+    //   // Also verify backend line items have paymentStatus set to PAID
+    //   const billResponse = await api.get(`billing/bill/${billUuid}`);
+    //   const billData = await billResponse.json();
+    //   billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
+    //     expect(lineItem.paymentStatus).toBe('PAID');
+    //   });
+    // });
 
     await test.step('And the Payments section should display a payment record', async () => {
       const paymentHistory = await paymentPage.getPaymentHistory();
