@@ -95,6 +95,12 @@ export const configSchema = {
     _description: 'The default page size',
     _default: 10,
   },
+  waiverPaymentModeUuid: {
+    _type: Type.String,
+    _description:
+      'Payment Mode UUID used for bill waivers. This UUID identifies the payment mode (e.g. waiver) used when posting a waiver payment to a bill.',
+    _default: 'eb6173cb-9678-4614-bbe1-0ccf7ed9d1d4',
+  },
 };
 
 /**
@@ -135,4 +141,5 @@ export interface BillingConfig {
   };
   defaultCurrency: string;
   pageSize: number;
+  waiverPaymentModeUuid: string;
 }

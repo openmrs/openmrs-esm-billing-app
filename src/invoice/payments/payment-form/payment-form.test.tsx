@@ -1,6 +1,6 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { PaymentFormValue } from '../payments.component';
 import { usePaymentModes } from '../payment.resource';
@@ -20,7 +20,7 @@ type WrapperProps = {
 const Wrapper: React.FC<WrapperProps> = ({ children, defaultValues }) => {
   const methods = useForm<PaymentFormValue>({
     mode: 'all',
-    defaultValues: defaultValues || { payment: [] },
+    defaultValues: defaultValues || { payment: { method: '', amount: undefined, referenceCode: '' } },
   });
   return <FormProvider {...methods}>{children}</FormProvider>;
 };
@@ -36,7 +36,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
@@ -55,14 +55,14 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
   });
 
-  test('should append default payment when isSingleLineItem is true', () => {
+  test('should render payment form with method, amount and reference fields when not disabled', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
@@ -72,46 +72,16 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={true} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
-    const paymentMethodElements = screen.getAllByText(/payment method/i);
-
-    expect(paymentMethodElements.length).toBeGreaterThan(0);
-    expect(paymentMethodElements[0]).toBeInTheDocument();
-
-    expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
-  });
-
-  test('should append a payment field when add payment method button is clicked', async () => {
-    const user = userEvent.setup();
-    mockUsePaymentModes.mockReturnValue({
-      paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-    });
-
-    render(
-      <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
-      </Wrapper>,
-    );
-
-    // Initially no payment fields are shown
-    expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
-
-    const addButton = screen.getByText(/add payment method/i);
-    await user.click(addButton);
-
-    // After clicking, payment fields should be visible
     expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/enter reference number/i)).toBeInTheDocument();
     expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
   });
 
-  test('should disable add payment button when disablePayment is true', () => {
+  test('should not render form when disablePayment is true', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
@@ -121,36 +91,12 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={true} isSingleLineItem={false} />
+        <PaymentForm disablePayment={true} />
       </Wrapper>,
     );
 
-    expect(screen.getByText(/add payment method/i)).toBeDisabled();
-  });
-
-  test('should remove payment field when remove button is clicked', async () => {
-    const user = userEvent.setup();
-    mockUsePaymentModes.mockReturnValue({
-      paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-    });
-
-    render(
-      <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
-      </Wrapper>,
-    );
-
-    await user.click(screen.getByText(/add payment method/i));
-
-    const removeButton = screen.getByRole('button', { name: /remove payment method/i });
-    await user.click(removeButton);
-
-    await waitFor(() => {
-      expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
-    });
+    expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/add payment method/i)).not.toBeInTheDocument();
   });
 
   test('should render amount input without leading zero', () => {
@@ -163,7 +109,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={true} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
@@ -182,7 +128,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={true} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
@@ -206,7 +152,7 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={true} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
@@ -226,99 +172,11 @@ describe('PaymentForm Component', () => {
 
     render(
       <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={true} />
+        <PaymentForm disablePayment={false} />
       </Wrapper>,
     );
 
     const referenceInput = screen.getByPlaceholderText(/enter reference number/i);
     expect(referenceInput).not.toHaveFocus();
-  });
-
-  test('should allow adding multiple payment methods', async () => {
-    const user = userEvent.setup();
-    mockUsePaymentModes.mockReturnValue({
-      paymentModes: [
-        { uuid: '1', name: 'Cash', description: 'Cash', retired: false },
-        { uuid: '2', name: 'Credit Card', description: 'Credit Card', retired: false },
-      ],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-    });
-
-    render(
-      <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
-      </Wrapper>,
-    );
-
-    const addButton = screen.getByText(/add payment method/i);
-
-    await user.click(addButton);
-    await user.click(addButton);
-
-    const amountInputs = screen.getAllByPlaceholderText(/enter amount/i);
-    expect(amountInputs).toHaveLength(2);
-  });
-
-  test('should preserve entered values when adding new payment method', async () => {
-    const user = userEvent.setup();
-    mockUsePaymentModes.mockReturnValue({
-      paymentModes: [{ uuid: '1', name: 'Cash', description: 'Cash', retired: false }],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-    });
-
-    render(
-      <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
-      </Wrapper>,
-    );
-
-    const addButton = screen.getByText(/add payment method/i);
-    await user.click(addButton);
-
-    const firstAmountInput = screen.getByPlaceholderText(/enter amount/i) as HTMLInputElement;
-    await user.type(firstAmountInput, '50');
-
-    await user.click(addButton);
-
-    const amountInputs = screen.getAllByPlaceholderText(/enter amount/i) as HTMLInputElement[];
-    expect(amountInputs[0].value).toBe('50');
-    expect(amountInputs[1].value).toBe('');
-  });
-
-  test('should handle removing payment method without affecting other fields', async () => {
-    const user = userEvent.setup();
-    mockUsePaymentModes.mockReturnValue({
-      paymentModes: [{ uuid: '1', name: 'Cash', description: 'Cash', retired: false }],
-      isLoading: false,
-      error: null,
-      mutate: jest.fn(),
-    });
-
-    render(
-      <Wrapper>
-        <PaymentForm disablePayment={false} isSingleLineItem={false} />
-      </Wrapper>,
-    );
-
-    const addButton = screen.getByText(/add payment method/i);
-    await user.click(addButton);
-    await user.click(addButton);
-
-    const amountInputs = screen.getAllByPlaceholderText(/enter amount/i) as HTMLInputElement[];
-    await user.type(amountInputs[0], '50');
-    await user.type(amountInputs[1], '75');
-
-    const removeButtons = screen.getAllByRole('button', { name: /remove payment method/i });
-    await user.click(removeButtons[0]);
-
-    await waitFor(() => {
-      const remainingInputs = screen.getAllByPlaceholderText(/enter amount/i) as HTMLInputElement[];
-      expect(remainingInputs).toHaveLength(1);
-      expect(remainingInputs[0].value).toBe('75');
-    });
   });
 });

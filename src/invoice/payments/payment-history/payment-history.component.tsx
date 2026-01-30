@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataTable, Table, TableHead, TableRow, TableHeader, TableBody, TableCell } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { type MappedBill } from '../../../types';
+import type { MappedBill } from '../../../types';
 import { formatDate, useConfig } from '@openmrs/esm-framework';
 import { convertToCurrency } from '../../../helpers';
 
@@ -30,15 +30,18 @@ const PaymentHistory: React.FC<PaymentHistoryProps> = ({ bill }) => {
       header: t('paymentMethod', 'Payment method'),
     },
   ];
-  const rows = bill?.payments?.map((payment, index) => {
+  const rows = (bill?.payments ?? []).map((payment, index) => {
+    const date = new Date(payment.dateCreated);
     return {
       id: `${payment.uuid}-${index}`,
-      dateCreated: formatDate(new Date(payment.dateCreated)),
+      dateCreated: formatDate(date),
       amountTendered: convertToCurrency(payment.amountTendered, defaultCurrency),
       amount: convertToCurrency(payment.amount, defaultCurrency),
       paymentMethod: payment.instanceType.name,
+      sortKey: date.getTime(),
     };
   });
+  rows.sort((a, b) => b.sortKey - a.sortKey);
 
   if (Object.values(bill?.payments ?? {}).length === 0) {
     return;

@@ -14,9 +14,9 @@ export class PaymentPage {
   readonly removePaymentButton = () => this.page.getByRole('button', { name: /remove/i });
 
   async waitForPaymentForm() {
-    // For single line item bills, wait for the auto-created payment row to be interactive
-    // The payment method combobox only appears after payment modes have loaded
-    // (while loading, the form shows a skeleton instead)
+    // Wait for the payment form to be interactive.
+    // The combobox only appears after payment modes have loaded
+    // (while loading, the form shows a skeleton instead).
     await this.paymentMethodCombobox().waitFor({ state: 'visible', timeout: 30000 });
   }
 

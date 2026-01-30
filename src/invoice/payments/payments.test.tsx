@@ -212,7 +212,7 @@ describe('Payments', () => {
     expect(formattedAmounts.length).toBeGreaterThan(0);
   });
 
-  it('should disable adding payment methods when amount due is zero or less', () => {
+  it('should not show payment form when amount due is zero or less', () => {
     const fullyPaidBill: MappedBill = {
       ...mockBill,
       totalAmount: 100,
@@ -221,7 +221,7 @@ describe('Payments', () => {
 
     render(<Payments bill={fullyPaidBill} mutate={mockMutate} />);
 
-    expect(screen.getByText(/add payment method/i)).toBeDisabled();
+    expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
   });
 
   it('should return null when bill is not provided', () => {
@@ -229,7 +229,7 @@ describe('Payments', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  it('should render add payment method button for bills with amount due', () => {
+  it('should show payment form when there is amount due', () => {
     const billWithAmountDue: MappedBill = {
       ...mockBill,
       totalAmount: 100,
@@ -239,9 +239,8 @@ describe('Payments', () => {
 
     render(<Payments bill={billWithAmountDue} mutate={mockMutate} />);
 
-    // Verify add payment method button is available
-    expect(screen.getByText(/add payment method/i)).toBeInTheDocument();
-    expect(screen.getByText(/add payment method/i)).toBeEnabled();
+    expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
+    expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
   });
 
   it('should display process payment button', () => {
@@ -258,25 +257,5 @@ describe('Payments', () => {
     expect(screen.getByText('Process Payment')).toBeInTheDocument();
     // Button should be disabled when no payment methods are added
     expect(screen.getByText('Process Payment')).toBeDisabled();
-  });
-
-  it('should allow adding multiple payment methods for split payments', async () => {
-    const user = userEvent.setup();
-    const billWithAmountDue: MappedBill = {
-      ...mockBill,
-      totalAmount: 100,
-      tenderedAmount: 0,
-    };
-
-    render(<Payments bill={billWithAmountDue} mutate={mockMutate} />);
-
-    // Add first payment method
-    await user.click(screen.getByText(/add payment method/i));
-    expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
-
-    // Add second payment method
-    await user.click(screen.getByText(/add payment method/i));
-    const amountInputs = screen.getAllByPlaceholderText(/enter amount/i);
-    expect(amountInputs).toHaveLength(2);
   });
 });
