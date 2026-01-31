@@ -30,9 +30,9 @@ export const configSchema = {
       // Payment method attribute type (e.g., cash, insurance, mobile money)
       paymentMethods: '8553afa0-bdb9-4d3c-8a98-05fa9350aa85',
       // Insurance policy number attribute type
-      policyNumber: '3a988e33-a6c0-4b76-b924-01abb998944b',
+      policyNumber: 'aac48226-d143-4274-80e0-264db4e368ee',
       // Insurance scheme name attribute type
-      insuranceScheme: 'aac48226-d143-4274-80e0-264db4e368ee',
+      insuranceScheme: '3a988e33-a6c0-4b76-b924-01abb998944b',
       // Patient category classification attribute type
       patientCategory: '3b9dfac8-9e4d-11ee-8c90-0242ac120002',
       // Form payload pending status attribute type
