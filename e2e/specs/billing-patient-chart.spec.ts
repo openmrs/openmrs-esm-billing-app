@@ -507,7 +507,7 @@ test.describe('Billing: Patient Chart workflow', () => {
 
     /**
      * TODO: Uncomment this after the ticket below has been implemented:
-     * https://github.com/openmrs/openmrs-esm-core/issues/6211
+     * https://openmrs.atlassian.net/browse/O3-5394
      *
      * The ticket is about updating the payment status of the line items when the payment is processed.
      * Once the ticket is implemented, we can uncomment the test step below
