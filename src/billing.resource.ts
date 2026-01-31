@@ -15,7 +15,7 @@ import type {
   MappedBill,
   PatientInvoice,
   BillableItem,
-  BillPaymentPayload,
+  PaymentRequestPayload,
   CreateBillPayload,
   UpdateBillPayload,
 } from './types';
@@ -24,22 +24,16 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
   return {
-    id: bill?.id,
-    uuid: bill?.uuid,
+    ...bill,
     patientName: bill?.patient?.display?.split('-')?.[1],
     identifier: bill?.patient?.display?.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
-    status: bill?.status,
-    receiptNumber: bill?.receiptNumber,
-    cashier: bill?.cashier,
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
     dateCreated: bill?.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
     lineItems: activeLineItems,
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
-    payments: bill.payments,
-    display: bill?.display,
     totalAmount: activeLineItems
       .map((item) => (item.price ?? 0) * (item.quantity ?? 0))
       .reduce((prev, curr) => prev + curr, 0),
@@ -125,8 +119,8 @@ export const useBill = (billUuid: string) => {
   };
 };
 
-export const processBillPayment = (payload: BillPaymentPayload, billUuid: string) => {
-  const url = `${apiBasePath}bill/${billUuid}`;
+export const processBillPayment = (payload: PaymentRequestPayload, billUuid: string) => {
+  const url = `${apiBasePath}bill/${billUuid}/payment`;
 
   return openmrsFetch(url, {
     method: 'POST',

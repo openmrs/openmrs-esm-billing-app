@@ -208,13 +208,10 @@ export interface BillableService {
   servicePrices: Array<ServicePrice>;
 }
 
-export type BillPaymentPayload = {
-  cashPoint: string;
-  cashier: string;
-  lineItems: Array<LineItem>;
-  payments: Array<PaymentPayload>;
-  patient: string;
-  status?: string;
+export type PaymentRequestPayload = {
+  instanceType: string;
+  amountTendered: number;
+  amount: number;
 };
 
 export type CreateBillPayload = {

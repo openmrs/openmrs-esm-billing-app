@@ -505,22 +505,30 @@ test.describe('Billing: Patient Chart workflow', () => {
       await waitForSuccessNotification(page, 'Payment processed successfully');
     });
 
-    await test.step('Then the line item should be marked as PAID', async () => {
-      await page.reload();
-      await invoicePage.waitForInvoiceToLoad();
+    /**
+     * TODO: Uncomment this after the ticket below has been implemented:
+     * https://openmrs.atlassian.net/browse/O3-5394
+     *
+     * The ticket is about updating the payment status of the line items when the payment is processed.
+     * Once the ticket is implemented, we can uncomment the test step below
+     */
 
-      const lineItems = await invoicePage.getLineItems();
-      lineItems.forEach((lineItem) => {
-        expect(lineItem.status).toBe('PAID');
-      });
+    // await test.step('Then the line item should be marked as PAID', async () => {
+    //   await page.reload();
+    //   await invoicePage.waitForInvoiceToLoad();
 
-      // Verify backend state
-      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
-      const billData = await billResponse.json();
-      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
-        expect(lineItem.paymentStatus).toBe('PAID');
-      });
-    });
+    //   const lineItems = await invoicePage.getLineItems();
+    //   lineItems.forEach((lineItem) => {
+    //     expect(lineItem.status).toBe('PAID');
+    //   });
+
+    //   // Verify backend state
+    //   const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
+    //   const billData = await billResponse.json();
+    //   billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
+    //     expect(lineItem.paymentStatus).toBe('PAID');
+    //   });
+    // });
   });
 
   test('Process payment with multiple payment methods', async ({ page, api, patient }) => {
@@ -529,6 +537,9 @@ test.describe('Billing: Patient Chart workflow', () => {
     const paymentPage = new PaymentPage(page);
     const patientUuid = patient.uuid;
     let billUuid: string;
+    let amountDue: string;
+    let paymentAmount1: number;
+    let paymentAmount2: number;
 
     await test.step('Given I have created a bill', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
@@ -552,24 +563,22 @@ test.describe('Billing: Patient Chart workflow', () => {
       await invoicePage.waitForInvoiceToLoad();
     });
 
-    await test.step('And I add multiple payment methods', async () => {
+    await test.step('And I record the first payment (60% Cash)', async () => {
       await paymentPage.waitForPaymentForm();
 
-      const amountDue = await invoicePage.getAmountDue();
-      const amountDueValue = extractNumericValue(amountDue);
+      amountDue = await invoicePage.getAmountDue();
+      paymentAmount1 = Math.round(extractNumericValue(amountDue) * 0.6 * 100) / 100;
+      paymentAmount2 = extractNumericValue(amountDue) - paymentAmount1;
 
-      // Split payment: 60% Cash, 40% Cash (using same method for simplicity)
-      // In real scenario, would use different payment methods like Mobile Money
-      const cashAmount1 = Math.round(amountDueValue * 0.6 * 100) / 100;
-      const cashAmount2 = amountDueValue - cashAmount1;
-
-      await paymentPage.addMultiplePayments([
-        { method: 'Cash', amount: cashAmount1 },
-        { method: 'Cash', amount: cashAmount2 },
-      ]);
+      await paymentPage.addPayment('Cash', paymentAmount1);
+      await paymentPage.processPayment();
+      await waitForSuccessNotification(page, 'Payment processed successfully');
     });
 
-    await test.step('When I process the payment', async () => {
+    await test.step('And I record the second payment (40% Cash)', async () => {
+      await paymentPage.waitForPaymentForm();
+
+      await paymentPage.addPayment('Cash', paymentAmount2);
       await paymentPage.processPayment();
       await waitForSuccessNotification(page, 'Payment processed successfully');
     });
@@ -680,21 +689,26 @@ test.describe('Billing: Patient Chart workflow', () => {
       await invoicePage.waitForInvoiceToLoad();
     });
 
-    await test.step('And I process payment with multiple payment methods', async () => {
+    await test.step('And I record the first payment (50%)', async () => {
       await paymentPage.waitForPaymentForm();
 
       const amountDue = await invoicePage.getAmountDue();
       const amountDueValue = extractNumericValue(amountDue);
 
-      // Split payment: 50% + 50%
       const payment1 = Math.round(amountDueValue * 0.5 * 100) / 100;
-      const payment2 = amountDueValue - payment1;
 
-      await paymentPage.addMultiplePayments([
-        { method: 'Cash', amount: payment1 },
-        { method: 'Cash', amount: payment2 },
-      ]);
+      await paymentPage.addPayment('Cash', payment1);
+      await paymentPage.processPayment();
+      await waitForSuccessNotification(page, 'Payment processed successfully');
+    });
 
+    await test.step('And I record the second payment (remaining 50%)', async () => {
+      await paymentPage.waitForPaymentForm();
+
+      const amountDue = await invoicePage.getAmountDue();
+      const payment2 = extractNumericValue(amountDue);
+
+      await paymentPage.addPayment('Cash', payment2);
       await paymentPage.processPayment();
       await waitForSuccessNotification(page, 'Payment processed successfully');
     });
@@ -709,13 +723,6 @@ test.describe('Billing: Patient Chart workflow', () => {
       const billResponse = await api.get(`billing/bill/${billUuid}`);
       const billData = await billResponse.json();
       expect(billData.status).toBe('PAID');
-    });
-
-    await test.step('And the line item should be marked as PAID', async () => {
-      const lineItems = await invoicePage.getLineItems();
-      lineItems.forEach((lineItem) => {
-        expect(lineItem.status).toBe('PAID');
-      });
     });
 
     await test.step('And the payment history should show multiple payments', async () => {

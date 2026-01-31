@@ -1,19 +1,17 @@
 import React from 'react';
+import { Button } from '@carbon/react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CardHeader, navigate, showSnackbar, useConfig, useVisit } from '@openmrs/esm-framework';
-import { Button } from '@carbon/react';
-import { convertToCurrency } from '../../helpers';
-import { createPaymentPayload } from './utils';
 import { InvoiceBreakDown } from './invoice-breakdown/invoice-breakdown.component';
-import { processBillPayment } from '../../billing.resource';
-import { type MappedBill } from '../../types';
-import { updateBillVisitAttribute } from './payment.resource';
-import { useBillableServices } from '../../billable-services/billable-service.resource';
 import PaymentForm from './payment-form/payment-form.component';
 import PaymentHistory from './payment-history/payment-history.component';
+import { processBillPayment } from '../../billing.resource';
+import { updateBillVisitAttribute } from './payment.resource';
+import { convertToCurrency } from '../../helpers';
+import type { MappedBill } from '../../types';
 import styles from './payments.scss';
 
 type PaymentProps = {
@@ -24,12 +22,11 @@ type PaymentProps = {
 export type Payment = { method: string; amount: number | undefined; referenceCode?: number | string };
 
 export type PaymentFormValue = {
-  payment: Array<Payment>;
+  payment: Payment;
 };
 
 const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
   const { t } = useTranslation();
-  const { billableServices } = useBillableServices();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
@@ -44,18 +41,23 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
     referenceCode: z.union([z.number(), z.string()]).optional(),
   });
 
-  const paymentFormSchema = z.object({ payment: z.array(paymentSchema) });
+  const paymentFormSchema = z.object({ payment: paymentSchema });
   const { currentVisit } = useVisit(bill?.patientUuid);
   const { defaultCurrency } = useConfig();
+  const defaultPaymentValues: PaymentFormValue = {
+    payment: { method: '', amount: undefined, referenceCode: '' },
+  };
+
   const methods = useForm<PaymentFormValue>({
     mode: 'all',
-    defaultValues: { payment: [] },
+    defaultValues: defaultPaymentValues,
     resolver: zodResolver(paymentFormSchema),
   });
 
   const formValues = useWatch({
     name: 'payment',
     control: methods.control,
+    defaultValue: defaultPaymentValues.payment,
   });
 
   const handleNavigateToBillingDashboard = () =>
@@ -70,15 +72,19 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
   const amountDue = (bill.totalAmount ?? 0) - (bill.tenderedAmount ?? 0);
 
   const handleProcessPayment = async () => {
-    const amountBeingTendered = formValues?.reduce((acc, curr) => acc + (curr.amount || 0), 0);
-    const amountRemaining = amountDue - amountBeingTendered;
-    const paymentPayload = createPaymentPayload(bill, bill?.patientUuid, formValues, amountRemaining, billableServices);
-    paymentPayload.payments.forEach((payment) => {
-      payment.dateCreated = new Date(payment.dateCreated);
-    });
+    if (!formValues?.method || formValues.amount == null) {
+      return;
+    }
 
     try {
-      await processBillPayment(paymentPayload, bill.uuid);
+      await processBillPayment(
+        {
+          instanceType: formValues.method,
+          amountTendered: Number(formValues.amount),
+          amount: bill.totalAmount ?? 0,
+        },
+        bill.uuid,
+      );
       showSnackbar({
         title: t('billPayment', 'Bill payment'),
         subtitle: t('paymentProcessedSuccessfully', 'Payment processed successfully'),
@@ -87,7 +93,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
       if (currentVisit) {
         updateBillVisitAttribute(currentVisit);
       }
-      methods.reset({ payment: [{ method: '', amount: null, referenceCode: '' }] });
+      methods.reset(defaultPaymentValues);
       mutate();
     } catch (error) {
       showSnackbar({
@@ -107,7 +113,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
           </CardHeader>
           <div>
             <PaymentHistory bill={bill} />
-            <PaymentForm disablePayment={amountDue <= 0} isSingleLineItem={bill.lineItems.length === 1} />
+            <PaymentForm disablePayment={amountDue <= 0} />
           </div>
         </div>
         <div className={styles.divider} />
@@ -130,7 +136,9 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             <Button onClick={handleNavigateToBillingDashboard} kind="secondary">
               {t('discard', 'Discard')}
             </Button>
-            <Button onClick={handleProcessPayment} disabled={!formValues?.length || !methods.formState.isValid}>
+            <Button
+              onClick={handleProcessPayment}
+              disabled={!formValues?.method || formValues.amount == null || !methods.formState.isValid}>
               {t('processPayment', 'Process Payment')}
             </Button>
           </div>
