@@ -85,10 +85,7 @@ describe('InvoiceTable', () => {
     expect(screen.getByText(/items to be billed/i)).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /^number$/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /bill item/i })).toBeInTheDocument();
-<<<<<<< HEAD
-=======
     expect(screen.getByRole('columnheader', { name: /invoice number/i })).toBeInTheDocument();
->>>>>>> a446b61 ((fix) Add invoice number column and fix billed items display)
     expect(screen.getByRole('columnheader', { name: /status/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /quantity/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /price/i })).toBeInTheDocument();
