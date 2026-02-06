@@ -108,7 +108,8 @@ describe('BillsTable', () => {
   test('renders data table with pending bills', () => {
     render(<BillsTable />);
 
-    expect(screen.getByText(/visit time/i)).toBeInTheDocument();
+    expect(screen.getByText(/bill date/i)).toBeInTheDocument();
+    expect(screen.getByText(/invoice number/i)).toBeInTheDocument();
     expect(screen.getByText(/patient identifier/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
     expect(screen.getByText(/12345678/i)).toBeInTheDocument();
@@ -205,13 +206,13 @@ describe('BillsTable', () => {
     expect(mockGoTo).toHaveBeenCalledWith(1);
   });
 
-  test('should render patient name as a link', () => {
+  test('should render invoice number as a link to the invoice page', () => {
     render(<BillsTable />);
 
-    const patientNameLink = screen.getByRole('link', { name: 'John Doe' });
-    expect(patientNameLink).toBeInTheDocument();
+    const invoiceNumberLink = screen.getByRole('link', { name: 'RCP-001' });
+    expect(invoiceNumberLink).toBeInTheDocument();
 
-    expect(patientNameLink).toHaveAttribute('href', '/openmrs/spa/home/billing/patient/uuid1/1');
+    expect(invoiceNumberLink).toHaveAttribute('href', '/openmrs/spa/home/billing/patient/uuid1/1');
   });
 
   test('should filter bills by payment status', async () => {

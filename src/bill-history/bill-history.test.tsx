@@ -85,8 +85,8 @@ describe('BillHistory', () => {
     render(<BillHistory {...testProps} />);
 
     // Verify headers
-    expect(screen.getByText('Visit time')).toBeInTheDocument();
-    expect(screen.getByText('Identifier')).toBeInTheDocument();
+    expect(screen.getByText('Bill date')).toBeInTheDocument();
+    expect(screen.getByText('Invoice number')).toBeInTheDocument();
 
     const tableRowGroup = screen.getAllByRole('rowgroup');
     expect(tableRowGroup).toHaveLength(2);
