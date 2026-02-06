@@ -241,5 +241,8 @@
   "uuid": "UUID",
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
+  "visitTime": "Visit time",
+  "voidReason": "Reason for void",
+  "voidReasonPlaceholder": "Enter reason for voiding this line item",
   "waiverForm": "Waiver form"
 }
