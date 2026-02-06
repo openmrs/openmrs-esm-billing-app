@@ -17,6 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  Tag,
   Tile,
 } from '@carbon/react';
 import { Add } from '@carbon/react/icons';
@@ -32,28 +33,46 @@ import {
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
 import InvoiceTable from '../invoice/invoice-table.component';
+import type { BillStatus } from '../types';
+import type { BillingConfig } from '../config-schema';
 import styles from './bill-history.scss';
+import { BillItemActionsMenu } from './bill-item-actions-menu.component';
 
 interface BillHistoryProps {
   patientUuid: string;
+}
+
+function getStatusTagType(status: BillStatus) {
+  switch (status) {
+    case 'PENDING':
+      return 'cyan';
+    case 'PAID':
+      return 'green';
+    case 'ADJUSTED':
+      return 'teal';
+    case 'POSTED':
+      return 'blue';
+    case 'CANCELLED':
+      return 'red';
+    case 'EXEMPTED':
+      return 'magenta';
+    default:
+      return 'gray';
+  }
 }
 
 const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const { t } = useTranslation();
   const { bills, error, isLoading, isValidating, mutate } = useBills(patientUuid);
   const { paginated, goTo, results, currentPage } = usePagination(bills);
-  const { pageSize, defaultCurrency } = useConfig();
+  const { pageSize, defaultCurrency } = useConfig<BillingConfig>();
   const [currentPageSize, setCurrentPageSize] = useState(pageSize);
   const { pageSizes } = usePaginationInfo(pageSize, bills?.length, currentPage, results?.length);
 
   const headerData = [
     {
-      header: t('visitTime', 'Visit time'),
-      key: 'visitTime',
-    },
-    {
-      header: t('identifier', 'Identifier'),
-      key: 'identifier',
+      header: t('dateCreated', 'Date created'),
+      key: 'dateCreated',
     },
     {
       header: t('billedItems', 'Billed Items'),
@@ -63,18 +82,22 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
       header: t('billTotal', 'Bill total'),
       key: 'billTotal',
     },
+    {
+      header: t('billStatus', 'Bill status'),
+      key: 'billStatus',
+    },
   ];
 
   const setBilledItems = (bill) =>
     bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item?.billableService || item?.item || ''), '');
 
-  const rowData = results?.map((bill) => ({
+  const rowData = bills?.map((bill) => ({
     id: bill.uuid,
     uuid: bill.uuid,
     billTotal: convertToCurrency(bill?.totalAmount, defaultCurrency),
-    visitTime: bill.dateCreated,
-    identifier: bill.identifier,
+    dateCreated: bill.dateCreated,
     billedItems: setBilledItems(bill),
+    billStatus: <Tag type={getStatusTagType(bill.status)}>{bill.status}</Tag>,
   }));
 
   if (isLoading) {
@@ -111,7 +134,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
               })
             }
             kind="ghost">
-            {t('addBillItems', 'Add bill items')}
+            {t('createBill', 'Create bill')}
           </Button>
         </Tile>
       </Layer>
@@ -135,7 +158,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             })
           }
           renderIcon={Add}>
-          {t('addBillItems', 'Add bill items')}
+          {t('createBill', 'Create bill')}
         </Button>
       </CardHeader>
       <div className={styles.billHistoryContainer}>
@@ -163,6 +186,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                         {header.header}
                       </TableHeader>
                     ))}
+                    <TableHeader aria-label={t('actions', 'Actions')} />
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -177,15 +201,18 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                               {cell.value}
                             </TableCell>
                           ))}
+                          <TableCell className="cds--table-column-menu" id="actions">
+                            <BillItemActionsMenu bill={currentBill} patientUuid={patientUuid} onMutate={mutate} />
+                          </TableCell>
                         </TableExpandRow>
                         {row.isExpanded ? (
-                          <TableExpandedRow colSpan={headers.length + 1}>
+                          <TableExpandedRow colSpan={headers.length + 2}>
                             <div className={styles.container} key={i}>
                               <InvoiceTable bill={currentBill} onMutate={mutate} isLoadingBill={isValidating} />
                             </div>
                           </TableExpandedRow>
                         ) : (
-                          <TableExpandedRow className={styles.hiddenRow} colSpan={headers.length + 2} />
+                          <TableExpandedRow className={styles.hiddenRow} colSpan={headers.length + 3} />
                         )}
                       </React.Fragment>
                     );

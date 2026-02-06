@@ -9,6 +9,7 @@ import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
 import { waitForLoadingToFinish } from 'tools/test-helpers';
 import Invoice from './invoice.component';
+import type { BillStatus } from '../types';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockUseBill = jest.mocked(useBill);
@@ -62,7 +63,7 @@ describe('Invoice', () => {
   const defaultBillData = {
     ...mockBill,
     uuid: 'test-uuid',
-    status: 'PENDING',
+    status: 'PENDING' as BillStatus,
     totalAmount: 1000,
     tenderedAmount: 0,
     receiptNumber: 'RCPT-001',
@@ -188,7 +189,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PAID',
+        status: 'PAID' as BillStatus,
         tenderedAmount: 1000,
       },
       isLoading: false,
@@ -207,7 +208,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: 'PENDING' as BillStatus,
         tenderedAmount: 500,
       },
       isLoading: false,
@@ -336,7 +337,7 @@ describe('Invoice', () => {
 
     const updatedBill = {
       ...defaultBillData,
-      status: 'PAID',
+      status: 'PAID' as BillStatus,
       tenderedAmount: 1000,
     };
 
@@ -456,7 +457,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: 'PENDING' as BillStatus,
         totalAmount: 1000,
         tenderedAmount: 500, // Partial payment
       },
@@ -485,7 +486,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: 'PENDING' as BillStatus,
         tenderedAmount: 0,
       },
       isLoading: false,

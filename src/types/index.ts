@@ -1,5 +1,6 @@
 import { type OpenmrsResource } from '@openmrs/esm-framework';
 
+export type BillStatus = 'PENDING' | 'PAID' | 'ADJUSTED' | 'POSTED' | 'CANCELLED' | 'EXEMPTED';
 export interface MappedBill {
   uuid: string;
   id: number;
@@ -10,7 +11,7 @@ export interface MappedBill {
   cashPointLocation: string;
   cashier: Provider;
   receiptNumber: string;
-  status: string;
+  status: BillStatus;
   identifier: string;
   dateCreated: string;
   lineItems: Array<LineItem>;
@@ -145,7 +146,7 @@ export interface PatientInvoice {
   patient: Patient;
   payments: Payment[];
   receiptNumber: string;
-  status: string;
+  status: BillStatus;
   adjustmentReason: string | null;
   id: number;
   resourceVersion: string;
