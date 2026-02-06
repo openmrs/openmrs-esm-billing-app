@@ -37,6 +37,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
 
   const tableHeaders = [
     { header: t('date', 'Date'), key: 'date' },
+    { header: t('invoiceNumber', 'Invoice number'), key: 'invoiceNumber' },
     { header: t('billableService', 'Billable service'), key: 'billableService' },
     { header: t('totalAmount', 'Total amount'), key: 'totalAmount' },
   ];
@@ -44,6 +45,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
   const tableRows = bills.map((bill) => ({
     id: `${bill.uuid}`,
     date: bill.dateCreated,
+    invoiceNumber: bill.receiptNumber,
     billableService: bill.billingService,
     totalAmount: convertToCurrency(bill?.totalAmount, defaultCurrency),
   }));

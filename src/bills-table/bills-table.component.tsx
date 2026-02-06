@@ -35,7 +35,7 @@ import styles from './bills-table.scss';
 
 interface BillDisplayItem extends Omit<MappedBill, 'id'> {
   id: string;
-  patientNameDisplay: React.ReactNode;
+  receiptNumberDisplay: React.ReactNode;
   billedItems: string;
 }
 
@@ -46,7 +46,10 @@ interface BillPaymentStatusFilterItem {
 }
 
 const mapLineItems = (bill: MappedBill) =>
-  bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item.billableService || item.item || ''), '');
+  bill?.lineItems
+    ?.map((item) => item.billableService || item.item)
+    .filter(Boolean)
+    .join(' & ');
 
 const BillsTable: React.FC = () => {
   const { t } = useTranslation();
@@ -77,8 +80,12 @@ const BillsTable: React.FC = () => {
 
   const headerData = [
     {
-      header: t('visitTime', 'Visit time'),
+      header: t('billDate', 'Bill date'),
       key: 'dateCreated',
+    },
+    {
+      header: t('invoiceNumber', 'Invoice number'),
+      key: 'receiptNumberDisplay',
     },
     {
       header: t('patientIdentifier', 'Patient identifier'),
@@ -86,10 +93,10 @@ const BillsTable: React.FC = () => {
     },
     {
       header: t('patientName', 'Patient name'),
-      key: 'patientNameDisplay',
+      key: 'patientName',
     },
     {
-      header: t('billedItems', 'Billed Items'),
+      header: t('billedItems', 'Billed items'),
       key: 'billedItems',
     },
   ];
@@ -101,12 +108,12 @@ const BillsTable: React.FC = () => {
       const object = {
         ...bill,
         id: String(bill.id),
-        patientNameDisplay: (
+        receiptNumberDisplay: (
           <ConfigurableLink
-            style={{ textDecoration: 'none', maxWidth: '50%' }}
+            style={{ textDecoration: 'none' }}
             to={billingUrl}
             templateParams={{ patientUuid: bill.patientUuid, uuid: bill.uuid }}>
-            {bill.patientName}
+            {bill.receiptNumber}
           </ConfigurableLink>
         ),
         billedItems: mapLineItems(bill),

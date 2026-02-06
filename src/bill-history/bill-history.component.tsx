@@ -48,15 +48,15 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
 
   const headerData = [
     {
-      header: t('visitTime', 'Visit time'),
-      key: 'visitTime',
+      header: t('billDate', 'Bill date'),
+      key: 'billDate',
     },
     {
-      header: t('identifier', 'Identifier'),
-      key: 'identifier',
+      header: t('invoiceNumber', 'Invoice number'),
+      key: 'invoiceNumber',
     },
     {
-      header: t('billedItems', 'Billed Items'),
+      header: t('billedItems', 'Billed items'),
       key: 'billedItems',
     },
     {
@@ -66,14 +66,17 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   ];
 
   const setBilledItems = (bill) =>
-    bill?.lineItems?.reduce((acc, item) => acc + (acc ? ' & ' : '') + (item?.billableService || item?.item || ''), '');
+    bill?.lineItems
+      ?.map((item) => item?.billableService || item?.item)
+      .filter(Boolean)
+      .join(' & ');
 
   const rowData = results?.map((bill) => ({
     id: bill.uuid,
     uuid: bill.uuid,
     billTotal: convertToCurrency(bill?.totalAmount, defaultCurrency),
-    visitTime: bill.dateCreated,
-    identifier: bill.identifier,
+    billDate: bill.dateCreated,
+    invoiceNumber: bill.receiptNumber,
     billedItems: setBilledItems(bill),
   }));
 

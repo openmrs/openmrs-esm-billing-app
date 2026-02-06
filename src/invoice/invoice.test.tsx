@@ -162,7 +162,7 @@ describe('Invoice', () => {
 
     expect(screen.getAllByText(/total amount/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/amount tendered/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/invoice number/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /invoice number/i })).toBeInTheDocument();
     expect(screen.getByText(/date and time/i)).toBeInTheDocument();
     expect(screen.getByText(/invoice status/i)).toBeInTheDocument();
     expect(screen.getAllByText('RCPT-001').length).toBeGreaterThan(0);
@@ -478,7 +478,7 @@ describe('Invoice', () => {
 
     // The component renders, which includes the ExtensionSlot
     // We can verify this indirectly by checking the main content is present
-    expect(screen.getByText(/invoice number/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /invoice number/i })).toBeInTheDocument();
   });
 
   it('should not show print receipt for bills with zero tendered amount', async () => {

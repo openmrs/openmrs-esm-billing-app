@@ -42,9 +42,10 @@ export class BillingDashboardPage {
     return this.billsTable().locator('tbody tr').filter({ hasText: patientName });
   }
 
-  async clickPatientNameLink(patientName: string) {
-    const patientLink = this.billsTable().getByRole('link', { name: new RegExp(patientName, 'i') });
-    await patientLink.click();
+  async clickInvoiceNumberLink(patientName: string) {
+    const row = await this.getBillRowByPatientName(patientName);
+    const invoiceLink = row.getByRole('link').first();
+    await invoiceLink.click();
   }
 
   async verifyBillInTable(patientName: string, shouldBeVisible: boolean = true) {
@@ -61,7 +62,7 @@ export class BillingDashboardPage {
     const bills = [];
 
     const headers = await this.billsTable().locator('thead th').allTextContents();
-    const visitTimeIndex = headers.findIndex((h) => h.includes('Visit time') || h.includes('visitTime'));
+    const billDateIndex = headers.findIndex((h) => h.includes('Bill date') || h.includes('billDate'));
     const identifierIndex = headers.findIndex((h) => h.includes('Identifier') || h.includes('identifier'));
     const nameIndex = headers.findIndex((h) => h.includes('Name') || h.includes('name'));
     const billedItemsIndex = headers.findIndex((h) => h.includes('Billed Items') || h.includes('billedItems'));
@@ -69,7 +70,7 @@ export class BillingDashboardPage {
     for (const row of rows) {
       const cells = await row.locator('td').allTextContents();
       bills.push({
-        visitTime: cells[visitTimeIndex],
+        billDate: cells[billDateIndex],
         identifier: cells[identifierIndex],
         patientName: cells[nameIndex],
         billedItems: cells[billedItemsIndex],

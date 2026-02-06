@@ -84,8 +84,8 @@ test.describe('Billing Dashboard workflow', () => {
       await billingDashboardPage.verifyBillInTable(patientName, true);
     });
 
-    await test.step('When I click on a patient name in the Bill List', async () => {
-      await billingDashboardPage.clickPatientNameLink(patientName);
+    await test.step('When I click on an invoice number in the Bill List', async () => {
+      await billingDashboardPage.clickInvoiceNumberLink(patientName);
       await invoicePage.waitForInvoiceToLoad();
     });
 
