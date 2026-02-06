@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader } from '@carbon/react';
+import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { getCoreTranslation, showSnackbar } from '@openmrs/esm-framework';
 import { deleteBillItem } from '../billing.resource';
@@ -15,12 +15,13 @@ interface DeleteLineItemParams {
 const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMutate }) => {
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [voidReason, setVoidReason] = useState('');
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
 
     try {
-      await deleteBillItem(item.uuid);
+      await deleteBillItem(item.uuid, voidReason.trim());
       onMutate?.();
 
       showSnackbar({
@@ -56,6 +57,15 @@ const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMu
 
       <ModalBody className={styles.modalBody}>
         <p>{t('deleteConfirmation', 'Are you sure you want to delete this line item?')}</p>
+        <TextArea
+          id="voidReason"
+          labelText={t('voidReason', 'Reason for void')}
+          placeholder={t('voidReasonPlaceholder', 'Enter reason for voiding this line item')}
+          value={voidReason}
+          onChange={(e) => setVoidReason(e.target.value)}
+          rows={3}
+          required
+        />
       </ModalBody>
 
       <ModalFooter>
@@ -63,7 +73,7 @@ const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMu
           {getCoreTranslation('cancel')}
         </Button>
 
-        <Button kind="danger" onClick={handleDeleteConfirm} disabled={isDeleting}>
+        <Button kind="danger" onClick={handleDeleteConfirm} disabled={isDeleting || !voidReason.trim()}>
           {isDeleting ? (
             <InlineLoading className={styles.spinner} description={t('deleting', 'Deleting') + '...'} />
           ) : (
