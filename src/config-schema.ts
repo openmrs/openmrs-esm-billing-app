@@ -30,9 +30,9 @@ export const configSchema = {
       // Payment method attribute type (e.g., cash, insurance, mobile money)
       paymentMethods: '8553afa0-bdb9-4d3c-8a98-05fa9350aa85',
       // Insurance policy number attribute type
-      policyNumber: 'aac48226-d143-4274-80e0-264db4e368ee',
+      policyNumber: '3a988e33-a6c0-4b76-b924-01abb998944b',
       // Insurance scheme name attribute type
-      insuranceScheme: '3a988e33-a6c0-4b76-b924-01abb998944b',
+      insuranceScheme: 'aac48226-d143-4274-80e0-264db4e368ee',
       // Patient category classification attribute type
       patientCategory: '3b9dfac8-9e4d-11ee-8c90-0242ac120002',
       // Form payload pending status attribute type
@@ -90,16 +90,16 @@ export const configSchema = {
     _description: 'The default currency for the application. Specify the currency code (e.g., KES, UGX, GBP).',
     _default: 'KES',
   },
+  waiverBillableServiceUuid: {
+    _type: Type.String,
+    _description:
+      'Billable service UUID to represent waivers/discounts as negative line items. Leave empty to force explicit configuration.',
+    _default: '',
+  },
   pageSize: {
     _type: Type.Number,
     _description: 'The default page size',
     _default: 10,
-  },
-  waiverPaymentModeUuid: {
-    _type: Type.String,
-    _description:
-      'Payment Mode UUID used for bill waivers. This UUID identifies the payment mode (e.g. waiver) used when posting a waiver payment to a bill.',
-    _default: 'eb6173cb-9678-4614-bbe1-0ccf7ed9d1d4',
   },
 };
 
@@ -140,6 +140,6 @@ export interface BillingConfig {
     billableService: string;
   };
   defaultCurrency: string;
+  waiverBillableServiceUuid: string;
   pageSize: number;
-  waiverPaymentModeUuid: string;
 }
