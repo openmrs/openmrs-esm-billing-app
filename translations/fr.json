@@ -33,9 +33,9 @@
   "billableServiceUpdated": "Service facturable mis à jour",
   "billableServiceUpdatedSuccessfully": "Service facturable mis à jour avec succès",
   "billAmount": "Montant de la facture",
-  "billCode": "Code de la facture",
   "billCreatedSuccessfully": "Facture créée avec succès",
   "billCreationError": "Erreur lors de la création de la facture",
+  "billDate": "Bill date",
   "billedItems": "Articles facturés",
   "billErrorService": "Erreur du service de facturation",
   "billing": "En cours de facturation",
@@ -113,7 +113,6 @@
   "gender": "Genre",
   "grandTotal": "Total",
   "home": "Accueil",
-  "identifier": "Identifiant",
   "insuranceScheme": "Régime d'assurance",
   "invalidUuidFormat": "Format UUID Invalide",
   "invalidWaiverAmount": "Montant d'exonération invalide",
@@ -242,6 +241,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID est obligatoire",
   "validationError": "Erreur de validation",
-  "visitTime": "Heure de visite",
   "waiverForm": "Formulaire d’exonération"
 }

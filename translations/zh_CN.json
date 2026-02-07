@@ -33,9 +33,9 @@
   "billableServiceUpdated": "计费服务已更新",
   "billableServiceUpdatedSuccessfully": "计费服务更新成功",
   "billAmount": "费用数额",
-  "billCode": "费用代码",
   "billCreatedSuccessfully": "账单创建成功",
   "billCreationError": "账单创建错误",
+  "billDate": "Bill date",
   "billedItems": "已计费项目",
   "billErrorService": "账单服务错误",
   "billing": "计费",
@@ -113,7 +113,6 @@
   "gender": "性别",
   "grandTotal": "总计",
   "home": "首页",
-  "identifier": "标识符",
   "insuranceScheme": "保险方案",
   "invalidUuidFormat": "无效的UUID格式",
   "invalidWaiverAmount": "无效的豁免金额",
@@ -242,6 +241,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID为必填项",
   "validationError": "验证错误",
-  "visitTime": "就诊时间",
   "waiverForm": "豁免表单"
 }

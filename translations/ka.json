@@ -33,9 +33,9 @@
   "billableServiceUpdated": "Billable service updated",
   "billableServiceUpdatedSuccessfully": "Billable service updated successfully",
   "billAmount": "Bill amount",
-  "billCode": "Bill code",
   "billCreatedSuccessfully": "Bill created successfully",
   "billCreationError": "Bill creation error",
+  "billDate": "Bill date",
   "billedItems": "Billed items",
   "billErrorService": "Billing service error",
   "billing": "ბილინგი",
@@ -113,7 +113,6 @@
   "gender": "Gender",
   "grandTotal": "მთლიანი ჯამი",
   "home": "საწყისი",
-  "identifier": "იდენტიფიკატორი",
   "insuranceScheme": "დაზღვევის სქემა",
   "invalidUuidFormat": "Invalid UUID format",
   "invalidWaiverAmount": "Invalid waiver amount",
@@ -242,6 +241,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
-  "visitTime": "ვიზიტის დრო",
   "waiverForm": "უარის ფორმა"
 }

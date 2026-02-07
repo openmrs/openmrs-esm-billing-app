@@ -33,9 +33,9 @@
   "billableServiceUpdated": "Billable service u përditësua",
   "billableServiceUpdatedSuccessfully": "Billable service u përditësua me sukses",
   "billAmount": "Faturë shuma",
-  "billCode": "Faturë code",
   "billCreatedSuccessfully": "Faturë u krijua me sukses",
   "billCreationError": "Faturë creation gabim",
+  "billDate": "Bill date",
   "billedItems": "Billed elemente",
   "billErrorService": "Faturim service gabim",
   "billing": "Faturim",
@@ -113,7 +113,6 @@
   "gender": "Gender",
   "grandTotal": "Grand totali",
   "home": "Home",
-  "identifier": "Identifikues",
   "insuranceScheme": "Insurance scheme",
   "invalidUuidFormat": "I pavlefshëm UUID format",
   "invalidWaiverAmount": "I pavlefshëm waiver shuma",
@@ -242,6 +241,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID është e detyrueshme",
   "validationError": "Validation gabim",
-  "visitTime": "Vizitë ora",
   "waiverForm": "Waiver formular"
 }
