@@ -33,9 +33,9 @@
   "billableServiceUpdated": "Billable service updated",
   "billableServiceUpdatedSuccessfully": "Billable service updated successfully",
   "billAmount": "Bill amount",
-  "billCode": "Bill code",
   "billCreatedSuccessfully": "Bill created successfully",
   "billCreationError": "Bill creation error",
+  "billDate": "Bill date",
   "billedItems": "Billed items",
   "billErrorService": "Billing service error",
   "billing": "Penagihan",
@@ -113,7 +113,6 @@
   "gender": "Gender",
   "grandTotal": "Total keseluruhan",
   "home": "Beranda",
-  "identifier": "Identifikasi",
   "insuranceScheme": "Skema asuransi",
   "invalidUuidFormat": "Invalid UUID format",
   "invalidWaiverAmount": "Jumlah pembebasan tidak valid",
@@ -242,6 +241,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
-  "visitTime": "Waktu kunjungan",
   "waiverForm": "Formulir pembebasan"
 }

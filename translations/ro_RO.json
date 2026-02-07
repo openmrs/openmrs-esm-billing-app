@@ -33,9 +33,9 @@
   "billableServiceUpdated": "Billable service updated",
   "billableServiceUpdatedSuccessfully": "Billable service updated successfully",
   "billAmount": "Bill amount",
-  "billCode": "Bill code",
   "billCreatedSuccessfully": "Bill created successfully",
   "billCreationError": "Bill creation error",
+  "billDate": "Bill date",
   "billedItems": "Billed items",
   "billErrorService": "Billing service error",
   "billing": "Facturare",
@@ -113,7 +113,6 @@
   "gender": "Gender",
   "grandTotal": "Total general",
   "home": "Acasa",
-  "identifier": "Identificator",
   "insuranceScheme": "Schema asigurare",
   "invalidUuidFormat": "Invalid UUID format",
   "invalidWaiverAmount": "Suma scutita invalida",
@@ -242,6 +241,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
-  "visitTime": "Ora vizitei",
   "waiverForm": "Formular scutire"
 }
