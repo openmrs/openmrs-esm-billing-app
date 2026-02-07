@@ -65,7 +65,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
   const tableHeaders = [
     { header: t('number', 'Number'), key: 'no', width: 7 }, // Width as a percentage
     { header: t('billItem', 'Bill item'), key: 'billItem', width: 25 },
-    { header: t('invoiceNumber', 'Invoice number'), key: 'invoiceNumber', width: 20 },
     { header: t('status', 'Status'), key: 'status', width: 25 },
     { header: t('quantity', 'Quantity'), key: 'quantity', width: 15 },
     { header: t('price', 'Price'), key: 'price', width: 24 },
@@ -103,7 +102,6 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
           no: `${index + 1}`,
           id: `${item.uuid}`,
           billItem: item.billableService ? item.billableService : item?.item,
-          invoiceNumber: <span data-testid={`receipt-number-${index}`}>{bill?.receiptNumber}</span>,
           status: item.paymentStatus,
           quantity: item.quantity,
           price: convertToCurrency(item.price, defaultCurrency),
@@ -131,15 +129,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
           ),
         };
       }) ?? [],
-    [
-      filteredLineItems,
-      bill?.receiptNumber,
-      defaultCurrency,
-      t,
-      handleSelectBillItem,
-      handleDeleteLineItem,
-      bill?.status,
-    ],
+    [filteredLineItems, defaultCurrency, t, handleSelectBillItem, handleDeleteLineItem, bill?.status],
   );
 
   if (isLoadingBill) {

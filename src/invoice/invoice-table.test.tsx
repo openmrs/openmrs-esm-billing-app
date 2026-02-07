@@ -85,7 +85,6 @@ describe('InvoiceTable', () => {
     expect(screen.getByText(/items to be billed/i)).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /^number$/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /bill item/i })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: /invoice number/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /status/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /quantity/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /price/i })).toBeInTheDocument();
@@ -97,8 +96,6 @@ describe('InvoiceTable', () => {
 
     expect(screen.getByText('Item 1')).toBeInTheDocument();
     expect(screen.getByText('Item 2')).toBeInTheDocument();
-    expect(screen.getByTestId('receipt-number-0')).toHaveTextContent('12345');
-    expect(screen.getByTestId('receipt-number-1')).toHaveTextContent('12345');
   });
 
   it('should display loading skeleton when bill is loading', () => {
