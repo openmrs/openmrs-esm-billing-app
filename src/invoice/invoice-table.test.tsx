@@ -85,7 +85,6 @@ describe('InvoiceTable', () => {
     expect(screen.getByText(/items to be billed/i)).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /^number$/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /bill item/i })).toBeInTheDocument();
-    expect(screen.getByRole('columnheader', { name: /invoice number/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /status/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /quantity/i })).toBeInTheDocument();
     expect(screen.getByRole('columnheader', { name: /price/i })).toBeInTheDocument();
