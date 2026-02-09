@@ -41,7 +41,7 @@ describe('DeleteLineItem Modal', () => {
 
     expect(screen.getByText(/Delete line item/i)).toBeInTheDocument();
     expect(screen.getByText(/Are you sure you want to delete this line item\?/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Reason for void/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Reason for deletion/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
   });
@@ -62,13 +62,13 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     await waitFor(() => {
-      expect(mockDeleteBillItem).toHaveBeenCalledWith(mockItem.uuid, 'Test void reason');
+      expect(mockDeleteBillItem).toHaveBeenCalledWith(mockItem.uuid, 'Test delete reason');
       expect(mockMutate).toHaveBeenCalled();
       expect(mockShowSnackbar).toHaveBeenCalledWith({
         kind: 'success',
@@ -86,8 +86,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -114,8 +114,8 @@ describe('DeleteLineItem Modal', () => {
     const deleteButton = screen.getByRole('button', { name: /delete/i });
     expect(deleteButton).toBeDisabled();
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     expect(deleteButton).toBeEnabled();
   });
@@ -126,8 +126,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     const deleteButton = screen.getByRole('button', { name: /delete/i });
     expect(deleteButton).toBeEnabled();
@@ -148,8 +148,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -173,8 +173,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -194,8 +194,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -214,13 +214,13 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     await waitFor(() => {
-      expect(mockDeleteBillItem).toHaveBeenCalledWith(mockItem.uuid, 'Test void reason');
+      expect(mockDeleteBillItem).toHaveBeenCalledWith(mockItem.uuid, 'Test delete reason');
       expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
       expect(mockCloseModal).toHaveBeenCalled();
     });
@@ -233,8 +233,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -252,8 +252,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
@@ -270,8 +270,8 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, 'Test void reason');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, 'Test delete reason');
 
     const deleteButton = screen.getByRole('button', { name: /delete/i });
     await user.click(deleteButton);
@@ -289,13 +289,13 @@ describe('DeleteLineItem Modal', () => {
 
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, '  Test void reason with spaces  ');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, '  Test delete reason with spaces  ');
 
     await user.click(screen.getByRole('button', { name: /delete/i }));
 
     await waitFor(() => {
-      expect(mockDeleteBillItem).toHaveBeenCalledWith(mockItem.uuid, 'Test void reason with spaces');
+      expect(mockDeleteBillItem).toHaveBeenCalledWith(mockItem.uuid, 'Test delete reason with spaces');
     });
   });
 
@@ -303,8 +303,8 @@ describe('DeleteLineItem Modal', () => {
     const user = userEvent.setup();
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
-    const voidReasonInput = screen.getByLabelText(/Reason for void/i);
-    await user.type(voidReasonInput, '   ');
+    const deleteReasonInput = screen.getByLabelText(/Reason for deletion/i);
+    await user.type(deleteReasonInput, '   ');
 
     const deleteButton = screen.getByRole('button', { name: /delete/i });
     expect(deleteButton).toBeDisabled();

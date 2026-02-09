@@ -15,13 +15,13 @@ interface DeleteLineItemParams {
 const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMutate }) => {
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
-  const [voidReason, setVoidReason] = useState('');
+  const [deleteReason, setDeleteReason] = useState('');
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
 
     try {
-      await deleteBillItem(item.uuid, voidReason.trim());
+      await deleteBillItem(item.uuid, deleteReason.trim());
       onMutate?.();
 
       showSnackbar({
@@ -58,11 +58,11 @@ const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMu
       <ModalBody className={styles.modalBody}>
         <p>{t('deleteConfirmation', 'Are you sure you want to delete this line item?')}</p>
         <TextArea
-          id="voidReason"
-          labelText={t('voidReason', 'Reason for void')}
-          placeholder={t('voidReasonPlaceholder', 'Enter reason for voiding this line item')}
-          value={voidReason}
-          onChange={(e) => setVoidReason(e.target.value)}
+          id="deleteReason"
+          labelText={t('deleteReason', 'Reason for deletion')}
+          placeholder={t('deleteReasonPlaceholder', 'Enter the reason for removing this line item from the bill')}
+          value={deleteReason}
+          onChange={(e) => setDeleteReason(e.target.value)}
           rows={3}
           required
         />
@@ -73,7 +73,7 @@ const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMu
           {getCoreTranslation('cancel')}
         </Button>
 
-        <Button kind="danger" onClick={handleDeleteConfirm} disabled={isDeleting || !voidReason.trim()}>
+        <Button kind="danger" onClick={handleDeleteConfirm} disabled={isDeleting || !deleteReason.trim()}>
           {isDeleting ? (
             <InlineLoading className={styles.spinner} description={t('deleting', 'Deleting') + '...'} />
           ) : (

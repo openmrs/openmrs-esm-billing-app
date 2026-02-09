@@ -82,6 +82,8 @@
   "deleteFailedTryAgain": "Unable to delete line item. Please try again.",
   "deleteLineItem": "Delete line item",
   "deletePaymentMode": "Delete payment mode",
+  "deleteReason": "Reason for deletion",
+  "deleteReasonPlaceholder": "Enter the reason for removing this line item from the bill",
   "deleting": "Deleting",
   "description": "Description",
   "descriptionPlaceholder": "For example, Used for all cash transactions",
@@ -241,8 +243,5 @@
   "uuid": "UUID",
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
-  "visitTime": "Visit time",
-  "voidReason": "Reason for void",
-  "voidReasonPlaceholder": "Enter reason for voiding this line item",
   "waiverForm": "Waiver form"
 }
