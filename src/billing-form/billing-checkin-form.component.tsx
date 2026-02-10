@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
@@ -19,7 +19,16 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
   const [attributes, setAttributes] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState<any>();
+  const [selectedBillableService, setSelectedBillableService] = useState<any>(null);
   let lineList = [];
+
+  useEffect(() => {
+    // Clear selected service when payment method becomes undefined (switching to Non-paying)
+    if (paymentMethod === undefined && selectedBillableService !== null) {
+      setSelectedBillableService(null);
+      setExtraVisitInfo(null);
+    }
+  }, [paymentMethod, selectedBillableService, setExtraVisitInfo]);
 
   const handleCreateExtraVisitInfo = useCallback(
     async (createBillPayload) => {
@@ -42,6 +51,13 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   );
 
   const handleBillingService = ({ selectedItem }) => {
+    setSelectedBillableService(selectedItem);
+
+    if (!selectedItem) {
+      setExtraVisitInfo(null);
+      return;
+    }
+
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
     const itemUuid = selectedItem?.uuid ?? '';
 
@@ -117,6 +133,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
           itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
           label={t('selectBillableService', 'Select a billable service')}
           onChange={handleBillingService}
+          selectedItem={selectedBillableService}
           titleText={t('billableService', 'Billable service')}
         />
       }

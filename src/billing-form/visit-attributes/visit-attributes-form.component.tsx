@@ -64,7 +64,8 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
       policyNumber,
       patientCategory: patientCategoryValue,
     } = getValues();
-    setPaymentMethod?.(paymentMethods);
+    // Clear payment method when switching to Non-paying
+    setPaymentMethod?.(paymentDetails === categoryConcepts.payingDetails ? paymentMethods : undefined);
 
     const formPayload = [
       { uuid: patientCategory.paymentDetails, value: paymentDetails },
@@ -89,6 +90,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
     patientCategory.paymentMethods,
     patientCategory.policyNumber,
     setPaymentMethod,
+    categoryConcepts.payingDetails,
   ]);
 
   useEffect(() => {
