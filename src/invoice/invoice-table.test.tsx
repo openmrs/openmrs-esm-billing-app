@@ -148,21 +148,23 @@ describe('InvoiceTable', () => {
     expect(screen.getByText('USD 300')).toBeInTheDocument();
   });
 
-  it('should render edit buttons for all line items', () => {
+  it('should render overflow menus for all line items', () => {
     render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
 
-    const editButton1 = screen.getByTestId('edit-button-1');
-    const editButton2 = screen.getByTestId('edit-button-2');
-
-    expect(editButton1).toBeInTheDocument();
-    expect(editButton2).toBeInTheDocument();
+    const overflowMenus = screen.getAllByRole('button', { name: /options/i });
+    expect(overflowMenus.length).toBe(2);
   });
 
   it('should open edit modal when edit button is clicked', async () => {
     const user = userEvent.setup();
     render(<InvoiceTable bill={{ ...defaultBill, status: 'PENDING' }} onMutate={mockOnMutate} />);
 
-    const editButton = screen.getByTestId('edit-button-1');
+    // Open the overflow menu for the first row
+    const overflowMenus = screen.getAllByRole('button', { name: /options/i });
+    await user.click(overflowMenus[0]);
+
+    // Find and click the edit button
+    const editButton = await screen.findByTestId('edit-button-1');
     await user.click(editButton);
 
     expect(mockShowModal).toHaveBeenCalledTimes(1);
@@ -174,6 +176,54 @@ describe('InvoiceTable', () => {
         onMutate: mockOnMutate,
       }),
     );
+  });
+
+  it('should open delete modal when delete button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<InvoiceTable bill={{ ...defaultBill, status: 'PENDING' }} onMutate={mockOnMutate} />);
+
+    // Open the overflow menu for the first row
+    const overflowMenus = screen.getAllByRole('button', { name: /options/i });
+    await user.click(overflowMenus[0]);
+
+    // Find and click the delete button
+    const deleteButton = await screen.findByTestId('delete-button-1');
+    await user.click(deleteButton);
+
+    expect(mockShowModal).toHaveBeenCalledTimes(1);
+    expect(mockShowModal).toHaveBeenCalledWith(
+      'delete-line-item-confirmation-modal',
+      expect.objectContaining({
+        item: expect.objectContaining({ uuid: '1' }),
+        onMutate: mockOnMutate,
+      }),
+    );
+  });
+
+  it('should disable delete button when bill status is not PENDING', async () => {
+    const user = userEvent.setup();
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
+
+    // Open the overflow menu for the first row
+    const overflowMenus = screen.getAllByRole('button', { name: /options/i });
+    await user.click(overflowMenus[0]);
+
+    // Find the delete button
+    const deleteButton = await screen.findByTestId('delete-button-1');
+    expect(deleteButton).toBeDisabled();
+  });
+
+  it('should disable edit button when bill status is not PENDING', async () => {
+    const user = userEvent.setup();
+    render(<InvoiceTable bill={defaultBill} onMutate={mockOnMutate} />);
+
+    // Open the overflow menu for the first row
+    const overflowMenus = screen.getAllByRole('button', { name: /options/i });
+    await user.click(overflowMenus[0]);
+
+    // Find the edit button
+    const editButton = await screen.findByTestId('edit-button-1');
+    expect(editButton).toBeDisabled();
   });
 
   it('should filter line items based on search term', async () => {

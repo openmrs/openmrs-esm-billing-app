@@ -4,8 +4,9 @@ import fuzzy from 'fuzzy';
 import {
   DataTable,
   DataTableSkeleton,
-  IconButton,
   Layer,
+  OverflowMenu,
+  OverflowMenuItem,
   Table,
   TableBody,
   TableCell,
@@ -17,8 +18,6 @@ import {
   Tile,
 } from '@carbon/react';
 import {
-  EditIcon,
-  TrashCanIcon,
   isDesktop,
   showModal,
   useConfig,
@@ -106,48 +105,49 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
           price: convertToCurrency(item.price, defaultCurrency),
           total: convertToCurrency(item.price * item.quantity, defaultCurrency),
           actionButton: (
-            <div className={styles.actionButtons}>
-              <IconButton
+            <OverflowMenu flipped>
+              <OverflowMenuItem
+                className={styles.menuitem}
                 data-testid={`edit-button-${item.uuid}`}
-                label={t('editThisBillItem', 'Edit this bill item')}
-                kind="ghost"
+                itemText={getCoreTranslation('edit')}
                 onClick={() => handleSelectBillItem(item)}
-                disabled={bill?.status !== 'PENDING'}>
-                <EditIcon size={16} />
-              </IconButton>
-
-              <IconButton
+                disabled={bill?.status !== 'PENDING'}
+              />
+              <OverflowMenuItem
+                className={styles.menuitem}
+                isDelete
                 data-testid={`delete-button-${item.uuid}`}
-                label={t('deleteBillLineItem', 'Delete this bill line item')}
-                kind="ghost"
+                itemText={getCoreTranslation('delete')}
                 onClick={() => handleDeleteLineItem(item)}
-                disabled={bill?.status !== 'PENDING'}>
-                <TrashCanIcon size={16} />
-              </IconButton>
-            </div>
+                disabled={bill?.status !== 'PENDING'}
+              />
+            </OverflowMenu>
           ),
         };
       }) ?? [],
-    [filteredLineItems, defaultCurrency, t, handleSelectBillItem, handleDeleteLineItem, bill?.status],
+    [filteredLineItems, defaultCurrency, handleSelectBillItem, handleDeleteLineItem, bill?.status],
   );
 
   if (isLoadingBill) {
     return (
-      <div className={styles.loaderContainer}>
-        <DataTableSkeleton
-          data-testid="loader"
-          columnCount={tableHeaders.length}
-          showHeader={false}
-          showToolbar={false}
-          zebra
-        />
-      </div>
+      <DataTableSkeleton
+        data-testid="loader"
+        columnCount={tableHeaders.length}
+        showHeader={false}
+        showToolbar={false}
+        zebra
+      />
     );
   }
 
   return (
     <div className={styles.lineItemsWrapper}>
-      <DataTable headers={tableHeaders} rows={tableRows} size={responsiveSize} useZebraStyles>
+      <DataTable
+        headers={tableHeaders}
+        rows={tableRows}
+        size={responsiveSize}
+        useZebraStyles
+        overflowMenuOnHover={isDesktop(layout)}>
         {({ rows, headers, getRowProps, getTableProps }) => (
           <TableContainer
             description={
