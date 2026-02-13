@@ -5,7 +5,6 @@
 
 .lineItemsWrapper {
   border: 1px solid colors.$gray-20;
-  border-radius: 4px;
   background-color: colors.$white;
   margin-bottom: layout.$spacing-05;
 }
@@ -42,8 +41,10 @@
 
 .invoiceTable {
   width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
+
+  td {
+    border-bottom: none !important;
+  }
 }
 
 .tableDescription {
@@ -63,8 +64,4 @@
   & > span {
     @include type.type-style('body-01');
   }
-}
-
-.menuitem {
-  max-width: none;
 }
