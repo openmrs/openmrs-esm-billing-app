@@ -1,5 +1,6 @@
 import { type OpenmrsResource } from '@openmrs/esm-framework';
-
+export type BillStatus = 'PENDING'|'PAID'|'ADJUSTED'|'POSTED';
+export type BillLineItemStatus = 'PENDING'|'PAID'|'ADJUSTED'|'UNPAID';
 export interface MappedBill {
   uuid: string;
   id: number;
@@ -56,7 +57,7 @@ interface Provider {
 export interface LineItem {
   uuid?: string;
   item?: string;
-  paymentStatus: string;
+  paymentStatus: BillLineItemStatus;
   billableService?: string;
   quantity: number;
   price: number;

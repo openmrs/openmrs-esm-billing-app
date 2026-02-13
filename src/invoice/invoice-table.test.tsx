@@ -2,12 +2,14 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, showModal, useConfig } from '@openmrs/esm-framework';
-import { type MappedBill } from '../types';
+import { type MappedBill, type LineItem } from '../types';
 import { configSchema, type BillingConfig } from '../config-schema';
 import InvoiceTable from './invoice-table.component';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockShowModal = jest.mocked(showModal);
+const PAID = 'PAID' as const;
+const PENDING = 'PENDING' as const;
 
 jest.mock('../helpers', () => ({
   convertToCurrency: jest.fn((price) => `USD ${price}`),
