@@ -779,6 +779,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And I click the delete button for the line item', async () => {
+      await page.getByRole('button', { name: 'Options' }).click();
       const deleteButton = page.getByTestId(`delete-button-${lineItemUuid}`);
       await expect(deleteButton).toBeVisible();
       await deleteButton.click();
@@ -798,7 +799,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('Then I should see a success notification', async () => {
-      await waitForSuccessNotification(page, 'Line item deleted');
+      await waitForSuccessNotification(page, 'Bill line item deleted successfully');
     });
 
     await test.step('And the line item should be removed from the invoice', async () => {
