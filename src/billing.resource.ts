@@ -177,11 +177,9 @@ export const updateBillItems = (payload: UpdateBillPayload) => {
 };
 
 export const deleteBillItem = (itemUuid: string, voidReason: string) => {
-  const url = `${apiBasePath}billLineItem/${itemUuid}`;
+  const url = `${apiBasePath}billLineItem/${itemUuid}?reason=${encodeURIComponent(voidReason)}`;
 
   return openmrsFetch(url, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' },
-    body: { voidReason },
   });
 };
