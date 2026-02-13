@@ -40,7 +40,7 @@ describe('DeleteLineItem Modal', () => {
     render(<DeleteLineItem closeModal={mockCloseModal} item={mockItem} onMutate={mockMutate} />);
 
     expect(screen.getByText(/Delete line item/i)).toBeInTheDocument();
-    expect(screen.getByText(/Are you sure you want to delete this line item\?/i)).toBeInTheDocument();
+    expect(screen.getByText(/Are you sure you want to delete "X-Ray Service" from this bill\?/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Reason for deletion/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
