@@ -5,7 +5,6 @@
 
 .lineItemsWrapper {
   border: 1px solid colors.$gray-20;
-  border-radius: 4px;
   background-color: colors.$white;
   margin-bottom: layout.$spacing-05;
 }
@@ -34,10 +33,6 @@
   color: $text-02;
 }
 
-.headerContainer {
-  background-color: colors.$gray-10;
-}
-
 .searchbox {
   input:focus {
     outline: 2px solid colors.$orange-40 !important;
@@ -46,8 +41,10 @@
 
 .invoiceTable {
   width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
+
+  td {
+    border-bottom: none !important;
+  }
 }
 
 .tableDescription {
@@ -67,31 +64,4 @@
   & > span {
     @include type.type-style('body-01');
   }
-}
-
-.tableToolbar {
-  width: 20%;
-  min-width: 12.5rem;
-}
-
-.toolbarWrapper {
-  position: relative;
-  display: flex;
-  justify-content: flex-end;
-}
-
-:global(.omrs-breakpoint-lt-desktop) {
-  .toolbarWrapper {
-    height: layout.$spacing-09;
-  }
-}
-
-:global(.omrs-breakpoint-gt-tablet) {
-  .toolbarWrapper {
-    height: layout.$spacing-07;
-  }
-}
-
-.actionButtons {
-  display: flex;
 }

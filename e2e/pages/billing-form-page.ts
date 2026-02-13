@@ -10,7 +10,7 @@ export class BillingFormPage {
   readonly selectedItemCards = () => this.page.locator('[class*="itemCard"]');
   readonly removeItemButton = () => this.page.getByRole('button', { name: /remove/i });
   readonly saveButton = () => this.page.getByRole('button', { name: /save and close/i });
-  readonly discardButton = () => this.page.getByRole('button', { name: /discard/i });
+  readonly discardButton = () => this.page.getByRole('button', { name: 'Discard', exact: true });
   readonly grandTotalLabel = () => this.page.getByText(/grand total/i);
 
   async openBillingForm(patientUuid: string) {
@@ -87,6 +87,14 @@ export class BillingFormPage {
 
   async discardBill() {
     await this.discardButton().click();
+
+    // If the workspace has unsaved changes, a confirmation modal appears.
+    // Click the modal's "Discard changes" button to confirm.
+    const modal = this.page.getByRole('dialog');
+    const confirmDiscardButton = modal.getByRole('button', { name: /discard changes/i });
+    if (await confirmDiscardButton.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await confirmDiscardButton.click();
+    }
   }
 
   async verifyItemAdded(itemName: string) {

@@ -734,4 +734,97 @@ test.describe('Billing: Patient Chart workflow', () => {
       });
     });
   });
+
+  test('Delete line item from invoice', async ({ page, api, patient }) => {
+    const billingFormPage = new BillingFormPage(page);
+    const invoicePage = new InvoicePage(page);
+    const patientUuid = patient.uuid;
+    let billUuid: string;
+    let lineItemUuid: string;
+    let initialTotalAmount: number;
+
+    await test.step('Given I have created a bill with a line item', async () => {
+      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      await createBillButton.click();
+
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, 'Bill processed successfully');
+
+      const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+      const billsData = await billsResponse.json();
+      billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
+
+      const bill = billsData.results[0];
+      expect(bill.lineItems.length).toBeGreaterThan(0);
+      lineItemUuid = bill.lineItems[0].uuid;
+    });
+
+    await test.step('When I navigate to the invoice page', async () => {
+      await invoicePage.goto(patientUuid, billUuid);
+      await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('And I verify the initial line items and total', async () => {
+      const lineItems = await invoicePage.getLineItems();
+      expect(lineItems.length).toBeGreaterThan(0);
+
+      const totalAmount = await invoicePage.getTotalAmount();
+      initialTotalAmount = extractNumericValue(totalAmount);
+      expect(initialTotalAmount).toBeGreaterThan(0);
+    });
+
+    await test.step('And I click the delete button for the line item', async () => {
+      await page.getByRole('button', { name: 'Options' }).click();
+      const deleteButton = page.getByTestId(`delete-button-${lineItemUuid}`);
+      await expect(deleteButton).toBeVisible();
+      await deleteButton.click();
+    });
+
+    await test.step('And I fill in the delete reason and confirm deletion', async () => {
+      const modal = page.getByRole('dialog');
+      await expect(modal).toBeVisible();
+
+      const deleteReasonInput = modal.locator('textarea#deleteReason');
+      await expect(deleteReasonInput).toBeVisible();
+      await deleteReasonInput.fill('Test deletion reason');
+
+      const confirmDeleteButton = modal.getByRole('button', { name: /delete/i });
+      await expect(confirmDeleteButton).toBeEnabled();
+      await confirmDeleteButton.click();
+    });
+
+    await test.step('Then I should see a success notification', async () => {
+      await waitForSuccessNotification(page, 'Bill line item deleted successfully');
+    });
+
+    await test.step('And the line item should be removed from the invoice', async () => {
+      await expect
+        .poll(async () => {
+          const lineItems = await invoicePage.getLineItems();
+          return lineItems.length;
+        })
+        .toBe(0);
+    });
+
+    await test.step('And the total amount should be updated to zero', async () => {
+      await expect
+        .poll(async () => {
+          const totalAmount = await invoicePage.getTotalAmount();
+          return extractNumericValue(totalAmount);
+        })
+        .toBe(0);
+
+      await expect
+        .poll(async () => {
+          const amountDue = await invoicePage.getAmountDue();
+          return extractNumericValue(amountDue);
+        })
+        .toBe(0);
+    });
+  });
 });

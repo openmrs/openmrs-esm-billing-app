@@ -176,7 +176,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   };
 
   return (
-    <Workspace2 title={t('addBillItems', 'Add bill items')}>
+    <Workspace2 title={t('addBillItems', 'Add bill items')} hasUnsavedChanges={selectedItems.length > 0}>
       <Form className={styles.form}>
         <div className={styles.grid}>
           {isLoading ? (

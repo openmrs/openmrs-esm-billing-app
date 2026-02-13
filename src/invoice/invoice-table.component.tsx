@@ -1,10 +1,10 @@
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import fuzzy from 'fuzzy';
 import {
   DataTable,
   DataTableSkeleton,
-  IconButton,
   Layer,
   Table,
   TableBody,
@@ -15,21 +15,12 @@ import {
   TableRow,
   TableToolbarSearch,
   Tile,
-  type DataTableRow,
 } from '@carbon/react';
-import {
-  EditIcon,
-  TrashCanIcon,
-  isDesktop,
-  showModal,
-  useConfig,
-  useDebounce,
-  useLayoutType,
-  getCoreTranslation,
-} from '@openmrs/esm-framework';
+import { getCoreTranslation, isDesktop, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { type LineItem, type MappedBill } from '../types';
 import { convertToCurrency } from '../helpers';
 import type { BillingConfig } from '../config-schema';
+import LineItemActionMenu from './line-item-action-menu.component';
 import styles from './invoice-table.scss';
 
 type InvoiceTableProps = {
@@ -52,15 +43,15 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
       return lineItems;
     }
 
-    return debouncedSearchTerm
-      ? fuzzy
-          .filter(debouncedSearchTerm, lineItems, {
-            extract: (lineItem: LineItem) => `${lineItem.billableService} ${lineItem.item}`,
-          })
-          .sort((r1, r2) => r1.score - r2.score)
-          .map((result) => result.original)
-      : lineItems;
+    return fuzzy
+      .filter(debouncedSearchTerm, lineItems, {
+        extract: (lineItem: LineItem) => `${lineItem.billableService} ${lineItem.item}`,
+      })
+      .sort((r1, r2) => r1.score - r2.score)
+      .map((result) => result.original);
   }, [debouncedSearchTerm, lineItems]);
+
+  const lineItemsByUuid = useMemo(() => new Map(lineItems.map((item) => [item.uuid, item])), [lineItems]);
 
   const tableHeaders = [
     { header: t('number', 'Number'), key: 'no', width: 7 }, // Width as a percentage
@@ -69,86 +60,42 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
     { header: t('quantity', 'Quantity'), key: 'quantity', width: 15 },
     { header: t('price', 'Price'), key: 'price', width: 24 },
     { header: t('total', 'Total'), key: 'total', width: 15 },
-    { header: getCoreTranslation('actions'), key: 'actionButton' },
   ];
-
-  const handleDeleteLineItem = useCallback(
-    (row: LineItem) => {
-      const dispose = showModal('delete-line-item-confirmation-modal', {
-        item: row,
-        closeModal: () => dispose(),
-        onMutate,
-      });
-    },
-    [onMutate],
-  );
-
-  const handleSelectBillItem = useCallback(
-    (row: LineItem) => {
-      const dispose = showModal('edit-bill-line-item-modal', {
-        bill,
-        item: row,
-        closeModal: () => dispose(),
-        onMutate,
-      });
-    },
-    [bill, onMutate],
-  );
 
   const tableRows = useMemo(
     () =>
-      filteredLineItems?.map((item, index) => {
-        return {
-          no: `${index + 1}`,
-          id: `${item.uuid}`,
-          billItem: item.billableService ? item.billableService : item?.item,
-          status: item.paymentStatus,
-          quantity: item.quantity,
-          price: convertToCurrency(item.price, defaultCurrency),
-          total: convertToCurrency(item.price * item.quantity, defaultCurrency),
-          actionButton: (
-            <div className={styles.actionButtons}>
-              <IconButton
-                data-testid={`edit-button-${item.uuid}`}
-                label={t('editThisBillItem', 'Edit this bill item')}
-                kind="ghost"
-                onClick={() => handleSelectBillItem(item)}
-                disabled={bill?.status !== 'PENDING'}>
-                <EditIcon size={16} />
-              </IconButton>
-
-              <IconButton
-                data-testid={`delete-button-${item.uuid}`}
-                label={t('deleteBillLineItem', 'Delete this bill line item')}
-                kind="ghost"
-                onClick={() => handleDeleteLineItem(item)}
-                disabled={bill?.status !== 'PENDING'}>
-                <TrashCanIcon size={16} />
-              </IconButton>
-            </div>
-          ),
-        };
-      }) ?? [],
-    [filteredLineItems, defaultCurrency, t, handleSelectBillItem, handleDeleteLineItem, bill?.status],
+      filteredLineItems?.map((item, index) => ({
+        no: `${index + 1}`,
+        id: `${item.uuid}`,
+        billItem: item.billableService ? item.billableService : item?.item,
+        status: item.paymentStatus,
+        quantity: item.quantity,
+        price: convertToCurrency(item.price, defaultCurrency),
+        total: convertToCurrency(item.price * item.quantity, defaultCurrency),
+      })) ?? [],
+    [filteredLineItems, defaultCurrency],
   );
 
   if (isLoadingBill) {
     return (
-      <div className={styles.loaderContainer}>
-        <DataTableSkeleton
-          data-testid="loader"
-          columnCount={tableHeaders.length}
-          showHeader={false}
-          showToolbar={false}
-          zebra
-        />
-      </div>
+      <DataTableSkeleton
+        data-testid="loader"
+        columnCount={tableHeaders.length}
+        showHeader={false}
+        showToolbar={false}
+        zebra
+      />
     );
   }
 
   return (
     <div className={styles.lineItemsWrapper}>
-      <DataTable headers={tableHeaders} rows={tableRows} size={responsiveSize} useZebraStyles>
+      <DataTable
+        headers={tableHeaders}
+        rows={tableRows}
+        size={responsiveSize}
+        useZebraStyles
+        overflowMenuOnHover={isDesktop(layout)}>
         {({ rows, headers, getRowProps, getTableProps }) => (
           <TableContainer
             description={
@@ -167,25 +114,26 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
             <Table
               {...getTableProps()}
               aria-label={t('invoiceLineItems', 'Invoice line items')}
-              className={`${styles.invoiceTable} billingTable`}>
+              className={classNames(styles.invoiceTable, 'billingTable')}>
               <TableHead>
                 <TableRow>
                   {headers.map((header) => (
                     <TableHeader key={header.key}>{header.header}</TableHeader>
                   ))}
+                  <TableHeader aria-label={getCoreTranslation('actions')} />
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, index) => {
+                {rows.map((row) => {
+                  const item = lineItemsByUuid.get(row.id);
                   return (
-                    <TableRow
-                      key={row.id}
-                      {...getRowProps({
-                        row,
-                      })}>
+                    <TableRow key={row.id} {...getRowProps({ row })}>
                       {row.cells.map((cell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}
+                      <TableCell className="cds--table-column-menu">
+                        {item && <LineItemActionMenu bill={bill} item={item} onMutate={onMutate} />}
+                      </TableCell>
                     </TableRow>
                   );
                 })}

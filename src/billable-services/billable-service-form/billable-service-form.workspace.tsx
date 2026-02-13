@@ -199,7 +199,7 @@ const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableS
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     setValue,
     reset,
   } = useForm<BillableServiceFormData>({
@@ -294,23 +294,24 @@ const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableS
     return null;
   };
 
+  const title = serviceToEdit
+    ? t('editBillableService', 'Edit billable service')
+    : t('addBillableService', 'Add billable service');
+
   if (isLoadingPaymentModes || isLoadingServiceTypes) {
     return (
-      <InlineLoading
-        status="active"
-        iconDescription={t('loadingDescription', 'Loading')}
-        description={t('loading', 'Loading data') + '...'}
-      />
+      <Workspace2 title={title} hasUnsavedChanges={isDirty}>
+        <InlineLoading
+          status="active"
+          iconDescription={t('loadingDescription', 'Loading')}
+          description={t('loading', 'Loading data') + '...'}
+        />
+      </Workspace2>
     );
   }
 
   return (
-    <Workspace2
-      title={
-        serviceToEdit
-          ? t('editBillableService', 'Edit billable service')
-          : t('addBillableService', 'Add billable service')
-      }>
+    <Workspace2 title={title} hasUnsavedChanges={isDirty}>
       <Form
         aria-label={t('billableServiceForm', 'Billable service form')}
         className={styles.form}
