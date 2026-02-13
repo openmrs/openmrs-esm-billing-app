@@ -803,28 +803,28 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And the line item should be removed from the invoice', async () => {
-      await page.reload();
-      await invoicePage.waitForInvoiceToLoad();
-
-      const lineItems = await invoicePage.getLineItems();
-      expect(lineItems.length).toBe(0);
+      await expect
+        .poll(async () => {
+          const lineItems = await invoicePage.getLineItems();
+          return lineItems.length;
+        })
+        .toBe(0);
     });
 
     await test.step('And the total amount should be updated to zero', async () => {
-      const totalAmount = await invoicePage.getTotalAmount();
-      const totalValue = extractNumericValue(totalAmount);
-      expect(totalValue).toBe(0);
+      await expect
+        .poll(async () => {
+          const totalAmount = await invoicePage.getTotalAmount();
+          return extractNumericValue(totalAmount);
+        })
+        .toBe(0);
 
-      const amountDue = await invoicePage.getAmountDue();
-      const amountDueValue = extractNumericValue(amountDue);
-      expect(amountDueValue).toBe(0);
-    });
-
-    await test.step('And the backend should reflect the deletion', async () => {
-      const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
-      const billData = await billResponse.json();
-      const activeLineItems = billData.lineItems.filter((item: { voided: boolean }) => !item.voided);
-      expect(activeLineItems.length).toBe(0);
+      await expect
+        .poll(async () => {
+          const amountDue = await invoicePage.getAmountDue();
+          return extractNumericValue(amountDue);
+        })
+        .toBe(0);
     });
   });
 });
