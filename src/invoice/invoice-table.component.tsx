@@ -124,16 +124,19 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row) => (
-                  <TableRow key={row.id} {...getRowProps({ row })}>
-                    {row.cells.map((cell) => (
-                      <TableCell key={cell.id}>{cell.value}</TableCell>
-                    ))}
-                    <TableCell className="cds--table-column-menu">
-                      <LineItemActionMenu bill={bill} item={lineItemsByUuid.get(row.id)!} onMutate={onMutate} />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {rows.map((row) => {
+                  const item = lineItemsByUuid.get(row.id);
+                  return (
+                    <TableRow key={row.id} {...getRowProps({ row })}>
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                      ))}
+                      <TableCell className="cds--table-column-menu">
+                        {item && <LineItemActionMenu bill={bill} item={item} onMutate={onMutate} />}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </TableContainer>
