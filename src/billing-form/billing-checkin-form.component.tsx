@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
+import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import styles from './billing-checkin-form.scss';
@@ -15,10 +15,12 @@ type BillingCheckInFormProps = {
 
 const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, setExtraVisitInfo }) => {
   const { t } = useTranslation();
+  const { categoryConcepts } = useConfig();
   const { cashPoints, isLoading: isLoadingCashPoints, error: cashError } = useCashPoint();
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
   const [attributes, setAttributes] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState<any>();
+  const [paymentDetails, setPaymentDetails] = useState<any>();
   const [selectedBillableService, setSelectedBillableService] = useState<any>(null);
   let lineList = [];
 
@@ -125,8 +127,12 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   return (
     <section className={styles.sectionContainer}>
-      <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
-      {
+      <VisitAttributesForm
+        setAttributes={setAttributes}
+        setPaymentMethod={setPaymentMethod}
+        setPaymentDetails={setPaymentDetails}
+      />
+      {paymentDetails === categoryConcepts.payingDetails && (
         <Dropdown
           id="billable-items"
           items={lineList}
@@ -136,7 +142,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
           selectedItem={selectedBillableService}
           titleText={t('billableService', 'Billable service')}
         />
-      }
+      )}
     </section>
   );
 };
