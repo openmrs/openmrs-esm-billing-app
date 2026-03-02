@@ -121,6 +121,14 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
         });
         return false;
       }
+      if (!item.quantity || item.quantity < 1) {
+        showSnackbar({
+          title: t('validationError', 'Validation error'),
+          subtitle: t('quantityMustBeAtLeastOne', 'Quantity must be at least 1'),
+          kind: 'error',
+        });
+        return false;
+      }
     }
     return true;
   };
