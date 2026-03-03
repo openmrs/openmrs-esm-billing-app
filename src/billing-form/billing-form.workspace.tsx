@@ -268,7 +268,6 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
                         id={`quantity-${item.uuid}`}
                         invalid={!item.quantity || item.quantity < 1}
                         invalidText={t('quantityMustBeAtLeastOne', 'Quantity must be at least 1')}
-                        min={1}
                         onChange={(_, { value }) => {
                           const number = parseFloat(String(value));
                           updateQuantity(item.uuid, isNaN(number) ? 0 : number);
