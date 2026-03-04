@@ -24,8 +24,10 @@ import {
   EmptyCardIllustration,
   ErrorState,
   ConfigurableLink,
+  formatDate,
   useConfig,
   useDebounce,
+  parseDate,
   type LayoutType,
 } from '@openmrs/esm-framework';
 import { usePaginatedBills } from '../billing.resource';
@@ -108,6 +110,7 @@ const BillsTable: React.FC = () => {
       const object = {
         ...bill,
         id: String(bill.id),
+        dateCreated: bill.dateCreated ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' }) : '--',
         receiptNumberDisplay: (
           <ConfigurableLink
             style={{ textDecoration: 'none' }}
