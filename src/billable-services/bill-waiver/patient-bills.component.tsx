@@ -15,7 +15,7 @@ import {
   Tile,
 } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { EmptyCardIllustration, useConfig } from '@openmrs/esm-framework';
+import { EmptyCardIllustration, formatDate, parseDate, useConfig } from '@openmrs/esm-framework';
 import { type MappedBill } from '../../types';
 import { convertToCurrency } from '../../helpers';
 import PatientBillsSelections from './bill-selection.component';
@@ -44,7 +44,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
 
   const tableRows = bills.map((bill) => ({
     id: `${bill.uuid}`,
-    date: bill.dateCreated,
+    date: formatDate(parseDate(bill.dateCreated), { mode: 'wide' }),
     invoiceNumber: bill.receiptNumber,
     billableService: bill.billingService,
     totalAmount: convertToCurrency(bill?.totalAmount, defaultCurrency),
@@ -69,12 +69,8 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
 
   return (
     <div style={{ marginTop: '1rem' }}>
-      <DataTable
-        rows={tableRows}
-        headers={tableHeaders}
-        size="sm"
-        useZebraStyles
-        render={({
+      <DataTable rows={tableRows} headers={tableHeaders} size="sm" useZebraStyles>
+        {({
           rows,
           headers,
           getHeaderProps,
@@ -130,7 +126,7 @@ const PatientBills: React.FC<PatientBillsProps> = ({ patientUuid, bills, setPati
             </Table>
           </TableContainer>
         )}
-      />
+      </DataTable>
     </div>
   );
 };

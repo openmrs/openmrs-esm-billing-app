@@ -24,7 +24,7 @@ const testProps = {
 const bill = {
   status: 'POSTED',
   receiptNumber: '0050-5',
-  dateCreated: '01 — Nov — 2025',
+  dateCreated: '2025-11-01T00:00:00.000Z',
   totalAmount: 100,
   tenderedAmount: 50,
 } as MappedBill;

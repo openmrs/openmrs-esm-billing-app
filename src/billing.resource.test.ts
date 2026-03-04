@@ -250,41 +250,6 @@ describe('mapBillProperties', () => {
     });
   });
 
-  describe('Date formatting', () => {
-    it('Formats dateCreated when present', () => {
-      mockFormatDate.mockReturnValue('01 January 2024');
-      const bill = createBaseBill({
-        dateCreated: '2024-01-01T00:00:00Z',
-      });
-      const result = mapBillProperties(bill);
-      expect(result.dateCreated).toBe('01 January 2024');
-    });
-
-    it('Returns "--" when dateCreated is null', () => {
-      const bill = createBaseBill({
-        dateCreated: null as unknown as string,
-      });
-      const result = mapBillProperties(bill);
-      expect(result.dateCreated).toBe('--');
-    });
-
-    it('Returns "--" when dateCreated is undefined', () => {
-      const bill = createBaseBill({
-        dateCreated: undefined as unknown as string,
-      });
-      const result = mapBillProperties(bill);
-      expect(result.dateCreated).toBe('--');
-    });
-
-    it('Returns "--" when dateCreated is empty string', () => {
-      const bill = createBaseBill({
-        dateCreated: '',
-      });
-      const result = mapBillProperties(bill);
-      expect(result.dateCreated).toBe('--');
-    });
-  });
-
   describe('Billing service concatenation', () => {
     it('Concatenates multiple line item names with double space', () => {
       const bill = createBaseBill({
