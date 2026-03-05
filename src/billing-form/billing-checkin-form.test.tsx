@@ -200,6 +200,52 @@ describe('BillingCheckInForm', () => {
       ]),
     });
   });
+
+  test('should clear selected billable service when switching from Paying to Non-paying', async () => {
+    const user = userEvent.setup();
+    mockUseCashPoint.mockReturnValue({ cashPoints: mockCashPoints, isLoading: false, error: null });
+    mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
+    renderBillingCheckinForm();
+
+    // 1. Select "Paying" radio button
+    const payingRadio = screen.getByRole('radio', { name: 'Paying' });
+    await user.click(payingRadio);
+
+    // 2. Select a payment method
+    const paymentMethodsDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(paymentMethodsDropdown);
+    const insuranceOption = await screen.findByText('Insurance');
+    await user.click(insuranceOption);
+
+    // 3. Select a billable service
+    const billableSelect = screen.getByRole('combobox', { name: /billable service/i });
+    await user.click(billableSelect);
+    const consultationOption = await screen.findByText(/Consultation \(Default: 100\.00\)/);
+    await user.click(consultationOption);
+
+    // 4. Verify service is selected and bill payload created
+    expect(testProps.setExtraVisitInfo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        createBillPayload: expect.objectContaining({
+          lineItems: expect.arrayContaining([
+            expect.objectContaining({
+              billableService: 'b37dddd6-4490-4bf7-b694-43bf19d04059',
+            }),
+          ]),
+        }),
+      }),
+    );
+
+    // Clear the mock to track new calls
+    testProps.setExtraVisitInfo.mockClear();
+
+    // 5. Switch to "Non-paying"
+    const nonPayingRadio = screen.getByRole('radio', { name: 'Non paying' });
+    await user.click(nonPayingRadio);
+
+    // 6. Verify setExtraVisitInfo called with null (clearing the payload)
+    expect(testProps.setExtraVisitInfo).toHaveBeenCalledWith(null);
+  });
 });
 
 function renderBillingCheckinForm() {

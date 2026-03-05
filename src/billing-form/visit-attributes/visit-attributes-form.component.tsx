@@ -11,6 +11,7 @@ import styles from './visit-attributes-form.scss';
 type VisitAttributesFormProps = {
   setAttributes: (state) => void;
   setPaymentMethod?: (value: any) => void;
+  setPaymentDetails?: (value: any) => void;
 };
 
 type VisitAttributesFormValue = {
@@ -29,7 +30,11 @@ const visitAttributesFormSchema = z.object({
   patientCategory: z.string(),
 });
 
-const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes, setPaymentMethod }) => {
+const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({
+  setAttributes,
+  setPaymentMethod,
+  setPaymentDetails,
+}) => {
   const { t } = useTranslation();
   const { patientCategory, categoryConcepts, nonPayingPatientCategories } = useConfig();
   const { control, getValues, watch } = useForm<VisitAttributesFormValue>({
@@ -64,7 +69,9 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
       policyNumber,
       patientCategory: patientCategoryValue,
     } = getValues();
-    setPaymentMethod?.(paymentMethods);
+    // Clear payment method when switching to Non-paying
+    setPaymentMethod?.(paymentDetails === categoryConcepts.payingDetails ? paymentMethods : undefined);
+    setPaymentDetails?.(paymentDetails);
 
     const formPayload = [
       { uuid: patientCategory.paymentDetails, value: paymentDetails },
@@ -89,6 +96,8 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
     patientCategory.paymentMethods,
     patientCategory.policyNumber,
     setPaymentMethod,
+    setPaymentDetails,
+    categoryConcepts.payingDetails,
   ]);
 
   useEffect(() => {
