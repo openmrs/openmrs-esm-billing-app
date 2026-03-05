@@ -82,6 +82,12 @@
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
       "order": 1
+    },
+    {
+      "name": "payment-status-badge",
+      "component": "paymentStatusBadge",
+      "slot": "patient-banner-tags-slot",
+      "order": 1
     }
   ],
   "modals": [
