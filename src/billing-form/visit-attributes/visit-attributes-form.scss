@@ -33,3 +33,9 @@
 .stack {
   margin-bottom: layout.$spacing-05;
 }
+
+.paymentDetailsLegend {
+  display: flex;
+  align-items: center;
+  gap: layout.$spacing-03; 
+}

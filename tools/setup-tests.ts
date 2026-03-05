@@ -12,12 +12,14 @@ window.spaBase = '/spa';
 window.getOpenmrsSpaBase = () => '/openmrs/spa/';
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
-// Mock ResizeObserver for Carbon components that use it (e.g., TextArea)
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-}));
+// Updated to Class syntax to support complex Carbon components (e.g. Toggletip, Notification)
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+window.ResizeObserver = ResizeObserver;
+global.ResizeObserver = ResizeObserver;
 
 // Suppress single-spa warnings in tests (these are expected when using framework mocks)
 const originalWarn = console.warn;

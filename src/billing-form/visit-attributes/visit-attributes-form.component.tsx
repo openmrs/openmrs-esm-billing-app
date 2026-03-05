@@ -3,7 +3,18 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { ComboBox, InlineLoading, RadioButton, RadioButtonGroup, Stack, TextInput } from '@carbon/react';
+import {
+  ComboBox,
+  InlineLoading,
+  RadioButton,
+  RadioButtonGroup,
+  Stack,
+  TextInput,
+  Toggletip,
+  ToggletipButton,
+  ToggletipContent,
+} from '@carbon/react';
+import { Information } from '@carbon/react/icons';
 import { useConfig } from '@openmrs/esm-framework';
 import { usePaymentMethods } from '../billing-form.resource';
 import styles from './visit-attributes-form.scss';
@@ -121,7 +132,19 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
         render={({ field }) => (
           <RadioButtonGroup
             className={styles.radioButtonGroup}
-            legendText={t('paymentDetails', 'Payment details')}
+            legendText={
+              <div className={styles.paymentDetailsLegend}>
+                {t('paymentDetails', 'Payment details')}
+                <Toggletip autoAlign>
+                  <ToggletipButton label="Show information">
+                    <Information />
+                  </ToggletipButton>
+                  <ToggletipContent>
+                    <p>{t('nonPayingInfo', 'Any services rendered to non-paying patients will not be billed')}</p>
+                  </ToggletipContent>
+                </Toggletip>
+              </div>
+            }
             name="payment-details"
             onChange={(selected) => field.onChange(selected)}
             orientation="vertical">
