@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
+import { type LineItem } from '../types';
 
 jest.mock('../billing.resource', () => ({
   usePaginatedBills: jest.fn(() => ({
@@ -15,19 +16,8 @@ jest.mock('../billing.resource', () => ({
 }));
 
 const mockBills = jest.mocked(usePaginatedBills);
-
-const mockBillsData = [
-  {
-    uuid: '1',
-    id: 1,
-    patientName: 'John Doe',
-    identifier: '12345678',
-    visitType: 'Checkup',
-    patientUuid: 'uuid1',
-    dateCreated: '2024-01-01',
-    lineItems: [
-      {
-        uuid: 'line-item-1',
+const lineItems1: LineItem ={
+  uuid: 'line-item-1',
         display: 'Service 1 Line Item',
         voided: false,
         voidReason: null,
@@ -40,8 +30,33 @@ const mockBillsData = [
         lineItemOrder: 1,
         resourceVersion: '1.0',
         paymentStatus: 'PENDING',
-      },
-    ],
+}
+
+const lineItems2: LineItem ={
+   uuid: 'line-item-2',
+        display: 'Service 2 Line Item',
+        voided: false,
+        voidReason: null,
+        item: 'Service 2',
+        billableService: 'Service 2',
+        quantity: 1,
+        price: 200,
+        priceName: 'Standard Price',
+        priceUuid: 'price-1',
+        lineItemOrder: 1,
+        resourceVersion: '1.0',
+        paymentStatus: 'PENDING',
+};
+const mockBillsData = [
+  {
+    uuid: '1',
+    id: 1,
+    patientName: 'John Doe',
+    identifier: '12345678',
+    visitType: 'Checkup',
+    patientUuid: 'uuid1',
+    dateCreated: '2024-01-01',
+    lineItems: [lineItems1],
     status: 'PENDING',
     cashPointUuid: 'cash-point-1',
     cashPointName: 'Main Cash Point',
@@ -61,23 +76,7 @@ const mockBillsData = [
     visitType: 'Wake up',
     patientUuid: 'uuid2',
     dateCreated: '2024-01-02',
-    lineItems: [
-      {
-        uuid: 'line-item-2',
-        display: 'Service 2 Line Item',
-        voided: false,
-        voidReason: null,
-        item: 'Service 2',
-        billableService: 'Service 2',
-        quantity: 1,
-        price: 200,
-        priceName: 'Standard Price',
-        priceUuid: 'price-1',
-        lineItemOrder: 1,
-        resourceVersion: '1.0',
-        paymentStatus: 'PENDING',
-      },
-    ],
+    lineItems: [lineItems2],
     status: 'PENDING',
     cashPointUuid: 'cash-point-1',
     cashPointName: 'Main Cash Point',
