@@ -9,6 +9,7 @@ import {
   type VisitReturnType,
 } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
+import { useBills } from '../../billing.resource';
 import { type MappedBill } from '../../types';
 import { configSchema, type BillingConfig } from '../../config-schema';
 import { usePaymentModes } from './payment.resource';
@@ -17,6 +18,7 @@ import Payments from './payments.component';
 const mockUseVisit = jest.mocked(useVisit);
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockUseBillableServices = jest.mocked(useBillableServices);
+const mockUseBills = jest.mocked(useBills);
 const mockUsePaymentModes = jest.mocked(usePaymentModes);
 const mockFormatToParts = jest.fn().mockReturnValue([{ type: 'integer', value: '1000' }]);
 const mockFormat = jest.fn().mockReturnValue('$1000.00');
@@ -38,6 +40,7 @@ global.Intl.NumberFormat = jest.fn().mockImplementation(() => ({
 
 jest.mock('../../billing.resource', () => ({
   processBillPayment: jest.fn(),
+  useBills: jest.fn(),
 }));
 
 jest.mock('./payment.resource', () => ({
@@ -114,6 +117,7 @@ describe('Payments', () => {
   beforeEach(() => {
     mockUseVisit.mockReturnValue({ currentVisit: null } as unknown as VisitReturnType);
     mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
+    mockUseBills.mockReturnValue({ bills: [], error: null, isLoading: false, isValidating: false, mutate: jest.fn() });
     mockUseBillableServices.mockReturnValue({
       billableServices: [],
       isLoading: false,
