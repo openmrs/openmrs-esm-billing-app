@@ -2,7 +2,7 @@ import { configSchema } from './config-schema';
 import { createDashboard, defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
-import { Settings, Wallet } from '@carbon/react/icons';
+import { Settings, Wallet, Money } from '@carbon/react/icons';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
 import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
@@ -87,20 +87,16 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
 );
 
 // t('billWaiver', 'Bill waiver')
-// Bill waiver feature disabled - O3-5057
-// The following export is commented out along with:
-// - BillWaiver component import and route in billable-services-home.component.tsx
-// - bill-waiver-left-panel-link extension removed from routes.json
-// export const billWaiverLeftPanelLink = getSyncLifecycle(
-//   createBillableServicesLeftPanelLink({
-//     name: 'bill-waiver',
-//     title: 'billWaiver',
-//     path: 'waive-bill',
-//     icon: Money,
-//     privilege: 'coreapps.systemAdministration',
-//   }),
-//   options,
-// );
+export const billWaiverLeftPanelLink = getSyncLifecycle(
+  createBillableServicesLeftPanelLink({
+    name: 'bill-waiver',
+    title: 'billWaiver',
+    path: 'waive-bill',
+    icon: Money,
+    privilege: 'coreapps.systemAdministration',
+  }),
+  options,
+);
 
 // t('billingSettings', 'Billing settings')
 // t('cashPointConfig', 'Cash point configuration')
