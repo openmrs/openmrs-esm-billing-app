@@ -4,10 +4,12 @@ import { TaskAdd } from '@carbon/react/icons';
 import { useSWRConfig } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { createBillWaiverPayload } from './utils';
 import { calculateTotalAmount, convertToCurrency } from '../../helpers';
-import { processBillPayment } from '../../billing.resource';
-import type { LineItem, MappedBill } from '../../types';
+import { updateBillItems } from '../../billing.resource';
+import { useBillableItems } from '../../billing-form/billing-form.resource';
 import type { BillingConfig } from '../../config-schema';
+import type { LineItem, MappedBill } from '../../types';
 import { apiBasePath } from '../../constants';
 import styles from './bill-waiver-form.scss';
 
@@ -20,9 +22,9 @@ type BillWaiverFormProps = {
 const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPatientUuid }) => {
   const { t } = useTranslation();
   const [waiverAmount, setWaiverAmount] = useState(0);
+  const { lineItems: billableLineItems } = useBillableItems();
   const totalAmount = calculateTotalAmount(lineItems);
-  const billTotal = bill.totalAmount ?? totalAmount;
-  const { defaultCurrency, waiverPaymentModeUuid } = useConfig<BillingConfig>();
+  const { defaultCurrency, waiverBillableServiceUuid } = useConfig<BillingConfig>();
   const { mutate } = useSWRConfig();
 
   if (lineItems?.length === 0) {
@@ -30,15 +32,20 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
   }
 
   const handleProcessPayment = async () => {
+    const waiverEndPointPayload = createBillWaiverPayload(
+      bill,
+      waiverAmount,
+      lineItems,
+      billableLineItems,
+      waiverBillableServiceUuid,
+    );
+
     try {
-      await processBillPayment(
-        {
-          instanceType: waiverPaymentModeUuid,
-          amount: billTotal,
-          amountTendered: Number(waiverAmount) || 0,
-        },
-        bill.uuid,
-      );
+      await updateBillItems({
+        ...waiverEndPointPayload,
+        uuid: bill.uuid,
+        status: 'PENDING',
+      });
       showSnackbar({
         title: t('billWaiver', 'Bill waiver'),
         subtitle: t('billWaiverSuccess', 'Bill waiver successful'),
@@ -74,7 +81,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
           </section>
           <section className={styles.billWaiverDescription}>
             <label className={styles.label}>{t('billTotal', 'Bill total')}</label>
-            <p className={styles.value}>{convertToCurrency(billTotal, defaultCurrency)}</p>
+            <p className={styles.value}>{convertToCurrency(totalAmount, defaultCurrency)}</p>
           </section>
 
           <Layer className={styles.formControlLayer}>
@@ -87,9 +94,9 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
               hideSteppers
               invalidText={t('invalidWaiverAmount', 'Invalid waiver amount')}
               label={t('amountToWaiveLabel', 'Amount to waive')}
-              max={billTotal}
+              max={totalAmount}
               min={0}
-              onChange={(_, { value }) => setWaiverAmount(Number(value) || 0)}
+              onChange={(_, { value }) => setWaiverAmount(value as number)}
               value={waiverAmount}
             />
           </Layer>
