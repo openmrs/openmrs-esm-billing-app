@@ -1,4 +1,5 @@
-import { mapBillProperties } from './billing.resource';
+import { renderHook } from '@testing-library/react';
+import { mapBillProperties, usePaginatedBills } from './billing.resource';
 import type { LineItem, PatientInvoice, Payment } from './types';
 
 type CashPoint = PatientInvoice['cashPoint'];
@@ -7,10 +8,13 @@ type Patient = PatientInvoice['patient'];
 
 const mockFormatDate = jest.fn((date: Date, options?: Partial<{ mode: string }>) => `formatted-${date}`);
 const mockParseDate = jest.fn((dateString: string): Date => new Date(dateString));
+const mockUseOpenmrsPagination = jest.fn();
 
 jest.mock('@openmrs/esm-framework', () => ({
   formatDate: (date: Date, options?: Partial<{ mode: string }>) => mockFormatDate(date, options),
   parseDate: (dateString: string) => mockParseDate(dateString),
+  useOpenmrsPagination: (...args: Parameters<typeof mockUseOpenmrsPagination>) => mockUseOpenmrsPagination(...args),
+  restBaseUrl: '/ws/rest/v1',
 }));
 
 const createLineItem = (overrides: Partial<LineItem> = {}): LineItem => ({
@@ -464,5 +468,67 @@ describe('mapBillProperties', () => {
       expect(result.billingService).toBe(longServiceName);
       expect(result.billingService.length).toBe(500);
     });
+  });
+});
+
+describe('usePaginatedBills', () => {
+  const mockGoTo = jest.fn();
+
+  beforeEach(() => {
+    mockUseOpenmrsPagination.mockReturnValue({
+      data: [],
+      error: null,
+      isLoading: false,
+      isValidating: false,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: mockGoTo,
+    });
+  });
+
+  it('returns bills sorted by dateCreated descending (newest first)', () => {
+    const oldBill = createBaseBill({ dateCreated: '2024-01-01T00:00:00Z', uuid: 'old-bill', id: 1 });
+    const midBill = createBaseBill({ dateCreated: '2024-06-15T00:00:00Z', uuid: 'mid-bill', id: 2 });
+    const newBill = createBaseBill({ dateCreated: '2024-12-31T00:00:00Z', uuid: 'new-bill', id: 3 });
+
+    // Provide data in ascending order (oldest first) to confirm the hook reverses it
+    mockUseOpenmrsPagination.mockReturnValueOnce({
+      data: [oldBill, midBill, newBill],
+      error: null,
+      isLoading: false,
+      isValidating: false,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 3,
+      goTo: mockGoTo,
+    });
+
+    const { result } = renderHook(() => usePaginatedBills(10));
+
+    expect(result.current.bills).toHaveLength(3);
+    expect(result.current.bills[0].uuid).toBe('new-bill');
+    expect(result.current.bills[1].uuid).toBe('mid-bill');
+    expect(result.current.bills[2].uuid).toBe('old-bill');
+  });
+
+  it('returns an empty array when there are no bills', () => {
+    const { result } = renderHook(() => usePaginatedBills(10));
+
+    expect(result.current.bills).toEqual([]);
+  });
+
+  it('passes the status filter to the API URL', () => {
+    renderHook(() => usePaginatedBills(10, 'PENDING,POSTED'));
+
+    const calledUrl: string = mockUseOpenmrsPagination.mock.calls[0][0];
+    expect(calledUrl).toContain('status=PENDING,POSTED');
+  });
+
+  it('passes an encoded patient name search term to the API URL', () => {
+    renderHook(() => usePaginatedBills(10, undefined, 'John Doe'));
+
+    const calledUrl: string = mockUseOpenmrsPagination.mock.calls[0][0];
+    expect(calledUrl).toContain('patientName=John%20Doe');
   });
 });
