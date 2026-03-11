@@ -19,31 +19,19 @@ import type {
   CreateBillPayload,
   UpdateBillPayload,
 } from './types';
-
-/**
- * Safely parse patient display string with multiple format support
- * OpenMRS Standard: Never trust external data format - always validate and provide fallbacks
- */
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
-  // CRITICAL: Patient identification required for legal compliance (HIPAA, GDPR, WHO standards)
   if (!display) {
     console.warn('[Billing] Patient display is null/undefined - using fallback values');
     return { identifier: 'UNKNOWN-ID', name: 'Unknown Patient' };
   }
-
-  // Handle standard OpenMRS format: "identifier-name"
   if (display.includes('-')) {
     const firstHyphenIndex = display.indexOf('-');
     const identifier = display.substring(0, firstHyphenIndex).trim();
     const name = display.substring(firstHyphenIndex + 1).trim();
-
-    // Validate extracted values are not empty
     if (identifier && name) {
       return { identifier, name };
     }
   }
-
-  // Fallback: No hyphen or invalid format - log warning for data quality monitoring
   console.warn(`[Billing] Unexpected patient.display format: "${display}" - treating as name`);
   return {
     identifier: 'TEMP-ID',
@@ -54,7 +42,6 @@ const parsePatientDisplay = (display: string | undefined): { identifier: string;
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
-  // CRITICAL FIX: Safe patient display parsing prevents undefined names in financial documents
   const { identifier, name } = parsePatientDisplay(bill?.patient?.display);
 
   return {
@@ -92,8 +79,6 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
 
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
     useOpenmrsPagination<PatientInvoice>(url, pageSize);
-
-  // Backend already sorts by ID descending (newest first), so no need to sort on frontend
   const mappedResults = data?.map((bill) => mapBillProperties(bill));
 
   return {
