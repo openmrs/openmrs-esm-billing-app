@@ -4,6 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { showSnackbar } from '@openmrs/esm-framework';
 import { deleteBillItem } from '../billing.resource';
 import DeleteLineItem from './delete-line-item-confirmation.modal';
+import { type LineItem } from '../types';
 
 const mockDeleteBillItem = jest.mocked(deleteBillItem);
 const mockShowSnackbar = jest.mocked(showSnackbar);
@@ -12,7 +13,7 @@ jest.mock('../billing.resource', () => ({
   deleteBillItem: jest.fn(),
 }));
 
-const mockItem = {
+const mockItem: LineItem = {
   uuid: 'item-uuid',
   quantity: 2,
   price: 100,

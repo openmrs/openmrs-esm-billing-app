@@ -3,10 +3,9 @@ import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, getDefaultsFromConfigSchema, showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
-import { type MappedBill } from '../types';
+import { type MappedBill, type LineItem } from '../types';
 import { updateBillItems } from '../billing.resource';
 import EditBillLineItemModal from './edit-bill-item.modal';
-
 const mockUpdateBillItems = jest.mocked(updateBillItems);
 const mockShowSnackbar = jest.mocked(showSnackbar);
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
@@ -65,7 +64,7 @@ const mockBill: MappedBill = {
   identifier: 'receipt-identifier',
 };
 
-const mockItem = {
+const mockItem: LineItem = {
   uuid: 'item-uuid',
   quantity: 2,
   price: 100,

@@ -9,6 +9,7 @@ import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
 import { waitForLoadingToFinish } from 'tools/test-helpers';
 import Invoice from './invoice.component';
+import { type LineItem } from '../types';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockUseBill = jest.mocked(useBill);
@@ -59,17 +60,8 @@ jest.mock('react-to-print', () => ({
 }));
 
 describe('Invoice', () => {
-  const defaultBillData = {
-    ...mockBill,
-    uuid: 'test-uuid',
-    status: 'PENDING',
-    totalAmount: 1000,
-    tenderedAmount: 0,
-    receiptNumber: 'RCPT-001',
-    dateCreated: '2024-01-01',
-    lineItems: [
-      {
-        uuid: 'item-1',
+  const defaultBillLineItem: LineItem = {
+    uuid: 'item-1',
         item: 'Test Service',
         quantity: 1,
         price: 1000,
@@ -82,8 +74,16 @@ describe('Invoice', () => {
         priceUuid: '',
         lineItemOrder: 0,
         resourceVersion: '',
-      },
-    ],
+  };
+  const defaultBillData = {
+    ...mockBill,
+    uuid: 'test-uuid',
+    status: 'PENDING',
+    totalAmount: 1000,
+    tenderedAmount: 0,
+    receiptNumber: 'RCPT-001',
+    dateCreated: '2024-01-01',
+    lineItems: [ defaultBillLineItem ],
   };
 
   beforeEach(() => {
@@ -261,11 +261,8 @@ describe('Invoice', () => {
   });
 
   it('should search and filter line items in the table', async () => {
-    const billWithMultipleItems = {
-      ...defaultBillData,
-      lineItems: [
-        {
-          uuid: 'item-1',
+    const item1: LineItem = {
+       uuid: 'item-1',
           item: 'Lab Test',
           quantity: 1,
           price: 500,
@@ -278,8 +275,8 @@ describe('Invoice', () => {
           priceUuid: '',
           lineItemOrder: 0,
           resourceVersion: '',
-        },
-        {
+    };
+    const item2: LineItem =  {
           uuid: 'item-2',
           item: 'X-Ray',
           quantity: 1,
@@ -293,8 +290,10 @@ describe('Invoice', () => {
           priceUuid: '',
           lineItemOrder: 1,
           resourceVersion: '',
-        },
-      ],
+        }
+    const billWithMultipleItems = {
+      ...defaultBillData,
+      lineItems: [item1, item2],
     };
 
     mockUseBill.mockReturnValue({
