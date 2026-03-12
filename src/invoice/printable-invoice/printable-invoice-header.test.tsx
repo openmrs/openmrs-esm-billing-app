@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { screen, render } from '@testing-library/react';
 import { useConfig } from '@openmrs/esm-framework';
 import { type BillingConfig } from '../../config-schema';
@@ -6,11 +7,11 @@ import { useDefaultFacility } from '../../billing.resource';
 import { type MappedBill } from '../../types';
 import PrintableInvoiceHeader from './printable-invoice-header.component';
 
-const mockUseDefaultFacility = jest.mocked(useDefaultFacility);
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
+const mockUseDefaultFacility = vi.mocked(useDefaultFacility);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
 
-jest.mock('../../billing.resource', () => ({
-  useDefaultFacility: jest.fn(),
+vi.mock('../../billing.resource', () => ({
+  useDefaultFacility: vi.fn(),
 }));
 
 const testProps = {
@@ -41,7 +42,7 @@ describe('PrintableInvoiceHeader', () => {
     mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
   });
 
-  test('should render PrintableInvoiceHeader component', () => {
+  it('should render PrintableInvoiceHeader component', () => {
     render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} bill={bill} />);
     const header = screen.getByText('Invoice');
     expect(header).toBeInTheDocument();
@@ -54,13 +55,13 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText(/15-May-1980/i)).toBeInTheDocument();
   });
 
-  test('should display the logo when logo is provided', () => {
+  it('should display the logo when logo is provided', () => {
     render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} bill={bill} />);
     const logo = screen.getByAltText('logo');
     expect(logo).toBeInTheDocument();
   });
 
-  test('should display the default OpenMRS SVG logo when logo src is not provided', () => {
+  it('should display the default OpenMRS SVG logo when logo src is not provided', () => {
     mockUseConfig.mockReturnValue({
       logo: { src: '', alt: '' },
       country: 'Kenya',
@@ -73,7 +74,7 @@ describe('PrintableInvoiceHeader', () => {
     expect(logo.tagName).toBe('svg');
   });
 
-  test('should display logo alt text when src is empty but alt is provided', () => {
+  it('should display logo alt text when src is empty but alt is provided', () => {
     mockUseConfig.mockReturnValue({
       logo: { src: '', alt: 'Test Facility Logo' },
       country: 'Kenya',
@@ -84,7 +85,7 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText('Test Facility Logo')).toBeInTheDocument();
   });
 
-  test('should format birthDate correctly', () => {
+  it('should format birthDate correctly', () => {
     const propsWithDifferentDate = {
       patientDetails: {
         ...testProps.patientDetails,
@@ -96,7 +97,7 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText(/25-Dec-1995/i)).toBeInTheDocument();
   });
 
-  test('should not render birthDate and gender when not provided', () => {
+  it('should not render birthDate and gender when not provided', () => {
     const propsWithoutBirthDateAndGender = {
       patientDetails: {
         ...testProps.patientDetails,
@@ -112,7 +113,7 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.queryByText(/Gender:/i)).not.toBeInTheDocument();
   });
 
-  test('should handle null defaultFacility gracefully', () => {
+  it('should handle null defaultFacility gracefully', () => {
     render(<PrintableInvoiceHeader {...testProps} defaultFacility={null} bill={bill} />);
     expect(screen.getByRole('heading', { name: /Invoice/i, level: 1 })).toBeInTheDocument();
     expect(screen.getByText(/john Doe/i)).toBeInTheDocument();

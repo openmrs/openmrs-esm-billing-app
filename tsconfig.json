@@ -9,13 +9,13 @@
       "esnext"
     ],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
-      "mocks/*": [
+      "@mocks/*": [
         "./__mocks__/*"
       ],
-      "tools/*": [
+      "@tools/*": [
         "./tools/*"
       ]
     },
