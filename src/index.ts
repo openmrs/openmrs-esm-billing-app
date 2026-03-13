@@ -130,3 +130,8 @@ export const deleteLineItemConfirmationModal = getAsyncLifecycle(
   () => import('./modal/delete-line-item-confirmation.modal'),
   options,
 );
+
+export const paymentStatusBadge = getAsyncLifecycle(
+  () => import('./patient-banner-payment-status/payment-status-badge.component'),
+  options,
+);
