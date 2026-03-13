@@ -60,7 +60,7 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
     useOpenmrsPagination<PatientInvoice>(url, pageSize);
 
   // Backend already sorts by ID descending (newest first), so no need to sort on frontend
-  const mappedResults = data?.map((bill) => mapBillProperties(bill));
+  const mappedResults = data?.map((bill) => mapBillProperties(bill)).filter((bill) => bill.lineItems.length > 0);
 
   return {
     bills: mappedResults,
@@ -89,8 +89,7 @@ export const useBills = (patientUuid?: string, billStatus?: string) => {
   const { data, error, isLoading, isValidating, mutate } = useOpenmrsFetchAll<PatientInvoice>(url);
 
   const sortedBills = sortBy(data ?? [], ['dateCreated']).reverse();
-  const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill));
-
+  const mappedResults = sortedBills?.map((bill) => mapBillProperties(bill)).filter((bill) => bill.lineItems.length > 0);
   return {
     bills: mappedResults,
     error,

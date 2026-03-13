@@ -1,0 +1,14 @@
+@use '@carbon/layout';
+
+.StatusTag {
+  margin: layout.$spacing-02;
+}
+
+.StatusTag[data-status='Partially Paid'] {
+  background-color: #f9de7c;
+  color: #161616;
+
+  &:hover {
+    background-color: #f8c84e;
+  }
+}

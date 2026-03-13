@@ -82,6 +82,12 @@
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
       "order": 1
+    },
+    {
+      "name": "payment-status-tag",
+      "component": "paymentStatusTag",
+      "slot": "patient-banner-tags-slot",
+      "order": 0
     }
   ],
   "modals": [
@@ -112,6 +118,10 @@
     {
       "name": "delete-line-item-confirmation-modal",
       "component": "deleteLineItemConfirmationModal"
+    },
+    {
+      "name":"billing-item-details-modal",
+      "component":"billingItemDetailsModal"
     }
   ],
   "workspaces2": [

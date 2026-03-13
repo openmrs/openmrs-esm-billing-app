@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CardHeader, navigate, showSnackbar, useConfig, useVisit } from '@openmrs/esm-framework';
+import { processBillPayment, useBills } from '../../billing.resource';
 import { InvoiceBreakDown } from './invoice-breakdown/invoice-breakdown.component';
 import PaymentForm from './payment-form/payment-form.component';
 import PaymentHistory from './payment-history/payment-history.component';
-import { processBillPayment } from '../../billing.resource';
 import { updateBillVisitAttribute } from './payment.resource';
 import { convertToCurrency } from '../../helpers';
 import type { MappedBill } from '../../types';
@@ -40,6 +40,8 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
       }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
   });
+
+  const { mutate: mutateBillData } = useBills(bill?.patientUuid);
 
   const paymentFormSchema = z.object({ payment: paymentSchema });
   const { currentVisit } = useVisit(bill?.patientUuid);
@@ -95,6 +97,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
       }
       methods.reset(defaultPaymentValues);
       mutate();
+      mutateBillData(); //revalidate bills
     } catch (error) {
       showSnackbar({
         title: t('errorProcessingPayment', 'Error processing payment'),

@@ -13,7 +13,9 @@ import BillHistory from './bill-history/bill-history.component';
 import BillingCheckInForm from './billing-form/billing-checkin-form.component';
 import DeletePaymentModeModal from './billable-services/payment-modes/delete-payment-mode.modal';
 import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
+import BillingItemDetailsModal from './modal/billing-item-details.modal';
 import PaymentModeFormModal from './billable-services/payment-modes/payment-mode-form.modal';
+import PaymentStatusTag from './payment-status-tag/payment-status-tag.extension';
 import RequirePaymentModal from './modal/require-payment.modal';
 import RootComponent from './root.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
@@ -85,6 +87,10 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
   }),
   options,
 );
+
+export const paymentStatusTag = getSyncLifecycle(PaymentStatusTag, options);
+
+export const billingItemDetailsModal = getSyncLifecycle(BillingItemDetailsModal, options);
 
 // t('billWaiver', 'Bill waiver')
 // Bill waiver feature disabled - O3-5057

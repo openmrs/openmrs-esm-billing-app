@@ -5,13 +5,14 @@ import { useReactToPrint } from 'react-to-print';
 import { getDefaultsFromConfigSchema, useConfig, usePatient } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { mockBill, mockPatient } from 'mocks/bills.mock';
-import { useBill } from '../billing.resource';
+import { useBill, useBills } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
 import { waitForLoadingToFinish } from 'tools/test-helpers';
 import Invoice from './invoice.component';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockUseBill = jest.mocked(useBill);
+const mockUseBills = jest.mocked(useBills);
 const mockUsePatient = jest.mocked(usePatient);
 const mockUsePaymentModes = jest.mocked(usePaymentModes);
 const mockUseReactToPrint = jest.mocked(useReactToPrint);
@@ -39,6 +40,7 @@ jest.mock('./payments/payment.resource', () => ({
 
 jest.mock('../billing.resource', () => ({
   useBill: jest.fn(),
+  useBills: jest.fn(),
   useDefaultFacility: jest.fn().mockReturnValue({
     data: {
       uuid: '54065383-b4d4-42d2-af4d-d250a1fd2590',
@@ -112,6 +114,7 @@ describe('Invoice', () => {
       mutate: jest.fn(),
     });
 
+    mockUseBills.mockReturnValue({ bills: [], error: null, isLoading: false, isValidating: false, mutate: jest.fn() });
     mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
 
     const printHandler = jest.fn();
