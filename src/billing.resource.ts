@@ -19,14 +19,35 @@ import type {
   CreateBillPayload,
   UpdateBillPayload,
 } from './types';
+const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
+  if (!display) {
+    console.warn('[Billing] Patient display is null/undefined - using fallback values');
+    return { identifier: 'UNKNOWN-ID', name: 'Unknown Patient' };
+  }
+  if (display.includes('-')) {
+    const firstHyphenIndex = display.indexOf('-');
+    const identifier = display.substring(0, firstHyphenIndex).trim();
+    const name = display.substring(firstHyphenIndex + 1).trim();
+    if (identifier && name) {
+      return { identifier, name };
+    }
+  }
+  console.warn(`[Billing] Unexpected patient.display format: "${display}" - treating as name`);
+  return {
+    identifier: 'TEMP-ID',
+    name: display.trim() || 'Unknown Patient',
+  };
+};
 
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
 
+  const { identifier, name } = parsePatientDisplay(bill?.patient?.display);
+
   return {
     ...bill,
-    patientName: bill?.patient?.display?.split('-')?.[1],
-    identifier: bill?.patient?.display?.split('-')?.[0],
+    patientName: name,
+    identifier: identifier,
     patientUuid: bill?.patient?.uuid,
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
@@ -58,8 +79,6 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
 
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
     useOpenmrsPagination<PatientInvoice>(url, pageSize);
-
-  // Backend already sorts by ID descending (newest first), so no need to sort on frontend
   const mappedResults = data?.map((bill) => mapBillProperties(bill));
 
   return {
