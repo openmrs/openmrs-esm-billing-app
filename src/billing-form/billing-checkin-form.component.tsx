@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, getCoreTranslation } from '@openmrs/esm-framework';
@@ -19,7 +19,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
   const [attributes, setAttributes] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState<any>();
-  let lineList = [];
+  const [selectedBillableItem, setSelectedBillableItem] = useState<any | null>(null);
 
   const handleCreateExtraVisitInfo = useCallback(
     async (createBillPayload) => {
@@ -42,6 +42,12 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   );
 
   const handleBillingService = ({ selectedItem }) => {
+    if (!selectedItem) {
+      setSelectedBillableItem(null);
+      return;
+    }
+
+    setSelectedBillableItem(selectedItem);
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
     const itemUuid = selectedItem?.uuid ?? '';
 
@@ -74,6 +80,22 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     });
   };
 
+  const lineList = useMemo(
+    () =>
+      paymentMethod
+        ? lineItems.filter((item) =>
+            item.servicePrices?.some((price) => price.paymentMode && price.paymentMode.uuid === paymentMethod),
+          )
+        : [],
+    [lineItems, paymentMethod],
+  );
+
+  useEffect(() => {
+    if (selectedBillableItem && !lineList.some((item) => item.uuid === selectedBillableItem.uuid)) {
+      setSelectedBillableItem(null);
+    }
+  }, [lineList, selectedBillableItem]);
+
   if (isLoadingLineItems || isLoadingCashPoints) {
     return (
       <InlineLoading
@@ -81,13 +103,6 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         iconDescription={getCoreTranslation('loading')}
         description={`${t('loadingBillingServices', 'Loading billing services')}...`}
       />
-    );
-  }
-
-  if (paymentMethod) {
-    lineList = [];
-    lineList = lineItems.filter((e) =>
-      e.servicePrices.some((p) => p.paymentMode && p.paymentMode.uuid === paymentMethod),
     );
   }
 
@@ -114,6 +129,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         <Dropdown
           id="billable-items"
           items={lineList}
+          selectedItem={selectedBillableItem}
           itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
           label={t('selectBillableService', 'Select a billable service')}
           onChange={handleBillingService}
