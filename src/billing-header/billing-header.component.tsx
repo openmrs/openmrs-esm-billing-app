@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import dayjs from 'dayjs';
 import { DatePickerInput, DatePicker } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { Location, UserFollow } from '@carbon/react/icons';
+import { Location } from '@carbon/react/icons';
 import { useSession } from '@openmrs/esm-framework';
 import { omrsDateFormat } from '../constants';
 import BillingIllustration from './billing-illustration.component';
@@ -29,10 +29,6 @@ const BillingHeader: React.FC<BillingHeaderProps> = ({ title }) => {
         </div>
       </div>
       <div className={styles['right-justified-items']}>
-        <div className={styles.userContainer}>
-          <p>{session?.user?.person?.display}</p>
-          <UserFollow size={16} className={styles.userIcon} />
-        </div>
         <div className={styles['date-and-location']}>
           <Location size={16} />
           <span className={styles.value}>{location}</span>

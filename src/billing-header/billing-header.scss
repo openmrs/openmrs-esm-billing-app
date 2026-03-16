@@ -47,12 +47,6 @@
   align-items: center;
 }
 
-.userContainer {
-  display: flex;
-  justify-content: flex-end;
-  gap: layout.$spacing-05;
-}
-
 .value {
   margin-left: layout.$spacing-02;
 }
@@ -75,9 +69,4 @@ html[dir='rtl'] {
       order: -2;
     }
   }
-}
-
-.userIcon {
-  fill: $ui-05;
-  margin: layout.$spacing-01;
 }
