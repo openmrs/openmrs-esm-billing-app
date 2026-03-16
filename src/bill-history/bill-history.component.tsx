@@ -24,7 +24,9 @@ import {
   CardHeader,
   EmptyCardIllustration,
   ErrorState,
+  formatDate,
   launchWorkspace2,
+  parseDate,
   useConfig,
   usePagination,
   usePaginationInfo,
@@ -75,7 +77,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
     id: bill.uuid,
     uuid: bill.uuid,
     billTotal: convertToCurrency(bill?.totalAmount, defaultCurrency),
-    billDate: bill.dateCreated,
+    billDate: formatDate(parseDate(bill.dateCreated), { mode: 'wide' }),
     invoiceNumber: bill.receiptNumber,
     billedItems: setBilledItems(bill),
   }));

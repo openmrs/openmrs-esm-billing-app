@@ -112,6 +112,9 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   };
 
   const validateSelectedItems = (): boolean => {
+    if (selectedItems.length === 0) {
+      return false;
+    }
     for (const item of selectedItems) {
       if (item.availablePaymentMethods && item.availablePaymentMethods.length > 1 && !item.selectedPaymentMethod) {
         showSnackbar({
@@ -121,11 +124,17 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
         });
         return false;
       }
+      if (!item.quantity || item.quantity < 1) {
+        return false;
+      }
     }
     return true;
   };
 
   const postBillItems = async () => {
+    if (isSubmitting || selectedItems.length === 0) {
+      return;
+    }
     if (!validateSelectedItems()) {
       return;
     }
@@ -175,9 +184,14 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     }
   };
 
+  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault();
+    postBillItems();
+  };
+
   return (
     <Workspace2 title={t('addBillItems', 'Add bill items')} hasUnsavedChanges={selectedItems.length > 0}>
-      <Form className={styles.form}>
+      <Form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.grid}>
           {isLoading ? (
             <InlineLoading description={getCoreTranslation('loading') + '...'} />
@@ -252,10 +266,11 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
                         disableWheel
                         hideSteppers
                         id={`quantity-${item.uuid}`}
-                        min={1}
+                        invalid={!item.quantity || item.quantity < 1}
+                        invalidText={t('quantityMustBeAtLeastOne', 'Quantity must be at least 1')}
                         onChange={(_, { value }) => {
                           const number = parseFloat(String(value));
-                          updateQuantity(item.uuid, isNaN(number) ? 1 : number);
+                          updateQuantity(item.uuid, isNaN(number) ? 0 : number);
                         }}
                         value={item.quantity}
                       />
@@ -292,7 +307,6 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
           <Button
             className={styles.button}
             kind="primary"
-            onClick={postBillItems}
             disabled={isSubmitting || selectedItems.length === 0}
             type="submit">
             {isSubmitting ? (
