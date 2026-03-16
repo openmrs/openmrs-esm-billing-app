@@ -8,7 +8,7 @@ import { CardHeader, navigate, showSnackbar, useConfig, useVisit } from '@openmr
 import { InvoiceBreakDown } from './invoice-breakdown/invoice-breakdown.component';
 import PaymentForm from './payment-form/payment-form.component';
 import PaymentHistory from './payment-history/payment-history.component';
-import { processBillPayment } from '../../billing.resource';
+import { processBillPayment, useBills } from '../../billing.resource';
 import { updateBillVisitAttribute } from './payment.resource';
 import { convertToCurrency } from '../../helpers';
 import type { MappedBill } from '../../types';
@@ -43,6 +43,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
 
   const paymentFormSchema = z.object({ payment: paymentSchema });
   const { currentVisit } = useVisit(bill?.patientUuid);
+  const { mutate: mutateBills } = useBills(bill?.patientUuid);
   const { defaultCurrency } = useConfig();
   const defaultPaymentValues: PaymentFormValue = {
     payment: { method: '', amount: undefined, referenceCode: '' },
@@ -95,6 +96,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
       }
       methods.reset(defaultPaymentValues);
       mutate();
+      mutateBills();
     } catch (error) {
       showSnackbar({
         title: t('errorProcessingPayment', 'Error processing payment'),

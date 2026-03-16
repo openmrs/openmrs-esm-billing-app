@@ -1,9 +1,23 @@
 
-.paymentStatusTag {
+@use '@carbon/layout';
+@use '@carbon/colors';
+
+.paymentStatusButton {
+  padding: 0;
+  border: 0;
+  background: none;
   cursor: pointer;
-  margin-right: 0.5rem;
+}
+
+.paymentStatusTag {
+  margin-right: layout.$spacing-03;
+}
+
+.partialPaymentStatusTag {
+  background-color: colors.$yellow-20 !important;
+  color: colors.$yellow-70 !important;
 }
 
 .modalTableContainer {
-  margin-top: 1rem;
+  margin-top: layout.$spacing-05;
 }
