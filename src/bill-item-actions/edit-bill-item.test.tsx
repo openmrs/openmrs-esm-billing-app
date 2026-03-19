@@ -334,6 +334,46 @@ describe('EditBillItem', () => {
     });
   });
 
+  test('allows updating the quantity of a zero-price (free) service while keeping price at zero', async () => {
+    const user = userEvent.setup();
+    mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
+
+    const freeServiceItem = { ...mockItem, price: 0 };
+    const billWithFreeItem: MappedBill = {
+      ...mockBill,
+      lineItems: [{ ...mockBill.lineItems[0], price: 0 }],
+    };
+
+    render(
+      <EditBillLineItemModal
+        bill={billWithFreeItem}
+        item={freeServiceItem}
+        closeModal={mockCloseModal}
+        onMutate={mockOnMutate}
+      />,
+    );
+
+    expect(screen.getByLabelText(/unit price/i)).toHaveValue('0');
+
+    const quantityInput = screen.getByRole('spinbutton', { name: /quantity/i });
+    await user.clear(quantityInput);
+    await user.type(quantityInput, '5');
+
+    expect(screen.getByText(/total/i)).toHaveTextContent(/0/);
+
+    await user.click(screen.getByText(/save/i));
+
+    await waitFor(() => {
+      expect(mockUpdateBillItems).toHaveBeenCalled();
+      const payload = mockUpdateBillItems.mock.calls[0][0];
+      const updatedItem = payload.lineItems.find((li) => li.uuid === freeServiceItem.uuid);
+      expect(updatedItem?.quantity).toBe(5);
+      expect(updatedItem?.price).toBe(0);
+      expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
+      expect(mockCloseModal).toHaveBeenCalled();
+    });
+  });
+
   test('shows validation error when quantity field is left empty', async () => {
     const user = userEvent.setup();
     render(
