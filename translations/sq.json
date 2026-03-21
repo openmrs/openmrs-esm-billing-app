@@ -189,6 +189,7 @@
   "previousPage": "E mëparshme faqe",
   "price": "Price",
   "priceIsRequired": "Price është e detyrueshme",
+  "priceMustBeNonNegative": "Price must be 0 or greater",
   "priceMustBeNumber": "Price duhet be a i vlefshëm number",
   "priceMustBePositive": "Price duhet be greater than 0",
   "prices": "Prices",
