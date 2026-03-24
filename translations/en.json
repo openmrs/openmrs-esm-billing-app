@@ -189,7 +189,6 @@
   "previousPage": "Previous page",
   "price": "Price",
   "priceIsRequired": "Price is required",
-  "priceMustBeNonNegative": "Price must be 0 or greater",
   "priceMustBeNumber": "Price must be a valid number",
   "priceMustBePositive": "Price must be greater than 0",
   "prices": "Prices",
