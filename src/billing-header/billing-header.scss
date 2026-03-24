@@ -18,7 +18,6 @@
   flex-direction: row;
   align-items: center;
   cursor: pointer;
-  align-items: center;
 }
 
 .page-name {
@@ -31,8 +30,4 @@
   p:first-of-type {
     margin-bottom: layout.$spacing-02;
   }
-}
-
-.view {
-  @include type.type-style('label-01');
 }
