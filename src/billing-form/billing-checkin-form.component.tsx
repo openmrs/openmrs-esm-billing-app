@@ -1,12 +1,10 @@
 import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react';
-import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar, getCoreTranslation, openmrsFetch, useConfig } from '@openmrs/esm-framework';
-import { useCashPoint, useBillableItems, createPatientBill } from './billing-form.resource';
+import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
+import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
+import { useCashPoint, useBillableItems, createPatientBill, useLastVisitInfo } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import styles from './billing-checkin-form.scss';
-import useSWR from 'swr';
-import dayjs from 'dayjs';
 
 const PENDING_PAYMENT_STATUS = 'PENDING';
 
@@ -19,29 +17,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const { t } = useTranslation();
   const { categoryConcepts } = useConfig();
 
-  const { data: visitData } = useSWR(`/ws/fhir2/R4/Encounter?patient=${patientUuid}&_sort=-date&_count=1`, (url) =>
-    openmrsFetch(url).then((res) => res.json()),
-  );
-
-  const lastVisitInfo = useMemo(() => {
-    if (!visitData?.entry?.length) return null;
-
-    const resource = visitData.entry[0].resource;
-    const visitDate = new Date(resource.period.start);
-    const today = new Date();
-    const diffTime = Math.abs(today.getTime() - visitDate.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    const type = resource.type?.[0]?.coding?.[0]?.display || resource.type?.[0]?.text;
-    const location = resource.location?.[0]?.location?.display;
-
-    return {
-      diffDays,
-      type: type || '',
-      location: location || '',
-      dateFormatted: dayjs(visitDate).format('DD MM YYYY'),
-    };
-  }, [visitData]);
+  const lastVisitInfo = useLastVisitInfo(patientUuid);
 
   const { cashPoints, isLoading: isLoadingCashPoints, error: cashError } = useCashPoint();
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
@@ -162,22 +138,25 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   return (
     <section className={styles.sectionContainer}>
-      <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
-
       {lastVisitInfo && (
-        <div style={{ marginBottom: '1rem' }}>
+        <div className={styles.lastVisitBanner}>
           <InlineNotification
+            hideCloseButton
             kind="info"
             title={t('lastVisitInfo', 'Last Visit Information')}
-            subtitle={t('lastVisitMsg', 'The last visit was a {{type}} visit {{days}} days ago at {{location}}', {
+            subtitle={t('lastVisitMsg', {
+              count: lastVisitInfo.diffDays,
+              defaultValue_one: 'The last visit was a {{type}} visit {{count}} day ago at {{location}}',
+              defaultValue_other: 'The last visit was a {{type}} visit {{count}} days ago at {{location}}',
               type: lastVisitInfo.type,
-              days: lastVisitInfo.diffDays,
               location: lastVisitInfo.location,
             })}
             lowContrast
           />
         </div>
       )}
+
+      <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
 
       {lineList.length > 0 && (
         <Dropdown

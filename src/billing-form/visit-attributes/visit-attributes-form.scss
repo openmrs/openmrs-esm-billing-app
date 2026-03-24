@@ -37,5 +37,11 @@
 .paymentDetailsLegend {
   display: flex;
   align-items: center;
-  gap: layout.$spacing-03; 
+  gap: layout.$spacing-03;
+  overflow: visible;
+
+  :global(.cds--toggletip-content) {
+    min-width: 16rem;
+    white-space: normal;
+  }
 }

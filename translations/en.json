@@ -242,5 +242,8 @@
   "uuid": "UUID",
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
+  "lastVisitInfo": "Last Visit Information",
+  "lastVisitMsg_one": "The last visit was a {{type}} visit {{count}} day ago at {{location}}",
+  "lastVisitMsg_other": "The last visit was a {{type}} visit {{count}} days ago at {{location}}",
   "waiverForm": "Waiver form"
 }

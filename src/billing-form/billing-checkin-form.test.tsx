@@ -3,13 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
 import { useConfig } from '@openmrs/esm-framework';
 import { type BillingConfig } from '../config-schema';
-import { useBillableItems, useCashPoint, usePaymentMethods } from './billing-form.resource';
+import { useBillableItems, useCashPoint, usePaymentMethods, useLastVisitInfo } from './billing-form.resource';
 import BillingCheckInForm from './billing-checkin-form.component';
 
 const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
 const mockUseCashPoint = jest.mocked(useCashPoint);
 const mockUseBillableItems = jest.mocked(useBillableItems);
 const mockUsePaymentMethods = jest.mocked(usePaymentMethods);
+const mockUseLastVisitInfo = jest.mocked(useLastVisitInfo);
 
 const mockCashPoints = [
   {
@@ -89,6 +90,7 @@ jest.mock('./billing-form.resource', () => ({
   useCashPoint: jest.fn(),
   createPatientBill: jest.fn(),
   usePaymentMethods: jest.fn(),
+  useLastVisitInfo: jest.fn(),
 }));
 
 const testProps = { patientUuid: 'some-patient-uuid', setExtraVisitInfo: jest.fn() };
@@ -116,6 +118,7 @@ describe('BillingCheckInForm', () => {
       },
     } as BillingConfig);
     mockUsePaymentMethods.mockReturnValue({ paymentModes: mockPaymentMethods, isLoading: false, error: null });
+    mockUseLastVisitInfo.mockReturnValue(null);
   });
 
   test('should show the loading spinner while retrieving data', () => {
@@ -134,6 +137,61 @@ describe('BillingCheckInForm', () => {
 
     expect(screen.getByText(/billing service error/i)).toBeInTheDocument();
     expect(screen.getByText(/error loading bill services/i)).toBeInTheDocument();
+  });
+
+  test('should show the last visit banner when last visit info is available', () => {
+    mockUseBillableItems.mockReturnValue({ lineItems: [], isLoading: false, error: null });
+    mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+    mockUseLastVisitInfo.mockReturnValue({ diffDays: 3, type: 'Outpatient', location: 'Main Clinic' });
+    renderBillingCheckinForm();
+
+    expect(screen.getByText(/Last Visit Information/i)).toBeInTheDocument();
+    expect(screen.getByText(/3 days ago/i)).toBeInTheDocument();
+  });
+
+  test('should not show the last visit banner when there is no recent visit', () => {
+    mockUseBillableItems.mockReturnValue({ lineItems: [], isLoading: false, error: null });
+    mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+    mockUseLastVisitInfo.mockReturnValue(null);
+    renderBillingCheckinForm();
+
+    expect(screen.queryByText(/Last Visit Information/i)).not.toBeInTheDocument();
+  });
+
+  test('should use count=1 (singular) for a visit that was 1 day ago', () => {
+    mockUseBillableItems.mockReturnValue({ lineItems: [], isLoading: false, error: null });
+    mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+    mockUseLastVisitInfo.mockReturnValue({ diffDays: 1, type: 'Outpatient', location: 'Main Clinic' });
+    renderBillingCheckinForm();
+
+    expect(screen.getByText(/1 day ago/i)).toBeInTheDocument();
+  });
+
+  test('should use count=2 (plural) for a visit that was 2 days ago', () => {
+    mockUseBillableItems.mockReturnValue({ lineItems: [], isLoading: false, error: null });
+    mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+    mockUseLastVisitInfo.mockReturnValue({ diffDays: 2, type: 'Outpatient', location: 'Main Clinic' });
+    renderBillingCheckinForm();
+
+    expect(screen.getByText(/2 days ago/i)).toBeInTheDocument();
+  });
+
+  test('should hide the billable service dropdown when the patient is switched to non-paying', async () => {
+    const user = userEvent.setup();
+    mockUseCashPoint.mockReturnValue({ cashPoints: mockCashPoints, isLoading: false, error: null });
+    mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
+    renderBillingCheckinForm();
+
+    // Select "Paying" and choose Insurance to make the billable service dropdown appear
+    await user.click(screen.getByRole('radio', { name: 'Paying' }));
+    const paymentMethodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(paymentMethodDropdown);
+    await user.click(await screen.findByText('Insurance'));
+    expect(screen.getByRole('combobox', { name: /billable service/i })).toBeInTheDocument();
+
+    // Switch to "Non paying" — dropdown must disappear
+    await user.click(screen.getByRole('radio', { name: /non paying/i }));
+    expect(screen.queryByRole('combobox', { name: /billable service/i })).not.toBeInTheDocument();
   });
 
   test('should render the form correctly and generate the required payload', async () => {
