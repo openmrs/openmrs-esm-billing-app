@@ -4,11 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { ComboBox, InlineLoading, RadioButton, RadioButtonGroup, Stack, TextInput } from '@carbon/react';
-import { useConfig } from '@openmrs/esm-framework';
+import { useConfig, usePatient } from '@openmrs/esm-framework';
 import { usePaymentMethods } from '../billing-form.resource';
 import styles from './visit-attributes-form.scss';
 
 type VisitAttributesFormProps = {
+  patientUuid: string;
   setAttributes: (state) => void;
   setPaymentMethod?: (value: any) => void;
 };
@@ -29,9 +30,10 @@ const visitAttributesFormSchema = z.object({
   patientCategory: z.string(),
 });
 
-const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes, setPaymentMethod }) => {
+const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ patientUuid, setAttributes, setPaymentMethod }) => {
   const { t } = useTranslation();
   const { patientCategory, categoryConcepts, nonPayingPatientCategories } = useConfig();
+  const { patient } = usePatient(patientUuid);
   const { control, getValues, watch } = useForm<VisitAttributesFormValue>({
     mode: 'all',
     defaultValues: {},
@@ -47,14 +49,33 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
   ]);
 
   const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentMethods();
+
+  const patientAge = useMemo(() => {
+    const birthDate = patient?.birthDate;
+    if (!birthDate) return undefined;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  }, [patient?.birthDate]);
+
   const patientCategoryOptions = useMemo(() => {
-    return Object.entries(nonPayingPatientCategories ?? {}).map(([key, uuid]) => ({
-      // t('childUnder5', 'Child under 5')
-      // t('student', 'Student')
-      text: t(key),
-      uuid,
-    }));
-  }, [nonPayingPatientCategories, t]);
+    return Object.entries(nonPayingPatientCategories ?? {})
+      .filter(([key]) => {
+        if (key === 'childUnder5' && patientAge !== undefined && patientAge >= 5) {
+          return false;
+        }
+        return true;
+      })
+      .map(([key, uuid]) => ({
+        text: t(key),
+        uuid,
+      }));
+  }, [nonPayingPatientCategories, t, patientAge]);
 
   const createVisitAttributesPayload = useCallback(() => {
     const {

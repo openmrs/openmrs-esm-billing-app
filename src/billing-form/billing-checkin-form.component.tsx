@@ -45,7 +45,6 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
     const itemUuid = selectedItem?.uuid ?? '';
 
-    // should default to first price if check returns empty. todo - update backend to return default price
     const priceForPaymentMode =
       selectedItem.servicePrices.find((p) => p.paymentMode?.uuid === paymentMethod) || selectedItem?.servicePrices[0];
 
@@ -109,7 +108,11 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   return (
     <section className={styles.sectionContainer}>
-      <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
+      <VisitAttributesForm
+        patientUuid={patientUuid}
+        setAttributes={setAttributes}
+        setPaymentMethod={setPaymentMethod}
+      />
       {
         <Dropdown
           id="billable-items"
