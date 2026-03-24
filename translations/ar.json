@@ -189,6 +189,7 @@
   "previousPage": "الصفحة السابقة",
   "price": "السعر",
   "priceIsRequired": "السعر مطلوب",
+  "priceMustBeNonNegative": "Price must be 0 or greater",
   "priceMustBeNumber": "يجب أن يكون السعر رقمًا صالحًا",
   "priceMustBePositive": "يجب أن يكون السعر أكبر من 0",
   "prices": "الأسعار",

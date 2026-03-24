@@ -189,6 +189,7 @@
   "previousPage": "上一页",
   "price": "价格",
   "priceIsRequired": "价格为必填项",
+  "priceMustBeNonNegative": "Price must be 0 or greater",
   "priceMustBeNumber": "价格必须为数字",
   "priceMustBePositive": "价格必须为正数",
   "prices": "价格",
