@@ -31,28 +31,10 @@ const renderNodes = (reactNodes) => {
 
 const useMock = [(key) => key, {}];
 useMock.t = (key, defaultValue, options = {}) => {
-  // Handle 2-arg form: t(key, options) where options has defaultValue_one / defaultValue_other
-  // This is the OpenMRS pattern for inline plural forms (mirrors real i18next behaviour).
-  let resolvedDefaultValue = defaultValue;
-  let resolvedOptions = options;
-
-  if (defaultValue !== null && typeof defaultValue === 'object') {
-    resolvedOptions = defaultValue;
-    const count = resolvedOptions.count;
-    if (count === 1 && resolvedOptions.defaultValue_one !== undefined) {
-      resolvedDefaultValue = resolvedOptions.defaultValue_one;
-    } else {
-      resolvedDefaultValue = resolvedOptions.defaultValue_other ?? resolvedOptions.defaultValue_one ?? key;
-    }
-  }
-
-  let translatedString = resolvedDefaultValue || key;
-  Object.entries(resolvedOptions).forEach(([k, v]) => {
-    if (k !== 'defaultValue_one' && k !== 'defaultValue_other' && key !== 'interpolation') {
-      translatedString = String(translatedString).replace(new RegExp(`{{${k}}}`, 'g'), String(v));
-    }
+  let translatedString = (typeof defaultValue === 'string' ? defaultValue : null) || key;
+  Object.entries(options).forEach(([k, v]) => {
+    translatedString = String(translatedString).replace(new RegExp(`{{${k}}}`, 'g'), String(v));
   });
-
   return translatedString;
 };
 

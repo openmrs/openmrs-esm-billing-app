@@ -17,7 +17,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const { t } = useTranslation();
   const { categoryConcepts } = useConfig();
 
-  const lastVisitInfo = useLastVisitInfo(patientUuid);
+  const { lastVisitInfo, isLoading: isLoadingLastVisitInfo, error: lastVisitError } = useLastVisitInfo(patientUuid);
 
   const { cashPoints, isLoading: isLoadingCashPoints, error: cashError } = useCashPoint();
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
@@ -138,19 +138,29 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   return (
     <section className={styles.sectionContainer}>
-      {lastVisitInfo && (
+      {!isLoadingLastVisitInfo && !lastVisitError && lastVisitInfo && (
         <div className={styles.lastVisitBanner}>
           <InlineNotification
             hideCloseButton
             kind="info"
             title={t('lastVisitInfo', 'Last Visit Information')}
-            subtitle={t('lastVisitMsg', {
-              count: lastVisitInfo.diffDays,
-              defaultValue_one: 'The last visit was a {{type}} visit {{count}} day ago at {{location}}',
-              defaultValue_other: 'The last visit was a {{type}} visit {{count}} days ago at {{location}}',
-              type: lastVisitInfo.type,
-              location: lastVisitInfo.location,
-            })}
+            subtitle={
+              lastVisitInfo.diffDays === 0
+                ? t('lastVisitMsgToday', 'The last visit was a {{type}} visit earlier today at {{location}}', {
+                    type: lastVisitInfo.type,
+                    location: lastVisitInfo.location,
+                  })
+                : lastVisitInfo.diffDays === 1
+                  ? t('lastVisitMsgYesterday', 'The last visit was a {{type}} visit 1 day ago at {{location}}', {
+                      type: lastVisitInfo.type,
+                      location: lastVisitInfo.location,
+                    })
+                  : t('lastVisitMsgDaysAgo', 'The last visit was a {{type}} visit {{count}} days ago at {{location}}', {
+                      count: lastVisitInfo.diffDays,
+                      type: lastVisitInfo.type,
+                      location: lastVisitInfo.location,
+                    })
+            }
             lowContrast
           />
         </div>
@@ -160,7 +170,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
       {lineList.length > 0 && (
         <Dropdown
-          key={`billable-${paymentMethod ?? 'none'}`}
+          key={`billable-${paymentMethod}`}
           id="billable-items"
           items={lineList}
           itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}

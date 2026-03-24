@@ -243,7 +243,8 @@
   "uuidRequired": "UUID is required",
   "validationError": "Validation error",
   "lastVisitInfo": "Last Visit Information",
-  "lastVisitMsg_one": "The last visit was a {{type}} visit {{count}} day ago at {{location}}",
-  "lastVisitMsg_other": "The last visit was a {{type}} visit {{count}} days ago at {{location}}",
+  "lastVisitMsgToday": "The last visit was a {{type}} visit earlier today at {{location}}",
+  "lastVisitMsgYesterday": "The last visit was a {{type}} visit 1 day ago at {{location}}",
+  "lastVisitMsgDaysAgo": "The last visit was a {{type}} visit {{count}} days ago at {{location}}",
   "waiverForm": "Waiver form"
 }

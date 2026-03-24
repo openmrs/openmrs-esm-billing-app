@@ -135,8 +135,8 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
             legendText={
               <div className={styles.paymentDetailsLegend}>
                 {t('paymentDetails', 'Payment details')}
-                <Toggletip autoAlign>
-                  <ToggletipButton label="Show information">
+                <Toggletip autoAlign align="bottom">
+                  <ToggletipButton label={t('showInformation', 'Show information')}>
                     <Information />
                   </ToggletipButton>
                   <ToggletipContent>

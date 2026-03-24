@@ -19,7 +19,11 @@
 }
 
 .radioButtonGroup {
+  overflow: visible;
+
   :global(.cds--radio-button-group) {
+    overflow: visible;
+
     :global(.cds--radio-button-wrapper) {
       margin-bottom: layout.$spacing-03;
 
@@ -28,10 +32,15 @@
       }
     }
   }
+
+  :global(fieldset.cds--fieldset) {
+    overflow: visible;
+  }
 }
 
 .stack {
   margin-bottom: layout.$spacing-05;
+  overflow: visible;
 }
 
 .paymentDetailsLegend {
@@ -39,6 +48,14 @@
   align-items: center;
   gap: layout.$spacing-03;
   overflow: visible;
+
+  :global(.cds--toggletip) {
+    overflow: visible;
+  }
+
+  :global(.cds--popover-content) {
+    z-index: 9100;
+  }
 
   :global(.cds--toggletip-content) {
     min-width: 16rem;
