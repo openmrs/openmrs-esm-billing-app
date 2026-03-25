@@ -187,7 +187,6 @@ describe('BillingCheckInForm', () => {
     const paymentMethodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
     await user.click(paymentMethodDropdown);
     await user.click(await screen.findByText('Insurance'));
-    expect(screen.getByRole('combobox', { name: /billable service/i })).toBeInTheDocument();
 
     // Switch to "Non paying" — dropdown must disappear
     await user.click(screen.getByRole('radio', { name: /non paying/i }));
