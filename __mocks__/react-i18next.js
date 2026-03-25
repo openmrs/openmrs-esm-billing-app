@@ -31,10 +31,13 @@ const renderNodes = (reactNodes) => {
 
 const useMock = [(key) => key, {}];
 useMock.t = (key, defaultValue, options = {}) => {
-  let translatedString = (typeof defaultValue === 'string' ? defaultValue : null) || key;
+  let translatedString = defaultValue || key;
   Object.entries(options).forEach(([k, v]) => {
-    translatedString = String(translatedString).replace(new RegExp(`{{${k}}}`, 'g'), String(v));
+    if (key !== 'interpolation') {
+      translatedString = translatedString.replace(new RegExp(`{{${k}}}`, 'g'), v);
+    }
   });
+
   return translatedString;
 };
 
