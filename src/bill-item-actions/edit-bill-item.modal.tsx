@@ -55,7 +55,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
             required_error: t('priceIsRequired', 'Price is required'),
             invalid_type_error: t('priceMustBeNumber', 'Price must be a valid number'),
           })
-          .positive(t('priceMustBePositive', 'Price must be greater than 0')),
+          .min(0, t('priceMustBeNonNegative', 'Price must be 0 or greater')),
       }),
     [t],
   );
