@@ -215,7 +215,7 @@ describe('mapBillProperties', () => {
       const result = mapBillProperties(bill);
       expect(result.identifier).toBe('12345');
       // Note: split('-')[1] only takes the second element, not everything after first dash
-      expect(result.patientName).toBe(' John ');
+      expect(result.patientName).toBe('John - Doe - Jr');
     });
 
     it('Handles empty patient display string', () => {
