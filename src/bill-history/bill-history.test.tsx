@@ -1,7 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
-import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
+import { getDefaultsFromConfigSchema, launchWorkspace2, useConfig } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { useBills } from '../billing.resource';
 import BillHistory from './bill-history.component';
@@ -119,5 +119,82 @@ describe('BillHistory', () => {
     render(<BillHistory {...testProps} />);
     const emptyState = screen.getByText(/There are no bills to display./);
     expect(emptyState).toBeInTheDocument();
+  });
+
+  test('should show overflow menu with "Add items to bill" for PENDING bills', async () => {
+    const user = userEvent.setup();
+    const pendingBill = {
+      ...mockBillData[0],
+      status: 'PENDING',
+      dateCreated: '2024-01-01',
+      receiptNumber: 'REC-001',
+      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, paymentStatus: 'PENDING' }],
+    };
+    mockUseBills.mockReturnValueOnce({
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      bills: [pendingBill] as any,
+      mutate: jest.fn(),
+    });
+    render(<BillHistory {...testProps} />);
+
+    const overflowMenu = screen.getByTestId('action-menu-1');
+    await user.click(overflowMenu);
+
+    expect(screen.getByText(/add items to bill/i)).toBeInTheDocument();
+  });
+
+  test('should not show overflow menu for PAID bills', () => {
+    const paidBill = {
+      ...mockBillData[0],
+      status: 'PAID',
+      dateCreated: '2024-01-01',
+      receiptNumber: 'REC-001',
+      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, paymentStatus: 'PAID' }],
+    };
+    mockUseBills.mockReturnValueOnce({
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      bills: [paidBill] as any,
+      mutate: jest.fn(),
+    });
+    render(<BillHistory {...testProps} />);
+
+    expect(screen.queryByTestId('action-menu-1')).not.toBeInTheDocument();
+  });
+
+  test('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
+    const user = userEvent.setup();
+    const mockMutate = jest.fn();
+    const mockLaunchWorkspace2 = jest.mocked(launchWorkspace2);
+    const pendingBill = {
+      ...mockBillData[0],
+      status: 'PENDING',
+      dateCreated: '2024-01-01',
+      receiptNumber: 'REC-001',
+      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, paymentStatus: 'PENDING' }],
+    };
+    mockUseBills.mockReturnValueOnce({
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      bills: [pendingBill] as any,
+      mutate: mockMutate,
+    });
+    render(<BillHistory {...testProps} />);
+
+    const overflowMenu = screen.getByTestId('action-menu-1');
+    await user.click(overflowMenu);
+
+    const addItemsMenuItem = screen.getByText(/add items to bill/i);
+    await user.click(addItemsMenuItem);
+
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith('billing-form-workspace', {
+      patientUuid: 'some-uuid',
+      billUuid: '1',
+      onMutate: mockMutate,
+    });
   });
 });
