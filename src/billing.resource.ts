@@ -1,8 +1,6 @@
 import useSWR from 'swr';
 import sortBy from 'lodash-es/sortBy';
 import {
-  formatDate,
-  parseDate,
   openmrsFetch,
   useSession,
   useVisit,
@@ -21,27 +19,24 @@ import type {
 } from './types';
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
   if (!display) {
-    console.warn('[Billing] Patient display is null/undefined - using fallback values');
-    return { identifier: 'UNKNOWN-ID', name: 'Unknown Patient' };
+    return { identifier: '', name: '' };
   }
-  if (display.includes('-')) {
-    const firstHyphenIndex = display.indexOf('-');
-    const identifier = display.substring(0, firstHyphenIndex).trim();
-    const name = display.substring(firstHyphenIndex + 1).trim();
-    if (identifier && name) {
-      return { identifier, name };
-    }
+
+  const separator = ' - ';
+  const index = display.indexOf(separator);
+
+  if (index === -1) {
+    return { identifier: '', name: display.trim() };
   }
-  console.warn(`[Billing] Unexpected patient.display format: "${display}" - treating as name`);
+
   return {
-    identifier: 'TEMP-ID',
-    name: display.trim() || 'Unknown Patient',
+    identifier: display.substring(0, index).trim(),
+    name: display.substring(index + separator.length).trim(),
   };
 };
 
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
-  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
-
+  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) ?? [];
   const { identifier, name } = parsePatientDisplay(bill?.patient?.display);
 
   return {
