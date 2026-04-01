@@ -2,7 +2,7 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useReactToPrint } from 'react-to-print';
-import { getDefaultsFromConfigSchema, useConfig, usePatient } from '@openmrs/esm-framework';
+import { getDefaultsFromConfigSchema, launchWorkspace2, useConfig, usePatient } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { mockBill, mockPatient } from 'mocks/bills.mock';
 import { useBill } from '../billing.resource';
@@ -498,5 +498,57 @@ describe('Invoice', () => {
     await waitForLoadingToFinish();
 
     expect(screen.queryByTestId('mock-print-receipt')).not.toBeInTheDocument();
+  });
+
+  it('should show "Add items to bill" button for PENDING bills', async () => {
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.getByRole('button', { name: /add items to bill/i })).toBeInTheDocument();
+  });
+
+  it('should not show "Add items to bill" button for PAID bills', async () => {
+    mockUseBill.mockReturnValue({
+      bill: {
+        ...defaultBillData,
+        status: 'PAID',
+        tenderedAmount: 1000,
+      },
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
+
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.queryByRole('button', { name: /add items to bill/i })).not.toBeInTheDocument();
+  });
+
+  it('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
+    const mockMutate = jest.fn();
+    const mockLaunchWorkspace2 = jest.mocked(launchWorkspace2);
+
+    mockUseBill.mockReturnValue({
+      bill: defaultBillData,
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: mockMutate,
+    });
+
+    const user = userEvent.setup();
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    const addItemsButton = screen.getByRole('button', { name: /add items to bill/i });
+    await user.click(addItemsButton);
+
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith('billing-form-workspace', {
+      patientUuid: 'patientUuid',
+      billUuid: 'test-uuid',
+      onMutate: mockMutate,
+    });
   });
 });
