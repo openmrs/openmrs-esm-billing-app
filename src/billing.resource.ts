@@ -74,6 +74,8 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
 
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
     useOpenmrsPagination<PatientInvoice>(url, pageSize);
+
+  // Backend already sorts by ID descending (newest first), so no need to sort on frontend
   const mappedResults = data?.map((bill) => mapBillProperties(bill));
 
   return {
