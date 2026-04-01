@@ -50,7 +50,11 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
   const { data, error, isLoading } = useBillableServices();
   const { bill, isLoading: isLoadingBill, error: billError } = useBill(billUuid);
-  const { billableServices } = useBillableServicesList();
+  const {
+    billableServices,
+    isLoading: isLoadingBillableServices,
+    error: billableServicesError,
+  } = useBillableServicesList();
   const isEditMode = !!billUuid && !!bill;
   const existingItemsTotal = useMemo(
     () => (isEditMode ? calculateTotalAmount(bill.lineItems) : 0),
@@ -155,6 +159,9 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     if (isSubmitting || selectedItems.length === 0) {
       return;
     }
+    if (isEditMode && (isLoadingBillableServices || billableServicesError)) {
+      return;
+    }
     if (!validateSelectedItems()) {
       return;
     }
@@ -172,7 +179,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     try {
       if (isEditMode) {
         const existingLineItems = bill.lineItems.map((item) => {
-          const serviceUuid = getBillableServiceUuid(billableServices, item.billableService);
+          const serviceUuid = getBillableServiceUuid(billableServices, item.billableService || item.item);
           if (!serviceUuid) {
             throw new Error(
               t('serviceResolutionError', 'Could not resolve service "{{service}}"', {
@@ -219,9 +226,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       onMutate?.();
 
       showSnackbar({
-        title: isEditMode
-          ? t('itemsAddedToBill', 'Items added to bill')
-          : t('billProcessed', 'Bill processed'),
+        title: isEditMode ? t('itemsAddedToBill', 'Items added to bill') : t('billProcessed', 'Bill processed'),
         subtitle: isEditMode
           ? t('itemsAddedToBillSuccessfully', 'Items have been added to the bill successfully')
           : t('billProcessedSuccessfully', 'Bill processed successfully'),
@@ -257,6 +262,13 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
               lowContrast
               title={t('errorLoadingBill', 'Error loading bill')}
               subtitle={billError?.message}
+            />
+          ) : isEditMode && billableServicesError ? (
+            <InlineNotification
+              kind="error"
+              lowContrast
+              title={t('errorLoadingBillableServices', 'Error loading billable services')}
+              subtitle={billableServicesError?.message}
             />
           ) : (
             <>
@@ -400,7 +412,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
           <Button
             className={styles.button}
             kind="primary"
-            disabled={isSubmitting || selectedItems.length === 0}
+            disabled={isSubmitting || selectedItems.length === 0 || (isEditMode && isLoadingBillableServices)}
             type="submit">
             {isSubmitting ? (
               <InlineLoading description={t('saving', 'Saving') + '...'} />
