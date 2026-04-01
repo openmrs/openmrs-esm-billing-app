@@ -194,8 +194,8 @@ describe('mapBillProperties', () => {
         patient: createPatient({ display: '12345 - John Doe' }),
       });
       const result = mapBillProperties(bill);
-      expect(result.identifier).toBe('12345 ');
-      expect(result.patientName).toBe(' John Doe');
+      expect(result.identifier).toBe('12345');
+      expect(result.patientName).toBe('John Doe');
       expect(result.patientUuid).toBe('patient-uuid');
     });
 
@@ -204,8 +204,8 @@ describe('mapBillProperties', () => {
         patient: createPatient({ display: 'John Doe' }),
       });
       const result = mapBillProperties(bill);
-      expect(result.identifier).toBe('John Doe');
-      expect(result.patientName).toBeUndefined();
+      expect(result.identifier).toBe('');
+      expect(result.patientName).toBe('John Doe');
     });
 
     it('Handles patient display with multiple dashes', () => {
@@ -213,9 +213,9 @@ describe('mapBillProperties', () => {
         patient: createPatient({ display: '12345 - John - Doe - Jr' }),
       });
       const result = mapBillProperties(bill);
-      expect(result.identifier).toBe('12345 ');
+      expect(result.identifier).toBe('12345');
       // Note: split('-')[1] only takes the second element, not everything after first dash
-      expect(result.patientName).toBe(' John ');
+      expect(result.patientName).toBe('John - Doe - Jr');
     });
 
     it('Handles empty patient display string', () => {
@@ -224,7 +224,7 @@ describe('mapBillProperties', () => {
       });
       const result = mapBillProperties(bill);
       expect(result.identifier).toBe('');
-      expect(result.patientName).toBeUndefined();
+      expect(result.patientName).toBe('');
     });
 
     it('Handles undefined patient gracefully', () => {
@@ -233,8 +233,8 @@ describe('mapBillProperties', () => {
       });
       const result = mapBillProperties(bill);
       expect(result.patientUuid).toBeUndefined();
-      expect(result.identifier).toBeUndefined();
-      expect(result.patientName).toBeUndefined();
+      expect(result.identifier).toBe('');
+      expect(result.patientName).toBe('');
     });
 
     it('Handles patient with undefined display', () => {
@@ -245,8 +245,8 @@ describe('mapBillProperties', () => {
         },
       });
       const result = mapBillProperties(bill);
-      expect(result.identifier).toBeUndefined();
-      expect(result.patientName).toBeUndefined();
+      expect(result.identifier).toBe('');
+      expect(result.patientName).toBe('');
     });
   });
 

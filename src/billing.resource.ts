@@ -1,8 +1,6 @@
 import useSWR from 'swr';
 import sortBy from 'lodash-es/sortBy';
 import {
-  formatDate,
-  parseDate,
   openmrsFetch,
   useSession,
   useVisit,
@@ -19,14 +17,32 @@ import type {
   CreateBillPayload,
   UpdateBillPayload,
 } from './types';
+const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
+  if (!display) {
+    return { identifier: '', name: '' };
+  }
+
+  const separator = ' - ';
+  const index = display.indexOf(separator);
+
+  if (index === -1) {
+    return { identifier: '', name: display.trim() };
+  }
+
+  return {
+    identifier: display.substring(0, index).trim(),
+    name: display.substring(index + separator.length).trim(),
+  };
+};
 
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
-  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) || [];
+  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) ?? [];
+  const { identifier, name } = parsePatientDisplay(bill?.patient?.display);
 
   return {
     ...bill,
-    patientName: bill?.patient?.display?.split('-')?.[1],
-    identifier: bill?.patient?.display?.split('-')?.[0],
+    patientName: name,
+    identifier: identifier,
     patientUuid: bill?.patient?.uuid,
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
