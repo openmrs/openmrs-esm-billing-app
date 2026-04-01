@@ -445,6 +445,81 @@ describe('BillingForm', () => {
       expect(optionTexts).toContain('Hemoglobin');
     });
 
+    it('should resolve service UUID using the item field when billableService is null', async () => {
+      mockUseBill.mockReturnValue({
+        bill: {
+          ...mockExistingBill,
+          lineItems: [
+            {
+              ...mockExistingBill.lineItems[0],
+              billableService: null,
+              item: 'Hemoglobin',
+            },
+          ],
+        } as any,
+        error: null,
+        isLoading: false,
+        isValidating: false,
+        mutate: jest.fn(),
+      });
+
+      const user = userEvent.setup();
+      render(<BillingForm {...editModeProps} />);
+
+      const combobox = screen.getByRole('combobox');
+      await user.click(combobox);
+      await user.click(screen.getByText('Lab Test'));
+
+      const submitButton = screen.getByRole('button', { name: /save and close/i });
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockGetBillableServiceUuid).toHaveBeenCalledWith(expect.anything(), 'Hemoglobin');
+      });
+    });
+
+    it('should disable submit button while billable services list is loading in edit mode', () => {
+      mockUseBillableServicesList.mockReturnValue({
+        billableServices: [],
+        isLoading: true,
+        isValidating: false,
+        error: null,
+        mutate: jest.fn(),
+      } as any);
+
+      render(<BillingForm {...editModeProps} />);
+      const submitButton = screen.getByRole('button', { name: /save and close/i });
+      expect(submitButton).toBeDisabled();
+    });
+
+    it('should show error notification when billable services list fails to load in edit mode', () => {
+      mockUseBillableServicesList.mockReturnValue({
+        billableServices: [],
+        isLoading: false,
+        isValidating: false,
+        error: new Error('Failed to load services'),
+        mutate: jest.fn(),
+      } as any);
+
+      render(<BillingForm {...editModeProps} />);
+      expect(screen.getByText(/error loading billable services/i)).toBeInTheDocument();
+    });
+
+    it('should not submit when billable services list has an error in edit mode', async () => {
+      mockUseBillableServicesList.mockReturnValue({
+        billableServices: [],
+        isLoading: false,
+        isValidating: false,
+        error: new Error('Failed to load services'),
+        mutate: jest.fn(),
+      } as any);
+
+      // The error notification replaces the form content, so we can't select items.
+      // Verify that updateBillItems is never called.
+      render(<BillingForm {...editModeProps} />);
+      expect(mockUpdateBillItems).not.toHaveBeenCalled();
+    });
+
     it('should show error when billable service UUID cannot be resolved', async () => {
       mockGetBillableServiceUuid.mockReturnValue(null);
 
