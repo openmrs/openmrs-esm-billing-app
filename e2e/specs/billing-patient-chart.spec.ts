@@ -55,7 +55,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And I launch the Create Bill form', async () => {
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
     });
 
@@ -159,7 +159,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And I click the Launch bill form button', async () => {
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
     });
 
@@ -215,7 +215,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And I click the Launch bill form button', async () => {
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
     });
 
@@ -247,7 +247,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And I click the Launch bill form button', async () => {
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
     });
 
@@ -291,7 +291,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('Given I have created and saved a bill', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
 
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
 
       await billingFormPage.searchAndSelectBillableService(testServiceName);
@@ -409,7 +409,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('And I launch the Create Bill form', async () => {
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
     });
 
@@ -536,7 +536,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('Given I have created a bill', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
 
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
 
       await billingFormPage.searchAndSelectBillableService(testServiceName);
@@ -641,7 +641,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('Given I create a bill with a service quantity of 2', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
 
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
 
       await billingFormPage.searchAndSelectBillableService(testServiceName);
@@ -746,7 +746,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('Given I have created a bill with a line item', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
 
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
 
       await billingFormPage.searchAndSelectBillableService(testServiceName);

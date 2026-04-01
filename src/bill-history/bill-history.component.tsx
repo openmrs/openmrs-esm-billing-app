@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -25,6 +25,7 @@ import {
   EmptyCardIllustration,
   ErrorState,
   formatDate,
+  getCoreTranslation,
   launchWorkspace2,
   parseDate,
   useConfig,
@@ -33,6 +34,7 @@ import {
 } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
+import BillActionMenu from './bill-action-menu.component';
 import InvoiceTable from '../invoice/invoice-table.component';
 import styles from './bill-history.scss';
 
@@ -47,6 +49,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
   const { pageSize, defaultCurrency } = useConfig();
   const [currentPageSize, setCurrentPageSize] = useState(pageSize);
   const { pageSizes } = usePaginationInfo(pageSize, bills?.length, currentPage, results?.length);
+  const billsByUuid = useMemo(() => new Map(bills?.map((bill) => [bill.uuid, bill])), [bills]);
 
   const headerData = [
     {
@@ -116,7 +119,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
               })
             }
             kind="ghost">
-            {t('addBillItems', 'Add bill items')}
+            {t('createBill', 'Create bill')}
           </Button>
         </Tile>
       </Layer>
@@ -140,7 +143,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
             })
           }
           renderIcon={Add}>
-          {t('addBillItems', 'Add bill items')}
+          {t('createBill', 'Create bill')}
         </Button>
       </CardHeader>
       <div className={styles.billHistoryContainer}>
@@ -168,11 +171,12 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                         {header.header}
                       </TableHeader>
                     ))}
+                    <TableHeader aria-label={getCoreTranslation('actions')} />
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {rows.map((row, i) => {
-                    const currentBill = bills?.find((bill) => bill.uuid === row.id);
+                    const currentBill = billsByUuid.get(row.id);
 
                     return (
                       <React.Fragment key={row.id}>
@@ -182,9 +186,14 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                               {cell.value}
                             </TableCell>
                           ))}
+                          <TableCell className="cds--table-column-menu">
+                            {currentBill?.status === 'PENDING' && (
+                              <BillActionMenu bill={currentBill} patientUuid={patientUuid} onMutate={mutate} />
+                            )}
+                          </TableCell>
                         </TableExpandRow>
                         {row.isExpanded ? (
-                          <TableExpandedRow colSpan={headers.length + 1}>
+                          <TableExpandedRow colSpan={headers.length + 2}>
                             <div className={styles.container} key={i}>
                               <InvoiceTable bill={currentBill} onMutate={mutate} isLoadingBill={isValidating} />
                             </div>
