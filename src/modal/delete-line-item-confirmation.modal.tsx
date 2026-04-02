@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, TextArea } from '@carbon/react';
+import { Button, InlineLoading, ModalBody, ModalFooter, ModalHeader, Stack, TextArea } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { getCoreTranslation, showSnackbar } from '@openmrs/esm-framework';
 import { deleteBillItem } from '../billing.resource';
@@ -16,6 +16,7 @@ const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMu
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
+  const itemName = item.billableService || item.item;
 
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
@@ -56,16 +57,22 @@ const DeleteLineItem: React.FC<DeleteLineItemParams> = ({ closeModal, item, onMu
       />
 
       <ModalBody className={styles.modalBody}>
-        <p>{t('deleteConfirmation', 'Are you sure you want to delete this line item?')}</p>
-        <TextArea
-          id="deleteReason"
-          labelText={t('deleteReason', 'Reason for deletion')}
-          placeholder={t('deleteReasonPlaceholder', 'Enter the reason for removing this line item from the bill')}
-          value={deleteReason}
-          onChange={(e) => setDeleteReason(e.target.value)}
-          rows={3}
-          required
-        />
+        <Stack gap={5}>
+          <p>
+            {t('deleteConfirmation', 'Are you sure you want to delete "{{itemName}}" from this bill?', { itemName })}
+          </p>
+          <TextArea
+            enableCounter
+            id="deleteReason"
+            labelText={t('deleteReason', 'Reason for deletion')}
+            maxCount={255}
+            onChange={(e) => setDeleteReason(e.target.value)}
+            placeholder={t('deleteReasonPlaceholder', 'Enter the reason for removing this line item from the bill')}
+            required
+            rows={3}
+            value={deleteReason}
+          />
+        </Stack>
       </ModalBody>
 
       <ModalFooter>

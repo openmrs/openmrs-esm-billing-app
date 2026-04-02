@@ -55,7 +55,6 @@
 
 .table {
   width: 100%;
-  table-layout: fixed; // This helps with uniform column sizing
   border-collapse: collapse;
 
   td:has(:global(.billingTable)) {

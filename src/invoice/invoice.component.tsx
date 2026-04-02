@@ -1,10 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, InlineLoading } from '@carbon/react';
-import { Printer } from '@carbon/react/icons';
+import { Add, Printer } from '@carbon/react/icons';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
-import { ErrorState, ExtensionSlot, showSnackbar, useConfig, usePatient } from '@openmrs/esm-framework';
+import {
+  ErrorState,
+  ExtensionSlot,
+  formatDate,
+  launchWorkspace2,
+  parseDate,
+  showSnackbar,
+  useConfig,
+  usePatient,
+} from '@openmrs/esm-framework';
 import { convertToCurrency } from '../helpers';
 import { useBill, useDefaultFacility } from '../billing.resource';
 import type { BillingConfig } from '../config-schema';
@@ -76,7 +85,9 @@ const Invoice: React.FC = () => {
     [t('totalAmount', 'Total amount')]: convertToCurrency(bill?.totalAmount, defaultCurrency),
     [t('amountTendered', 'Amount tendered')]: convertToCurrency(bill?.tenderedAmount, defaultCurrency),
     [t('invoiceNumber', 'Invoice number')]: bill?.receiptNumber,
-    [t('dateAndTime', 'Date and time')]: bill?.dateCreated,
+    [t('dateAndTime', 'Date and time')]: bill?.dateCreated
+      ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' })
+      : '--',
     [t('invoiceStatus', 'Invoice status')]: bill?.status,
   };
 
@@ -113,6 +124,20 @@ const Invoice: React.FC = () => {
             <span>
               <InlineLoading status="active" />
             </span>
+          )}
+          {bill?.status === 'PENDING' && (
+            <Button
+              kind="ghost"
+              renderIcon={Add}
+              onClick={() =>
+                launchWorkspace2('billing-form-workspace', {
+                  patientUuid,
+                  billUuid: bill.uuid,
+                  onMutate: mutate,
+                })
+              }>
+              {t('addItemsToBill', 'Add items to bill')}
+            </Button>
           )}
           <Button
             disabled={isPrinting || isLoadingPatient || isLoadingBill}

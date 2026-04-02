@@ -59,7 +59,7 @@ test.describe('Billing Dashboard workflow', () => {
     await test.step('Given I have created and saved a bill', async () => {
       await page.goto(`patient/${patientUuid}/chart/Billing history`);
 
-      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill/i });
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
 
       await billingFormPage.searchAndSelectBillableService(testServiceName);
