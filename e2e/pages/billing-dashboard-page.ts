@@ -24,7 +24,7 @@ export class BillingDashboardPage {
     }
   }
 
-  async selectFilter(filterText: 'All bills' | 'Pending bills' | 'Paid bills') {
+  async selectFilter(filterText: 'All bills' | 'Pending confirmation' | 'Pending payment' | 'Paid bills') {
     await this.filterDropdown().click();
     await this.page.getByRole('option', { name: filterText }).click();
   }

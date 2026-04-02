@@ -24,6 +24,11 @@ export class BillingFormPage {
     await this.page.getByRole('option', { name: new RegExp(serviceName, 'i') }).click();
   }
 
+  async selectFirstAvailableBillableService() {
+    await this.billableServicesCombobox().click();
+    await this.page.getByRole('option').first().click();
+  }
+
   async clearBillableServiceCombobox() {
     const combobox = this.billableServicesCombobox();
     // Carbon ComboBox has a clear button (X icon) - try to find it

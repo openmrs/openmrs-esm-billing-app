@@ -64,13 +64,14 @@ const BillsTable: React.FC = () => {
   const billPaymentStatusFilterItems: BillPaymentStatusFilterItem[] = useMemo(
     () => [
       { id: '', text: t('allBills', 'All bills'), status: '' },
-      { id: 'PENDING', text: t('pendingBills', 'Pending bills'), status: 'PENDING,POSTED' },
+      { id: 'PENDING', text: t('pendingConfirmationBills', 'Pending confirmation'), status: 'PENDING' },
+      { id: 'POSTED', text: t('pendingPaymentBills', 'Pending payment'), status: 'POSTED' },
       { id: 'PAID', text: t('paidBills', 'Paid bills'), status: 'PAID' },
     ],
     [t],
   );
   const [billPaymentStatus, setBillPaymentStatus] = useState<BillPaymentStatusFilterItem>(
-    billPaymentStatusFilterItems[1],
+    () => billPaymentStatusFilterItems.find((item) => item.id === 'POSTED') ?? billPaymentStatusFilterItems[0],
   );
   const [searchString, setSearchString] = useState('');
   const debouncedSearchString = useDebounce(searchString, 500);
@@ -127,9 +128,6 @@ const BillsTable: React.FC = () => {
     return mappedBills;
   }, [bills]);
 
-  // Server-side search is now handled by the API, so we just use the bills directly
-  const searchResults = billList;
-
   // Check if user has applied any filters (not "All bills") or search
   const hasActiveFiltersOrSearch = searchString.trim() !== '' || billPaymentStatus.id !== '';
 
@@ -156,7 +154,6 @@ const BillsTable: React.FC = () => {
           className={styles.filterDropdown}
           direction="bottom"
           id="bill-payment-status-filter"
-          initialSelectedItem={billPaymentStatusFilterItems[1]}
           selectedItem={billPaymentStatus}
           items={billPaymentStatusFilterItems}
           itemToString={(item: BillPaymentStatusFilterItem) => (item ? item.text : '')}
@@ -196,10 +193,10 @@ const BillsTable: React.FC = () => {
           />
           <DataTable
             isSortable
-            rows={searchResults}
+            rows={billList}
             headers={headerData}
             size={responsiveSize}
-            useZebraStyles={searchResults?.length > 1 ? true : false}>
+            useZebraStyles={billList?.length > 1 ? true : false}>
             {({ rows, headers, getRowProps, getTableProps }) => (
               <TableContainer>
                 <Table {...getTableProps()} aria-label={t('billList', 'Bill list')}>
@@ -227,7 +224,7 @@ const BillsTable: React.FC = () => {
               </TableContainer>
             )}
           </DataTable>
-          {searchResults?.length === 0 && (
+          {billList?.length === 0 && (
             <div className={styles.filterEmptyState}>
               <Layer level={0}>
                 <Tile className={styles.filterEmptyStateTile}>
