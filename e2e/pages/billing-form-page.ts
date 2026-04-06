@@ -26,7 +26,7 @@ export class BillingFormPage {
 
   async selectFirstAvailableBillableService() {
     await this.billableServicesCombobox().click();
-    await this.page.getByRole('option').first().click();
+    await this.billableServicesCombobox().getByRole('option').first().click();
   }
 
   async clearBillableServiceCombobox() {

@@ -1,5 +1,14 @@
 import { type OpenmrsResource } from '@openmrs/esm-framework';
 
+export const BillStatus = {
+  PENDING: 'PENDING',
+  POSTED: 'POSTED',
+  PAID: 'PAID',
+  ADJUSTED: 'ADJUSTED',
+} as const;
+
+export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus];
+
 export interface MappedBill {
   uuid: string;
   id: number;

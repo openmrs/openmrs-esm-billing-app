@@ -9,14 +9,16 @@ import {
   useOpenmrsPagination,
 } from '@openmrs/esm-framework';
 import { apiBasePath } from './constants';
-import type {
-  MappedBill,
-  PatientInvoice,
-  BillableItem,
-  PaymentRequestPayload,
-  CreateBillPayload,
-  UpdateBillPayload,
+import {
+  type MappedBill,
+  type PatientInvoice,
+  type BillableItem,
+  type PaymentRequestPayload,
+  type CreateBillPayload,
+  type UpdateBillPayload,
+  BillStatus,
 } from './types';
+
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
   if (!display) {
     return { identifier: '', name: '' };
@@ -195,7 +197,7 @@ export const finalizeBill = (billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}`;
   return openmrsFetch(url, {
     method: 'POST',
-    body: { status: 'POSTED' },
+    body: { status: BillStatus.POSTED },
     headers: {
       'Content-Type': 'application/json',
     },

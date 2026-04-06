@@ -31,6 +31,7 @@ import {
   type LayoutType,
 } from '@openmrs/esm-framework';
 import { usePaginatedBills } from '../billing.resource';
+import { BillStatus } from '../types';
 import type { MappedBill } from '../types';
 import type { BillingConfig } from '../config-schema';
 import styles from './bills-table.scss';
@@ -42,9 +43,9 @@ interface BillDisplayItem extends Omit<MappedBill, 'id'> {
 }
 
 interface BillPaymentStatusFilterItem {
-  id: string;
+  id: BillStatus | '';
   text: string;
-  status: string;
+  status: BillStatus | '';
 }
 
 const mapLineItems = (bill: MappedBill) =>
@@ -64,14 +65,20 @@ const BillsTable: React.FC = () => {
   const billPaymentStatusFilterItems: BillPaymentStatusFilterItem[] = useMemo(
     () => [
       { id: '', text: t('allBills', 'All bills'), status: '' },
-      { id: 'PENDING', text: t('pendingConfirmationBills', 'Pending confirmation'), status: 'PENDING' },
-      { id: 'POSTED', text: t('pendingPaymentBills', 'Pending payment'), status: 'POSTED' },
-      { id: 'PAID', text: t('paidBills', 'Paid bills'), status: 'PAID' },
+      {
+        id: BillStatus.PENDING,
+        text: t('pendingConfirmationBills', 'Pending confirmation'),
+        status: BillStatus.PENDING,
+      },
+      { id: BillStatus.POSTED, text: t('pendingPaymentBills', 'Pending payment'), status: BillStatus.POSTED },
+      { id: BillStatus.PAID, text: t('paidBills', 'Paid bills'), status: BillStatus.PAID },
     ],
     [t],
   );
+
+  // Default to 'POSTED' (pending payment) so cashiers see bills awaiting payment on load
   const [billPaymentStatus, setBillPaymentStatus] = useState<BillPaymentStatusFilterItem>(
-    () => billPaymentStatusFilterItems.find((item) => item.id === 'POSTED') ?? billPaymentStatusFilterItems[0],
+    () => billPaymentStatusFilterItems.find((item) => item.id === BillStatus.POSTED) ?? billPaymentStatusFilterItems[0],
   );
   const [searchString, setSearchString] = useState('');
   const debouncedSearchString = useDebounce(searchString, 500);

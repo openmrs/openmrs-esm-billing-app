@@ -61,7 +61,7 @@ const FinalizeBillModal: React.FC<FinalizeBillModalParams> = ({ closeModal, bill
         <p>
           {t(
             'finalizeBillConfirmation',
-            'Are you sure you want to finalize this bill? Once finalized, no further edits to the bill will be allowed.',
+            'Are you sure you want to finalize this bill? Once finalized, no further modifications to the bill will be allowed.',
           )}
         </p>
       </ModalBody>

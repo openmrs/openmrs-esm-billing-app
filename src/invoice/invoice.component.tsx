@@ -22,6 +22,7 @@ import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
+import { BillStatus } from '../types';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -128,7 +129,7 @@ const Invoice: React.FC = () => {
             <InlineLoading status="active" />
           </span>
         )}
-        {bill?.status === 'PENDING' && (
+        {bill?.status === BillStatus.PENDING && (
           <>
             <Button
               kind="ghost"
@@ -154,7 +155,7 @@ const Invoice: React.FC = () => {
           iconDescription={t('printBill', 'Print bill')}>
           {t('printBill', 'Print bill')}
         </Button>
-        {(bill?.status === 'PAID' || bill?.tenderedAmount > 0) && <PrintReceipt billUuid={bill?.uuid} />}
+        {bill && (bill.status === BillStatus.PAID || bill.tenderedAmount > 0) && <PrintReceipt billUuid={bill.uuid} />}
       </div>
       <div className={styles.detailsContainer}>
         <section className={styles.details}>
