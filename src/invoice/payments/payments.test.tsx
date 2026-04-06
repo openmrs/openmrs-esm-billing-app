@@ -224,6 +224,34 @@ describe('Payments', () => {
     expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
   });
 
+  it('should not show payment form when bill is in PENDING state', () => {
+    const pendingBill: MappedBill = {
+      ...mockBill,
+      status: 'PENDING',
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={pendingBill} mutate={mockMutate} />);
+
+    expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/select payment method/i)).not.toBeInTheDocument();
+  });
+
+  it('should show payment form when bill is in POSTED state', () => {
+    const postedBill: MappedBill = {
+      ...mockBill,
+      status: 'POSTED',
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={postedBill} mutate={mockMutate} />);
+
+    expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
+    expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
+  });
+
   it('should return null when bill is not provided', () => {
     const { container } = render(<Payments bill={null} mutate={mockMutate} />);
     expect(container).toBeEmptyDOMElement();
@@ -232,6 +260,7 @@ describe('Payments', () => {
   it('should show payment form when there is amount due', () => {
     const billWithAmountDue: MappedBill = {
       ...mockBill,
+      status: 'POSTED',
       totalAmount: 100,
       tenderedAmount: 0,
       lineItems: [],

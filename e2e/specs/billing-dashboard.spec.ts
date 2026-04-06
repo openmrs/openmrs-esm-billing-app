@@ -113,9 +113,19 @@ test.describe('Billing Dashboard workflow', () => {
       expect(invoiceStatus).toBe('PENDING');
     });
 
-    await test.step('And the Payments section should be displayed', async () => {
-      await paymentPage.waitForPaymentForm();
+    await test.step('And the payment form should not be visible for a PENDING bill', async () => {
+      await expect(paymentPage.paymentMethodCombobox()).toBeHidden();
+      await expect(paymentPage.amountInput()).toBeHidden();
+    });
 
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
+    await test.step('Then the payment form should now be visible', async () => {
+      await paymentPage.waitForPaymentForm();
       await expect(paymentPage.paymentMethodCombobox()).toBeVisible();
       await expect(paymentPage.amountInput()).toBeVisible();
       await expect(paymentPage.referenceCodeInput()).toBeVisible();
