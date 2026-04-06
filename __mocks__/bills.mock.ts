@@ -1,4 +1,5 @@
 import { restBaseUrl } from '@openmrs/esm-framework';
+import { BillStatus } from '../src/types';
 
 export const mockPatient = {
   uuid: 'dda9b65f-0037-11ec-85e7-04ed33c79a3e',
@@ -116,7 +117,7 @@ export const billsSummary = [
       },
     ],
     receiptNumber: 'CP2-0011-0',
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     adjustmentReason: null,
     id: 30,
     resourceVersion: '1.8',
@@ -225,7 +226,7 @@ export const billsSummary = [
       },
     ],
     receiptNumber: 'CP2-0011-0',
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     adjustmentReason: null,
     id: 30,
     resourceVersion: '1.8',
@@ -334,7 +335,7 @@ export const billsSummary = [
       },
     ],
     receiptNumber: 'CP2-0011-0',
-    status: 'PAID',
+    status: BillStatus.PAID,
     adjustmentReason: null,
     id: 30,
     resourceVersion: '1.8',
@@ -347,7 +348,7 @@ export const mockBill = {
   patientName: 'James Bond',
   identifier: 'PJYM9 ',
   patientUuid: 'b2fcf02b-7ee3-4d16-a48f-576be2b103aa',
-  status: 'PENDING',
+  status: BillStatus.PENDING,
   receiptNumber: '0035-6',
   cashier: {
     uuid: 'fe00dd43-4c39-4ce9-9832-bc3620c80c6c',

@@ -49,6 +49,7 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
+    status: bill.status as BillStatus,
     lineItems: activeLineItems,
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
     totalAmount: activeLineItems

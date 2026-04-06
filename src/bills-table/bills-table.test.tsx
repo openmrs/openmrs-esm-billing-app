@@ -2,6 +2,7 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
+import { BillStatus } from '../types';
 import BillsTable from './bills-table.component';
 
 jest.mock('../billing.resource', () => ({
@@ -42,7 +43,7 @@ const mockBillsData = [
         paymentStatus: 'PENDING',
       },
     ],
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     cashPointUuid: 'cash-point-1',
     cashPointName: 'Main Cash Point',
     cashPointLocation: 'Main Hospital',
@@ -78,7 +79,7 @@ const mockBillsData = [
         paymentStatus: 'PENDING',
       },
     ],
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     cashPointUuid: 'cash-point-1',
     cashPointName: 'Main Cash Point',
     cashPointLocation: 'Main Hospital',
@@ -220,7 +221,7 @@ describe('BillsTable', () => {
 
     // First call: initial render with PENDING filter (default)
     mockBills.mockImplementationOnce(() => ({
-      bills: mockBillsData.map((bill) => ({ ...bill, status: 'PENDING' })),
+      bills: mockBillsData.map((bill) => ({ ...bill, status: BillStatus.PENDING })),
       isLoading: false,
       isValidating: false,
       error: null,

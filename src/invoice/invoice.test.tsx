@@ -10,6 +10,7 @@ import {
   usePatient,
 } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
+import { BillStatus } from '../types';
 import { mockBill, mockPatient } from 'mocks/bills.mock';
 import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
@@ -69,7 +70,7 @@ describe('Invoice', () => {
   const defaultBillData = {
     ...mockBill,
     uuid: 'test-uuid',
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     totalAmount: 1000,
     tenderedAmount: 0,
     receiptNumber: 'RCPT-001',
@@ -195,7 +196,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PAID',
+        status: BillStatus.PAID,
         tenderedAmount: 1000,
       },
       isLoading: false,
@@ -214,7 +215,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: BillStatus.PENDING,
         tenderedAmount: 500,
       },
       isLoading: false,
@@ -343,7 +344,7 @@ describe('Invoice', () => {
 
     const updatedBill = {
       ...defaultBillData,
-      status: 'PAID',
+      status: BillStatus.PAID,
       tenderedAmount: 1000,
     };
 
@@ -463,7 +464,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: BillStatus.PENDING,
         totalAmount: 1000,
         tenderedAmount: 500, // Partial payment
       },
@@ -492,7 +493,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: BillStatus.PENDING,
         tenderedAmount: 0,
       },
       isLoading: false,
@@ -518,7 +519,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PAID',
+        status: BillStatus.PAID,
         tenderedAmount: 1000,
       },
       isLoading: false,
@@ -542,7 +543,7 @@ describe('Invoice', () => {
 
   it('should not show "Finalize bill" button for POSTED bills', async () => {
     mockUseBill.mockReturnValue({
-      bill: { ...defaultBillData, status: 'POSTED' },
+      bill: { ...defaultBillData, status: BillStatus.POSTED },
       isLoading: false,
       error: null,
       isValidating: false,
@@ -557,7 +558,7 @@ describe('Invoice', () => {
 
   it('should not show "Finalize bill" button for PAID bills', async () => {
     mockUseBill.mockReturnValue({
-      bill: { ...defaultBillData, status: 'PAID', tenderedAmount: 1000 },
+      bill: { ...defaultBillData, status: BillStatus.PAID, tenderedAmount: 1000 },
       isLoading: false,
       error: null,
       isValidating: false,

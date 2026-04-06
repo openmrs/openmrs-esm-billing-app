@@ -19,7 +19,7 @@ export interface MappedBill {
   cashPointLocation: string;
   cashier: Provider;
   receiptNumber: string;
-  status: string;
+  status: BillStatus;
   identifier: string;
   dateCreated: string;
   lineItems: Array<LineItem>;

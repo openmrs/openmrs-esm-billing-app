@@ -9,7 +9,7 @@ import {
   type VisitReturnType,
 } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
-import { type MappedBill } from '../../types';
+import { BillStatus, type MappedBill } from '../../types';
 import { configSchema, type BillingConfig } from '../../config-schema';
 import { usePaymentModes } from './payment.resource';
 import Payments from './payments.component';
@@ -102,7 +102,7 @@ describe('Payments', () => {
       },
     ],
     receiptNumber: '12345',
-    status: 'PAID',
+    status: BillStatus.PAID,
     identifier: 'invoice-123',
     dateCreated: '2023-09-01T12:00:00Z',
     lineItems: [],
@@ -227,7 +227,7 @@ describe('Payments', () => {
   it('should not show payment form when bill is in PENDING state', () => {
     const pendingBill: MappedBill = {
       ...mockBill,
-      status: 'PENDING',
+      status: BillStatus.PENDING,
       totalAmount: 100,
       tenderedAmount: 0,
     };
@@ -241,7 +241,7 @@ describe('Payments', () => {
   it('should show payment form when bill is in POSTED state', () => {
     const postedBill: MappedBill = {
       ...mockBill,
-      status: 'POSTED',
+      status: BillStatus.POSTED,
       totalAmount: 100,
       tenderedAmount: 0,
     };
@@ -260,7 +260,7 @@ describe('Payments', () => {
   it('should show payment form when there is amount due', () => {
     const billWithAmountDue: MappedBill = {
       ...mockBill,
-      status: 'POSTED',
+      status: BillStatus.POSTED,
       totalAmount: 100,
       tenderedAmount: 0,
       lineItems: [],
