@@ -51,7 +51,7 @@ describe('FinalizeBillModal', () => {
 
     expect(screen.getByText(/finalize bill/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/are you sure you want to finalize this bill\? once finalized, no further edits/i),
+      screen.getByText(/are you sure you want to finalize this bill\? once finalized, no further modifications/i),
     ).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /finalize/i })).toBeInTheDocument();

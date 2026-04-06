@@ -120,7 +120,7 @@
   "filterTable": "Filter table",
   "finalize": "Finalize",
   "finalizeBill": "Finalize bill",
-  "finalizeBillConfirmation": "Are you sure you want to finalize this bill? Once finalized, no further edits to the bill will be allowed.",
+  "finalizeBillConfirmation": "Are you sure you want to finalize this bill? Once finalized, no further modifications to the bill will be allowed.",
   "finalizeFailedTryAgain": "Unable to finalize bill. Please try again.",
   "finalizing": "Finalizing",
   "gender": "Gender",
