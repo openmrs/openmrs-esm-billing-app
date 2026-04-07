@@ -12,7 +12,6 @@ window.spaBase = '/spa';
 window.getOpenmrsSpaBase = () => '/openmrs/spa/';
 window.HTMLElement.prototype.scrollIntoView = jest.fn();
 
-// Updated to Class syntax to support complex Carbon components (e.g. Toggletip, Notification)
 class ResizeObserver {
   observe() {}
   unobserve() {}

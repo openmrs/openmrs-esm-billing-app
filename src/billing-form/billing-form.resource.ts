@@ -9,7 +9,9 @@ type LastVisitInfo = {
   location: string;
 };
 
-export const useLastVisitInfo = (patientUuid: string): { lastVisitInfo: LastVisitInfo | null; isLoading: boolean; error: any } => {
+export const useLastVisitInfo = (
+  patientUuid: string,
+): { lastVisitInfo: LastVisitInfo | null; isLoading: boolean; error: any } => {
   const url = `${restBaseUrl}/visit?patient=${patientUuid}&v=default&limit=1&sort=desc:startDatetime`;
   const { data, isLoading, error } = useSWR<{ data: { results: Array<any> } }>(patientUuid ? url : null, openmrsFetch);
 
@@ -19,6 +21,7 @@ export const useLastVisitInfo = (patientUuid: string): { lastVisitInfo: LastVisi
 
     const visit = results[0];
     const visitDate = new Date(visit.startDatetime);
+    if (isNaN(visitDate.getTime())) return null;
     const diffTime = Math.abs(Date.now() - visitDate.getTime());
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 

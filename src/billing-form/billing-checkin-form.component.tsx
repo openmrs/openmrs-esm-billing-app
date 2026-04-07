@@ -19,6 +19,16 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   const { lastVisitInfo, isLoading: isLoadingLastVisitInfo, error: lastVisitError } = useLastVisitInfo(patientUuid);
 
+  useEffect(() => {
+    if (lastVisitError) {
+      showSnackbar({
+        title: t('lastVisitError', 'Last visit error'),
+        subtitle: t('errorLoadingLastVisit', 'An error occurred while loading the last visit'),
+        kind: 'error',
+      });
+    }
+  }, [lastVisitError, t]);
+
   const { cashPoints, isLoading: isLoadingCashPoints, error: cashError } = useCashPoint();
   const { lineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
 
@@ -144,8 +154,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
             hideCloseButton
             kind="info"
             title={t('lastVisitInfo', 'Last Visit Information')}
-            subtitle={
-             t('lastVisitMsg', 'The last visit was a {{type}} {{count}} days ago at {{location}}', {
+            subtitle={t('lastVisitMsg', 'The last visit was a {{type}} {{count}} days ago at {{location}}', {
               count: lastVisitInfo.diffDays,
               type: lastVisitInfo.type,
               location: lastVisitInfo.location,

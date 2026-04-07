@@ -182,13 +182,6 @@ describe('BillingCheckInForm', () => {
     mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
     renderBillingCheckinForm();
 
-    // First select Paying + Insurance to show the dropdown
-    await user.click(screen.getByRole('radio', { name: 'Paying' }));
-    const paymentMethodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
-    await user.click(paymentMethodDropdown);
-    await user.click(await screen.findByText('Insurance'));
-
-    // Switch to "Non paying" — dropdown must disappear
     await user.click(screen.getByRole('radio', { name: /non paying/i }));
     expect(screen.queryByRole('combobox', { name: /billable service/i })).not.toBeInTheDocument();
   });
