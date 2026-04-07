@@ -1,4 +1,5 @@
 @use '@carbon/layout';
+@use '@carbon/type';
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
 .tablet {
@@ -89,15 +90,61 @@
   margin-top: layout.$spacing-05;
 }
 
+.existingItemsContainer {
+  padding: layout.$spacing-05;
+  background-color: $ui-01;
+  border: 1px solid $ui-03;
+  border-radius: layout.$spacing-02;
+
+  .existingItemRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: layout.$spacing-03 0;
+    border-bottom: 1px solid $ui-03;
+
+    &:last-of-type {
+      border-bottom: none;
+    }
+
+    .existingItemName {
+      @include type.type-style('body-compact-01');
+      flex: 1;
+      color: $text-02;
+    }
+
+    .existingItemDetail {
+      @include type.type-style('body-compact-01');
+      flex: 0 0 auto;
+      color: $text-02;
+      margin: 0 layout.$spacing-05;
+    }
+
+    .existingItemTotal {
+      @include type.type-style('heading-compact-01');
+      flex: 0 0 auto;
+      color: $text-02;
+    }
+  }
+
+  .existingItemsSubtotal {
+    @include type.type-style('body-compact-01');
+    text-align: right;
+    padding-top: layout.$spacing-04;
+    border-top: 1px solid $ui-03;
+    margin-top: layout.$spacing-03;
+    color: $text-02;
+  }
+}
+
+.sectionHeading {
+  @include type.type-style('heading-compact-02');
+  margin-bottom: layout.$spacing-04;
+  color: $text-02;
+}
+
 .selectedItemsContainer {
   margin-top: layout.$spacing-05;
-  
-  h4 {
-    margin-bottom: layout.$spacing-05;
-    color: $text-02;
-    font-size: 1rem;
-    font-weight: 600;
-  }
   
   .itemCard {
     border: 1px solid $ui-03;

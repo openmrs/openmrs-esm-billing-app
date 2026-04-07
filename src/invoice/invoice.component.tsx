@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, InlineLoading } from '@carbon/react';
-import { Printer } from '@carbon/react/icons';
+import { Add, Printer } from '@carbon/react/icons';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,7 @@ import {
   ErrorState,
   ExtensionSlot,
   formatDate,
+  launchWorkspace2,
   parseDate,
   showSnackbar,
   useConfig,
@@ -123,6 +124,20 @@ const Invoice: React.FC = () => {
             <span>
               <InlineLoading status="active" />
             </span>
+          )}
+          {bill?.status === 'PENDING' && (
+            <Button
+              kind="ghost"
+              renderIcon={Add}
+              onClick={() =>
+                launchWorkspace2('billing-form-workspace', {
+                  patientUuid,
+                  billUuid: bill.uuid,
+                  onMutate: mutate,
+                })
+              }>
+              {t('addItemsToBill', 'Add items to bill')}
+            </Button>
           )}
           <Button
             disabled={isPrinting || isLoadingPatient || isLoadingBill}
