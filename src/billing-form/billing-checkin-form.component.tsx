@@ -148,36 +148,38 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
 
   return (
     <section className={styles.sectionContainer}>
-      {!isLoadingLastVisitInfo && !lastVisitError && lastVisitInfo && (
-        <div className={styles.lastVisitBanner}>
-          <InlineNotification
-            hideCloseButton
-            kind="info"
-            title={t('lastVisitInfo', 'Last Visit Information')}
-            subtitle={t('lastVisitMsg', 'The last visit was a {{type}} {{count}} days ago at {{location}}', {
-              count: lastVisitInfo.diffDays,
-              type: lastVisitInfo.type,
-              location: lastVisitInfo.location,
-            })}
-            lowContrast
+      <h1 className={styles.sectionLabel}>{t('billingDetails', 'Billing details')}</h1>
+      <div className={styles.sectionField}>
+        {!isLoadingLastVisitInfo && !lastVisitError && lastVisitInfo && (
+          <div className={styles.lastVisitBanner}>
+            <InlineNotification
+              hideCloseButton
+              kind="info"
+              title={t('lastVisitInfo', 'Last Visit Information')}
+              subtitle={t('lastVisitMsg', 'The last visit was a {{type}} {{count}} days ago at {{location}}', {
+                count: lastVisitInfo.diffDays,
+                type: lastVisitInfo.type,
+                location: lastVisitInfo.location,
+              })}
+              lowContrast
+            />
+          </div>
+        )}
+        <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
+
+        {lineList.length > 0 && (
+          <Dropdown
+            key={`billable-${paymentMethod}`}
+            id="billable-items"
+            items={lineList}
+            itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
+            label={t('selectBillableService', 'Select a billable service')}
+            onChange={handleBillingService}
+            selectedItem={selectedBillableItem}
+            titleText={t('billableService', 'Billable service')}
           />
-        </div>
-      )}
-
-      <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
-
-      {lineList.length > 0 && (
-        <Dropdown
-          key={`billable-${paymentMethod}`}
-          id="billable-items"
-          items={lineList}
-          itemToString={(item) => (item ? `${item.name} ${setServicePrice(item.servicePrices)}` : '')}
-          label={t('selectBillableService', 'Select a billable service')}
-          onChange={handleBillingService}
-          selectedItem={selectedBillableItem}
-          titleText={t('billableService', 'Billable service')}
-        />
-      )}
+        )}
+      </div>
     </section>
   );
 };

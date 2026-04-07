@@ -1,10 +1,30 @@
 @use '@carbon/layout';
+@use '@carbon/type';
+@use '@carbon/colors';
 
-.sectionContainer {
-  margin: 0 layout.$spacing-03;
+.sectionLabel {
+  @include type.type-style('heading-compact-02');
+  color: colors.$gray-70;
+  margin: 0 0 layout.$spacing-03 0;
+  min-width: 8rem;
 }
 
 .lastVisitBanner {
   margin-bottom: layout.$spacing-05;
 }
 
+:global(.omrs-breakpoint-lt-desktop) {
+    .sectionContainer {
+      display: flex;
+
+      .sectionLabel {
+        flex-basis: 30%;
+        min-width: 8rem;
+        text-align: left;
+      }
+
+      .sectionField {
+        flex-basis: 70%;
+      }
+  }
+}
