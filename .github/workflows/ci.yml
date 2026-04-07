@@ -5,17 +5,7 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  release:
-    types:
-      - created
 
 jobs:
   build:
     uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/build-frontend-module.yml@main
-
-  release:
-    needs: build
-    uses: openmrs/openmrs-contrib-gha-workflows/.github/workflows/release-frontend-module.yml@main
-    secrets:
-      NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-      BOT_PAT: ${{ secrets.BOT_PAT }}
