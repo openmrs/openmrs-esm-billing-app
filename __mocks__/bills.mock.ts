@@ -378,7 +378,7 @@ export const mockBill = {
       priceName: '',
       priceUuid: '',
       lineItemOrder: 0,
-      paymentStatus: 'PENDING',
+      paymentStatus: BillStatus.PENDING,
       resourceVersion: '1.8',
     },
   ],

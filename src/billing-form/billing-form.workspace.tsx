@@ -24,7 +24,7 @@ import { useBillableServices as useBillableServicesList } from '../billable-serv
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
-import type { BillableItem, LineItem, ServicePrice } from '../types';
+import { BillStatus, type BillableItem, type LineItem, type ServicePrice } from '../types';
 import styles from './billing-form.scss';
 
 interface ExtendedLineItem extends LineItem {
@@ -101,7 +101,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       quantity: 1,
       price: defaultPrice,
       billableService: item.uuid,
-      paymentStatus: 'PENDING',
+      paymentStatus: BillStatus.PENDING,
       lineItemOrder: 0,
       selectedPaymentMethod: selectedPaymentMethod,
       availablePaymentMethods: availablePaymentMethods,
@@ -172,7 +172,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       quantity: item.quantity,
       price: item.price,
       lineItemOrder: 0,
-      paymentStatus: 'PENDING',
+      paymentStatus: BillStatus.PENDING,
       billableService: item.uuid,
     }));
 
@@ -216,7 +216,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
           lineItems: newLineItems,
           payments: [],
           patient: patientUuid,
-          status: 'PENDING',
+          status: BillStatus.PENDING,
         };
 
         await processBillItems(payload);

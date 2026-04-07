@@ -5,6 +5,7 @@ import { showSnackbar } from '@openmrs/esm-framework';
 import { finalizeBill } from '../billing.resource';
 import FinalizeBillModal from './finalize-bill-confirmation.modal';
 import type { MappedBill } from '../types';
+import { BillStatus } from '../types';
 
 const mockFinalizeBill = jest.mocked(finalizeBill);
 const mockShowSnackbar = jest.mocked(showSnackbar);
@@ -23,7 +24,7 @@ const mockBill: MappedBill = {
   cashPointLocation: 'Main Hospital',
   cashier: { uuid: 'cashier-uuid', display: 'Jane Cashier', links: [] },
   receiptNumber: 'RCPT-001',
-  status: 'PENDING',
+  status: BillStatus.PENDING,
   identifier: '12345678',
   dateCreated: '2024-01-01',
   lineItems: [
@@ -32,7 +33,7 @@ const mockBill: MappedBill = {
       item: 'X-Ray',
       quantity: 1,
       price: 500,
-      paymentStatus: 'PENDING',
+      paymentStatus: BillStatus.PENDING,
       billableService: 'X-Ray Service',
     },
   ],

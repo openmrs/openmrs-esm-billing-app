@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { ExtensionSlot, UserHasAccess } from '@openmrs/esm-framework';
 import { useBills } from '../../billing.resource';
 import PatientBills from './patient-bills.component';
+import { BillStatus } from '../../types';
 import styles from './bill-waiver.scss';
 
 const BillWaiver: React.FC = () => {
   const [patientUuid, setPatientUuid] = useState<string>('');
   const { bills } = useBills(patientUuid);
 
-  const filterBills = bills.filter((bill) => bill?.status !== 'PAID' && patientUuid === bill.patientUuid) ?? [];
+  const filterBills =
+    bills.filter((bill) => bill?.status !== BillStatus.PAID && patientUuid === bill.patientUuid) ?? [];
 
   return (
     <UserHasAccess privilege="coreapps.systemAdministration">
