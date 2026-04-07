@@ -112,6 +112,10 @@
     {
       "name": "delete-line-item-confirmation-modal",
       "component": "deleteLineItemConfirmationModal"
+    },
+    {
+      "name": "finalize-bill-confirmation-modal",
+      "component": "finalizeBillConfirmationModal"
     }
   ],
   "workspaces2": [

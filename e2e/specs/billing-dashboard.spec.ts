@@ -80,6 +80,8 @@ test.describe('Billing Dashboard workflow', () => {
 
     await test.step('Then the Bill List should display pending bills', async () => {
       await expect(billingDashboardPage.filterDropdown()).toBeVisible();
+      await billingDashboardPage.selectFilter('Pending confirmation');
+      await billingDashboardPage.waitForBillsTableToLoad();
 
       await billingDashboardPage.verifyBillInTable(patientName, true);
     });
@@ -111,9 +113,19 @@ test.describe('Billing Dashboard workflow', () => {
       expect(invoiceStatus).toBe('PENDING');
     });
 
-    await test.step('And the Payments section should be displayed', async () => {
-      await paymentPage.waitForPaymentForm();
+    await test.step('And the payment form should not be visible for a PENDING bill', async () => {
+      await expect(paymentPage.paymentMethodCombobox()).toBeHidden();
+      await expect(paymentPage.amountInput()).toBeHidden();
+    });
 
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
+    await test.step('Then the payment form should now be visible', async () => {
+      await paymentPage.waitForPaymentForm();
       await expect(paymentPage.paymentMethodCombobox()).toBeVisible();
       await expect(paymentPage.amountInput()).toBeVisible();
       await expect(paymentPage.referenceCodeInput()).toBeVisible();
@@ -197,6 +209,117 @@ test.describe('Billing Dashboard workflow', () => {
       await billingDashboardPage.selectFilter('Paid bills');
       await billingDashboardPage.waitForBillsTableToLoad();
 
+      await billingDashboardPage.verifyBillInTable(patientName, true);
+    });
+  });
+
+  test('Cashier confirms a bill from the pending queue, adds an item, finalizes, and processes payment', async ({
+    page,
+    api,
+    patient,
+  }) => {
+    const billingDashboardPage = new BillingDashboardPage(page);
+    const billingFormPage = new BillingFormPage(page);
+    const invoicePage = new InvoicePage(page);
+    const paymentPage = new PaymentPage(page);
+    const patientUuid = patient.uuid;
+    const patientName = patient.person.display;
+    let billUuid: string;
+
+    await test.step('Given a bill has been created for a patient (PENDING status)', async () => {
+      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
+      await createBillButton.click();
+
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, /bill processed successfully/i);
+
+      const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+      const billsData = await billsResponse.json();
+      billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
+    });
+
+    await test.step('When I navigate to the Billing dashboard and open the pending confirmation queue', async () => {
+      await billingDashboardPage.goto();
+      await billingDashboardPage.waitForBillsTableToLoad();
+      await billingDashboardPage.selectFilter('Pending confirmation');
+      await billingDashboardPage.waitForBillsTableToLoad();
+    });
+
+    await test.step('Then the bill appears in the pending confirmation queue', async () => {
+      await billingDashboardPage.verifyBillInTable(patientName, true);
+    });
+
+    await test.step('When I open the invoice', async () => {
+      await billingDashboardPage.clickInvoiceNumberLink(patientName);
+      await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('Then I click on the Add items to bill button', async () => {
+      await invoicePage.addItemsToBillButton().click();
+      await expect(billingFormPage.saveButton()).toBeVisible();
+    });
+
+    await test.step('Then I add an item to the bill', async () => {
+      await billingFormPage.selectFirstAvailableBillableService();
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, /items added to bill/i);
+    });
+
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+    });
+
+    await test.step('Then the invoice status should be POSTED and editing buttons should be gone', async () => {
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+      await expect(invoicePage.finalizeBillButton()).toBeHidden();
+      await expect(invoicePage.addItemsToBillButton()).toBeHidden();
+    });
+
+    await test.step('When I return to the dashboard', async () => {
+      await billingDashboardPage.goto();
+      await billingDashboardPage.waitForBillsTableToLoad();
+    });
+
+    await test.step('Then the bill has moved out of pending confirmation and into pending payment', async () => {
+      await billingDashboardPage.selectFilter('Pending confirmation');
+      await billingDashboardPage.waitForBillsTableToLoad();
+      await billingDashboardPage.verifyBillInTable(patientName, false);
+
+      await billingDashboardPage.selectFilter('Pending payment');
+      await billingDashboardPage.waitForBillsTableToLoad();
+      await billingDashboardPage.verifyBillInTable(patientName, true);
+    });
+
+    await test.step('When I open the invoice and process full payment', async () => {
+      await billingDashboardPage.clickInvoiceNumberLink(patientName);
+      await invoicePage.waitForInvoiceToLoad();
+
+      await paymentPage.waitForPaymentForm();
+      const amountDue = await invoicePage.getAmountDue();
+      await paymentPage.addPayment('Cash', extractNumericValue(amountDue));
+      await paymentPage.processPayment();
+      await waitForSuccessNotification(page, /payment processed successfully/i);
+    });
+
+    await test.step('When I return to the dashboard', async () => {
+      await billingDashboardPage.goto();
+      await billingDashboardPage.waitForBillsTableToLoad();
+    });
+
+    await test.step('Then the bill has moved out of pending payment and into paid bills', async () => {
+      await billingDashboardPage.selectFilter('Pending payment');
+      await billingDashboardPage.waitForBillsTableToLoad();
+      await billingDashboardPage.verifyBillInTable(patientName, false);
+
+      await billingDashboardPage.selectFilter('Paid bills');
+      await billingDashboardPage.waitForBillsTableToLoad();
       await billingDashboardPage.verifyBillInTable(patientName, true);
     });
   });

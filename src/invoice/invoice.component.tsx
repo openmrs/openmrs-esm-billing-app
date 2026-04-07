@@ -10,6 +10,7 @@ import {
   formatDate,
   launchWorkspace2,
   parseDate,
+  showModal,
   showSnackbar,
   useConfig,
   usePatient,
@@ -21,6 +22,7 @@ import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
+import { BillStatus } from '../types';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -52,6 +54,14 @@ const Invoice: React.FC = () => {
       }
     });
   }, [bill, patient]);
+
+  const handleFinalizeBill = () => {
+    const dispose = showModal('finalize-bill-confirmation-modal', {
+      bill,
+      onMutate: mutate,
+      closeModal: () => dispose(),
+    });
+  };
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
@@ -113,19 +123,14 @@ const Invoice: React.FC = () => {
   return (
     <div className={styles.invoiceContainer}>
       {patient && patientUuid && <ExtensionSlot name="patient-header-slot" state={{ patient, patientUuid }} />}
-      <div className={styles.detailsContainer}>
-        <section className={styles.details}>
-          {Object.entries(invoiceDetails).map(([key, val]) => (
-            <InvoiceDetails key={key} label={key} value={val} />
-          ))}
-        </section>
-        <div className={styles.actionsContainer}>
-          {isValidating && (
-            <span>
-              <InlineLoading status="active" />
-            </span>
-          )}
-          {bill?.status === 'PENDING' && (
+      <div className={styles.actionsContainer}>
+        {isValidating && (
+          <span>
+            <InlineLoading status="active" />
+          </span>
+        )}
+        {bill?.status === BillStatus.PENDING && (
+          <>
             <Button
               kind="ghost"
               renderIcon={Add}
@@ -138,16 +143,26 @@ const Invoice: React.FC = () => {
               }>
               {t('addItemsToBill', 'Add items to bill')}
             </Button>
-          )}
-          <Button
-            disabled={isPrinting || isLoadingPatient || isLoadingBill}
-            onClick={handlePrint}
-            renderIcon={(props) => <Printer size={24} {...props} />}
-            iconDescription={t('printBill', 'Print bill')}>
-            {t('printBill', 'Print bill')}
-          </Button>
-          {(bill?.status === 'PAID' || bill?.tenderedAmount > 0) && <PrintReceipt billUuid={bill?.uuid} />}
-        </div>
+            <Button kind="primary" onClick={handleFinalizeBill}>
+              {t('finalizeBill', 'Finalize bill')}
+            </Button>
+          </>
+        )}
+        <Button
+          disabled={isPrinting || isLoadingPatient || isLoadingBill}
+          onClick={handlePrint}
+          renderIcon={(props) => <Printer size={24} {...props} />}
+          iconDescription={t('printBill', 'Print bill')}>
+          {t('printBill', 'Print bill')}
+        </Button>
+        {bill && (bill.status === BillStatus.PAID || bill.tenderedAmount > 0) && <PrintReceipt billUuid={bill.uuid} />}
+      </div>
+      <div className={styles.detailsContainer}>
+        <section className={styles.details}>
+          {Object.entries(invoiceDetails).map(([key, val]) => (
+            <InvoiceDetails key={key} label={key} value={val} />
+          ))}
+        </section>
       </div>
 
       <div className={styles.invoiceContent}>

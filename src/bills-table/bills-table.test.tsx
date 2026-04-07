@@ -2,6 +2,7 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
+import { BillStatus } from '../types';
 import BillsTable from './bills-table.component';
 
 jest.mock('../billing.resource', () => ({
@@ -42,7 +43,7 @@ const mockBillsData = [
         paymentStatus: 'PENDING',
       },
     ],
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     cashPointUuid: 'cash-point-1',
     cashPointName: 'Main Cash Point',
     cashPointLocation: 'Main Hospital',
@@ -78,7 +79,7 @@ const mockBillsData = [
         paymentStatus: 'PENDING',
       },
     ],
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     cashPointUuid: 'cash-point-1',
     cashPointName: 'Main Cash Point',
     cashPointLocation: 'Main Hospital',
@@ -151,7 +152,7 @@ describe('BillsTable', () => {
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
-    expect(screen.getByText(/pending bills/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending payment/i)).toBeInTheDocument();
   });
 
   test('should display an error state if there is a problem loading bill data', () => {
@@ -171,7 +172,7 @@ describe('BillsTable', () => {
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
-    expect(screen.getByText(/pending bills/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending payment/i)).toBeInTheDocument();
   });
 
   test('should pass search term to backend API', async () => {
@@ -200,7 +201,7 @@ describe('BillsTable', () => {
     await user.type(searchInput, 'John');
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING,POSTED', 'John');
+      expect(mockBills).toHaveBeenCalledWith(10, 'POSTED', 'John');
     });
 
     expect(mockGoTo).toHaveBeenCalledWith(1);
@@ -220,7 +221,7 @@ describe('BillsTable', () => {
 
     // First call: initial render with PENDING filter (default)
     mockBills.mockImplementationOnce(() => ({
-      bills: mockBillsData.map((bill) => ({ ...bill, status: 'PENDING' })),
+      bills: mockBillsData.map((bill) => ({ ...bill, status: BillStatus.PENDING })),
       isLoading: false,
       isValidating: false,
       error: null,
@@ -244,7 +245,7 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    const filterDropdown = screen.getByText('Pending bills');
+    const filterDropdown = screen.getByText('Pending payment');
     await user.click(filterDropdown);
 
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
@@ -322,6 +323,82 @@ describe('BillsTable', () => {
     // Should call goTo(1) to reset to first page
     await waitFor(() => {
       expect(mockGoTo).toHaveBeenCalledWith(1);
+    });
+  });
+
+  test('should default to "Pending payment" filter showing POSTED bills', () => {
+    render(<BillsTable />);
+
+    expect(screen.getByText('Pending payment')).toBeInTheDocument();
+    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+  });
+
+  test('should show "Pending confirmation" option in filter dropdown', async () => {
+    const user = userEvent.setup();
+    render(<BillsTable />);
+
+    const filterDropdown = screen.getByText('Pending payment');
+    await user.click(filterDropdown);
+
+    expect(screen.getByRole('option', { name: /pending confirmation/i })).toBeInTheDocument();
+  });
+
+  test('should filter by PENDING status when "Pending confirmation" is selected', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = jest.fn();
+
+    mockBills.mockImplementation((_pageSize, status) => ({
+      bills: status === 'PENDING' ? [mockBillsData[0]] : mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: status === 'PENDING' ? 1 : 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    const filterDropdown = screen.getByText('Pending payment');
+    await user.click(filterDropdown);
+
+    await user.click(screen.getByRole('option', { name: /pending confirmation/i }));
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
+    });
+  });
+
+  test('should filter by POSTED status when "Pending payment" is selected', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = jest.fn();
+
+    mockBills.mockImplementation((_pageSize, status) => ({
+      bills: status === 'POSTED' ? [mockBillsData[1]] : mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: jest.fn(),
+      currentPage: 1,
+      totalCount: 1,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    // Navigate away from the default POSTED filter first, then select it again
+    const filterDropdown = screen.getByText('Pending payment');
+    await user.click(filterDropdown);
+    await user.click(screen.getByRole('option', { name: /all bills/i }));
+
+    mockBills.mockClear();
+
+    await user.click(screen.getByText('All bills'));
+    await user.click(screen.getByRole('option', { name: /pending payment/i }));
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
     });
   });
 

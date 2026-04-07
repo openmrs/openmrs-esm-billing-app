@@ -11,7 +11,7 @@ import PaymentHistory from './payment-history/payment-history.component';
 import { processBillPayment } from '../../billing.resource';
 import { updateBillVisitAttribute } from './payment.resource';
 import { convertToCurrency } from '../../helpers';
-import type { MappedBill } from '../../types';
+import { BillStatus, type MappedBill } from '../../types';
 import styles from './payments.scss';
 
 type PaymentProps = {
@@ -113,7 +113,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
           </CardHeader>
           <div>
             <PaymentHistory bill={bill} />
-            <PaymentForm disablePayment={amountDue <= 0} />
+            <PaymentForm disablePayment={amountDue <= 0 || bill.status === BillStatus.PENDING} />
           </div>
         </div>
         <div className={styles.divider} />

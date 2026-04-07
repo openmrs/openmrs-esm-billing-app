@@ -112,6 +112,12 @@ test.describe('Billing: Patient Chart workflow', () => {
       await expect(invoicePage.invoiceNumberLabel()).toBeVisible();
     });
 
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
     await test.step('When I process the full amount due', async () => {
       await paymentPage.waitForPaymentForm();
       const amountDue = await invoicePage.getAmountDue();
@@ -310,6 +316,12 @@ test.describe('Billing: Patient Chart workflow', () => {
       await invoicePage.waitForInvoiceToLoad();
     });
 
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
     await test.step('And I make a partial payment (50% of amount due)', async () => {
       await paymentPage.waitForPaymentForm();
 
@@ -495,6 +507,12 @@ test.describe('Billing: Patient Chart workflow', () => {
       expect(backendTotal).toBeCloseTo(totalValue, 2);
     });
 
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
     await test.step('When I process payment for the full amount', async () => {
       await paymentPage.waitForPaymentForm();
       const amountDue = await invoicePage.getAmountDue();
@@ -553,6 +571,12 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('When I navigate to the invoice page', async () => {
       await invoicePage.goto(patientUuid, billUuid);
       await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
     });
 
     await test.step('And I record the first payment (60% Cash)', async () => {
@@ -681,6 +705,12 @@ test.describe('Billing: Patient Chart workflow', () => {
       await invoicePage.waitForInvoiceToLoad();
     });
 
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
     await test.step('And I record the first payment (50%)', async () => {
       await paymentPage.waitForPaymentForm();
 
@@ -732,6 +762,62 @@ test.describe('Billing: Patient Chart workflow', () => {
         expect(payment.instanceType.name).toBeTruthy();
         expect(payment.amountTendered).toBeGreaterThan(0);
       });
+    });
+  });
+
+  test('Payment form is blocked on PENDING bill and available after finalization', async ({ page, api, patient }) => {
+    const billingFormPage = new BillingFormPage(page);
+    const invoicePage = new InvoicePage(page);
+    const paymentPage = new PaymentPage(page);
+    const patientUuid = patient.uuid;
+    let billUuid: string;
+
+    await test.step('Given I create and save a bill', async () => {
+      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+
+      const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
+      await createBillButton.click();
+
+      await billingFormPage.searchAndSelectBillableService(testServiceName);
+      await billingFormPage.selectPaymentMethodIfVisible();
+      await billingFormPage.saveBill();
+      await waitForSuccessNotification(page, 'Bill processed successfully');
+
+      const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
+      const billsData = await billsResponse.json();
+      billUuid = billsData.results[0].uuid;
+      billsToCleanup.add(billUuid);
+    });
+
+    await test.step('When I navigate to the invoice page', async () => {
+      await invoicePage.goto(patientUuid, billUuid);
+      await invoicePage.waitForInvoiceToLoad();
+    });
+
+    await test.step('Then the invoice status should be PENDING', async () => {
+      const status = await invoicePage.getInvoiceStatus();
+      expect(status).toBe('PENDING');
+    });
+
+    await test.step('And the payment form should not be visible for a PENDING bill', async () => {
+      await expect(paymentPage.paymentMethodCombobox()).toBeHidden();
+      await expect(paymentPage.amountInput()).toBeHidden();
+      await expect(paymentPage.processPaymentButton()).toBeDisabled();
+    });
+
+    await test.step('When I finalize the bill', async () => {
+      await invoicePage.finalizeBill();
+      await waitForSuccessNotification(page, /bill finalized/i);
+    });
+
+    await test.step('Then the invoice status should be POSTED', async () => {
+      await expect.poll(async () => await invoicePage.getInvoiceStatus()).toBe('POSTED');
+    });
+
+    await test.step('And the payment form should now be accessible', async () => {
+      await paymentPage.waitForPaymentForm();
+      await expect(paymentPage.paymentMethodCombobox()).toBeVisible();
+      await expect(paymentPage.amountInput()).toBeVisible();
     });
   });
 
