@@ -145,22 +145,11 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
             kind="info"
             title={t('lastVisitInfo', 'Last Visit Information')}
             subtitle={
-              lastVisitInfo.diffDays === 0
-                ? t('lastVisitMsgToday', 'The last visit was a {{type}} visit earlier today at {{location}}', {
-                    type: lastVisitInfo.type,
-                    location: lastVisitInfo.location,
-                  })
-                : lastVisitInfo.diffDays === 1
-                  ? t('lastVisitMsgYesterday', 'The last visit was a {{type}} visit 1 day ago at {{location}}', {
-                      type: lastVisitInfo.type,
-                      location: lastVisitInfo.location,
-                    })
-                  : t('lastVisitMsgDaysAgo', 'The last visit was a {{type}} visit {{count}} days ago at {{location}}', {
-                      count: lastVisitInfo.diffDays,
-                      type: lastVisitInfo.type,
-                      location: lastVisitInfo.location,
-                    })
-            }
+             t('lastVisitMsg', 'The last visit was a {{type}} {{count}} days ago at {{location}}', {
+              count: lastVisitInfo.diffDays,
+              type: lastVisitInfo.type,
+              location: lastVisitInfo.location,
+            })}
             lowContrast
           />
         </div>
