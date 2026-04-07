@@ -197,3 +197,4 @@ See [Creating a Distribution](https://openmrs.atlassian.net/wiki/x/IABBHg) for i
 For more information on how to get started, please refer to [OpenMRS Frontend Developer Documentation](https://openmrs.atlassian.net/wiki/x/94ABCQ).
 
 Detailed documentation on the Billing Module can be found [in the OpenMRS Wiki](https://openmrs.atlassian.net/wiki/x/0w2bAQ).
+
