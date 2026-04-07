@@ -9,14 +9,16 @@ import {
   useOpenmrsPagination,
 } from '@openmrs/esm-framework';
 import { apiBasePath } from './constants';
-import type {
-  MappedBill,
-  PatientInvoice,
-  BillableItem,
-  PaymentRequestPayload,
-  CreateBillPayload,
-  UpdateBillPayload,
+import {
+  type MappedBill,
+  type PatientInvoice,
+  type BillableItem,
+  type PaymentRequestPayload,
+  type CreateBillPayload,
+  type UpdateBillPayload,
+  BillStatus,
 } from './types';
+
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
   if (!display) {
     return { identifier: '', name: '' };
@@ -47,6 +49,7 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
+    status: bill.status as BillStatus,
     lineItems: activeLineItems,
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
     totalAmount: activeLineItems
@@ -185,6 +188,17 @@ export const updateBillItems = (payload: UpdateBillPayload) => {
   return openmrsFetch(url, {
     method: 'POST',
     body: payload,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const finalizeBill = (billUuid: string) => {
+  const url = `${apiBasePath}bill/${billUuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: { status: BillStatus.POSTED },
     headers: {
       'Content-Type': 'application/json',
     },

@@ -9,7 +9,7 @@ import {
   type VisitReturnType,
 } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
-import { type MappedBill } from '../../types';
+import { BillStatus, type MappedBill } from '../../types';
 import { configSchema, type BillingConfig } from '../../config-schema';
 import { usePaymentModes } from './payment.resource';
 import Payments from './payments.component';
@@ -102,7 +102,7 @@ describe('Payments', () => {
       },
     ],
     receiptNumber: '12345',
-    status: 'PAID',
+    status: BillStatus.PAID,
     identifier: 'invoice-123',
     dateCreated: '2023-09-01T12:00:00Z',
     lineItems: [],
@@ -224,6 +224,34 @@ describe('Payments', () => {
     expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
   });
 
+  it('should not show payment form when bill is in PENDING state', () => {
+    const pendingBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.PENDING,
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={pendingBill} mutate={mockMutate} />);
+
+    expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/select payment method/i)).not.toBeInTheDocument();
+  });
+
+  it('should show payment form when bill is in POSTED state', () => {
+    const postedBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={postedBill} mutate={mockMutate} />);
+
+    expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
+    expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
+  });
+
   it('should return null when bill is not provided', () => {
     const { container } = render(<Payments bill={null} mutate={mockMutate} />);
     expect(container).toBeEmptyDOMElement();
@@ -232,6 +260,7 @@ describe('Payments', () => {
   it('should show payment form when there is amount due', () => {
     const billWithAmountDue: MappedBill = {
       ...mockBill,
+      status: BillStatus.POSTED,
       totalAmount: 100,
       tenderedAmount: 0,
       lineItems: [],

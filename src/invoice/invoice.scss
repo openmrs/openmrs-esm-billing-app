@@ -17,6 +17,14 @@
   justify-content: center;
 }
 
+.actionsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: layout.$spacing-03;
+  padding: layout.$spacing-04 layout.$spacing-05;
+}
+
 .detailsContainer {
   display: flex;
 }
@@ -27,15 +35,8 @@
   flex-flow: row wrap;
   align-items: center;
   justify-content: space-between;
-  margin: layout.$spacing-05;
+  margin: layout.$spacing-05 layout.$spacing-06;
   row-gap: layout.$spacing-06;
-}
-
-.actionsContainer {
-  display: flex;
-  align-items: center;
-  gap: layout.$spacing-03;
-  margin: layout.$spacing-05;
 }
 
 .label {

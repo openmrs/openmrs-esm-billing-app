@@ -15,6 +15,7 @@ import {
 import { getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
+import { BillStatus } from '../types';
 import styles from './require-payment.scss';
 
 type RequirePaymentModalProps = {
@@ -26,7 +27,7 @@ const RequirePaymentModal: React.FC<RequirePaymentModalProps> = ({ closeModal, p
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig();
   const { bills, isLoading } = useBills(patientUuid);
-  const lineItems = bills.filter((bill) => bill?.status !== 'PAID').flatMap((bill) => bill?.lineItems);
+  const lineItems = bills.filter((bill) => bill?.status !== BillStatus.PAID).flatMap((bill) => bill?.lineItems);
 
   return (
     <>

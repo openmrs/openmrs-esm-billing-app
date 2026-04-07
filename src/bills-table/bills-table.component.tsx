@@ -31,6 +31,7 @@ import {
   type LayoutType,
 } from '@openmrs/esm-framework';
 import { usePaginatedBills } from '../billing.resource';
+import { BillStatus } from '../types';
 import type { MappedBill } from '../types';
 import type { BillingConfig } from '../config-schema';
 import styles from './bills-table.scss';
@@ -42,9 +43,9 @@ interface BillDisplayItem extends Omit<MappedBill, 'id'> {
 }
 
 interface BillPaymentStatusFilterItem {
-  id: string;
+  id: BillStatus | '';
   text: string;
-  status: string;
+  status: BillStatus | '';
 }
 
 const mapLineItems = (bill: MappedBill) =>
@@ -64,13 +65,20 @@ const BillsTable: React.FC = () => {
   const billPaymentStatusFilterItems: BillPaymentStatusFilterItem[] = useMemo(
     () => [
       { id: '', text: t('allBills', 'All bills'), status: '' },
-      { id: 'PENDING', text: t('pendingBills', 'Pending bills'), status: 'PENDING,POSTED' },
-      { id: 'PAID', text: t('paidBills', 'Paid bills'), status: 'PAID' },
+      {
+        id: BillStatus.PENDING,
+        text: t('pendingConfirmationBills', 'Pending confirmation'),
+        status: BillStatus.PENDING,
+      },
+      { id: BillStatus.POSTED, text: t('pendingPaymentBills', 'Pending payment'), status: BillStatus.POSTED },
+      { id: BillStatus.PAID, text: t('paidBills', 'Paid bills'), status: BillStatus.PAID },
     ],
     [t],
   );
+
+  // Default to 'POSTED' (pending payment) so cashiers see bills awaiting payment on load
   const [billPaymentStatus, setBillPaymentStatus] = useState<BillPaymentStatusFilterItem>(
-    billPaymentStatusFilterItems[1],
+    () => billPaymentStatusFilterItems.find((item) => item.id === BillStatus.POSTED) ?? billPaymentStatusFilterItems[0],
   );
   const [searchString, setSearchString] = useState('');
   const debouncedSearchString = useDebounce(searchString, 500);
@@ -127,9 +135,6 @@ const BillsTable: React.FC = () => {
     return mappedBills;
   }, [bills]);
 
-  // Server-side search is now handled by the API, so we just use the bills directly
-  const searchResults = billList;
-
   // Check if user has applied any filters (not "All bills") or search
   const hasActiveFiltersOrSearch = searchString.trim() !== '' || billPaymentStatus.id !== '';
 
@@ -156,7 +161,6 @@ const BillsTable: React.FC = () => {
           className={styles.filterDropdown}
           direction="bottom"
           id="bill-payment-status-filter"
-          initialSelectedItem={billPaymentStatusFilterItems[1]}
           selectedItem={billPaymentStatus}
           items={billPaymentStatusFilterItems}
           itemToString={(item: BillPaymentStatusFilterItem) => (item ? item.text : '')}
@@ -196,10 +200,10 @@ const BillsTable: React.FC = () => {
           />
           <DataTable
             isSortable
-            rows={searchResults}
+            rows={billList}
             headers={headerData}
             size={responsiveSize}
-            useZebraStyles={searchResults?.length > 1 ? true : false}>
+            useZebraStyles={billList?.length > 1 ? true : false}>
             {({ rows, headers, getRowProps, getTableProps }) => (
               <TableContainer>
                 <Table {...getTableProps()} aria-label={t('billList', 'Bill list')}>
@@ -227,7 +231,7 @@ const BillsTable: React.FC = () => {
               </TableContainer>
             )}
           </DataTable>
-          {searchResults?.length === 0 && (
+          {billList?.length === 0 && (
             <div className={styles.filterEmptyState}>
               <Layer level={0}>
                 <Tile className={styles.filterEmptyStateTile}>

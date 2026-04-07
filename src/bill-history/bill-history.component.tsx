@@ -36,6 +36,7 @@ import { useBills } from '../billing.resource';
 import { convertToCurrency } from '../helpers';
 import BillActionMenu from './bill-action-menu.component';
 import InvoiceTable from '../invoice/invoice-table.component';
+import { BillStatus } from '../types';
 import styles from './bill-history.scss';
 
 interface BillHistoryProps {
@@ -187,7 +188,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
                             </TableCell>
                           ))}
                           <TableCell className="cds--table-column-menu">
-                            {currentBill?.status === 'PENDING' && (
+                            {currentBill?.status === BillStatus.PENDING && (
                               <BillActionMenu bill={currentBill} patientUuid={patientUuid} onMutate={mutate} />
                             )}
                           </TableCell>
