@@ -43,6 +43,7 @@
   "billFinalizedSuccess": "Bill has been finalized successfully",
   "billFinalizeFailed": "Failed to finalize bill",
   "billing": "الفواتير",
+  "billingDetails": "Billing details",
   "billingHistory": "تاريخ الفواتير",
   "billingSettings": "إعدادات الفواتير",
   "billItem": "عنصر فاتورة",
