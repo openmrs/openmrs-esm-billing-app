@@ -1,5 +1,7 @@
 import { type Page, expect } from '@playwright/test';
 
+export type BillFilterOption = 'All bills' | 'Pending confirmation' | 'Pending payment' | 'Paid bills';
+
 export class BillingDashboardPage {
   constructor(readonly page: Page) {}
 
@@ -24,7 +26,7 @@ export class BillingDashboardPage {
     }
   }
 
-  async selectFilter(filterText: 'All bills' | 'Pending bills' | 'Paid bills') {
+  async selectFilter(filterText: BillFilterOption) {
     await this.filterDropdown().click();
     await this.page.getByRole('option', { name: filterText }).click();
   }

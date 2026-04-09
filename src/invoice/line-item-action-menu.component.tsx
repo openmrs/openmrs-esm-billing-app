@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Layer, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { getCoreTranslation, isDesktop, showModal, useLayoutType } from '@openmrs/esm-framework';
-import { type LineItem, type MappedBill } from '../types';
+import { BillStatus, type LineItem, type MappedBill } from '../types';
 import styles from './line-item-action-menu.scss';
 
 type LineItemActionMenuProps = {
@@ -30,7 +30,7 @@ const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({ bill, item, onM
     });
   }, [item, onMutate]);
 
-  const isPending = bill?.status === 'PENDING';
+  const isPending = bill?.status === BillStatus.PENDING;
 
   return (
     <Layer>

@@ -1,5 +1,4 @@
-import { calculateTotalAmount, convertToCurrency } from '../helpers';
-import { type MappedBill } from '../types';
+import { BillStatus, type MappedBill } from '../types';
 
 /**
  * A custom hook for calculating bill metrics.
@@ -31,9 +30,9 @@ const calculateBillTotals = (bills: Array<MappedBill>) => {
   let cumulativeTotal = 0;
 
   bills.forEach((bill) => {
-    if (bill?.status === 'PAID') {
+    if (bill?.status === BillStatus.PAID) {
       paidTotal += bill?.totalAmount;
-    } else if (bill?.status === 'PENDING') {
+    } else if (bill?.status === BillStatus.PENDING) {
       pendingTotal += bill?.totalAmount;
     }
     cumulativeTotal += bill?.totalAmount; // Add to cumulative total regardless of status

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Button,
@@ -19,10 +19,12 @@ import {
   type Workspace2DefinitionProps,
   Workspace2,
 } from '@openmrs/esm-framework';
-import { processBillItems, useBillableServices } from '../billing.resource';
+import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
+import { useBillableServices as useBillableServicesList } from '../billable-services/billable-service.resource';
+import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
-import type { BillableItem, LineItem, ServicePrice } from '../types';
+import { BillStatus, type BillableItem, type LineItem, type ServicePrice } from '../types';
 import styles from './billing-form.scss';
 
 interface ExtendedLineItem extends LineItem {
@@ -34,10 +36,11 @@ type BillingFormProps = {
   patientUuid: string;
   closeWorkspace: () => void;
   onMutate?: () => void;
+  billUuid?: string;
 };
 
 const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
-  workspaceProps: { patientUuid, onMutate },
+  workspaceProps: { patientUuid, onMutate, billUuid },
   closeWorkspace,
 }) => {
   const isTablet = useLayoutType() === 'tablet';
@@ -46,6 +49,27 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
   const { data, error, isLoading } = useBillableServices();
+  const { bill, isLoading: isLoadingBill, error: billError } = useBill(billUuid);
+  const {
+    billableServices,
+    isLoading: isLoadingBillableServices,
+    error: billableServicesError,
+  } = useBillableServicesList();
+  const isEditMode = !!billUuid && !!bill;
+  const existingItemsTotal = useMemo(
+    () => (isEditMode ? calculateTotalAmount(bill.lineItems) : 0),
+    [isEditMode, bill?.lineItems],
+  );
+
+  const availableBillableItems = useMemo(() => {
+    if (!data) return [];
+    if (!isEditMode) return data;
+    const lineItems = bill.lineItems ?? [];
+    const existingNames = new Set(
+      lineItems.flatMap((lineItem) => [lineItem.billableService, lineItem.item].filter(Boolean)),
+    );
+    return data.filter((item) => item.name && !existingNames.has(item.name));
+  }, [data, isEditMode, bill?.lineItems]);
 
   const selectBillableItem = (item: BillableItem) => {
     if (!item) {
@@ -77,7 +101,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       quantity: 1,
       price: defaultPrice,
       billableService: item.uuid,
-      paymentStatus: 'PENDING',
+      paymentStatus: BillStatus.PENDING,
       lineItemOrder: 0,
       selectedPaymentMethod: selectedPaymentMethod,
       availablePaymentMethods: availablePaymentMethods,
@@ -135,49 +159,84 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     if (isSubmitting || selectedItems.length === 0) {
       return;
     }
+    if (isEditMode && (isLoadingBillableServices || billableServicesError)) {
+      return;
+    }
     if (!validateSelectedItems()) {
       return;
     }
 
     setIsSubmitting(true);
-    const bill = {
-      cashPoint: postBilledItems.cashPoint,
-      cashier: postBilledItems.cashier,
-      lineItems: [],
-      payments: [],
-      patient: patientUuid,
-      status: 'PENDING',
-    };
 
-    selectedItems.forEach((item) => {
-      const lineItem: LineItem = {
-        quantity: item.quantity,
-        price: item.price,
-        lineItemOrder: 0,
-        paymentStatus: 'PENDING',
-        billableService: item.uuid,
-      };
-
-      bill.lineItems.push(lineItem);
-    });
+    const newLineItems: Array<LineItem> = selectedItems.map((item) => ({
+      quantity: item.quantity,
+      price: item.price,
+      lineItemOrder: 0,
+      paymentStatus: BillStatus.PENDING,
+      billableService: item.uuid,
+    }));
 
     try {
-      await processBillItems(bill);
-      closeWorkspace({ discardUnsavedChanges: true });
+      if (isEditMode) {
+        const existingLineItems = bill.lineItems.map((item) => {
+          const serviceUuid = getBillableServiceUuid(billableServices, item.billableService || item.item);
+          if (!serviceUuid) {
+            throw new Error(
+              t('serviceResolutionError', 'Could not resolve service "{{service}}"', {
+                service: item.billableService || item.item,
+              }),
+            );
+          }
+          return {
+            uuid: item.uuid,
+            quantity: item.quantity,
+            price: item.price,
+            lineItemOrder: item.lineItemOrder,
+            paymentStatus: item.paymentStatus,
+            billableService: serviceUuid,
+            priceName: item.priceName,
+            priceUuid: item.priceUuid,
+          };
+        });
 
-      // Call the mutate function from parent to revalidate bill list
+        const payload = {
+          cashPoint: bill.cashPointUuid,
+          cashier: bill.cashier.uuid,
+          lineItems: [...existingLineItems, ...newLineItems],
+          patient: bill.patientUuid,
+          status: bill.status,
+          uuid: bill.uuid,
+        };
+
+        await updateBillItems(payload);
+      } else {
+        const payload = {
+          cashPoint: postBilledItems.cashPoint,
+          cashier: postBilledItems.cashier,
+          lineItems: newLineItems,
+          payments: [],
+          patient: patientUuid,
+          status: BillStatus.PENDING,
+        };
+
+        await processBillItems(payload);
+      }
+
+      closeWorkspace({ discardUnsavedChanges: true });
       onMutate?.();
 
       showSnackbar({
-        title: t('billProcessed', 'Bill processed'),
-        subtitle: t('billProcessedSuccessfully', 'Bill processed successfully'),
+        title: isEditMode ? t('itemsAddedToBill', 'Items added to bill') : t('billProcessed', 'Bill processed'),
+        subtitle: isEditMode
+          ? t('itemsAddedToBillSuccessfully', 'Items have been added to the bill successfully')
+          : t('billProcessedSuccessfully', 'Bill processed successfully'),
         kind: 'success',
       });
-    } catch (error) {
+    } catch (err) {
       showSnackbar({
         title: t('billProcessingError', 'Bill processing error'),
         kind: 'error',
-        subtitle: error?.message,
+        subtitle: err instanceof Error ? err.message : t('unknownBillError', 'An unexpected error occurred'),
       });
     } finally {
       setIsSubmitting(false);
@@ -190,30 +249,76 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   };
 
   return (
-    <Workspace2 title={t('addBillItems', 'Add bill items')} hasUnsavedChanges={selectedItems.length > 0}>
+    <Workspace2
+      title={isEditMode ? t('addItemsToBill', 'Add items to bill') : t('addBillItems', 'Add bill items')}
+      hasUnsavedChanges={selectedItems.length > 0}>
       <Form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.grid}>
-          {isLoading ? (
+          {billUuid && isLoadingBill ? (
             <InlineLoading description={getCoreTranslation('loading') + '...'} />
-          ) : error ? (
+          ) : billUuid && billError ? (
+            <InlineNotification
+              kind="error"
+              lowContrast
+              title={t('errorLoadingBill', 'Error loading bill')}
+              subtitle={billError?.message}
+            />
+          ) : isEditMode && billableServicesError ? (
             <InlineNotification
               kind="error"
               lowContrast
               title={t('errorLoadingBillableServices', 'Error loading billable services')}
-              subtitle={error?.message}
+              subtitle={billableServicesError?.message}
             />
           ) : (
-            <ComboBox
-              id="searchItems"
-              onChange={({ selectedItem: item }: { selectedItem: BillableItem }) => selectBillableItem(item)}
-              itemToString={(item: BillableItem) => item?.name || ''}
-              items={data ?? []}
-              titleText={t('searchItems', 'Search items and services')}
-            />
+            <>
+              {isEditMode && (
+                <div className={styles.existingItemsContainer}>
+                  <h4 className={styles.sectionHeading}>{t('existingItems', 'Existing items')}</h4>
+                  {bill.lineItems.map((item) => (
+                    <div key={item.uuid} className={styles.existingItemRow}>
+                      <span className={styles.existingItemName}>
+                        {item.billableService || item.item || item.display}
+                      </span>
+                      <span className={styles.existingItemDetail}>
+                        {item.quantity} x {convertToCurrency(item.price, defaultCurrency)}
+                      </span>
+                      <span className={styles.existingItemTotal}>
+                        {convertToCurrency(item.price * item.quantity, defaultCurrency)}
+                      </span>
+                    </div>
+                  ))}
+                  <div className={styles.existingItemsSubtotal}>
+                    <strong>
+                      {t('subtotal', 'Subtotal')}: {convertToCurrency(existingItemsTotal, defaultCurrency)}
+                    </strong>
+                  </div>
+                </div>
+              )}
+              {isEditMode && <h4 className={styles.sectionHeading}>{t('newItems', 'New items')}</h4>}
+              {isLoading ? (
+                <InlineLoading description={getCoreTranslation('loading') + '...'} />
+              ) : error ? (
+                <InlineNotification
+                  kind="error"
+                  lowContrast
+                  title={t('errorLoadingBillableServices', 'Error loading billable services')}
+                  subtitle={error?.message}
+                />
+              ) : (
+                <ComboBox
+                  id="searchItems"
+                  onChange={({ selectedItem: item }: { selectedItem: BillableItem }) => selectBillableItem(item)}
+                  itemToString={(item: BillableItem) => item?.name || ''}
+                  items={availableBillableItems}
+                  titleText={t('searchItems', 'Search items and services')}
+                />
+              )}
+            </>
           )}
           {selectedItems && selectedItems.length > 0 && (
             <div className={styles.selectedItemsContainer}>
-              <h4>{t('selectedItems', 'Selected items')}</h4>
+              <h4 className={styles.sectionHeading}>{t('selectedItems', 'Selected items')}</h4>
               {selectedItems.map((item) => (
                 <div key={item.uuid} className={styles.itemCard}>
                   <div className={styles.itemHeader}>
@@ -289,7 +394,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
               <div className={styles.grandTotal}>
                 <strong>
                   {t('grandTotal', 'Grand total')}:{' '}
-                  {convertToCurrency(calculateTotalAmount(selectedItems), defaultCurrency)}
+                  {convertToCurrency(existingItemsTotal + calculateTotalAmount(selectedItems), defaultCurrency)}
                 </strong>
               </div>
             </div>
@@ -307,7 +412,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
           <Button
             className={styles.button}
             kind="primary"
-            disabled={isSubmitting || selectedItems.length === 0}
+            disabled={isSubmitting || selectedItems.length === 0 || (isEditMode && isLoadingBillableServices)}
             type="submit">
             {isSubmitting ? (
               <InlineLoading description={t('saving', 'Saving') + '...'} />

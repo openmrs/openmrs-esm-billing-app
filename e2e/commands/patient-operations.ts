@@ -79,7 +79,7 @@ export async function deletePatient(api: APIRequestContext, patientUuid: string)
 /**
  * Waits for a success notification to appear
  */
-export async function waitForSuccessNotification(page: any, message?: string) {
+export async function waitForSuccessNotification(page: any, message?: string | RegExp) {
   if (message) {
     await page.getByText(message).waitFor({ state: 'visible', timeout: 10000 });
   } else {

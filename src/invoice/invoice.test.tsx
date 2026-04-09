@@ -2,8 +2,15 @@ import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useReactToPrint } from 'react-to-print';
-import { getDefaultsFromConfigSchema, useConfig, usePatient } from '@openmrs/esm-framework';
+import {
+  getDefaultsFromConfigSchema,
+  launchWorkspace2,
+  showModal,
+  useConfig,
+  usePatient,
+} from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
+import { BillStatus } from '../types';
 import { mockBill, mockPatient } from 'mocks/bills.mock';
 import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
@@ -15,6 +22,7 @@ const mockUseBill = jest.mocked(useBill);
 const mockUsePatient = jest.mocked(usePatient);
 const mockUsePaymentModes = jest.mocked(usePaymentModes);
 const mockUseReactToPrint = jest.mocked(useReactToPrint);
+const mockShowModal = jest.mocked(showModal);
 
 jest.mock('../helpers/functions', () => ({
   convertToCurrency: jest.fn((amount) => `USD ${amount}`),
@@ -62,7 +70,7 @@ describe('Invoice', () => {
   const defaultBillData = {
     ...mockBill,
     uuid: 'test-uuid',
-    status: 'PENDING',
+    status: BillStatus.PENDING,
     totalAmount: 1000,
     tenderedAmount: 0,
     receiptNumber: 'RCPT-001',
@@ -188,7 +196,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PAID',
+        status: BillStatus.PAID,
         tenderedAmount: 1000,
       },
       isLoading: false,
@@ -207,7 +215,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: BillStatus.PENDING,
         tenderedAmount: 500,
       },
       isLoading: false,
@@ -336,7 +344,7 @@ describe('Invoice', () => {
 
     const updatedBill = {
       ...defaultBillData,
-      status: 'PAID',
+      status: BillStatus.PAID,
       tenderedAmount: 1000,
     };
 
@@ -456,7 +464,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: BillStatus.PENDING,
         totalAmount: 1000,
         tenderedAmount: 500, // Partial payment
       },
@@ -485,7 +493,7 @@ describe('Invoice', () => {
     mockUseBill.mockReturnValue({
       bill: {
         ...defaultBillData,
-        status: 'PENDING',
+        status: BillStatus.PENDING,
         tenderedAmount: 0,
       },
       isLoading: false,
@@ -498,5 +506,118 @@ describe('Invoice', () => {
     await waitForLoadingToFinish();
 
     expect(screen.queryByTestId('mock-print-receipt')).not.toBeInTheDocument();
+  });
+
+  it('should show "Add items to bill" button for PENDING bills', async () => {
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.getByRole('button', { name: /add items to bill/i })).toBeInTheDocument();
+  });
+
+  it('should not show "Add items to bill" button for PAID bills', async () => {
+    mockUseBill.mockReturnValue({
+      bill: {
+        ...defaultBillData,
+        status: BillStatus.PAID,
+        tenderedAmount: 1000,
+      },
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
+
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.queryByRole('button', { name: /add items to bill/i })).not.toBeInTheDocument();
+  });
+
+  it('should show "Finalize bill" button for PENDING bills', async () => {
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.getByRole('button', { name: /finalize bill/i })).toBeInTheDocument();
+  });
+
+  it('should not show "Finalize bill" button for POSTED bills', async () => {
+    mockUseBill.mockReturnValue({
+      bill: { ...defaultBillData, status: BillStatus.POSTED },
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
+
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.queryByRole('button', { name: /finalize bill/i })).not.toBeInTheDocument();
+  });
+
+  it('should not show "Finalize bill" button for PAID bills', async () => {
+    mockUseBill.mockReturnValue({
+      bill: { ...defaultBillData, status: BillStatus.PAID, tenderedAmount: 1000 },
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: jest.fn(),
+    });
+
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    expect(screen.queryByRole('button', { name: /finalize bill/i })).not.toBeInTheDocument();
+  });
+
+  it('should open finalize confirmation modal when "Finalize bill" button is clicked', async () => {
+    const mockMutate = jest.fn();
+    const user = userEvent.setup();
+
+    mockUseBill.mockReturnValue({
+      bill: defaultBillData,
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: mockMutate,
+    });
+
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    await user.click(screen.getByRole('button', { name: /finalize bill/i }));
+
+    expect(mockShowModal).toHaveBeenCalledWith('finalize-bill-confirmation-modal', {
+      bill: defaultBillData,
+      onMutate: mockMutate,
+      closeModal: expect.any(Function),
+    });
+  });
+
+  it('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
+    const mockMutate = jest.fn();
+    const mockLaunchWorkspace2 = jest.mocked(launchWorkspace2);
+
+    mockUseBill.mockReturnValue({
+      bill: defaultBillData,
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: mockMutate,
+    });
+
+    const user = userEvent.setup();
+    render(<Invoice />);
+    await waitForLoadingToFinish();
+
+    const addItemsButton = screen.getByRole('button', { name: /add items to bill/i });
+    await user.click(addItemsButton);
+
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith('billing-form-workspace', {
+      patientUuid: 'patientUuid',
+      billUuid: 'test-uuid',
+      onMutate: mockMutate,
+    });
   });
 });
