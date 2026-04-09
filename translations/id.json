@@ -43,6 +43,7 @@
   "billFinalizedSuccess": "Bill has been finalized successfully",
   "billFinalizeFailed": "Failed to finalize bill",
   "billing": "Penagihan",
+  "billingDetails": "Billing details",
   "billingHistory": "Billing history",
   "billingSettings": "Billing settings",
   "billItem": "Item tagihan",

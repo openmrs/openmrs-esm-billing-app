@@ -43,6 +43,7 @@
   "billFinalizedSuccess": "Bill has been finalized successfully",
   "billFinalizeFailed": "Failed to finalize bill",
   "billing": "En cours de facturation",
+  "billingDetails": "Billing details",
   "billingHistory": "Historique des facturations",
   "billingSettings": "Paramétrage des facturations",
   "billItem": "Article de la facture",

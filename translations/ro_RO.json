@@ -43,6 +43,7 @@
   "billFinalizedSuccess": "Bill has been finalized successfully",
   "billFinalizeFailed": "Failed to finalize bill",
   "billing": "Facturare",
+  "billingDetails": "Billing details",
   "billingHistory": "Billing history",
   "billingSettings": "Billing settings",
   "billItem": "Element factura",

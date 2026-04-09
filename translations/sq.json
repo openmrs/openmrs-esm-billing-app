@@ -43,6 +43,7 @@
   "billFinalizedSuccess": "Bill has been finalized successfully",
   "billFinalizeFailed": "Failed to finalize bill",
   "billing": "Faturim",
+  "billingDetails": "Billing details",
   "billingHistory": "Faturim history",
   "billingSettings": "Faturim settings",
   "billItem": "Faturë element",
