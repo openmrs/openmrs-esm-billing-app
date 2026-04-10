@@ -57,7 +57,7 @@ test.describe('Billing Dashboard workflow', () => {
     let billUuid: string;
 
     await test.step('Given I have created and saved a bill', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
@@ -227,7 +227,7 @@ test.describe('Billing Dashboard workflow', () => {
     let billUuid: string;
 
     await test.step('Given a bill has been created for a patient (PENDING status)', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();

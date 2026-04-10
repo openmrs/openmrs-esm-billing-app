@@ -10,5 +10,5 @@ export const dashboardMeta: Omit<DashboardExtensionProps, 'basePath'> & {
   title: 'billingHistory',
   hideDashboardTitle: true,
   icon: 'omrs-icon-money',
-  path: 'Billing history',
+  path: 'billing-history',
 };
