@@ -43,7 +43,7 @@
   "billFinalizedSuccess": "Die Rechnung wurde erfolgreich abgeschlossen",
   "billFinalizeFailed": "Die Rechnung konnte nicht abgeschlossen werden",
   "billing": "Abrechnung",
-  "billingDetails": "Billing details",
+  "billingDetails": "Rechnungsdaten",
   "billingHistory": "Abrechnungshistorie",
   "billingSettings": "Abrechnungseinstellungen",
   "billItem": "Rechnungsposition",
