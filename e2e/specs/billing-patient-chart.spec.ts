@@ -51,7 +51,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     let billUuid: string;
 
     await test.step('When I navigate to the Billing history page', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
     });
 
     await test.step('And I launch the Create Bill form', async () => {
@@ -161,7 +161,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     let billUuid: string;
 
     await test.step('When I navigate to the patient billing history', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
     });
 
     await test.step('And I click the Launch bill form button', async () => {
@@ -217,7 +217,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     });
 
     await test.step('When I navigate to the patient billing history', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
     });
 
     await test.step('And I click the Launch bill form button', async () => {
@@ -249,7 +249,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     const patientUuid = patient.uuid;
 
     await test.step('When I navigate to the patient billing history', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
     });
 
     await test.step('And I click the Launch bill form button', async () => {
@@ -295,7 +295,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     let partialAmount: number;
 
     await test.step('Given I have created and saved a bill', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
@@ -417,7 +417,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     const expectedTotal = expectedServicePrice * quantity;
 
     await test.step('When I navigate to the Billing history page', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
     });
 
     await test.step('And I launch the Create Bill form', async () => {
@@ -552,7 +552,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     let paymentAmount2: number;
 
     await test.step('Given I have created a bill', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
@@ -663,7 +663,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     const expectedTotal = expectedServicePrice * quantity;
 
     await test.step('Given I create a bill with a service quantity of 2', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
@@ -773,7 +773,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     let billUuid: string;
 
     await test.step('Given I create and save a bill', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
@@ -830,7 +830,7 @@ test.describe('Billing: Patient Chart workflow', () => {
     let initialTotalAmount: number;
 
     await test.step('Given I have created a bill with a line item', async () => {
-      await page.goto(`patient/${patientUuid}/chart/Billing history`);
+      await page.goto(`patient/${patientUuid}/chart/billing-history`);
 
       const createBillButton = page.getByRole('button', { name: /launch bill form|add bill|create bill/i });
       await createBillButton.click();
