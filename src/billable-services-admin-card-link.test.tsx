@@ -1,9 +1,10 @@
 import React from 'react';
+import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 
 describe('BillableServicesCardLink', () => {
-  test('should render billable services admin link', () => {
+  it('should render billable services admin link', () => {
     renderBillableServicesCardLink();
     const manageBillableServicesText = screen.getByText('Manage billable services');
     expect(manageBillableServicesText).toHaveClass('heading');

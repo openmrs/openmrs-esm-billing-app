@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
 import { useConfig } from '@openmrs/esm-framework';
@@ -6,11 +7,11 @@ import { type BillingConfig } from '../config-schema';
 import { useBillableItems, useCashPoint, usePaymentMethods, useLastVisitInfo } from './billing-form.resource';
 import BillingCheckInForm from './billing-checkin-form.component';
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockUseCashPoint = jest.mocked(useCashPoint);
-const mockUseBillableItems = jest.mocked(useBillableItems);
-const mockUsePaymentMethods = jest.mocked(usePaymentMethods);
-const mockUseLastVisitInfo = jest.mocked(useLastVisitInfo);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockUseCashPoint = vi.mocked(useCashPoint);
+const mockUseBillableItems = vi.mocked(useBillableItems);
+const mockUsePaymentMethods = vi.mocked(usePaymentMethods);
+const mockUseLastVisitInfo = vi.mocked(useLastVisitInfo);
 
 const mockCashPoints = [
   {
@@ -85,19 +86,19 @@ const mockPaymentMethods = [
   },
 ];
 
-jest.mock('./billing-form.resource', () => ({
-  useBillableItems: jest.fn(),
-  useCashPoint: jest.fn(),
-  createPatientBill: jest.fn(),
-  usePaymentMethods: jest.fn(),
-  useLastVisitInfo: jest.fn(),
+vi.mock('./billing-form.resource', () => ({
+  useBillableItems: vi.fn(),
+  useCashPoint: vi.fn(),
+  createPatientBill: vi.fn(),
+  usePaymentMethods: vi.fn(),
+  useLastVisitInfo: vi.fn(),
 }));
 
-const testProps = { patientUuid: 'some-patient-uuid', setExtraVisitInfo: jest.fn() };
+const testProps = { patientUuid: 'some-patient-uuid', setExtraVisitInfo: vi.fn() };
 
 describe('BillingCheckInForm', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     mockUseConfig.mockReturnValue({
       patientCategory: {
         paymentDetails: 'fbc0702d-b4c9-4968-be63-af8ad3ad6239',
@@ -121,7 +122,7 @@ describe('BillingCheckInForm', () => {
     mockUseLastVisitInfo.mockReturnValue({ lastVisitInfo: null, isLoading: false, error: null });
   });
 
-  test('should show the loading spinner while retrieving data', () => {
+  it('should show the loading spinner while retrieving data', () => {
     mockUseBillableItems.mockReturnValueOnce({ lineItems: [], isLoading: true, error: null });
     mockUseCashPoint.mockReturnValueOnce({ cashPoints: [], isLoading: true, error: null });
     renderBillingCheckinForm();
@@ -129,7 +130,7 @@ describe('BillingCheckInForm', () => {
     expect(screen.getByText(/Loading billing services.../)).toBeInTheDocument();
   });
 
-  test('should show error state when an error occurs while fetching data', () => {
+  it('should show error state when an error occurs while fetching data', () => {
     const error = new Error('Internal server error');
     mockUseBillableItems.mockReturnValueOnce({ lineItems: [], isLoading: false, error });
     mockUseCashPoint.mockReturnValueOnce({ cashPoints: [], isLoading: false, error });
@@ -139,7 +140,7 @@ describe('BillingCheckInForm', () => {
     expect(screen.getByText(/error loading bill services/i)).toBeInTheDocument();
   });
 
-  test('should show the last visit banner when last visit info is available', () => {
+  it('should show the last visit banner when last visit info is available', () => {
     mockUseBillableItems.mockReturnValue({ lineItems: [], isLoading: false, error: null });
     mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
     mockUseLastVisitInfo.mockReturnValue({
@@ -153,7 +154,7 @@ describe('BillingCheckInForm', () => {
     expect(screen.getByText(/3 days ago/i)).toBeInTheDocument();
   });
 
-  test('should not show the last visit banner when there is no recent visit', () => {
+  it('should not show the last visit banner when there is no recent visit', () => {
     mockUseBillableItems.mockReturnValue({ lineItems: [], isLoading: false, error: null });
     mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
     mockUseLastVisitInfo.mockReturnValue({ lastVisitInfo: null, isLoading: false, error: null });
@@ -162,7 +163,7 @@ describe('BillingCheckInForm', () => {
     expect(screen.queryByText(/Last Visit Information/i)).not.toBeInTheDocument();
   });
 
-  test('should show billable service dropdown when a paying method is selected', async () => {
+  it('should show billable service dropdown when a paying method is selected', async () => {
     const user = userEvent.setup();
     mockUseCashPoint.mockReturnValue({ cashPoints: mockCashPoints, isLoading: false, error: null });
     mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
@@ -176,7 +177,7 @@ describe('BillingCheckInForm', () => {
     expect(screen.getByRole('combobox', { name: /billable service/i })).toBeInTheDocument();
   });
 
-  test('should hide billable service dropdown when switched to non-paying', async () => {
+  it('should hide billable service dropdown when switched to non-paying', async () => {
     const user = userEvent.setup();
     mockUseCashPoint.mockReturnValue({ cashPoints: mockCashPoints, isLoading: false, error: null });
     mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
@@ -186,7 +187,7 @@ describe('BillingCheckInForm', () => {
     expect(screen.queryByRole('combobox', { name: /billable service/i })).not.toBeInTheDocument();
   });
 
-  test('should render the form correctly and generate the required payload', async () => {
+  it('should render the form correctly and generate the required payload', async () => {
     const user = userEvent.setup();
     mockUseCashPoint.mockReturnValue({ cashPoints: mockCashPoints, isLoading: false, error: null });
     mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });

@@ -1,4 +1,5 @@
-import React, { act } from 'react';
+import React from 'react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import PrintReceipt from './print-receipt.component';
@@ -20,10 +21,10 @@ describe('PrintReceipt', () => {
     });
 
     mockLink = document.createElement('a');
-    jest.spyOn(mockLink, 'click').mockImplementation(() => {});
+    vi.spyOn(mockLink, 'click').mockImplementation(() => {});
 
     const originalCreateElement = document.createElement.bind(document);
-    jest.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+    vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
       if (tagName === 'a') {
         mockLink.href = '';
         mockLink.download = '';
@@ -31,13 +32,10 @@ describe('PrintReceipt', () => {
       }
       return originalCreateElement(tagName);
     });
-
-    jest.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-    jest.useRealTimers();
+    vi.restoreAllMocks();
     Object.defineProperty(window, 'location', {
       value: originalLocation,
       writable: true,
@@ -54,7 +52,7 @@ describe('PrintReceipt', () => {
   });
 
   it('shows loading state and disables button during download', async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
 
     const button = screen.getByRole('button', { name: /print receipt/i });
@@ -66,15 +64,11 @@ describe('PrintReceipt', () => {
   });
 
   it('initiates download when button is clicked', async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
 
     const button = screen.getByRole('button', { name: /print receipt/i });
     await user.click(button);
-
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
 
     await waitFor(() => {
       expect(mockLink.click).toHaveBeenCalled();
@@ -85,17 +79,13 @@ describe('PrintReceipt', () => {
   });
 
   it('re-enables button after download completes', async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
 
     const button = screen.getByRole('button', { name: /print receipt/i });
     await user.click(button);
 
     expect(button).toBeDisabled();
-
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
 
     await waitFor(() => {
       expect(button).toBeEnabled();
@@ -106,7 +96,7 @@ describe('PrintReceipt', () => {
   });
 
   it('prevents multiple simultaneous downloads', async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
 
     const button = screen.getByRole('button', { name: /print receipt/i });
@@ -116,10 +106,6 @@ describe('PrintReceipt', () => {
     await user.click(button);
 
     expect(button).toBeDisabled();
-
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
 
     await waitFor(() => {
       expect(button).toBeEnabled();
@@ -134,15 +120,11 @@ describe('PrintReceipt', () => {
   });
 
   it('handles empty bill UUID', async () => {
-    const user = userEvent.setup({ delay: null });
+    const user = userEvent.setup();
     render(<PrintReceipt billUuid="" />);
 
     const button = screen.getByRole('button', { name: /print receipt/i });
     await user.click(button);
-
-    act(() => {
-      jest.advanceTimersByTime(1000);
-    });
 
     await waitFor(() => {
       expect(mockLink.click).toHaveBeenCalled();

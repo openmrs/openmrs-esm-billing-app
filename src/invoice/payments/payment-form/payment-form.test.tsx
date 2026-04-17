@@ -1,4 +1,5 @@
 import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -6,11 +7,11 @@ import type { PaymentFormValue } from '../payments.component';
 import { usePaymentModes } from '../payment.resource';
 import PaymentForm from './payment-form.component';
 
-jest.mock('../payment.resource', () => ({
-  usePaymentModes: jest.fn(),
+vi.mock('../payment.resource', () => ({
+  usePaymentModes: vi.fn(),
 }));
 
-const mockUsePaymentModes = jest.mocked(usePaymentModes);
+const mockUsePaymentModes = vi.mocked(usePaymentModes);
 
 type WrapperProps = {
   children: React.ReactNode;
@@ -26,12 +27,12 @@ const Wrapper: React.FC<WrapperProps> = ({ children, defaultValues }) => {
 };
 
 describe('PaymentForm Component', () => {
-  test('should render skeleton while loading payment modes', () => {
+  it('should render skeleton while loading payment modes', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [],
       isLoading: true,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -45,12 +46,12 @@ describe('PaymentForm Component', () => {
     expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
   });
 
-  test('should render error message when payment modes fail to load', () => {
+  it('should render error message when payment modes fail to load', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [],
       isLoading: false,
       error: new Error('Failed to load payment modes'),
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -62,12 +63,12 @@ describe('PaymentForm Component', () => {
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
   });
 
-  test('should render payment form with method, amount and reference fields when not disabled', () => {
+  it('should render payment form with method, amount and reference fields when not disabled', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -81,12 +82,12 @@ describe('PaymentForm Component', () => {
     expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
   });
 
-  test('should not render form when disablePayment is true', () => {
+  it('should not render form when disablePayment is true', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -99,12 +100,12 @@ describe('PaymentForm Component', () => {
     expect(screen.queryByText(/add payment method/i)).not.toBeInTheDocument();
   });
 
-  test('should render amount input without leading zero', () => {
+  it('should render amount input without leading zero', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -117,13 +118,13 @@ describe('PaymentForm Component', () => {
     expect(amountInput.value).toBe('');
   });
 
-  test('should allow user to clear amount input without reverting to zero', async () => {
+  it('should allow user to clear amount input without reverting to zero', async () => {
     const user = userEvent.setup();
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -141,13 +142,13 @@ describe('PaymentForm Component', () => {
     expect(amountInput.value).toBe('');
   });
 
-  test('should handle amount input with decimal values', async () => {
+  it('should handle amount input with decimal values', async () => {
     const user = userEvent.setup();
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(
@@ -162,12 +163,12 @@ describe('PaymentForm Component', () => {
     expect(amountInput.value).toBe('10.5');
   });
 
-  test('should not auto-focus reference number input on mount', () => {
+  it('should not auto-focus reference number input on mount', () => {
     mockUsePaymentModes.mockReturnValue({
       paymentModes: [{ uuid: '1', name: 'Credit Card', description: 'Credit Card', retired: false }],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(

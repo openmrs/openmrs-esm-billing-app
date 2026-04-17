@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, showSnackbar, useConfig } from '@openmrs/esm-framework';
@@ -8,35 +9,35 @@ import { useBillableServices as useBillableServicesList } from '../billable-serv
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import BillingForm from './billing-form.workspace';
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockUseBillableServices = jest.mocked(useBillableServices);
-const mockUseBill = jest.mocked(useBill);
-const mockUseBillableServicesList = jest.mocked(useBillableServicesList);
-const mockProcessBillItems = jest.mocked(processBillItems);
-const mockUpdateBillItems = jest.mocked(updateBillItems);
-const mockGetBillableServiceUuid = jest.mocked(getBillableServiceUuid);
-const mockShowSnackbar = jest.mocked(showSnackbar);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockUseBillableServices = vi.mocked(useBillableServices);
+const mockUseBill = vi.mocked(useBill);
+const mockUseBillableServicesList = vi.mocked(useBillableServicesList);
+const mockProcessBillItems = vi.mocked(processBillItems);
+const mockUpdateBillItems = vi.mocked(updateBillItems);
+const mockGetBillableServiceUuid = vi.mocked(getBillableServiceUuid);
+const mockShowSnackbar = vi.mocked(showSnackbar);
 
-jest.mock('../billing.resource', () => ({
-  processBillItems: jest.fn().mockResolvedValue({}),
-  updateBillItems: jest.fn().mockResolvedValue({}),
-  useBill: jest.fn(),
-  useBillableServices: jest.fn(),
+vi.mock('../billing.resource', () => ({
+  processBillItems: vi.fn().mockResolvedValue({}),
+  updateBillItems: vi.fn().mockResolvedValue({}),
+  useBill: vi.fn(),
+  useBillableServices: vi.fn(),
 }));
 
-jest.mock('../billable-services/billable-service.resource', () => ({
-  useBillableServices: jest.fn(),
+vi.mock('../billable-services/billable-service.resource', () => ({
+  useBillableServices: vi.fn(),
 }));
 
-jest.mock('../invoice/payments/utils', () => ({
-  getBillableServiceUuid: jest.fn(),
+vi.mock('../invoice/payments/utils', () => ({
+  getBillableServiceUuid: vi.fn(),
 }));
 
-jest.mock('../helpers/functions', () => ({
-  calculateTotalAmount: jest.fn((items) =>
+vi.mock('../helpers/functions', () => ({
+  calculateTotalAmount: vi.fn((items) =>
     Array.isArray(items) ? items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0,
   ),
-  convertToCurrency: jest.fn((amount) => `KES ${amount}`),
+  convertToCurrency: vi.fn((amount) => `KES ${amount}`),
 }));
 
 window.i18next = {
@@ -97,8 +98,8 @@ const mockExistingBill = {
   id: 1,
 };
 
-const closeWorkspace = jest.fn();
-const onMutate = jest.fn();
+const closeWorkspace = vi.fn();
+const onMutate = vi.fn();
 
 const defaultCreateProps = {
   workspaceProps: { patientUuid: 'patient-uuid', onMutate },
@@ -112,7 +113,7 @@ const editModeProps = {
 
 describe('BillingForm', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     mockUseConfig.mockReturnValue({
       ...getDefaultsFromConfigSchema(configSchema),
       defaultCurrency: 'KES',
@@ -127,14 +128,14 @@ describe('BillingForm', () => {
       error: null,
       isLoading: false,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     mockUseBillableServicesList.mockReturnValue({
       billableServices: [{ uuid: 'bs-uuid-1', name: 'Hemoglobin' }],
       isLoading: false,
       isValidating: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     } as any);
     mockGetBillableServiceUuid.mockReturnValue('bs-uuid-1');
   });
@@ -200,7 +201,7 @@ describe('BillingForm', () => {
         error: null,
         isLoading: false,
         isValidating: false,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       });
     });
 
@@ -227,7 +228,7 @@ describe('BillingForm', () => {
         error: null,
         isLoading: true,
         isValidating: false,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       });
       render(<BillingForm {...editModeProps} />);
       expect(screen.getByText(/loading\.\.\./i)).toBeInTheDocument();
@@ -239,7 +240,7 @@ describe('BillingForm', () => {
         error: new Error('Failed to load'),
         isLoading: false,
         isValidating: false,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       });
       render(<BillingForm {...editModeProps} />);
       expect(screen.getByText(/error loading bill/i)).toBeInTheDocument();
@@ -411,7 +412,7 @@ describe('BillingForm', () => {
         error: null,
         isLoading: false,
         isValidating: false,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       });
       const user = userEvent.setup();
       render(<BillingForm {...editModeProps} />);
@@ -430,7 +431,7 @@ describe('BillingForm', () => {
         error: null,
         isLoading: false,
         isValidating: false,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       });
       const user = userEvent.setup();
       render(<BillingForm {...defaultCreateProps} />);
@@ -460,7 +461,7 @@ describe('BillingForm', () => {
         error: null,
         isLoading: false,
         isValidating: false,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       });
 
       const user = userEvent.setup();
@@ -484,7 +485,7 @@ describe('BillingForm', () => {
         isLoading: true,
         isValidating: false,
         error: null,
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       } as any);
 
       render(<BillingForm {...editModeProps} />);
@@ -498,7 +499,7 @@ describe('BillingForm', () => {
         isLoading: false,
         isValidating: false,
         error: new Error('Failed to load services'),
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       } as any);
 
       render(<BillingForm {...editModeProps} />);
@@ -511,7 +512,7 @@ describe('BillingForm', () => {
         isLoading: false,
         isValidating: false,
         error: new Error('Failed to load services'),
-        mutate: jest.fn(),
+        mutate: vi.fn(),
       } as any);
 
       // The error notification replaces the form content, so we can't select items.

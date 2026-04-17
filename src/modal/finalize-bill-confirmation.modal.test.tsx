@@ -1,4 +1,5 @@
 import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { showSnackbar } from '@openmrs/esm-framework';
@@ -7,11 +8,11 @@ import FinalizeBillModal from './finalize-bill-confirmation.modal';
 import type { MappedBill } from '../types';
 import { BillStatus } from '../types';
 
-const mockFinalizeBill = jest.mocked(finalizeBill);
-const mockShowSnackbar = jest.mocked(showSnackbar);
+const mockFinalizeBill = vi.mocked(finalizeBill);
+const mockShowSnackbar = vi.mocked(showSnackbar);
 
-jest.mock('../billing.resource', () => ({
-  finalizeBill: jest.fn(),
+vi.mock('../billing.resource', () => ({
+  finalizeBill: vi.fn(),
 }));
 
 const mockBill: MappedBill = {
@@ -44,8 +45,8 @@ const mockBill: MappedBill = {
 };
 
 describe('FinalizeBillModal', () => {
-  const mockCloseModal = jest.fn();
-  const mockMutate = jest.fn();
+  const mockCloseModal = vi.fn();
+  const mockMutate = vi.fn();
 
   it('renders the confirmation modal with correct content', () => {
     render(<FinalizeBillModal closeModal={mockCloseModal} bill={mockBill} onMutate={mockMutate} />);

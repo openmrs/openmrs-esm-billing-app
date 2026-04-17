@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, showModal, useConfig } from '@openmrs/esm-framework';
@@ -6,15 +7,15 @@ import { type MappedBill } from '../types';
 import { configSchema, type BillingConfig } from '../config-schema';
 import InvoiceTable from './invoice-table.component';
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockShowModal = jest.mocked(showModal);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockShowModal = vi.mocked(showModal);
 
-jest.mock('../helpers', () => ({
-  convertToCurrency: jest.fn((price) => `USD ${price}`),
+vi.mock('../helpers', () => ({
+  convertToCurrency: vi.fn((price) => `USD ${price}`),
 }));
 
 describe('InvoiceTable', () => {
-  const mockOnMutate = jest.fn();
+  const mockOnMutate = vi.fn();
 
   const defaultBill: MappedBill = {
     uuid: 'bill-uuid',

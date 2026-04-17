@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, getDefaultsFromConfigSchema, showSnackbar, useConfig } from '@openmrs/esm-framework';
@@ -7,9 +8,9 @@ import { type MappedBill } from '../types';
 import { updateBillItems } from '../billing.resource';
 import EditBillLineItemModal from './edit-bill-item.modal';
 
-const mockUpdateBillItems = jest.mocked(updateBillItems);
-const mockShowSnackbar = jest.mocked(showSnackbar);
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
+const mockUpdateBillItems = vi.mocked(updateBillItems);
+const mockShowSnackbar = vi.mocked(showSnackbar);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
 
 const mockBillableServices = [
   { name: 'X-Ray Service', uuid: 'xray-uuid-123' },
@@ -17,12 +18,12 @@ const mockBillableServices = [
   { name: 'Consultation Service', uuid: 'consult-uuid-789' },
 ];
 
-jest.mock('../billing.resource', () => ({
-  updateBillItems: jest.fn().mockResolvedValue({}),
+vi.mock('../billing.resource', () => ({
+  updateBillItems: vi.fn().mockResolvedValue({}),
 }));
 
-jest.mock('../billable-services/billable-service.resource', () => ({
-  useBillableServices: jest.fn(() => ({
+vi.mock('../billable-services/billable-service.resource', () => ({
+  useBillableServices: vi.fn(() => ({
     billableServices: mockBillableServices,
   })),
 }));
@@ -89,10 +90,10 @@ describe('EditBillItem', () => {
     });
   });
 
-  const mockCloseModal = jest.fn();
-  const mockOnMutate = jest.fn();
+  const mockCloseModal = vi.fn();
+  const mockOnMutate = vi.fn();
 
-  test('renders the form with correct fields and default values', () => {
+  it('renders the form with correct fields and default values', () => {
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
     );
@@ -106,7 +107,7 @@ describe('EditBillItem', () => {
     expect(screen.getByText(/total/i)).toHaveTextContent(/200/);
   });
 
-  test('updates total when quantity is changed', async () => {
+  it('updates total when quantity is changed', async () => {
     const user = userEvent.setup();
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
@@ -119,7 +120,7 @@ describe('EditBillItem', () => {
     expect(screen.getByText(/total/i)).toHaveTextContent(/300/);
   });
 
-  test('submits the form and shows a success notification', async () => {
+  it('submits the form and shows a success notification', async () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
 
@@ -141,7 +142,7 @@ describe('EditBillItem', () => {
     });
   });
 
-  test('shows error notification when submission fails', async () => {
+  it('shows error notification when submission fails', async () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockRejectedValueOnce({ message: 'Error occurred' });
 
@@ -160,7 +161,7 @@ describe('EditBillItem', () => {
     });
   });
 
-  test('preserves billable service UUIDs for other line items when editing', async () => {
+  it('preserves billable service UUIDs for other line items when editing', async () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
 
@@ -249,7 +250,7 @@ describe('EditBillItem', () => {
     });
   });
 
-  test('shows validation error for quantity less than 1', async () => {
+  it('shows validation error for quantity less than 1', async () => {
     const user = userEvent.setup();
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
@@ -271,7 +272,7 @@ describe('EditBillItem', () => {
     expect(mockUpdateBillItems).not.toHaveBeenCalled();
   });
 
-  test('shows validation error for quantity greater than 100', async () => {
+  it('shows validation error for quantity greater than 100', async () => {
     const user = userEvent.setup();
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
@@ -289,7 +290,7 @@ describe('EditBillItem', () => {
     expect(mockUpdateBillItems).not.toHaveBeenCalled();
   });
 
-  test('shows validation error for non-integer quantity', async () => {
+  it('shows validation error for non-integer quantity', async () => {
     const user = userEvent.setup();
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
@@ -307,7 +308,7 @@ describe('EditBillItem', () => {
     expect(mockUpdateBillItems).not.toHaveBeenCalled();
   });
 
-  test('clears validation error when valid quantity is entered', async () => {
+  it('clears validation error when valid quantity is entered', async () => {
     const user = userEvent.setup();
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,
@@ -334,7 +335,7 @@ describe('EditBillItem', () => {
     });
   });
 
-  test('allows updating the quantity of a zero-price (free) service while keeping price at zero', async () => {
+  it('allows updating the quantity of a zero-price (free) service while keeping price at zero', async () => {
     const user = userEvent.setup();
     mockUpdateBillItems.mockResolvedValueOnce({} as FetchResponse<any>);
 
@@ -374,7 +375,7 @@ describe('EditBillItem', () => {
     });
   });
 
-  test('shows validation error when quantity field is left empty', async () => {
+  it('shows validation error when quantity field is left empty', async () => {
     const user = userEvent.setup();
     render(
       <EditBillLineItemModal bill={mockBill} item={mockItem} closeModal={mockCloseModal} onMutate={mockOnMutate} />,

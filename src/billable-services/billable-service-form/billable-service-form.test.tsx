@@ -1,4 +1,5 @@
 import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { type Workspace2DefinitionProps, type FetchResponse } from '@openmrs/esm-framework';
@@ -18,20 +19,20 @@ import BillableServiceFormWorkspace, {
 } from './billable-service-form.workspace';
 import type { BillableService } from '../../types';
 
-const mockUseBillableServices = jest.mocked(useBillableServices);
-const mockUsePaymentModes = jest.mocked(usePaymentModes);
-const mockUseServiceTypes = jest.mocked(useServiceTypes);
-const mockCreateBillableService = jest.mocked(createBillableService);
-const mockUpdateBillableService = jest.mocked(updateBillableService);
-const mockUseConceptsSearch = jest.mocked(useConceptsSearch);
+const mockUseBillableServices = vi.mocked(useBillableServices);
+const mockUsePaymentModes = vi.mocked(usePaymentModes);
+const mockUseServiceTypes = vi.mocked(useServiceTypes);
+const mockCreateBillableService = vi.mocked(createBillableService);
+const mockUpdateBillableService = vi.mocked(updateBillableService);
+const mockUseConceptsSearch = vi.mocked(useConceptsSearch);
 
-jest.mock('../billable-service.resource', () => ({
-  useBillableServices: jest.fn(),
-  usePaymentModes: jest.fn(),
-  useServiceTypes: jest.fn(),
-  createBillableService: jest.fn(),
-  updateBillableService: jest.fn(),
-  useConceptsSearch: jest.fn(),
+vi.mock('../billable-service.resource', () => ({
+  useBillableServices: vi.fn(),
+  usePaymentModes: vi.fn(),
+  useServiceTypes: vi.fn(),
+  createBillableService: vi.fn(),
+  updateBillableService: vi.fn(),
+  useConceptsSearch: vi.fn(),
 }));
 
 const mockPaymentModes = [
@@ -66,14 +67,14 @@ const setupMocks = () => {
     billableServices: [],
     isLoading: false,
     error: null,
-    mutate: jest.fn(),
+    mutate: vi.fn(),
     isValidating: false,
   });
   mockUsePaymentModes.mockReturnValue({
     paymentModes: mockPaymentModes,
     error: null,
     isLoadingPaymentModes: false,
-    mutate: jest.fn(),
+    mutate: vi.fn(),
   });
   mockUseServiceTypes.mockReturnValue({ serviceTypes: mockServiceTypes, error: false, isLoadingServiceTypes: false });
   mockUseConceptsSearch.mockReturnValue({ searchResults: [], isSearching: false, error: null });
@@ -82,7 +83,7 @@ const setupMocks = () => {
 const renderBillableServicesForm = (
   props: Partial<Workspace2DefinitionProps<Partial<BillableServiceFormWorkspaceProps>>> = {},
 ) => {
-  const closeWorkspace = props.closeWorkspace || jest.fn();
+  const closeWorkspace = props.closeWorkspace || vi.fn();
   const workspaceProps: BillableServiceFormWorkspaceProps = {
     serviceToEdit: props.workspaceProps?.serviceToEdit,
     closeWorkspaceWithSavedChanges: props.workspaceProps?.closeWorkspaceWithSavedChanges,
@@ -98,7 +99,7 @@ const renderBillableServicesForm = (
     groupProps: props.groupProps || {},
     windowProps: props.windowProps || {},
     workspaceName: props.workspaceName || 'billable-service-form-workspace',
-    launchChildWorkspace: jest.fn(),
+    launchChildWorkspace: vi.fn(),
     windowName: 'billable-service-form-window',
     isRootWorkspace: false,
     showActionMenu: true,
@@ -142,9 +143,9 @@ const submitForm = async () => {
 };
 
 describe('BillableServiceFormWorkspace', () => {
-  test('should render billable services form and generate correct payload', async () => {
+  it('should render billable services form and generate correct payload', async () => {
     const user = userEvent.setup();
-    const mockCloseWorkspace = jest.fn();
+    const mockCloseWorkspace = vi.fn();
     renderBillableServicesForm({ closeWorkspace: mockCloseWorkspace });
 
     await fillRequiredFields(user);
@@ -170,9 +171,9 @@ describe('BillableServiceFormWorkspace', () => {
   });
 
   describe('Workspace Interactions', () => {
-    test('should call closeWorkspace when Cancel button is clicked', async () => {
+    it('should call closeWorkspace when Cancel button is clicked', async () => {
       const user = userEvent.setup();
-      const mockCloseWorkspace = jest.fn();
+      const mockCloseWorkspace = vi.fn();
       renderBillableServicesForm({ closeWorkspace: mockCloseWorkspace });
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i });
@@ -181,9 +182,9 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCloseWorkspace).toHaveBeenCalledTimes(1);
     });
 
-    test('should call closeWorkspaceWithSavedChanges after successful save', async () => {
+    it('should call closeWorkspaceWithSavedChanges after successful save', async () => {
       const user = userEvent.setup();
-      const mockCloseWorkspaceWithSavedChanges = jest.fn();
+      const mockCloseWorkspaceWithSavedChanges = vi.fn();
       renderBillableServicesForm({
         workspaceProps: { closeWorkspaceWithSavedChanges: mockCloseWorkspaceWithSavedChanges },
       });
@@ -197,7 +198,7 @@ describe('BillableServiceFormWorkspace', () => {
       });
     });
 
-    test('should disable buttons during submission', async () => {
+    it('should disable buttons during submission', async () => {
       const user = userEvent.setup();
       let resolveCreate: (value: any) => void;
       const createPromise = new Promise((resolve) => {
@@ -224,7 +225,7 @@ describe('BillableServiceFormWorkspace', () => {
       });
     });
 
-    test('should show loading indicator in save button during submission', async () => {
+    it('should show loading indicator in save button during submission', async () => {
       const user = userEvent.setup();
       let resolveCreate: (value: any) => void;
       const createPromise = new Promise((resolve) => {
@@ -249,8 +250,8 @@ describe('BillableServiceFormWorkspace', () => {
       });
     });
 
-    test('should call onWorkspaceClose callback after successful edit', async () => {
-      const mockOnWorkspaceClose = jest.fn();
+    it('should call onWorkspaceClose callback after successful edit', async () => {
+      const mockOnWorkspaceClose = vi.fn();
       const mockServiceToEdit: BillableService = {
         uuid: 'test-uuid',
         name: 'Test Service',
@@ -289,7 +290,7 @@ describe('BillableServiceFormWorkspace', () => {
   });
 
   describe('Form Validation', () => {
-    test('should accept form submission without short name (short name is optional)', async () => {
+    it('should accept form submission without short name (short name is optional)', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -317,7 +318,7 @@ describe('BillableServiceFormWorkspace', () => {
       );
     });
 
-    test('should trim leading and trailing whitespace from service name and short name', async () => {
+    it('should trim leading and trailing whitespace from service name and short name', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -347,7 +348,7 @@ describe('BillableServiceFormWorkspace', () => {
       );
     });
 
-    test('should enforce 255 character limit on service name input', async () => {
+    it('should enforce 255 character limit on service name input', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -359,7 +360,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(input).toHaveValue('A'.repeat(255));
     });
 
-    test('should enforce 255 character limit on short name input', async () => {
+    it('should enforce 255 character limit on short name input', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -371,7 +372,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(input).toHaveValue('B'.repeat(255));
     });
 
-    test('should show "Price must be greater than 0" error for zero price', async () => {
+    it('should show "Price must be greater than 0" error for zero price', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -386,7 +387,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should show "Price must be greater than 0" error for negative price', async () => {
+    it('should show "Price must be greater than 0" error for negative price', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -401,7 +402,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should show "Service name is required" error when service name is empty', async () => {
+    it('should show "Service name is required" error when service name is empty', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -423,7 +424,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should accept valid decimal price values', async () => {
+    it('should accept valid decimal price values', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -455,7 +456,7 @@ describe('BillableServiceFormWorkspace', () => {
       });
     });
 
-    test('should show "Service type is required" error when not selected', async () => {
+    it('should show "Service type is required" error when not selected', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -474,7 +475,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should show "Payment mode is required" error when not selected', async () => {
+    it('should show "Payment mode is required" error when not selected', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -493,7 +494,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should show "Price is required" error when price field is empty', async () => {
+    it('should show "Price is required" error when price field is empty', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -530,16 +531,16 @@ describe('BillableServiceFormWorkspace', () => {
       ],
     };
 
-    test('should populate form with existing service data', () => {
+    it('should populate form with existing service data', () => {
       renderBillableServicesForm({ workspaceProps: { serviceToEdit: mockServiceToEdit } });
 
       expect(screen.getByText('X-Ray Service')).toBeInTheDocument(); // Service name shown as label
       expect(screen.getByDisplayValue('XRay')).toBeInTheDocument(); // Short name
     });
 
-    test('should call updateBillableService instead of createBillableService', async () => {
+    it('should call updateBillableService instead of createBillableService', async () => {
       const user = userEvent.setup();
-      const mockCloseWorkspace = jest.fn();
+      const mockCloseWorkspace = vi.fn();
       renderBillableServicesForm({
         closeWorkspace: mockCloseWorkspace,
         workspaceProps: { serviceToEdit: mockServiceToEdit },
@@ -571,9 +572,9 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should trim whitespace from short name when updating service', async () => {
+    it('should trim whitespace from short name when updating service', async () => {
       const user = userEvent.setup();
-      const mockCloseWorkspace = jest.fn();
+      const mockCloseWorkspace = vi.fn();
       renderBillableServicesForm({
         closeWorkspace: mockCloseWorkspace,
         workspaceProps: { serviceToEdit: mockServiceToEdit },
@@ -596,8 +597,8 @@ describe('BillableServiceFormWorkspace', () => {
       );
     });
 
-    test('should call onWorkspaceClose callback after successful edit', async () => {
-      const mockOnWorkspaceClose = jest.fn();
+    it('should call onWorkspaceClose callback after successful edit', async () => {
+      const mockOnWorkspaceClose = vi.fn();
       renderBillableServicesForm({
         workspaceProps: { serviceToEdit: mockServiceToEdit, onWorkspaceClose: mockOnWorkspaceClose },
       });
@@ -609,7 +610,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockOnWorkspaceClose).toHaveBeenCalledTimes(1);
     });
 
-    test('should not allow editing service name in edit mode', () => {
+    it('should not allow editing service name in edit mode', () => {
       renderBillableServicesForm({ workspaceProps: { serviceToEdit: mockServiceToEdit } });
 
       // Service name should be displayed as a label, not an editable input
@@ -617,7 +618,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(screen.queryByRole('textbox', { name: /Service name/i })).not.toBeInTheDocument();
     });
 
-    test('should handle asynchronous loading of dependencies and populate form correctly', async () => {
+    it('should handle asynchronous loading of dependencies and populate form correctly', async () => {
       // Scenario: User opens edit form, but payment modes/service types haven't loaded yet
       // The form should wait for dependencies to load, then populate correctly
 
@@ -635,7 +636,7 @@ describe('BillableServiceFormWorkspace', () => {
   });
 
   describe('Dynamic Payment Options', () => {
-    test('should add new payment option when clicking "Add payment option" button', async () => {
+    it('should add new payment option when clicking "Add payment option" button', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -646,7 +647,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(paymentModeDropdowns).toHaveLength(2);
     });
 
-    test('should be able to add multiple payment options', async () => {
+    it('should be able to add multiple payment options', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -658,7 +659,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(paymentModeDropdowns).toHaveLength(2);
     });
 
-    test('should allow adding multiple payment options with different payment modes', async () => {
+    it('should allow adding multiple payment options with different payment modes', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -706,7 +707,7 @@ describe('BillableServiceFormWorkspace', () => {
       );
     });
 
-    test('should validate each payment option independently', async () => {
+    it('should validate each payment option independently', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -740,7 +741,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
-    test('should allow selecting different payment modes in multiple fields', async () => {
+    it('should allow selecting different payment modes in multiple fields', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -801,7 +802,7 @@ describe('BillableServiceFormWorkspace', () => {
   });
 
   describe('Error Handling', () => {
-    test('should display error snackbar when create API call fails', async () => {
+    it('should display error snackbar when create API call fails', async () => {
       const user = userEvent.setup();
       renderBillableServicesForm();
 
@@ -818,7 +819,7 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).toHaveBeenCalledTimes(1);
     });
 
-    test('should display error snackbar when update API call fails', async () => {
+    it('should display error snackbar when update API call fails', async () => {
       const mockServiceToEdit: BillableService = {
         uuid: 'service-uuid',
         name: 'Test Service',
@@ -859,7 +860,7 @@ describe('BillableServiceFormWorkspace', () => {
 
 describe('Helper Functions', () => {
   describe('transformServiceToFormData', () => {
-    test('should return default form data when no service is provided', () => {
+    it('should return default form data when no service is provided', () => {
       const result = transformServiceToFormData();
 
       expect(result).toEqual({
@@ -871,7 +872,7 @@ describe('Helper Functions', () => {
       });
     });
 
-    test('should return default form data when undefined service is provided', () => {
+    it('should return default form data when undefined service is provided', () => {
       const result = transformServiceToFormData(undefined);
 
       expect(result).toEqual({
@@ -883,7 +884,7 @@ describe('Helper Functions', () => {
       });
     });
 
-    test('should transform a complete service to form data', () => {
+    it('should transform a complete service to form data', () => {
       const service: BillableService = {
         uuid: 'service-uuid',
         name: 'X-Ray',
@@ -949,7 +950,7 @@ describe('Helper Functions', () => {
       });
     });
 
-    test('should handle service without concept', () => {
+    it('should handle service without concept', () => {
       const service: BillableService = {
         uuid: 'service-uuid',
         name: 'Basic Service',
@@ -978,7 +979,7 @@ describe('Helper Functions', () => {
       expect(result.concept).toBeNull();
     });
 
-    test('should handle service with missing or empty price using nullish coalescing', () => {
+    it('should handle service with missing or empty price using nullish coalescing', () => {
       const service: BillableService = {
         uuid: 'service-uuid',
         name: 'Test Service',
@@ -1010,32 +1011,32 @@ describe('Helper Functions', () => {
   });
 
   describe('normalizePrice', () => {
-    test('should return number as-is', () => {
+    it('should return number as-is', () => {
       expect(normalizePrice(100)).toBe(100);
       expect(normalizePrice(10.5)).toBe(10.5);
       expect(normalizePrice(0)).toBe(0);
     });
 
-    test('should convert string to number', () => {
+    it('should convert string to number', () => {
       expect(normalizePrice('100')).toBe(100);
       expect(normalizePrice('10.5')).toBe(10.5);
       expect(normalizePrice('0')).toBe(0);
     });
 
-    test('should handle decimal strings correctly', () => {
+    it('should handle decimal strings correctly', () => {
       expect(normalizePrice('10.99')).toBe(10.99);
       expect(normalizePrice('0.50')).toBe(0.5);
     });
 
-    test('should handle undefined by converting to NaN', () => {
+    it('should handle undefined by converting to NaN', () => {
       expect(normalizePrice(undefined)).toBeNaN();
     });
 
-    test('should handle empty string by converting to NaN', () => {
+    it('should handle empty string by converting to NaN', () => {
       expect(normalizePrice('')).toBeNaN();
     });
 
-    test('should handle invalid string by converting to NaN', () => {
+    it('should handle invalid string by converting to NaN', () => {
       expect(normalizePrice('invalid')).toBeNaN();
     });
   });
@@ -1047,14 +1048,14 @@ describe('Helper Functions', () => {
       { uuid: 'mpesa-uuid', name: 'MPESA' },
     ];
 
-    test('should return all payment modes when no modes are selected', () => {
+    it('should return all payment modes when no modes are selected', () => {
       const fields = [{ paymentMode: '', price: '' }];
       const result = getAvailablePaymentModes(allPaymentModes, fields, 0, '');
 
       expect(result).toEqual(allPaymentModes);
     });
 
-    test('should exclude already-selected payment modes from other fields', () => {
+    it('should exclude already-selected payment modes from other fields', () => {
       const fields = [
         { paymentMode: 'cash-uuid', price: '100' },
         { paymentMode: '', price: '' },
@@ -1068,7 +1069,7 @@ describe('Helper Functions', () => {
       expect(result).not.toContainEqual({ uuid: 'cash-uuid', name: 'Cash' });
     });
 
-    test('should keep current field selection visible even if selected elsewhere', () => {
+    it('should keep current field selection visible even if selected elsewhere', () => {
       const fields = [
         { paymentMode: 'cash-uuid', price: '100' },
         { paymentMode: 'insurance-uuid', price: '80' },
@@ -1081,7 +1082,7 @@ describe('Helper Functions', () => {
       expect(result).toContainEqual({ uuid: 'mpesa-uuid', name: 'MPESA' });
     });
 
-    test('should filter multiple selected payment modes', () => {
+    it('should filter multiple selected payment modes', () => {
       const fields = [
         { paymentMode: 'cash-uuid', price: '100' },
         { paymentMode: 'insurance-uuid', price: '80' },
@@ -1092,7 +1093,7 @@ describe('Helper Functions', () => {
       expect(result).toEqual([{ uuid: 'mpesa-uuid', name: 'MPESA' }]);
     });
 
-    test('should handle empty payment mode values correctly', () => {
+    it('should handle empty payment mode values correctly', () => {
       const fields = [
         { paymentMode: '', price: '' },
         { paymentMode: 'cash-uuid', price: '100' },
@@ -1107,7 +1108,7 @@ describe('Helper Functions', () => {
       ]);
     });
 
-    test('should work with generic types having uuid property', () => {
+    it('should work with generic types having uuid property', () => {
       const customModes = [
         { uuid: 'a', customProp: 'value1' },
         { uuid: 'b', customProp: 'value2' },
@@ -1122,7 +1123,7 @@ describe('Helper Functions', () => {
       expect(result).toEqual([{ uuid: 'b', customProp: 'value2' }]);
     });
 
-    test('should return all modes when only current field has a selection', () => {
+    it('should return all modes when only current field has a selection', () => {
       const fields = [{ paymentMode: 'cash-uuid', price: '100' }];
       const result = getAvailablePaymentModes(allPaymentModes, fields, 0, 'cash-uuid');
 
