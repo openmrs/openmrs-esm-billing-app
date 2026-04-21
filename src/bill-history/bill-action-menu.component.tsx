@@ -1,8 +1,8 @@
 import React from 'react';
 import { Layer, OverflowMenu, OverflowMenuItem } from '@carbon/react';
-import { isDesktop, launchWorkspace2, useLayoutType } from '@openmrs/esm-framework';
+import { isDesktop, launchWorkspace2, showModal, useLayoutType } from '@openmrs/esm-framework';
 import { useTranslation } from 'react-i18next';
-import type { MappedBill } from '../types';
+import { BillStatus, type MappedBill } from '../types';
 import styles from './bill-action-menu.scss';
 
 type BillActionMenuProps = {
@@ -14,6 +14,15 @@ type BillActionMenuProps = {
 const BillActionMenu: React.FC<BillActionMenuProps> = ({ bill, patientUuid, onMutate }) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
+  const isPending = bill?.status === BillStatus.PENDING;
+
+  const handleDeleteBill = () => {
+    const dispose = showModal('delete-bill-confirmation-modal', {
+      bill,
+      onSuccess: onMutate,
+      closeModal: () => dispose(),
+    });
+  };
 
   return (
     <Layer>
@@ -33,6 +42,15 @@ const BillActionMenu: React.FC<BillActionMenuProps> = ({ bill, patientUuid, onMu
             })
           }
         />
+        {isPending && (
+          <OverflowMenuItem
+            className={styles.menuItem}
+            hasDivider
+            isDelete
+            itemText={t('deleteBill', 'Delete bill')}
+            onClick={handleDeleteBill}
+          />
+        )}
       </OverflowMenu>
     </Layer>
   );
