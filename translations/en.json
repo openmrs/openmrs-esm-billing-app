@@ -39,7 +39,7 @@
   "billDate": "Bill date",
   "billDeleted": "Bill deleted",
   "billDeleteFailed": "Failed to delete bill",
-  "billDeleteSuccess": "Bill has been deleted successfully",
+  "billDeleteSuccess": "Bill deleted successfully",
   "billedItems": "Billed items",
   "billErrorService": "Billing service error",
   "billFinalized": "Bill finalized",

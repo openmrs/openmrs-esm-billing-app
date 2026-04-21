@@ -67,7 +67,7 @@ const Invoice: React.FC = () => {
   const handleDeleteBill = () => {
     const dispose = showModal('delete-bill-confirmation-modal', {
       bill,
-      onDelete: () => navigate({ to: window.getOpenmrsSpaBase() + 'home/billing' }),
+      onSuccess: () => navigate({ to: window.getOpenmrsSpaBase() + 'home/billing' }),
       closeModal: () => dispose(),
     });
   };

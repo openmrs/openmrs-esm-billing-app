@@ -19,7 +19,7 @@ const BillActionMenu: React.FC<BillActionMenuProps> = ({ bill, patientUuid, onMu
   const handleDeleteBill = () => {
     const dispose = showModal('delete-bill-confirmation-modal', {
       bill,
-      onMutate,
+      onSuccess: onMutate,
       closeModal: () => dispose(),
     });
   };

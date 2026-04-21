@@ -9,11 +9,10 @@ import styles from './delete-line-item-confirmation.scss';
 interface DeleteBillModalParams {
   closeModal: () => void;
   bill: MappedBill;
-  onMutate?: () => void;
-  onDelete?: () => void;
+  onSuccess?: () => void;
 }
 
-const DeleteBillModal: React.FC<DeleteBillModalParams> = ({ closeModal, bill, onMutate, onDelete }) => {
+const DeleteBillModal: React.FC<DeleteBillModalParams> = ({ closeModal, bill, onSuccess }) => {
   const { t } = useTranslation();
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteReason, setDeleteReason] = useState('');
@@ -30,12 +29,11 @@ const DeleteBillModal: React.FC<DeleteBillModalParams> = ({ closeModal, bill, on
 
       showSnackbar({
         title: t('billDeleted', 'Bill deleted'),
-        subtitle: t('billDeleteSuccess', 'Bill has been deleted successfully'),
+        subtitle: t('billDeleteSuccess', 'Bill deleted successfully'),
         kind: 'success',
       });
 
-      onMutate?.();
-      onDelete?.();
+      onSuccess?.();
       closeModal();
     } catch (err: any) {
       const message =
