@@ -9,6 +9,7 @@ import {
   ExtensionSlot,
   formatDate,
   launchWorkspace2,
+  navigate,
   parseDate,
   showModal,
   showSnackbar,
@@ -59,6 +60,14 @@ const Invoice: React.FC = () => {
     const dispose = showModal('finalize-bill-confirmation-modal', {
       bill,
       onMutate: mutate,
+      closeModal: () => dispose(),
+    });
+  };
+
+  const handleDeleteBill = () => {
+    const dispose = showModal('delete-bill-confirmation-modal', {
+      bill,
+      onDelete: () => navigate({ to: window.getOpenmrsSpaBase() + 'home/billing' }),
       closeModal: () => dispose(),
     });
   };
@@ -142,6 +151,9 @@ const Invoice: React.FC = () => {
                 })
               }>
               {t('addItemsToBill', 'Add items to bill')}
+            </Button>
+            <Button kind="danger--ghost" onClick={handleDeleteBill}>
+              {t('deleteBill', 'Delete bill')}
             </Button>
             <Button kind="primary" onClick={handleFinalizeBill}>
               {t('finalizeBill', 'Finalize bill')}
