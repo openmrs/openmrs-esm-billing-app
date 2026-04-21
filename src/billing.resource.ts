@@ -212,3 +212,11 @@ export const deleteBillItem = (itemUuid: string, voidReason: string) => {
     method: 'DELETE',
   });
 };
+
+export const deleteBill = (billUuid: string, reason: string) => {
+  const url = `${apiBasePath}bill/${billUuid}?reason=${encodeURIComponent(reason)}`;
+
+  return openmrsFetch(url, {
+    method: 'DELETE',
+  });
+};

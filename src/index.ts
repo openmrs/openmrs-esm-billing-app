@@ -135,3 +135,8 @@ export const finalizeBillConfirmationModal = getAsyncLifecycle(
   () => import('./modal/finalize-bill-confirmation.modal'),
   options,
 );
+
+export const deleteBillConfirmationModal = getAsyncLifecycle(
+  () => import('./modal/delete-bill-confirmation.modal'),
+  options,
+);

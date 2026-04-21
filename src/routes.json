@@ -116,6 +116,10 @@
     {
       "name": "finalize-bill-confirmation-modal",
       "component": "finalizeBillConfirmationModal"
+    },
+    {
+      "name": "delete-bill-confirmation-modal",
+      "component": "deleteBillConfirmationModal"
     }
   ],
   "workspaces2": [
