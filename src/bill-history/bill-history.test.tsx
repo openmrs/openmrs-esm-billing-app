@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, launchWorkspace2, useConfig } from '@openmrs/esm-framework';
@@ -6,11 +7,11 @@ import { configSchema, type BillingConfig } from '../config-schema';
 import { useBills } from '../billing.resource';
 import BillHistory from './bill-history.component';
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockUseBills = jest.mocked<typeof useBills>(useBills);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockUseBills = vi.mocked<typeof useBills>(useBills);
 
-jest.mock('../billing.resource', () => ({
-  useBills: jest.fn(() => ({
+vi.mock('../billing.resource', () => ({
+  useBills: vi.fn(() => ({
     bills: mockBillData,
     isLoading: false,
     isValidating: false,
@@ -46,13 +47,13 @@ describe('BillHistory', () => {
     mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
   });
 
-  test('should render loading datatable skeleton', () => {
+  it('should render loading datatable skeleton', () => {
     mockUseBills.mockReturnValueOnce({
       isLoading: true,
       isValidating: false,
       error: null,
       bills: [],
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<BillHistory {...testProps} />);
     const loadingSkeleton = screen.getByRole('table');
@@ -60,27 +61,27 @@ describe('BillHistory', () => {
     expect(loadingSkeleton).toHaveClass('cds--skeleton cds--data-table cds--data-table--zebra');
   });
 
-  test('should render error state when API call fails', () => {
+  it('should render error state when API call fails', () => {
     mockUseBills.mockReturnValueOnce({
       isLoading: false,
       isValidating: false,
       error: new Error('some error'),
       bills: [],
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<BillHistory {...testProps} />);
     const errorState = screen.getByText(/Error/);
     expect(errorState).toBeInTheDocument();
   });
 
-  test('should render bills table', async () => {
+  it('should render bills table', async () => {
     const user = userEvent.setup();
     mockUseBills.mockReturnValueOnce({
       isLoading: false,
       isValidating: false,
       error: null,
       bills: mockBillData as any,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<BillHistory {...testProps} />);
 
@@ -108,20 +109,20 @@ describe('BillHistory', () => {
     await user.click(expandAllRowButton);
   });
 
-  test('should render empty state view when there are no bills', () => {
+  it('should render empty state view when there are no bills', () => {
     mockUseBills.mockReturnValueOnce({
       isLoading: false,
       isValidating: false,
       error: null,
       bills: [],
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<BillHistory {...testProps} />);
     const emptyState = screen.getByText(/There are no bills to display./);
     expect(emptyState).toBeInTheDocument();
   });
 
-  test('should show overflow menu with "Add items to bill" for PENDING bills', async () => {
+  it('should show overflow menu with "Add items to bill" for PENDING bills', async () => {
     const user = userEvent.setup();
     const pendingBill = {
       ...mockBillData[0],
@@ -135,7 +136,7 @@ describe('BillHistory', () => {
       isValidating: false,
       error: null,
       bills: [pendingBill] as any,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<BillHistory {...testProps} />);
 
@@ -145,7 +146,7 @@ describe('BillHistory', () => {
     expect(screen.getByText(/add items to bill/i)).toBeInTheDocument();
   });
 
-  test('should not show overflow menu for PAID bills', () => {
+  it('should not show overflow menu for PAID bills', () => {
     const paidBill = {
       ...mockBillData[0],
       status: 'PAID',
@@ -158,17 +159,17 @@ describe('BillHistory', () => {
       isValidating: false,
       error: null,
       bills: [paidBill] as any,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<BillHistory {...testProps} />);
 
     expect(screen.queryByTestId('action-menu-1')).not.toBeInTheDocument();
   });
 
-  test('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
+  it('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
     const user = userEvent.setup();
-    const mockMutate = jest.fn();
-    const mockLaunchWorkspace2 = jest.mocked(launchWorkspace2);
+    const mockMutate = vi.fn();
+    const mockLaunchWorkspace2 = vi.mocked(launchWorkspace2);
     const pendingBill = {
       ...mockBillData[0],
       status: 'PENDING',

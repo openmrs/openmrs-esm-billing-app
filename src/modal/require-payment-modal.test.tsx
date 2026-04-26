@@ -1,4 +1,5 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
@@ -7,19 +8,19 @@ import { type MappedBill } from '../types';
 import { configSchema, type BillingConfig } from '../config-schema';
 import RequirePaymentModal from './require-payment.modal';
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockUseBills = jest.mocked<typeof useBills>(useBills);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockUseBills = vi.mocked<typeof useBills>(useBills);
 
-jest.mock('../billing.resource', () => ({
-  useBills: jest.fn(),
+vi.mock('../billing.resource', () => ({
+  useBills: vi.fn(),
 }));
 
-jest.mock('../helpers', () => ({
-  convertToCurrency: (value, currency) => `${currency} ${value.toFixed(2)}`,
+vi.mock('../helpers', () => ({
+  convertToCurrency: (value: number, currency: string) => `${currency} ${value.toFixed(2)}`,
 }));
 
 describe('RequirePaymentModal', () => {
-  const closeModal = jest.fn();
+  const closeModal = vi.fn();
   const patientUuid = '12345';
 
   beforeEach(() => {
@@ -27,13 +28,13 @@ describe('RequirePaymentModal', () => {
   });
 
   it('renders correctly', () => {
-    mockUseBills.mockReturnValue({ bills: [], isLoading: false, error: null, isValidating: false, mutate: jest.fn() });
+    mockUseBills.mockReturnValue({ bills: [], isLoading: false, error: null, isValidating: false, mutate: vi.fn() });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
     expect(screen.getByText('Patient Billing Alert')).toBeInTheDocument();
   });
 
   it('displays loading state', () => {
-    mockUseBills.mockReturnValue({ bills: [], isLoading: true, error: null, isValidating: false, mutate: jest.fn() });
+    mockUseBills.mockReturnValue({ bills: [], isLoading: true, error: null, isValidating: false, mutate: vi.fn() });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
     expect(screen.getByText('Loading bill items...')).toBeInTheDocument();
   });
@@ -53,7 +54,7 @@ describe('RequirePaymentModal', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
     expect(screen.getByText('Service 1')).toBeInTheDocument();
@@ -62,7 +63,7 @@ describe('RequirePaymentModal', () => {
 
   it('handles closeModal', async () => {
     const user = userEvent.setup();
-    mockUseBills.mockReturnValue({ bills: [], isLoading: false, error: null, isValidating: false, mutate: jest.fn() });
+    mockUseBills.mockReturnValue({ bills: [], isLoading: false, error: null, isValidating: false, mutate: vi.fn() });
     render(<RequirePaymentModal closeModal={closeModal} patientUuid={patientUuid} />);
     await user.click(screen.getByText('Cancel'));
     await user.click(screen.getByText('OK'));

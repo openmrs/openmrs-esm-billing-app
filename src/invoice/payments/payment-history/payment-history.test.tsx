@@ -1,15 +1,16 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
 import { type BillingConfig, configSchema } from '../../../config-schema';
 import { type MappedBill } from '../../../types';
 import PaymentHistory from './payment-history.component';
 
-jest.mock('../../../helpers', () => ({
-  convertToCurrency: jest.fn((amount, currency) => `${currency} ${amount.toFixed(2)}`),
+vi.mock('../../../helpers', () => ({
+  convertToCurrency: vi.fn((amount, currency) => `${currency} ${amount.toFixed(2)}`),
 }));
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
 
 describe('PaymentHistory Component', () => {
   beforeEach(() => {
@@ -103,11 +104,11 @@ describe('PaymentHistory Component', () => {
     billingService: 'Billing Service',
   };
 
-  test('renders without crashing', () => {
+  it('renders without crashing', () => {
     render(<PaymentHistory bill={mockBill} />);
   });
 
-  test('renders correct table headers', () => {
+  it('renders correct table headers', () => {
     render(<PaymentHistory bill={mockBill} />);
     expect(screen.getByText('Date of payment')).toBeInTheDocument();
     expect(screen.getByText('Bill amount')).toBeInTheDocument();
@@ -115,13 +116,13 @@ describe('PaymentHistory Component', () => {
     expect(screen.getByText('Payment method')).toBeInTheDocument();
   });
 
-  test('renders the correct number of rows', () => {
+  it('renders the correct number of rows', () => {
     render(<PaymentHistory bill={mockBill} />);
     const rows = screen.getAllByRole('row');
     expect(rows).toHaveLength(3);
   });
 
-  test('renders correct data in the rows', () => {
+  it('renders correct data in the rows', () => {
     render(<PaymentHistory bill={mockBill} />);
 
     expect(screen.getByText('01-Sept-2023')).toBeInTheDocument();
@@ -135,17 +136,17 @@ describe('PaymentHistory Component', () => {
     expect(screen.getByText('Cash')).toBeInTheDocument();
   });
 
-  test('handles empty payments gracefully', () => {
+  it('handles empty payments gracefully', () => {
     render(<PaymentHistory bill={emptyBill} />);
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  test('does not render when bill is undefined', () => {
+  it('does not render when bill is undefined', () => {
     render(<PaymentHistory bill={undefined} />);
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
   });
 
-  test('formats dates and converts amounts correctly', () => {
+  it('formats dates and converts amounts correctly', () => {
     render(<PaymentHistory bill={mockBill} />);
 
     expect(screen.getByText('01-Sept-2023')).toBeInTheDocument();

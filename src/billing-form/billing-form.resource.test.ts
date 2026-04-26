@@ -1,21 +1,22 @@
-import { renderHook } from '@testing-library/react';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import useSWR from 'swr';
+import { renderHook } from '@testing-library/react';
 import { useLastVisitInfo } from './billing-form.resource';
 
-jest.mock('swr');
-const mockUseSWR = jest.mocked(useSWR);
+vi.mock('swr');
+const mockUseSWR = vi.mocked(useSWR);
 
 // Pin "now" so diffDays calculations are deterministic
 const FIXED_NOW = new Date('2026-01-10T12:00:00Z').getTime();
 
 describe('useLastVisitInfo', () => {
   beforeAll(() => {
-    jest.useFakeTimers();
-    jest.setSystemTime(FIXED_NOW);
+    vi.useFakeTimers();
+    vi.setSystemTime(FIXED_NOW);
   });
 
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('returns null lastVisitInfo when there is no visit data yet', () => {

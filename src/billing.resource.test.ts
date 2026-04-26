@@ -1,17 +1,10 @@
+import { describe, expect, it, vi } from 'vitest';
 import { mapBillProperties } from './billing.resource';
 import type { LineItem, PatientInvoice, Payment } from './types';
 
 type CashPoint = PatientInvoice['cashPoint'];
 type Provider = PatientInvoice['cashier'];
 type Patient = PatientInvoice['patient'];
-
-const mockFormatDate = jest.fn((date: Date, options?: Partial<{ mode: string }>) => `formatted-${date}`);
-const mockParseDate = jest.fn((dateString: string): Date => new Date(dateString));
-
-jest.mock('@openmrs/esm-framework', () => ({
-  formatDate: (date: Date, options?: Partial<{ mode: string }>) => mockFormatDate(date, options),
-  parseDate: (dateString: string) => mockParseDate(dateString),
-}));
 
 const createLineItem = (overrides: Partial<LineItem> = {}): LineItem => ({
   uuid: 'line-item-uuid',

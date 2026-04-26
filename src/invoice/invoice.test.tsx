@@ -1,4 +1,7 @@
 import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mockBill, mockPatient } from '@mocks/bills.mock';
+import { waitForLoadingToFinish } from '@tools/test-helpers';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useReactToPrint } from 'react-to-print';
@@ -11,43 +14,41 @@ import {
 } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { BillStatus } from '../types';
-import { mockBill, mockPatient } from 'mocks/bills.mock';
 import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
-import { waitForLoadingToFinish } from 'tools/test-helpers';
 import Invoice from './invoice.component';
 
-const mockUseConfig = jest.mocked(useConfig<BillingConfig>);
-const mockUseBill = jest.mocked(useBill);
-const mockUsePatient = jest.mocked(usePatient);
-const mockUsePaymentModes = jest.mocked(usePaymentModes);
-const mockUseReactToPrint = jest.mocked(useReactToPrint);
-const mockShowModal = jest.mocked(showModal);
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockUseBill = vi.mocked(useBill);
+const mockUsePatient = vi.mocked(usePatient);
+const mockUsePaymentModes = vi.mocked(usePaymentModes);
+const mockUseReactToPrint = vi.mocked(useReactToPrint);
+const mockShowModal = vi.mocked(showModal);
 
-jest.mock('../helpers/functions', () => ({
-  convertToCurrency: jest.fn((amount) => `USD ${amount}`),
+vi.mock('../helpers/functions', () => ({
+  convertToCurrency: vi.fn((amount) => `USD ${amount}`),
 }));
 
 window.i18next = {
   language: 'en',
 } as any;
 
-jest.mock('./printable-invoice/print-receipt.component', () =>
-  jest.fn(() => <div data-testid="mock-print-receipt">Print Receipt Mock</div>),
-);
-
-jest.mock('./printable-invoice/printable-invoice.component', () =>
-  jest.fn(() => <div data-testid="mock-printable-invoice">Printable Invoice Mock</div>),
-);
-
-jest.mock('./payments/payment.resource', () => ({
-  usePaymentModes: jest.fn(),
-  updateBillVisitAttribute: jest.fn(),
+vi.mock('./printable-invoice/print-receipt.component', () => ({
+  default: vi.fn(() => <div data-testid="mock-print-receipt">Print Receipt Mock</div>),
 }));
 
-jest.mock('../billing.resource', () => ({
-  useBill: jest.fn(),
-  useDefaultFacility: jest.fn().mockReturnValue({
+vi.mock('./printable-invoice/printable-invoice.component', () => ({
+  default: vi.fn(() => <div data-testid="mock-printable-invoice">Printable Invoice Mock</div>),
+}));
+
+vi.mock('./payments/payment.resource', () => ({
+  usePaymentModes: vi.fn(),
+  updateBillVisitAttribute: vi.fn(),
+}));
+
+vi.mock('../billing.resource', () => ({
+  useBill: vi.fn(),
+  useDefaultFacility: vi.fn().mockReturnValue({
     data: {
       uuid: '54065383-b4d4-42d2-af4d-d250a1fd2590',
       display: 'MTRH',
@@ -55,15 +56,15 @@ jest.mock('../billing.resource', () => ({
   }),
 }));
 
-jest.mock('react-router-dom', () => ({
-  useParams: jest.fn().mockReturnValue({
+vi.mock('react-router-dom', () => ({
+  useParams: vi.fn().mockReturnValue({
     patientUuid: 'patientUuid',
     billUuid: 'billUuid',
   }),
 }));
 
-jest.mock('react-to-print', () => ({
-  useReactToPrint: jest.fn(),
+vi.mock('react-to-print', () => ({
+  useReactToPrint: vi.fn(),
 }));
 
 describe('Invoice', () => {
@@ -100,7 +101,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     mockUsePatient.mockReturnValue({
@@ -117,12 +118,12 @@ describe('Invoice', () => {
       ],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'USD' });
 
-    const printHandler = jest.fn();
+    const printHandler = vi.fn();
     mockUseReactToPrint.mockReturnValue(printHandler);
   });
 
@@ -132,7 +133,7 @@ describe('Invoice', () => {
       isLoading: true,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -157,7 +158,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: new Error('Failed to load bill'),
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -202,7 +203,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -221,7 +222,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -238,7 +239,7 @@ describe('Invoice', () => {
   });
 
   it('should handle print button click', async () => {
-    const handlePrintMock = jest.fn();
+    const handlePrintMock = vi.fn();
     const user = userEvent.setup();
     mockUseReactToPrint.mockReturnValue(handlePrintMock);
 
@@ -310,7 +311,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     const user = userEvent.setup();
@@ -330,7 +331,7 @@ describe('Invoice', () => {
   });
 
   it('should handle bill data updates via mutate', async () => {
-    const mockMutate = jest.fn();
+    const mockMutate = vi.fn();
     mockUseBill.mockReturnValue({
       bill: defaultBillData,
       isLoading: false,
@@ -378,7 +379,7 @@ describe('Invoice', () => {
       isLoading: true,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -392,7 +393,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     mockUsePatient.mockReturnValue({
@@ -444,7 +445,7 @@ describe('Invoice', () => {
   });
 
   it('should pass mutate function to Payments component', async () => {
-    const mockMutate = jest.fn();
+    const mockMutate = vi.fn();
     mockUseBill.mockReturnValue({
       bill: defaultBillData,
       isLoading: false,
@@ -471,7 +472,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -499,7 +500,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -525,7 +526,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -547,7 +548,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -562,7 +563,7 @@ describe('Invoice', () => {
       isLoading: false,
       error: null,
       isValidating: false,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<Invoice />);
@@ -572,7 +573,7 @@ describe('Invoice', () => {
   });
 
   it('should open finalize confirmation modal when "Finalize bill" button is clicked', async () => {
-    const mockMutate = jest.fn();
+    const mockMutate = vi.fn();
     const user = userEvent.setup();
 
     mockUseBill.mockReturnValue({
@@ -596,8 +597,8 @@ describe('Invoice', () => {
   });
 
   it('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
-    const mockMutate = jest.fn();
-    const mockLaunchWorkspace2 = jest.mocked(launchWorkspace2);
+    const mockMutate = vi.fn();
+    const mockLaunchWorkspace2 = vi.mocked(launchWorkspace2);
 
     mockUseBill.mockReturnValue({
       bill: defaultBillData,
