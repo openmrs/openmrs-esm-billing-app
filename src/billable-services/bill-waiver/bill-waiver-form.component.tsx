@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { Button, Form, FormGroup, Layer, NumberInput, Stack } from '@carbon/react';
 import { TaskAdd } from '@carbon/react/icons';
-import { useSWRConfig } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { calculateTotalAmount, convertToCurrency } from '../../helpers';
-import { processBillPayment } from '../../billing.resource';
+import { updateBillItems } from '../../billing.resource';
 import type { LineItem, MappedBill } from '../../types';
 import type { BillingConfig } from '../../config-schema';
-import { apiBasePath } from '../../constants';
 import styles from './bill-waiver-form.scss';
 
 type BillWaiverFormProps = {
@@ -23,22 +21,49 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
   const totalAmount = calculateTotalAmount(lineItems);
   const billTotal = bill.totalAmount ?? totalAmount;
   const { defaultCurrency, waiverPaymentModeUuid } = useConfig<BillingConfig>();
-  const { mutate } = useSWRConfig();
 
   if (lineItems?.length === 0) {
     return null;
   }
 
   const handleProcessPayment = async () => {
+    if (!waiverPaymentModeUuid) {
+      showSnackbar({
+        title: t('billWaiverErrorTitle', 'Waiver Error'),
+        subtitle: t('waiverServiceNotConfigured', 'Waiver service UUID is not configured.'),
+        kind: 'error',
+      });
+      return;
+    }
+
     try {
-      await processBillPayment(
-        {
-          instanceType: waiverPaymentModeUuid,
-          amount: billTotal,
-          amountTendered: Number(waiverAmount) || 0,
-        },
-        bill.uuid,
-      );
+      // Add negative line item for waiver using updateBillItems
+      const nextLineItemOrder = Math.max(...lineItems.map((item) => item.lineItemOrder ?? 0), 0) + 1;
+      await updateBillItems({
+        uuid: bill.uuid,
+        cashPoint: bill.cashPointUuid,
+        cashier: bill.cashier?.uuid ?? '',
+        patient: bill.patientUuid,
+        status: bill.status,
+        lineItems: [
+          ...lineItems.map((item) => ({
+            uuid: item.uuid,
+            item: item.item,
+            quantity: item.quantity,
+            price: item.price,
+            paymentStatus: item.paymentStatus,
+            lineItemOrder: item.lineItemOrder,
+          })),
+          {
+            item: waiverPaymentModeUuid,
+            quantity: 1,
+            price: -Math.abs(Number(waiverAmount) || 0),
+            paymentStatus: 'PENDING',
+            lineItemOrder: nextLineItemOrder,
+          },
+        ],
+      });
+
       showSnackbar({
         title: t('billWaiver', 'Bill waiver'),
         subtitle: t('billWaiverSuccess', 'Bill waiver successful'),
@@ -46,13 +71,10 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
         isLowContrast: true,
       });
       setPatientUuid('');
-      mutate((key) => typeof key === 'string' && key.startsWith(`${apiBasePath}bill?v=full`), undefined, {
-        revalidate: true,
-      });
     } catch (error) {
       showSnackbar({
         title: t('billWaiver', 'Bill waiver'),
-        subtitle: t('billWaiverError', 'Bill waiver failed {{error}}', { error: error?.message }),
+        subtitle: t('billWaiverError', 'An error occurred'),
         kind: 'error',
         isLowContrast: true,
       });
