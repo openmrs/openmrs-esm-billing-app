@@ -76,9 +76,10 @@ const BillsTable: React.FC = () => {
     [t],
   );
 
-  // Default to 'POSTED' (pending payment) so cashiers see bills awaiting payment on load
+  // Default to 'PENDING' (pending confirmation) so cashiers see bills awaiting confirmation on load
   const [billPaymentStatus, setBillPaymentStatus] = useState<BillPaymentStatusFilterItem>(
-    () => billPaymentStatusFilterItems.find((item) => item.id === BillStatus.POSTED) ?? billPaymentStatusFilterItems[0],
+    () =>
+      billPaymentStatusFilterItems.find((item) => item.id === BillStatus.PENDING) ?? billPaymentStatusFilterItems[0],
   );
   const [searchString, setSearchString] = useState('');
   const debouncedSearchString = useDebounce(searchString, 500);
