@@ -78,10 +78,16 @@
       "order": 0
     },
     {
+      "name": "bill-waiver-left-panel-link",
+      "component": "billWaiverLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 1
+    },
+    {
       "name": "billing-settings-left-panel-menu",
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
-      "order": 1
+      "order": 2
     }
   ],
   "modals": [
