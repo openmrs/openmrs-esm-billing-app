@@ -153,7 +153,7 @@ describe('BillsTable', () => {
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
-    expect(screen.getByText(/pending payment/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending confirmation/i)).toBeInTheDocument();
   });
 
   it('should display an error state if there is a problem loading bill data', () => {
@@ -173,7 +173,7 @@ describe('BillsTable', () => {
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
-    expect(screen.getByText(/pending payment/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending confirmation/i)).toBeInTheDocument();
   });
 
   it('should pass search term to backend API', async () => {
@@ -202,7 +202,7 @@ describe('BillsTable', () => {
     await user.type(searchInput, 'John');
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(10, 'POSTED', 'John');
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', 'John');
     });
 
     expect(mockGoTo).toHaveBeenCalledWith(1);
@@ -246,7 +246,7 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    const filterDropdown = screen.getByText('Pending payment');
+    const filterDropdown = screen.getByText('Pending confirmation');
     await user.click(filterDropdown);
 
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
@@ -327,48 +327,21 @@ describe('BillsTable', () => {
     });
   });
 
-  it('should default to "Pending payment" filter showing POSTED bills', () => {
+  it('should default to "Pending confirmation" filter showing PENDING bills', () => {
     render(<BillsTable />);
 
-    expect(screen.getByText('Pending payment')).toBeInTheDocument();
-    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+    expect(screen.getByText('Pending confirmation')).toBeInTheDocument();
+    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
   });
 
-  it('should show "Pending confirmation" option in filter dropdown', async () => {
+  it('should show "Pending payment" option in filter dropdown', async () => {
     const user = userEvent.setup();
     render(<BillsTable />);
 
-    const filterDropdown = screen.getByText('Pending payment');
+    const filterDropdown = screen.getByText('Pending confirmation');
     await user.click(filterDropdown);
 
-    expect(screen.getByRole('option', { name: /pending confirmation/i })).toBeInTheDocument();
-  });
-
-  it('should filter by PENDING status when "Pending confirmation" is selected', async () => {
-    const user = userEvent.setup();
-    const mockGoTo = vi.fn();
-
-    mockBills.mockImplementation((_pageSize, status) => ({
-      bills: status === 'PENDING' ? [mockBillsData[0]] : mockBillsData,
-      isLoading: false,
-      isValidating: false,
-      error: null,
-      mutate: vi.fn(),
-      currentPage: 1,
-      totalCount: status === 'PENDING' ? 1 : 2,
-      goTo: mockGoTo,
-    }));
-
-    render(<BillsTable />);
-
-    const filterDropdown = screen.getByText('Pending payment');
-    await user.click(filterDropdown);
-
-    await user.click(screen.getByRole('option', { name: /pending confirmation/i }));
-
-    await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
-    });
+    expect(screen.getByRole('option', { name: /pending payment/i })).toBeInTheDocument();
   });
 
   it('should filter by POSTED status when "Pending payment" is selected', async () => {
@@ -382,24 +355,51 @@ describe('BillsTable', () => {
       error: null,
       mutate: vi.fn(),
       currentPage: 1,
+      totalCount: status === 'POSTED' ? 1 : 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    const filterDropdown = screen.getByText('Pending confirmation');
+    await user.click(filterDropdown);
+
+    await user.click(screen.getByRole('option', { name: /pending payment/i }));
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+    });
+  });
+
+  it('should filter by PENDING status when "Pending confirmation" is selected', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation((_pageSize, status) => ({
+      bills: status === 'PENDING' ? [mockBillsData[0]] : mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
       totalCount: 1,
       goTo: mockGoTo,
     }));
 
     render(<BillsTable />);
 
-    // Navigate away from the default POSTED filter first, then select it again
-    const filterDropdown = screen.getByText('Pending payment');
+    // Navigate away from the default PENDING filter first, then select it again
+    const filterDropdown = screen.getByText('Pending confirmation');
     await user.click(filterDropdown);
     await user.click(screen.getByRole('option', { name: /all bills/i }));
 
     mockBills.mockClear();
 
     await user.click(screen.getByText('All bills'));
-    await user.click(screen.getByRole('option', { name: /pending payment/i }));
+    await user.click(screen.getByRole('option', { name: /pending confirmation/i }));
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
     });
   });
 
