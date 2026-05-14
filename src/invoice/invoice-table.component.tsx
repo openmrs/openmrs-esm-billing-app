@@ -16,11 +16,19 @@ import {
   TableToolbarSearch,
   Tile,
 } from '@carbon/react';
-import { getCoreTranslation, isDesktop, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
-import { type LineItem, type MappedBill } from '../types';
+import {
+  getCoreTranslation,
+  isDesktop,
+  showModal,
+  useConfig,
+  useDebounce,
+  useLayoutType,
+} from '@openmrs/esm-framework';
+import LineItemActionMenu from './line-item-action-menu.component';
+import { useBillDiscounts } from '../discounts/discounts.resource';
 import { convertToCurrency } from '../helpers';
 import type { BillingConfig } from '../config-schema';
-import LineItemActionMenu from './line-item-action-menu.component';
+import { BillStatus, type LineItem, type MappedBill } from '../types';
 import styles from './invoice-table.scss';
 
 type InvoiceTableProps = {
@@ -37,6 +45,40 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
+
+  const { discounts, error: discountsError, mutate: mutateDiscounts } = useBillDiscounts(bill?.uuid);
+  const billStatusEligible = bill?.status === BillStatus.PENDING || bill?.status === BillStatus.POSTED;
+  const hasBillLevelDiscount = discounts?.some((d) => !d.lineItemUuid) ?? false;
+
+  const lineHasActiveDiscount = (lineItemUuid: string) =>
+    discounts?.some((d) => d.lineItemUuid === lineItemUuid) ?? false;
+
+  const showLineItemRequest = (lineItem: LineItem) =>
+    billStatusEligible && !hasBillLevelDiscount && !lineHasActiveDiscount(lineItem.uuid) && !discountsError;
+
+  const handleLineItemRequest = (lineItem: LineItem) => {
+    const dispose = showModal('request-discount-modal', {
+      bill: {
+        uuid: bill.uuid,
+        total: bill.totalAmount ?? 0,
+        amountDue: Math.max(0, (bill.netAmount ?? bill.totalAmount ?? 0) - (bill.tenderedAmount ?? 0)),
+        receiptNumber: bill.receiptNumber,
+        lineItemCount: lineItems.length,
+      },
+      lineItem: {
+        uuid: lineItem.uuid,
+        display: lineItem.item || lineItem.billableService || '--',
+        total: (lineItem.price ?? 0) * (lineItem.quantity ?? 0),
+        quantity: lineItem.quantity,
+        price: lineItem.price,
+      },
+      onMutate: () => {
+        onMutate?.();
+        mutateDiscounts();
+      },
+      closeModal: () => dispose(),
+    });
+  };
 
   const filteredLineItems = useMemo(() => {
     if (!debouncedSearchTerm) {
@@ -132,7 +174,15 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}
                       <TableCell className="cds--table-column-menu">
-                        {item && <LineItemActionMenu bill={bill} item={item} onMutate={onMutate} />}
+                        {item && (
+                          <LineItemActionMenu
+                            bill={bill}
+                            item={item}
+                            onMutate={onMutate}
+                            showDiscountRequest={showLineItemRequest(item)}
+                            onDiscountRequest={() => handleLineItemRequest(item)}
+                          />
+                        )}
                       </TableCell>
                     </TableRow>
                   );

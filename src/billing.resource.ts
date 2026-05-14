@@ -52,9 +52,8 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     status: bill.status as BillStatus,
     lineItems: activeLineItems,
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
-    totalAmount: activeLineItems
-      .map((item) => (item.price ?? 0) * (item.quantity ?? 0))
-      .reduce((prev, curr) => prev + curr, 0),
+    totalAmount: bill.total,
+    netAmount: bill.amountAfterDiscount,
     tenderedAmount: (bill?.payments ?? [])
       .map((item) => item.amountTendered ?? 0)
       .reduce((prev, curr) => prev + curr, 0),

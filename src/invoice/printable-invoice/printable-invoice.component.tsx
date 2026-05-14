@@ -83,12 +83,6 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
     return [];
   }, [bill, defaultCurrency]);
 
-  const summaryHeaders = [
-    { key: 'total', header: t('totalAmount', 'Total Amount') },
-    { key: 'paid', header: t('totalPaid', 'Total Paid') },
-    { key: 'balance', header: t('amountBalance', 'Amount Balance') },
-  ];
-
   const patientDetails = useMemo(() => {
     const address = patient?.address?.[0];
     const addressParts = [address?.line?.join(' '), address?.city, address?.district, address?.state].filter(Boolean);
@@ -136,14 +130,43 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
               </TableContainer>
             )}
           </DataTable>
-          <div className={styles.balanceContainer}>
-            <span className={styles.itemHeading}>{t('totalAmount', 'Total Amount')}:</span>{' '}
-            <span className={styles.itemLabel}>
-              <strong>
-                {defaultCurrency} {bill?.totalAmount}
-              </strong>
-            </span>
-          </div>
+          {bill?.netAmount != null && bill.totalAmount !== bill.netAmount ? (
+            <>
+              <div className={styles.balanceContainer}>
+                <span className={styles.itemHeading}>{t('subtotal', 'Subtotal')}:</span>{' '}
+                <span className={styles.itemLabel}>
+                  <strong>
+                    {defaultCurrency} {bill?.totalAmount}
+                  </strong>
+                </span>
+              </div>
+              <div className={styles.balanceContainer}>
+                <span className={styles.itemHeading}>{t('discount', 'Discount')}:</span>{' '}
+                <span className={styles.itemLabel}>
+                  <strong>
+                    - {defaultCurrency} {(bill?.totalAmount ?? 0) - (bill?.netAmount ?? 0)}
+                  </strong>
+                </span>
+              </div>
+              <div className={styles.balanceContainer}>
+                <span className={styles.itemHeading}>{t('totalAmount', 'Total Amount')}:</span>{' '}
+                <span className={styles.itemLabel}>
+                  <strong>
+                    {defaultCurrency} {bill?.netAmount}
+                  </strong>
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className={styles.balanceContainer}>
+              <span className={styles.itemHeading}>{t('totalAmount', 'Total Amount')}:</span>{' '}
+              <span className={styles.itemLabel}>
+                <strong>
+                  {defaultCurrency} {bill?.totalAmount}
+                </strong>
+              </span>
+            </div>
+          )}
           {bill?.payments?.length > 0 && (
             <div className={styles.paymentHistoryContainer}>
               <DataTable rows={paymentHistoryRows} headers={paymentHistoryHeaders} size={responsiveSize}>

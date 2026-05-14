@@ -1,0 +1,88 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type' as *;
+
+.modalBody {
+  padding-bottom: $spacing-05;
+}
+
+.scopePanel {
+  background: var(--cds-layer);
+  border-left: 3px solid var(--cds-border-interactive);
+  padding: $spacing-04 $spacing-05;
+}
+
+.scopePrimary {
+  @include type-style('heading-compact-01');
+  color: var(--cds-text-primary);
+  margin-bottom: $spacing-02;
+  word-break: break-word;
+}
+
+.scopeMeta {
+  @include type-style('label-01');
+  color: var(--cds-text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+
+  li + li::before {
+    content: '·';
+    margin: 0 $spacing-03;
+    color: var(--cds-text-helper);
+  }
+}
+
+.scopeTotal {
+  color: var(--cds-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.discountGroup :global(.cds--fieldset) {
+  margin-bottom: 0;
+}
+
+.summaryCard {
+  background: var(--cds-layer);
+  padding: $spacing-04 $spacing-05;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  row-gap: $spacing-03;
+  column-gap: $spacing-05;
+  align-items: baseline;
+}
+
+.summaryLabel {
+  @include type-style('body-compact-01');
+  color: var(--cds-text-secondary);
+}
+
+.summaryValue {
+  @include type-style('body-compact-01');
+  color: var(--cds-text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.summaryDiscount {
+  color: var(--cds-text-error);
+}
+
+.summaryDivider {
+  grid-column: 1 / -1;
+  height: 1px;
+  background: var(--cds-border-subtle);
+}
+
+.summaryTotalLabel {
+  @include type-style('heading-compact-01');
+  color: var(--cds-text-primary);
+}
+
+.summaryTotalValue {
+  @include type-style('heading-compact-01');
+  color: var(--cds-text-primary);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

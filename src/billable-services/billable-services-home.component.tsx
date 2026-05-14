@@ -3,11 +3,11 @@ import classNames from 'classnames';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLeftNav, WorkspaceContainer, useLayoutType, isDesktop } from '@openmrs/esm-framework';
-// import BillWaiver from './bill-waiver/bill-waiver.component';
 import BillableServicesDashboard from './dashboard/dashboard.component';
 import BillingHeader from '../billing-header/billing-header.component';
 import CashPointConfiguration from './cash-point/cash-point-configuration.component';
 import PaymentModesConfig from './payment-modes/payment-modes-config.component';
+import DiscountRequests from '../discounts/admin/discount-requests.component';
 import styles from './billable-services.scss';
 
 const BillableServiceHome: React.FC = () => {
@@ -26,7 +26,7 @@ const BillableServiceHome: React.FC = () => {
             <Route path="/" element={<BillableServicesDashboard />} />
             <Route path="/cash-point-config" element={<CashPointConfiguration />} />
             <Route path="/payment-modes-config" element={<PaymentModesConfig />} />
-            {/* <Route path="/waive-bill" element={<BillWaiver />} /> */}
+            <Route path="/discount-requests" element={<DiscountRequests />} />
           </Routes>
         </main>
       </div>

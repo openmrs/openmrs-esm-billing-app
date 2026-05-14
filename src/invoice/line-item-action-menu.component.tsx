@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Layer, OverflowMenu, OverflowMenuItem } from '@carbon/react';
 import { getCoreTranslation, isDesktop, showModal, useLayoutType } from '@openmrs/esm-framework';
 import { BillStatus, type LineItem, type MappedBill } from '../types';
@@ -8,9 +9,18 @@ type LineItemActionMenuProps = {
   bill: MappedBill;
   item: LineItem;
   onMutate?: () => void;
+  showDiscountRequest?: boolean;
+  onDiscountRequest?: () => void;
 };
 
-const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({ bill, item, onMutate }) => {
+const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({
+  bill,
+  item,
+  onMutate,
+  showDiscountRequest,
+  onDiscountRequest,
+}) => {
+  const { t } = useTranslation();
   const layout = useLayoutType();
 
   const handleEditLineItem = useCallback(() => {
@@ -54,6 +64,14 @@ const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({ bill, item, onM
           itemText={getCoreTranslation('delete')}
           onClick={handleDeleteLineItem}
         />
+        {showDiscountRequest && (
+          <OverflowMenuItem
+            className={styles.menuitem}
+            data-testid={`request-discount-button-${item.uuid}`}
+            itemText={t('requestDiscount', 'Request discount')}
+            onClick={onDiscountRequest}
+          />
+        )}
       </OverflowMenu>
     </Layer>
   );

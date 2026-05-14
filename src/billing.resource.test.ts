@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { mapBillProperties } from './billing.resource';
+import { calculateTotalAmount } from './helpers/functions';
 import type { LineItem, PatientInvoice, Payment } from './types';
 
 type CashPoint = PatientInvoice['cashPoint'];
@@ -67,26 +68,33 @@ const createPayment = (overrides: Partial<Payment> = {}): Payment => ({
   ...overrides,
 });
 
-const createBaseBill = (overrides: Partial<PatientInvoice> = {}): PatientInvoice => ({
-  uuid: 'uuid1',
-  display: '12345 - John Doe',
-  voided: false,
-  voidReason: null,
-  adjustedBy: [],
-  billAdjusted: null,
-  cashPoint: createCashPoint(),
-  cashier: createProvider(),
-  dateCreated: '2024-01-01T00:00:00Z',
-  lineItems: [],
-  patient: createPatient(),
-  payments: [],
-  receiptNumber: 'R123',
-  status: 'PENDING',
-  adjustmentReason: null,
-  id: 1,
-  resourceVersion: '1.0',
-  ...overrides,
-});
+const createBaseBill = (overrides: Partial<PatientInvoice> = {}): PatientInvoice => {
+  const lineItems = overrides.lineItems ?? [];
+  const serverTotal = calculateTotalAmount(lineItems);
+  return {
+    uuid: 'uuid1',
+    display: '12345 - John Doe',
+    voided: false,
+    voidReason: null,
+    adjustedBy: [],
+    billAdjusted: null,
+    cashPoint: createCashPoint(),
+    cashier: createProvider(),
+    dateCreated: '2024-01-01T00:00:00Z',
+    lineItems,
+    patient: createPatient(),
+    payments: [],
+    receiptNumber: 'R123',
+    status: 'PENDING',
+    adjustmentReason: null,
+    id: 1,
+    resourceVersion: '1.0',
+    total: serverTotal,
+    amountAfterDiscount: serverTotal,
+    discounts: [],
+    ...overrides,
+  };
+};
 
 describe('mapBillProperties', () => {
   describe('Amount calculations', () => {

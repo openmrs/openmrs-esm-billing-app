@@ -14,6 +14,10 @@ vi.mock('../helpers', () => ({
   convertToCurrency: vi.fn((price) => `USD ${price}`),
 }));
 
+vi.mock('../discounts/discounts.resource', () => ({
+  useBillDiscounts: () => ({ discounts: [], isLoading: false, error: null, mutate: vi.fn() }),
+}));
+
 describe('InvoiceTable', () => {
   const mockOnMutate = vi.fn();
 
@@ -409,5 +413,44 @@ describe('InvoiceTable', () => {
     const searchInput = screen.getByPlaceholderText(/search this table/i);
     expect(searchInput).toBeInTheDocument();
     expect(searchInput).toBeVisible();
+  });
+
+  describe('per-line-item discount action', () => {
+    it('opens the request-discount modal with lineItem scope', async () => {
+      const user = userEvent.setup();
+      const billPosted: MappedBill = {
+        ...defaultBill,
+        status: 'POSTED',
+        lineItems: [
+          {
+            uuid: 'li1',
+            item: 'Consultation',
+            paymentStatus: 'PENDING',
+            quantity: 1,
+            price: 1000,
+            display: '',
+            voided: false,
+            voidReason: '',
+            billableService: '',
+            priceName: '',
+            priceUuid: '',
+            lineItemOrder: 0,
+            resourceVersion: '',
+          },
+        ],
+        totalAmount: 1000,
+      };
+      render(<InvoiceTable bill={billPosted} onMutate={mockOnMutate} />);
+
+      await user.click(screen.getByTestId('action-menu-li1'));
+      await user.click(screen.getByText(/request discount/i));
+
+      expect(mockShowModal).toHaveBeenCalledWith(
+        'request-discount-modal',
+        expect.objectContaining({
+          lineItem: expect.objectContaining({ uuid: 'li1', display: 'Consultation' }),
+        }),
+      );
+    });
   });
 });
