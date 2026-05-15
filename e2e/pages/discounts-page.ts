@@ -3,7 +3,8 @@ import { type Page, expect } from '@playwright/test';
 export class DiscountRequestModal {
   constructor(readonly page: Page) {}
 
-  readonly modal = () => this.page.getByRole('dialog', { name: /request discount/i });
+  readonly modal = () =>
+    this.page.getByRole('dialog').filter({ has: this.page.getByRole('heading', { name: /request discount/i }) });
   readonly percentageRadio = () => this.modal().getByRole('radio', { name: /percentage/i });
   readonly fixedAmountRadio = () => this.modal().getByRole('radio', { name: /fixed amount/i });
   readonly valueInput = () => this.modal().locator('#discount-value');
@@ -48,7 +49,8 @@ export class DiscountRequestsAdminPage {
 export class ReviewBillDiscountsModal {
   constructor(readonly page: Page) {}
 
-  readonly modal = () => this.page.getByRole('dialog', { name: /review discounts/i });
+  readonly modal = () =>
+    this.page.getByRole('dialog').filter({ has: this.page.getByRole('heading', { name: /review discounts/i }) });
   readonly pendingSection = () =>
     this.modal()
       .locator('section')
