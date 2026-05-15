@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ModalBody, ModalHeader } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useSession } from '@openmrs/esm-framework';
@@ -39,72 +39,84 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
     outstanding,
   } = useReviewBillModel(localBill);
 
-  const handleApprove = async (d: BillDiscount) => {
-    if (!canDecide) return;
-    if (outstanding - d.discountAmount < 0) {
-      showSnackbar({
-        title: t('approveBlocked', 'Cannot approve discount'),
-        subtitle: t('approveBlockedNegativeDue', 'Approving this discount would push the amount due below zero.'),
-        kind: 'error',
-      });
-      return;
-    }
-    setBusy(d.uuid);
-    try {
-      await decideDiscount(d.uuid, BillDiscountStatus.APPROVED, session.user.uuid);
-      showSnackbar({ title: t('discountApproved', 'Discount approved'), kind: 'success' });
-      onMutate();
-      closeModal();
-    } catch (e: unknown) {
-      showSnackbar({
-        title: t('approveFailed', 'Approve failed'),
-        subtitle: extractErrorMessage(e),
-        kind: 'error',
-      });
-    } finally {
-      setBusy(null);
-    }
-  };
+  const handleApprove = useCallback(
+    async (d: BillDiscount) => {
+      if (!canDecide) return;
+      if (outstanding - d.discountAmount < 0) {
+        showSnackbar({
+          title: t('approveBlocked', 'Cannot approve discount'),
+          subtitle: t('approveBlockedNegativeDue', 'Approving this discount would push the amount due below zero.'),
+          kind: 'error',
+        });
+        return;
+      }
+      setBusy(d.uuid);
+      try {
+        await decideDiscount(d.uuid, BillDiscountStatus.APPROVED, session.user.uuid);
+        showSnackbar({ title: t('discountApproved', 'Discount approved'), kind: 'success' });
+        onMutate();
+        closeModal();
+      } catch (e: unknown) {
+        showSnackbar({
+          title: t('approveFailed', 'Approve failed'),
+          subtitle: extractErrorMessage(e),
+          kind: 'error',
+        });
+      } finally {
+        setBusy(null);
+      }
+    },
+    [canDecide, outstanding, t, session.user.uuid, onMutate, closeModal],
+  );
 
-  const confirmReject = async (d: BillDiscount) => {
-    if (!canDecide) return;
-    setBusy(d.uuid);
-    try {
-      await decideDiscount(d.uuid, BillDiscountStatus.REJECTED, session.user.uuid);
-      showSnackbar({ title: t('discountRejected', 'Discount rejected'), kind: 'success' });
-      onMutate();
-      closeModal();
-    } catch (e: unknown) {
-      showSnackbar({ title: t('rejectFailed', 'Reject failed'), subtitle: extractErrorMessage(e), kind: 'error' });
-    } finally {
-      setBusy(null);
-      setRejectingId(null);
-    }
-  };
+  const confirmReject = useCallback(
+    async (d: BillDiscount) => {
+      if (!canDecide) return;
+      setBusy(d.uuid);
+      try {
+        await decideDiscount(d.uuid, BillDiscountStatus.REJECTED, session.user.uuid);
+        showSnackbar({ title: t('discountRejected', 'Discount rejected'), kind: 'success' });
+        onMutate();
+        closeModal();
+      } catch (e: unknown) {
+        showSnackbar({ title: t('rejectFailed', 'Reject failed'), subtitle: extractErrorMessage(e), kind: 'error' });
+      } finally {
+        setBusy(null);
+        setRejectingId(null);
+      }
+    },
+    [canDecide, t, session.user.uuid, onMutate, closeModal],
+  );
 
-  const confirmDelete = async (d: BillDiscount) => {
-    if (d.status === BillDiscountStatus.APPROVED && outstanding <= 0) {
-      showSnackbar({
-        title: t('deleteBlocked', 'Cannot delete discount'),
-        subtitle: t('deleteBlockedFullyPaid', 'An approved discount cannot be removed once the bill is fully paid.'),
-        kind: 'error',
-      });
-      setDeletingId(null);
-      return;
-    }
-    setBusy(d.uuid);
-    try {
-      await voidDiscount(d.uuid, 'Deleted by admin');
-      showSnackbar({ title: t('discountDeleted', 'Discount deleted'), kind: 'success' });
-      onMutate();
-      closeModal();
-    } catch (e: unknown) {
-      showSnackbar({ title: t('deleteFailed', 'Delete failed'), subtitle: extractErrorMessage(e), kind: 'error' });
-    } finally {
-      setBusy(null);
-      setDeletingId(null);
-    }
-  };
+  const confirmDelete = useCallback(
+    async (d: BillDiscount) => {
+      if (d.status === BillDiscountStatus.APPROVED && outstanding <= 0) {
+        showSnackbar({
+          title: t('deleteBlocked', 'Cannot delete discount'),
+          subtitle: t('deleteBlockedFullyPaid', 'An approved discount cannot be removed once the bill is fully paid.'),
+          kind: 'error',
+        });
+        setDeletingId(null);
+        return;
+      }
+      setBusy(d.uuid);
+      try {
+        await voidDiscount(d.uuid, 'Deleted by admin');
+        showSnackbar({ title: t('discountDeleted', 'Discount deleted'), kind: 'success' });
+        onMutate();
+        closeModal();
+      } catch (e: unknown) {
+        showSnackbar({ title: t('deleteFailed', 'Delete failed'), subtitle: extractErrorMessage(e), kind: 'error' });
+      } finally {
+        setBusy(null);
+        setDeletingId(null);
+      }
+    },
+    [outstanding, t, onMutate, closeModal],
+  );
+
+  const handleCancelReject = useCallback(() => setRejectingId(null), []);
+  const handleCancelDelete = useCallback(() => setDeletingId(null), []);
 
   return (
     <>
@@ -132,10 +144,10 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
             canDecide={canDecide}
             onApprove={handleApprove}
             onStartReject={setRejectingId}
-            onCancelReject={() => setRejectingId(null)}
+            onCancelReject={handleCancelReject}
             onConfirmReject={confirmReject}
             onStartDelete={setDeletingId}
-            onCancelDelete={() => setDeletingId(null)}
+            onCancelDelete={handleCancelDelete}
             onConfirmDelete={confirmDelete}
           />
         </div>

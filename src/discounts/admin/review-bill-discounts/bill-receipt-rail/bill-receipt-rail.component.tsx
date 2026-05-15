@@ -70,4 +70,4 @@ const BillReceiptRail: React.FC<Props> = ({
   );
 };
 
-export default BillReceiptRail;
+export default React.memo(BillReceiptRail);

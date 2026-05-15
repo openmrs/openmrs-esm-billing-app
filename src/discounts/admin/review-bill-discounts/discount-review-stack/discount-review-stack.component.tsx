@@ -83,4 +83,4 @@ const DiscountReviewStack: React.FC<Props> = ({
   );
 };
 
-export default DiscountReviewStack;
+export default React.memo(DiscountReviewStack);
