@@ -30,7 +30,7 @@ interface UseDiscountRequestsArgs {
 export function useDiscountRequests({ statuses }: UseDiscountRequestsArgs) {
   const qs = new URLSearchParams({
     discountStatus: statuses.join(','),
-    v: 'full',
+    v: 'custom:(uuid,dateCreated,status,receiptNumber,total,amountAfterDiscount,patient:(uuid,display),cashier:(uuid,display),lineItems:(uuid,item,billableService,quantity,price,voided),payments:(uuid,amountTendered,dateCreated,voided,instanceType:(uuid,name)),discounts:(uuid,voided,status,discountAmount,discountType,discountValue,dateCreated,justification,lineItemUuid,initiator:(uuid,display)))',
   });
   const url = `${billUrl}?${qs.toString()}`;
   const { data, isLoading, error, mutate, isValidating } = useOpenmrsFetchAll<PatientInvoice>(url);

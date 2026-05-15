@@ -128,7 +128,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
           />
           <InvoiceBreakDown
             label={t('discount', 'Discount')}
-            value={`- ${convertToCurrency((bill?.totalAmount ?? 0) - (bill?.netAmount ?? 0), defaultCurrency)}`}
+            value={`- ${convertToCurrency((bill.totalAmount ?? 0) - (bill.netAmount ?? 0), defaultCurrency)}`}
           />
           <InvoiceBreakDown
             hasBalance={amountDue < 0}

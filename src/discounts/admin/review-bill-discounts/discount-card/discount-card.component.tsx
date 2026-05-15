@@ -119,7 +119,7 @@ const DiscountCard: React.FC<Props> = ({
             </>
           )}
           {showDefaultActions && (
-            <Button kind="danger--tertiary" size="sm" onClick={() => onStartDelete(d.uuid)}>
+            <Button kind="danger" size="sm" onClick={() => onStartDelete(d.uuid)}>
               {t('delete', 'Delete')}
             </Button>
           )}
