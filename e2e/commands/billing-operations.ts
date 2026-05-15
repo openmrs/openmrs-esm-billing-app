@@ -80,9 +80,28 @@ async function getBillableService(api: APIRequestContext, serviceUuid: string): 
 }
 
 export async function deleteBill(api: APIRequestContext, billUuid: string) {
+  // The bill_discount FK on cashier_bill_line_item has no ON DELETE CASCADE, so any
+  // discounts attached to this bill must be purged first or the bill purge will fail
+  // with a Hibernate ConstraintViolationException.
+  await purgeBillDiscounts(api, billUuid);
+
   const response = await api.delete(`billing/bill/${billUuid}?purge=true`);
   if (!response.ok()) {
     console.warn(`Failed to delete bill ${billUuid}: ${await response.text()}`);
+  }
+}
+
+async function purgeBillDiscounts(api: APIRequestContext, billUuid: string) {
+  const response = await api.get(`billing/billDiscount?bill=${billUuid}`);
+  if (!response.ok()) {
+    return;
+  }
+  const { results = [] } = (await response.json()) as { results?: Array<{ uuid: string }> };
+  for (const discount of results) {
+    const purge = await api.delete(`billing/billDiscount/${discount.uuid}?purge=true`);
+    if (!purge.ok()) {
+      console.warn(`Failed to purge discount ${discount.uuid}: ${await purge.text()}`);
+    }
   }
 }
 
