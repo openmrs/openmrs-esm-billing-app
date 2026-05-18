@@ -30,7 +30,7 @@ describe('InvoiceTable', () => {
       {
         uuid: '1',
         item: 'Item 1',
-        paymentStatus: 'PAID',
+        status: 'PAID',
         quantity: 1,
         price: 100,
         display: '',
@@ -45,7 +45,7 @@ describe('InvoiceTable', () => {
       {
         uuid: '2',
         item: 'Item 2',
-        paymentStatus: 'PENDING',
+        status: 'PENDING',
         quantity: 2,
         price: 200,
         display: '',
@@ -132,7 +132,7 @@ describe('InvoiceTable', () => {
         {
           uuid: '1',
           item: 'Service A',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           quantity: 3,
           price: 100,
           display: '',
@@ -298,7 +298,7 @@ describe('InvoiceTable', () => {
         {
           uuid: '1',
           item: 'Free Service',
-          paymentStatus: 'PAID',
+          status: 'PAID',
           quantity: 1,
           price: 0,
           display: '',
@@ -326,7 +326,7 @@ describe('InvoiceTable', () => {
         {
           uuid: '1',
           item: 'Service',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           quantity: 0,
           price: 100,
           display: '',
@@ -355,7 +355,7 @@ describe('InvoiceTable', () => {
           uuid: '1',
           item: 'Item Name',
           billableService: 'Billable Service Name',
-          paymentStatus: 'PAID',
+          status: 'PAID',
           quantity: 1,
           price: 100,
           display: '',
@@ -370,7 +370,7 @@ describe('InvoiceTable', () => {
           uuid: '2',
           item: 'Item Without Billable',
           billableService: '',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           quantity: 1,
           price: 200,
           display: '',

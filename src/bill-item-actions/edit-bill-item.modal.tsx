@@ -161,7 +161,7 @@ const EditBillLineItemModal: React.FC<EditBillLineItemModalProps> = ({ bill, clo
                 {t('currentPrice', 'Current price')}: {convertToCurrency(item?.price, defaultCurrency)}
               </p>
               <p className={styles.label}>
-                {t('serviceStatus', 'Service status')}: {item?.paymentStatus}
+                {t('serviceStatus', 'Service status')}: {item?.status}
               </p>
               <Controller
                 name="quantity"

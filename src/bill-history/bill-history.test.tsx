@@ -129,7 +129,7 @@ describe('BillHistory', () => {
       status: 'PENDING',
       dateCreated: '2024-01-01',
       receiptNumber: 'REC-001',
-      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, paymentStatus: 'PENDING' }],
+      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, status: 'PENDING' }],
     };
     mockUseBills.mockReturnValueOnce({
       isLoading: false,
@@ -152,7 +152,7 @@ describe('BillHistory', () => {
       status: 'PAID',
       dateCreated: '2024-01-01',
       receiptNumber: 'REC-001',
-      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, paymentStatus: 'PAID' }],
+      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, status: 'PAID' }],
     };
     mockUseBills.mockReturnValueOnce({
       isLoading: false,
@@ -175,7 +175,7 @@ describe('BillHistory', () => {
       status: 'PENDING',
       dateCreated: '2024-01-01',
       receiptNumber: 'REC-001',
-      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, paymentStatus: 'PENDING' }],
+      lineItems: [{ uuid: 'item-1', item: 'Test', quantity: 1, price: 100, status: 'PENDING' }],
     };
     mockUseBills.mockReturnValueOnce({
       isLoading: false,

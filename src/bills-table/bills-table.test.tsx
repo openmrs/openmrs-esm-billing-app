@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
-import { BillStatus } from '../types';
+import { BillLineItemStatus, BillStatus, type MappedBill } from '../types';
 import BillsTable from './bills-table.component';
 
 vi.mock('../billing.resource', () => ({
@@ -24,7 +24,6 @@ const mockBillsData = [
     id: 1,
     patientName: 'John Doe',
     identifier: '12345678',
-    visitType: 'Checkup',
     patientUuid: 'uuid1',
     dateCreated: '2024-01-01',
     lineItems: [
@@ -41,7 +40,7 @@ const mockBillsData = [
         priceUuid: 'price-1',
         lineItemOrder: 1,
         resourceVersion: '1.0',
-        paymentStatus: 'PENDING',
+        status: BillLineItemStatus.PENDING,
       },
     ],
     status: BillStatus.PENDING,
@@ -60,7 +59,6 @@ const mockBillsData = [
     id: 2,
     patientName: 'Mary Smith',
     identifier: '98765432',
-    visitType: 'Wake up',
     patientUuid: 'uuid2',
     dateCreated: '2024-01-02',
     lineItems: [
@@ -77,7 +75,7 @@ const mockBillsData = [
         priceUuid: 'price-1',
         lineItemOrder: 1,
         resourceVersion: '1.0',
-        paymentStatus: 'PENDING',
+        status: BillLineItemStatus.PENDING,
       },
     ],
     status: BillStatus.PENDING,
@@ -91,7 +89,7 @@ const mockBillsData = [
     totalAmount: 200,
     tenderedAmount: 200,
   },
-];
+] satisfies MappedBill[];
 
 describe('BillsTable', () => {
   beforeEach(() => {

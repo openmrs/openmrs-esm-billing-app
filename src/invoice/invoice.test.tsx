@@ -13,7 +13,7 @@ import {
   usePatient,
 } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
-import { type BillDiscount, BillDiscountStatus, BillDiscountType, BillStatus } from '../types';
+import { type BillDiscount, BillDiscountStatus, BillDiscountType, BillStatus, type MappedBill } from '../types';
 import { useBill } from '../billing.resource';
 import { useBillDiscounts } from '../discounts/discounts.resource';
 import { usePaymentModes } from './payments/payment.resource';
@@ -81,7 +81,7 @@ vi.mock('react-to-print', () => ({
 }));
 
 describe('Invoice', () => {
-  const defaultBillData = {
+  const defaultBillData: MappedBill = {
     ...mockBill,
     uuid: 'test-uuid',
     status: BillStatus.PENDING,
@@ -95,7 +95,7 @@ describe('Invoice', () => {
         item: 'Test Service',
         quantity: 1,
         price: 1000,
-        paymentStatus: 'PENDING',
+        status: 'PENDING',
         billableService: 'Test Service',
         display: '',
         voided: false,
@@ -294,7 +294,7 @@ describe('Invoice', () => {
   });
 
   it('should search and filter line items in the table', async () => {
-    const billWithMultipleItems = {
+    const billWithMultipleItems: MappedBill = {
       ...defaultBillData,
       lineItems: [
         {
@@ -302,7 +302,7 @@ describe('Invoice', () => {
           item: 'Lab Test',
           quantity: 1,
           price: 500,
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           billableService: 'Lab Test',
           display: '',
           voided: false,
@@ -317,7 +317,7 @@ describe('Invoice', () => {
           item: 'X-Ray',
           quantity: 1,
           price: 500,
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           billableService: 'X-Ray',
           display: '',
           voided: false,

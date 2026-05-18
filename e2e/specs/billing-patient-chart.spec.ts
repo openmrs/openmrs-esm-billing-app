@@ -535,8 +535,8 @@ test.describe('Billing: Patient Chart workflow', () => {
       // Verify backend state
       const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
       const billData = await billResponse.json();
-      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
-        expect(lineItem.paymentStatus).toBe('PAID');
+      billData.lineItems.forEach((lineItem: { status: string }) => {
+        expect(lineItem.status).toBe('PAID');
       });
     });
   });

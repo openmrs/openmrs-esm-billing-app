@@ -11,7 +11,7 @@ const createLineItem = (overrides: Partial<LineItem> = {}): LineItem => ({
   uuid: 'line-item-uuid',
   item: 'Service Item',
   billableService: 'Billable Service',
-  paymentStatus: 'PENDING',
+  status: 'PENDING',
   quantity: 1,
   price: 100,
   priceName: 'Standard',
@@ -346,8 +346,8 @@ describe('mapBillProperties', () => {
     it('Handles partial payment correctly', () => {
       const bill = createBaseBill({
         lineItems: [
-          createLineItem({ price: 100, quantity: 1, paymentStatus: 'PAID' }),
-          createLineItem({ price: 50, quantity: 1, paymentStatus: 'PENDING' }),
+          createLineItem({ price: 100, quantity: 1, status: 'PAID' }),
+          createLineItem({ price: 50, quantity: 1, status: 'PENDING' }),
         ],
         payments: [createPayment({ amountTendered: 100 })],
       });
@@ -360,7 +360,7 @@ describe('mapBillProperties', () => {
     it('Handles overpayment (change due scenario)', () => {
       const bill = createBaseBill({
         status: 'PAID',
-        lineItems: [createLineItem({ price: 100, quantity: 1, paymentStatus: 'PAID' })],
+        lineItems: [createLineItem({ price: 100, quantity: 1, status: 'PAID' })],
         payments: [createPayment({ amount: 100, amountTendered: 150 })],
       });
       const result = mapBillProperties(bill);
@@ -372,11 +372,11 @@ describe('mapBillProperties', () => {
     it('Handles complex bill with mixed item states', () => {
       const bill = createBaseBill({
         lineItems: [
-          createLineItem({ paymentStatus: 'PAID', voided: false, price: 100, quantity: 1, item: 'Consultation' }),
-          createLineItem({ paymentStatus: 'PENDING', voided: false, price: 50, quantity: 2, item: 'Lab Test' }),
-          createLineItem({ paymentStatus: 'PAID', voided: true, price: 200, quantity: 1, item: 'Canceled X-Ray' }),
+          createLineItem({ status: 'PAID', voided: false, price: 100, quantity: 1, item: 'Consultation' }),
+          createLineItem({ status: 'PENDING', voided: false, price: 50, quantity: 2, item: 'Lab Test' }),
+          createLineItem({ status: 'PAID', voided: true, price: 200, quantity: 1, item: 'Canceled X-Ray' }),
           createLineItem({
-            paymentStatus: 'PAID',
+            status: 'PAID',
             voided: false,
             price: 25,
             quantity: 3,
@@ -399,8 +399,8 @@ describe('mapBillProperties', () => {
       const bill = createBaseBill({
         status: 'PAID',
         lineItems: [
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
+          createLineItem({ status: 'PENDING', voided: true }),
+          createLineItem({ status: 'PENDING', voided: true }),
         ],
       });
       const result = mapBillProperties(bill);
@@ -412,7 +412,7 @@ describe('mapBillProperties', () => {
 
     it('Handles bill with no payments yet', () => {
       const bill = createBaseBill({
-        lineItems: [createLineItem({ price: 100, quantity: 1, paymentStatus: 'PENDING' })],
+        lineItems: [createLineItem({ price: 100, quantity: 1, status: 'PENDING' })],
         payments: [],
       });
       const result = mapBillProperties(bill);
@@ -425,8 +425,8 @@ describe('mapBillProperties', () => {
       const bill = createBaseBill({
         status: 'PAID',
         lineItems: [
-          createLineItem({ price: 50, quantity: 3, paymentStatus: 'PAID' }), // Originally 1, adjusted to 3
-          createLineItem({ price: 100, quantity: 0, paymentStatus: 'PAID' }), // Adjusted to 0
+          createLineItem({ price: 50, quantity: 3, status: 'PAID' }), // Originally 1, adjusted to 3
+          createLineItem({ price: 100, quantity: 0, status: 'PAID' }), // Adjusted to 0
         ],
         payments: [createPayment({ amountTendered: 150 })],
       });

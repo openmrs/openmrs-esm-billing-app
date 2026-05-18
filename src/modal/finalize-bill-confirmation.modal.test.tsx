@@ -34,7 +34,7 @@ const mockBill: MappedBill = {
       item: 'X-Ray',
       quantity: 1,
       price: 500,
-      paymentStatus: BillStatus.PENDING,
+      status: BillStatus.PENDING,
       billableService: 'X-Ray Service',
     },
   ],

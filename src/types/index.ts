@@ -9,6 +9,17 @@ export const BillStatus = {
 
 export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus];
 
+export const BillLineItemStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  ADJUSTED: 'ADJUSTED',
+  REFUND_REQUESTED: 'REFUND_REQUESTED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+  REFUNDED: 'REFUNDED',
+} as const;
+
+export type BillLineItemStatus = (typeof BillLineItemStatus)[keyof typeof BillLineItemStatus];
+
 export interface MappedBill {
   uuid: string;
   id: number;
@@ -66,7 +77,7 @@ interface Provider {
 export interface LineItem {
   uuid?: string;
   item?: string;
-  paymentStatus: string;
+  status: BillLineItemStatus;
   billableService?: string;
   quantity: number;
   price: number;

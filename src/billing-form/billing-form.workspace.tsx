@@ -24,7 +24,7 @@ import { useBillableServices as useBillableServicesList } from '../billable-serv
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
-import { BillStatus, type BillableItem, type LineItem, type ServicePrice } from '../types';
+import { BillLineItemStatus, BillStatus, type BillableItem, type LineItem, type ServicePrice } from '../types';
 import styles from './billing-form.scss';
 
 interface ExtendedLineItem extends LineItem {
@@ -101,7 +101,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       quantity: 1,
       price: defaultPrice,
       billableService: item.uuid,
-      paymentStatus: BillStatus.PENDING,
+      status: BillLineItemStatus.PENDING,
       lineItemOrder: 0,
       selectedPaymentMethod: selectedPaymentMethod,
       availablePaymentMethods: availablePaymentMethods,
@@ -172,7 +172,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       quantity: item.quantity,
       price: item.price,
       lineItemOrder: 0,
-      paymentStatus: BillStatus.PENDING,
+      status: BillLineItemStatus.PENDING,
       billableService: item.uuid,
     }));
 
@@ -192,7 +192,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
             quantity: item.quantity,
             price: item.price,
             lineItemOrder: item.lineItemOrder,
-            paymentStatus: item.paymentStatus,
+            status: item.status,
             billableService: serviceUuid,
             priceName: item.priceName,
             priceUuid: item.priceUuid,

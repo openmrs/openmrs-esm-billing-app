@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { type FetchResponse, getDefaultsFromConfigSchema, showSnackbar, useConfig } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
-import { type MappedBill } from '../types';
+import { type LineItem, type MappedBill } from '../types';
 import { updateBillItems } from '../billing.resource';
 import EditBillLineItemModal from './edit-bill-item.modal';
 
@@ -54,7 +54,7 @@ const mockBill: MappedBill = {
       lineItemOrder: 1,
       resourceVersion: '1.0',
       item: 'Test Item',
-      paymentStatus: 'PENDING',
+      status: 'PENDING',
     },
   ],
   dateCreated: new Date().toISOString(),
@@ -66,12 +66,12 @@ const mockBill: MappedBill = {
   identifier: 'receipt-identifier',
 };
 
-const mockItem = {
+const mockItem: LineItem = {
   uuid: 'item-uuid',
   quantity: 2,
   price: 100,
   billableService: 'X-Ray Service',
-  paymentStatus: 'UNPAID',
+  status: 'PENDING',
   item: 'Test Service',
   display: 'Test Service',
   voided: false,
@@ -174,7 +174,7 @@ describe('EditBillItem', () => {
           quantity: 1,
           price: 100,
           billableService: 'X-Ray Service',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           item: 'X-Ray',
           display: 'X-Ray',
           voided: false,
@@ -189,7 +189,7 @@ describe('EditBillItem', () => {
           quantity: 2,
           price: 50,
           billableService: 'Lab Test Service',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           item: 'Lab Test',
           display: 'Lab Test',
           voided: false,
@@ -204,7 +204,7 @@ describe('EditBillItem', () => {
           quantity: 1,
           price: 200,
           billableService: 'Consultation Service',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           item: 'Consultation',
           display: 'Consultation',
           voided: false,

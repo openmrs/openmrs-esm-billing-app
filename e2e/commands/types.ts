@@ -61,7 +61,15 @@ export interface Bill {
     priceName: string;
     priceUuid: string;
     lineItemOrder: number;
-    paymentStatus: string;
+    status:
+      | 'PENDING'
+      | 'PAID'
+      | 'ADJUSTED'
+      | 'CANCELLED'
+      | 'EXEMPTED'
+      | 'REFUND_REQUESTED'
+      | 'REFUNDED'
+      | 'PARTIALLY_REFUNDED';
   }>;
   payments: Array<{
     uuid: string;
