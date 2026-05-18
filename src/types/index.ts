@@ -26,6 +26,7 @@ export interface MappedBill {
   billingService: string;
   payments: Array<Payment>;
   totalAmount?: number;
+  netAmount?: number;
   tenderedAmount?: number;
   display?: string;
 }
@@ -158,6 +159,9 @@ export interface PatientInvoice {
   adjustmentReason: string | null;
   id: number;
   resourceVersion: string;
+  total: number;
+  amountAfterDiscount: number;
+  discounts: BillDiscount[];
 }
 
 export interface PatientDetails {
@@ -261,3 +265,51 @@ export type PaymentModePayload = {
   name: string;
   description: string;
 };
+
+export const BillDiscountStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export type BillDiscountStatus = (typeof BillDiscountStatus)[keyof typeof BillDiscountStatus];
+
+export const BillDiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+} as const;
+
+export type BillDiscountType = (typeof BillDiscountType)[keyof typeof BillDiscountType];
+
+export interface UserRef {
+  uuid: string;
+  display: string;
+}
+
+export interface BillDiscount {
+  uuid: string;
+  billUuid: string;
+  lineItemUuid: string | null;
+  discountType: BillDiscountType;
+  discountValue: number;
+  discountAmount: number;
+  justification: string;
+  initiator: UserRef;
+  approver: UserRef | null;
+  dateCreated: string;
+  status: BillDiscountStatus;
+  voided: boolean;
+}
+
+export interface RequestDiscountPayload {
+  bill: string;
+  lineItem?: string;
+  discountType: BillDiscountType;
+  discountValue: number;
+  justification: string;
+}
+
+export interface DecideDiscountPayload {
+  status: Exclude<BillDiscountStatus, 'PENDING'>;
+  approver: string;
+}

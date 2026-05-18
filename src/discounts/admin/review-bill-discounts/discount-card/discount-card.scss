@@ -1,0 +1,164 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.card {
+  position: relative;
+  border: 1px solid $ui-03;
+  background: $ui-02;
+  padding: $spacing-05 $spacing-05 $spacing-04 $spacing-06;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: $color-gray-30;
+}
+
+.cardPending::before {
+  background: $inverse-support-03;
+}
+
+.cardApproved::before {
+  background: $support-02;
+}
+
+.cardRejected::before {
+  background: $danger;
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-04;
+  margin-bottom: $spacing-03;
+}
+
+.cardScope {
+  display: flex;
+  align-items: center;
+  gap: $spacing-03;
+  flex-wrap: wrap;
+}
+
+.cardRef {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background: $ui-05;
+  color: $ui-02;
+  @include type.type-style('code-01');
+  font-weight: 500;
+  text-align: center;
+  line-height: 22px;
+}
+
+.cardScopeName {
+  @include type.type-style('heading-02');
+  color: var(--cds-text-primary);
+}
+
+.cardScopeKind {
+  @include type.type-style('label-01');
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cds-text-helper);
+  border-left: 1px solid $ui-03;
+  padding-left: $spacing-03;
+}
+
+.cardFigure {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-03;
+  margin-bottom: $spacing-04;
+  font-variant-numeric: tabular-nums;
+}
+
+.cardAmount {
+  @include type.type-style('heading-05');
+  letter-spacing: -0.015em;
+  color: var(--cds-text-primary);
+  line-height: 1;
+}
+
+.cardAmountMinus {
+  color: $danger;
+  margin-right: 2px;
+}
+
+.cardAmountVoided {
+  color: var(--cds-text-helper);
+}
+
+.cardValue {
+  @include type.type-style('code-01');
+  color: var(--cds-text-helper);
+  padding: 3px $spacing-02;
+  background: $ui-01;
+  border: 1px solid $ui-03;
+}
+
+.cardJustification {
+  @include type.type-style('body-01');
+  font-style: italic;
+  color: var(--cds-text-secondary);
+  padding: $spacing-01 0 $spacing-01 $spacing-03;
+  margin: 0 0 $spacing-04;
+}
+
+.cardAlert {
+  margin: 0 0 $spacing-04 !important;
+  max-width: 100% !important;
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $spacing-04;
+  padding-top: $spacing-03;
+  border-top: 1px solid $ui-03;
+  flex-wrap: wrap;
+}
+
+.cardByline {
+  @include type.type-style('label-01');
+  color: var(--cds-text-helper);
+  display: flex;
+  gap: $spacing-02;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cardByline strong {
+  font-weight: 500;
+  color: var(--cds-text-secondary);
+}
+
+.cardBylineSep {
+  color: $color-gray-30;
+}
+
+.cardActions {
+  display: flex;
+  gap: $spacing-02;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.cardActions :global(.cds--btn) {
+  min-width: 7rem;
+  justify-content: center;
+}
+
+.confirmCopy {
+  @include type.type-style('body-compact-01');
+  color: var(--cds-text-secondary);
+  margin-right: $spacing-02;
+}

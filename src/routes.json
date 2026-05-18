@@ -82,6 +82,12 @@
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
       "order": 1
+    },
+    {
+      "name": "discount-requests-left-panel-link",
+      "component": "discountRequestsLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 2
     }
   ],
   "modals": [
@@ -120,7 +126,9 @@
     {
       "name": "delete-bill-confirmation-modal",
       "component": "deleteBillConfirmationModal"
-    }
+    },
+    { "name": "request-discount-modal", "component": "requestDiscountModal" },
+    { "name": "review-bill-discounts-modal", "component": "reviewBillDiscountsModal" }
   ],
   "workspaces2": [
     {

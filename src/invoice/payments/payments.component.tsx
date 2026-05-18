@@ -35,7 +35,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
         invalid_type_error: t('amountRequired', 'Amount is required'),
       })
       .positive({ message: t('amountMustBePositive', 'Amount must be greater than 0') })
-      .max(bill?.totalAmount - bill?.tenderedAmount, {
+      .max((bill?.netAmount ?? 0) - (bill?.tenderedAmount ?? 0), {
         message: t('paymentAmountCannotExceedAmountDue', 'Payment amount cannot exceed amount due'),
       }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
@@ -69,7 +69,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
     return null;
   }
 
-  const amountDue = (bill.totalAmount ?? 0) - (bill.tenderedAmount ?? 0);
+  const amountDue = (bill.netAmount ?? 0) - (bill.tenderedAmount ?? 0);
 
   const handleProcessPayment = async () => {
     if (!formValues?.method || formValues.amount == null) {
@@ -126,11 +126,14 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             label={t('totalTendered', 'Total tendered')}
             value={convertToCurrency(bill.tenderedAmount ?? 0, defaultCurrency)}
           />
-          <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
+          <InvoiceBreakDown
+            label={t('discount', 'Discount')}
+            value={`- ${convertToCurrency((bill.totalAmount ?? 0) - (bill.netAmount ?? 0), defaultCurrency)}`}
+          />
           <InvoiceBreakDown
             hasBalance={amountDue < 0}
             label={t('amountDue', 'Amount due')}
-            value={convertToCurrency(amountDue < 0 ? -amountDue : amountDue, defaultCurrency)}
+            value={convertToCurrency(amountDue, defaultCurrency)}
           />
           <div className={styles.processPayments}>
             <Button onClick={handleNavigateToBillingDashboard} kind="secondary">

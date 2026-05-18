@@ -23,7 +23,9 @@ import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
-import { BillStatus } from '../types';
+import { BillDiscountStatus, BillStatus } from '../types';
+import { useBillDiscounts } from '../discounts/discounts.resource';
+import DiscountsTable from '../discounts/discounts-table.component';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -41,6 +43,31 @@ const Invoice: React.FC = () => {
   const componentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
   const { defaultCurrency } = useConfig<BillingConfig>();
+
+  const { discounts, error: discountsError, mutate: mutateDiscounts } = useBillDiscounts(billUuid);
+  const billLevelDiscountExists = discounts?.some((d) => !d.lineItemUuid) ?? false;
+  const lineItemDiscountExists = discounts?.some((d) => !!d.lineItemUuid) ?? false;
+  const billStatusEligible = bill?.status === BillStatus.PENDING || bill?.status === BillStatus.POSTED;
+  // Treat a discounts fetch failure as ineligible — otherwise the user could request a duplicate.
+  const showRequestDiscountButton = !!bill && billStatusEligible && !billLevelDiscountExists && !discountsError;
+  const hasApprovedDiscount = discounts?.some((d) => d.status === BillDiscountStatus.APPROVED) ?? false;
+
+  const handleRequestDiscount = () => {
+    const dispose = showModal('request-discount-modal', {
+      bill: {
+        uuid: bill!.uuid,
+        total: bill!.totalAmount ?? 0,
+        amountDue: Math.max(0, (bill!.netAmount ?? bill!.totalAmount ?? 0) - (bill!.tenderedAmount ?? 0)),
+        receiptNumber: bill!.receiptNumber,
+        lineItemCount: bill!.lineItems?.length ?? 0,
+      },
+      onMutate: () => {
+        mutate();
+        mutateDiscounts();
+      },
+      closeModal: () => dispose(),
+    });
+  };
 
   const handleAfterPrint = useCallback(() => {
     onBeforeGetContentResolve.current = null;
@@ -100,13 +127,24 @@ const Invoice: React.FC = () => {
    * t('dateAndTime', 'Date and time')
    * t('invoiceStatus', 'Invoice status')
    */
-  const invoiceDetails = {
-    [t('totalAmount', 'Total amount')]: convertToCurrency(bill?.totalAmount, defaultCurrency),
-    [t('amountTendered', 'Amount tendered')]: convertToCurrency(bill?.tenderedAmount, defaultCurrency),
-    [t('invoiceNumber', 'Invoice number')]: bill?.receiptNumber,
-    [t('dateAndTime', 'Date and time')]: bill?.dateCreated
+  const invoiceDetails: Record<string, string | number | undefined> = {
+    [t('dateBillCreated', 'Date bill created')]: bill?.dateCreated
       ? formatDate(parseDate(bill.dateCreated), { mode: 'wide' })
       : '--',
+    [t('totalAmount', 'Total amount')]: convertToCurrency(bill?.totalAmount, defaultCurrency),
+    ...(hasApprovedDiscount
+      ? {
+          [t('discount', 'Discount')]:
+            `- ${convertToCurrency((bill?.totalAmount ?? 0) - (bill?.netAmount ?? 0), defaultCurrency)}`,
+          [t('netAmount', 'Net amount')]: convertToCurrency(bill?.netAmount, defaultCurrency),
+        }
+      : {}),
+    [t('amountTendered', 'Amount tendered')]: convertToCurrency(bill?.tenderedAmount, defaultCurrency),
+    [t('amountDue', 'Amount due')]: convertToCurrency(
+      bill ? (bill.netAmount ?? 0) - (bill.tenderedAmount ?? 0) : undefined,
+      defaultCurrency,
+    ),
+    [t('invoiceNumber', 'Invoice number')]: bill?.receiptNumber,
     [t('invoiceStatus', 'Invoice status')]: bill?.status,
   };
 
@@ -137,6 +175,11 @@ const Invoice: React.FC = () => {
           <span>
             <InlineLoading status="active" />
           </span>
+        )}
+        {showRequestDiscountButton && (
+          <Button kind="tertiary" onClick={handleRequestDiscount} disabled={lineItemDiscountExists}>
+            {t('requestDiscount', 'Request discount')}
+          </Button>
         )}
         {bill?.status === BillStatus.PENDING && (
           <>
@@ -178,7 +221,15 @@ const Invoice: React.FC = () => {
       </div>
 
       <div className={styles.invoiceContent}>
-        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
+        <InvoiceTable
+          bill={bill}
+          isLoadingBill={isLoadingBill}
+          onMutate={mutate}
+          discounts={discounts}
+          discountsError={discountsError}
+          mutateDiscounts={mutateDiscounts}
+        />
+        {bill && <DiscountsTable bill={bill} billUuid={bill.uuid} />}
         <Payments bill={bill} mutate={mutate} />
       </div>
 

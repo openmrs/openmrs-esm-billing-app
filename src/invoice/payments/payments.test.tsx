@@ -10,6 +10,7 @@ import {
   type VisitReturnType,
 } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
+import { processBillPayment } from '../../billing.resource';
 import { BillStatus, type MappedBill } from '../../types';
 import { configSchema, type BillingConfig } from '../../config-schema';
 import { usePaymentModes } from './payment.resource';
@@ -244,6 +245,7 @@ describe('Payments', () => {
       ...mockBill,
       status: BillStatus.POSTED,
       totalAmount: 100,
+      netAmount: 100,
       tenderedAmount: 0,
     };
 
@@ -263,6 +265,7 @@ describe('Payments', () => {
       ...mockBill,
       status: BillStatus.POSTED,
       totalAmount: 100,
+      netAmount: 100,
       tenderedAmount: 0,
       lineItems: [],
     };
@@ -271,6 +274,66 @@ describe('Payments', () => {
 
     expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
     expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
+  });
+
+  it('blocks payment greater than (netAmount - tendered) on a discounted bill', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+    mockProcessBillPayment.mockResolvedValue({} as any);
+
+    const billWithDiscount: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 500,
+      netAmount: 400,
+      tenderedAmount: 0,
+      payments: [],
+      lineItems: [],
+    };
+
+    render(<Payments bill={billWithDiscount} mutate={mockMutate} />);
+
+    const methodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(methodDropdown);
+    await user.click(screen.getByText('Cash'));
+
+    // 450 > netAmount (400). If the schema bound regressed to totalAmount (500) this would pass.
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '450');
+
+    expect(screen.getByText('Process Payment')).toBeDisabled();
+    expect(mockProcessBillPayment).not.toHaveBeenCalled();
+  });
+
+  it('sends a non-null amount in the payment payload when processing a discounted bill', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+    mockProcessBillPayment.mockResolvedValue({} as any);
+
+    const billWithDiscount: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 500,
+      netAmount: 400,
+      tenderedAmount: 0,
+      payments: [],
+      lineItems: [],
+    };
+
+    render(<Payments bill={billWithDiscount} mutate={mockMutate} />);
+
+    const methodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(methodDropdown);
+    await user.click(screen.getByText('Cash'));
+
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '100');
+
+    await user.click(screen.getByText('Process Payment'));
+
+    expect(mockProcessBillPayment).toHaveBeenCalledTimes(1);
+    const [payload] = mockProcessBillPayment.mock.calls[0];
+    expect(payload.amount).toBeTypeOf('number');
+    expect(payload.amount).not.toBeNaN();
+    expect(payload.amountTendered).toBe(100);
   });
 
   it('should display process payment button', () => {

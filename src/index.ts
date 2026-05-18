@@ -2,9 +2,12 @@ import { configSchema } from './config-schema';
 import { createDashboard, defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { dashboardMeta } from './dashboard.meta';
-import { Settings, Wallet } from '@carbon/react/icons';
+import { Settings, TagGroup, Wallet } from '@carbon/react/icons';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
+import { createDiscountRequestsLeftPanelLink } from './discounts/admin/discount-requests-left-panel-link.component';
+import RequestDiscountModal from './discounts/request-discount.modal';
+import ReviewBillDiscountsModal from './discounts/admin/review-bill-discounts/review-bill-discounts.modal';
 import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
 import appMenu from './billable-services/billable-services-menu-item/item.component';
 import BillableServiceHome from './billable-services/billable-services-home.component';
@@ -86,22 +89,6 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
   options,
 );
 
-// t('billWaiver', 'Bill waiver')
-// Bill waiver feature disabled - O3-5057
-// The following export is commented out along with:
-// - BillWaiver component import and route in billable-services-home.component.tsx
-// - bill-waiver-left-panel-link extension removed from routes.json
-// export const billWaiverLeftPanelLink = getSyncLifecycle(
-//   createBillableServicesLeftPanelLink({
-//     name: 'bill-waiver',
-//     title: 'billWaiver',
-//     path: 'waive-bill',
-//     icon: Money,
-//     privilege: 'coreapps.systemAdministration',
-//   }),
-//   options,
-// );
-
 // t('billingSettings', 'Billing settings')
 // t('cashPointConfig', 'Cash point configuration')
 // t('paymentModesConfig', 'Payment modes configuration')
@@ -138,5 +125,20 @@ export const finalizeBillConfirmationModal = getAsyncLifecycle(
 
 export const deleteBillConfirmationModal = getAsyncLifecycle(
   () => import('./modal/delete-bill-confirmation.modal'),
+  options,
+);
+
+export const requestDiscountModal = getSyncLifecycle(RequestDiscountModal, options);
+
+export const reviewBillDiscountsModal = getSyncLifecycle(ReviewBillDiscountsModal, options);
+
+// t('discountRequests', 'Discount requests')
+export const discountRequestsLeftPanelLink = getSyncLifecycle(
+  createDiscountRequestsLeftPanelLink({
+    name: 'discount-requests',
+    title: 'discountRequests',
+    path: 'discount-requests',
+    icon: TagGroup,
+  }),
   options,
 );
