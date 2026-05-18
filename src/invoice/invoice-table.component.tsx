@@ -31,13 +31,27 @@ import type { BillingConfig } from '../config-schema';
 import { BillStatus, type LineItem, type MappedBill } from '../types';
 import styles from './invoice-table.scss';
 
+const getLineItemTotal = (item: LineItem) => (item.price ?? 0) * (item.quantity ?? 0);
+
+type UseBillDiscountsResult = ReturnType<typeof useBillDiscounts>;
+
 type InvoiceTableProps = {
   bill: MappedBill;
   isLoadingBill?: boolean;
   onMutate?: () => void;
+  discounts?: UseBillDiscountsResult['discounts'];
+  discountsError?: UseBillDiscountsResult['error'];
+  mutateDiscounts?: UseBillDiscountsResult['mutate'];
 };
 
-const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMutate }) => {
+const InvoiceTable: React.FC<InvoiceTableProps> = ({
+  bill,
+  isLoadingBill,
+  onMutate,
+  discounts: discountsProp,
+  discountsError: discountsErrorProp,
+  mutateDiscounts: mutateDiscountsProp,
+}) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
@@ -46,7 +60,11 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
 
-  const { discounts, error: discountsError, mutate: mutateDiscounts } = useBillDiscounts(bill?.uuid);
+  const shouldFetchDiscounts = discountsProp === undefined;
+  const hookResult = useBillDiscounts(shouldFetchDiscounts ? bill?.uuid : undefined);
+  const discounts = discountsProp ?? hookResult.discounts;
+  const discountsError = discountsErrorProp ?? hookResult.error;
+  const mutateDiscounts = mutateDiscountsProp ?? hookResult.mutate;
   const billStatusEligible = bill?.status === BillStatus.PENDING || bill?.status === BillStatus.POSTED;
   const hasBillLevelDiscount = discounts?.some((d) => !d.lineItemUuid) ?? false;
 
@@ -68,7 +86,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
       lineItem: {
         uuid: lineItem.uuid,
         display: lineItem.item || lineItem.billableService || '--',
-        total: (lineItem.price ?? 0) * (lineItem.quantity ?? 0),
+        total: getLineItemTotal(lineItem),
         quantity: lineItem.quantity,
         price: lineItem.price,
       },
@@ -113,7 +131,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
         status: item.paymentStatus,
         quantity: item.quantity,
         price: convertToCurrency(item.price, defaultCurrency),
-        total: convertToCurrency(item.price * item.quantity, defaultCurrency),
+        total: convertToCurrency(getLineItemTotal(item), defaultCurrency),
       })) ?? [],
     [filteredLineItems, defaultCurrency],
   );

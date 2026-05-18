@@ -9,8 +9,8 @@ import { useReviewBillModel } from './review-bill-discounts.utils';
 import { BillDiscountStatus, BillStatus, type BillDiscount, type PatientInvoice } from '../../../types';
 import styles from './review-bill-discounts.modal.scss';
 
-const extractErrorMessage = (e: any): string | undefined =>
-  e?.responseBody?.error?.message ?? (e instanceof Error ? e.message : undefined);
+const extractErrorMessage = (e: any): string =>
+  e?.responseBody?.error?.message ?? (e instanceof Error ? e.message : String(e));
 
 interface Props {
   closeModal: () => void;
@@ -24,8 +24,7 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
   const [busy, setBusy] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [localBill] = useState(bill);
-  const canDecide = localBill.status === BillStatus.PENDING || localBill.status === BillStatus.POSTED;
+  const canDecide = bill.status === BillStatus.PENDING || bill.status === BillStatus.POSTED;
 
   const {
     pendingDiscounts,
@@ -37,7 +36,7 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
     subtotal,
     currentNet,
     outstanding,
-  } = useReviewBillModel(localBill);
+  } = useReviewBillModel(bill);
 
   const handleApprove = useCallback(
     async (d: BillDiscount) => {
@@ -124,7 +123,7 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
       <ModalBody>
         <div className={styles.layout}>
           <BillReceiptRail
-            bill={localBill}
+            bill={bill}
             lineItems={lineItems}
             payments={payments}
             paymentsTotal={paymentsTotal}

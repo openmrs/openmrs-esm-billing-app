@@ -221,7 +221,14 @@ const Invoice: React.FC = () => {
       </div>
 
       <div className={styles.invoiceContent}>
-        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
+        <InvoiceTable
+          bill={bill}
+          isLoadingBill={isLoadingBill}
+          onMutate={mutate}
+          discounts={discounts}
+          discountsError={discountsError}
+          mutateDiscounts={mutateDiscounts}
+        />
         {bill && <DiscountsTable bill={bill} billUuid={bill.uuid} />}
         <Payments bill={bill} mutate={mutate} />
       </div>

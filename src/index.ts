@@ -136,7 +136,7 @@ export const reviewBillDiscountsModal = getSyncLifecycle(ReviewBillDiscountsModa
 export const discountRequestsLeftPanelLink = getSyncLifecycle(
   createDiscountRequestsLeftPanelLink({
     name: 'discount-requests',
-    title: 'Discount requests',
+    title: 'discountRequests',
     path: 'discount-requests',
     icon: TagGroup,
   }),
