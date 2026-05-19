@@ -425,7 +425,7 @@ describe('InvoiceTable', () => {
           {
             uuid: 'li1',
             item: 'Consultation',
-            paymentStatus: 'PENDING',
+            status: 'PENDING',
             quantity: 1,
             price: 1000,
             display: '',
