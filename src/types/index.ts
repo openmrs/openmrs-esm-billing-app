@@ -326,3 +326,8 @@ export interface DecideDiscountPayload {
   status: Exclude<BillDiscountStatus, 'PENDING'>;
   approver: string;
 }
+
+export interface PatientPaymentStatus {
+  status: string;
+  reason: string;
+}

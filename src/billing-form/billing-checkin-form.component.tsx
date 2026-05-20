@@ -1,10 +1,12 @@
 import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill, useLastVisitInfo } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import { BillLineItemStatus, BillStatus } from '../types';
+import { apiBasePath } from '../constants';
 import styles from './billing-checkin-form.scss';
 
 type BillingCheckInFormProps = {
@@ -66,6 +68,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     async (createBillPayload) => {
       try {
         await createPatientBill(createBillPayload);
+        mutate(`${apiBasePath}patientPaymentStatus/${patientUuid}`);
         showSnackbar({
           title: t('patientBill', 'Patient bill'),
           subtitle: t('billCreatedSuccessfully', 'Bill created successfully'),
@@ -79,7 +82,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         });
       }
     },
-    [t],
+    [t, patientUuid],
   );
 
   const handleBillingService = useCallback(

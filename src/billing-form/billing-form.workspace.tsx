@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { mutate } from 'swr';
 import {
   Button,
   ButtonSet,
@@ -20,6 +21,7 @@ import {
   Workspace2,
 } from '@openmrs/esm-framework';
 import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
+import { apiBasePath } from '../constants';
 import { useBillableServices as useBillableServicesList } from '../billable-services/billable-service.resource';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
@@ -224,6 +226,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 
       closeWorkspace({ discardUnsavedChanges: true });
       onMutate?.();
+      mutate(`${apiBasePath}patientPaymentStatus/${patientUuid}`);
 
       showSnackbar({
         title: isEditMode ? t('itemsAddedToBill', 'Items added to bill') : t('billProcessed', 'Bill processed'),
