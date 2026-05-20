@@ -12,10 +12,12 @@ export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus];
 export const BillLineItemStatus = {
   PENDING: 'PENDING',
   PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
   ADJUSTED: 'ADJUSTED',
+  EXEMPTED: 'EXEMPTED',
   REFUND_REQUESTED: 'REFUND_REQUESTED',
-  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
   REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
 } as const;
 
 export type BillLineItemStatus = (typeof BillLineItemStatus)[keyof typeof BillLineItemStatus];
