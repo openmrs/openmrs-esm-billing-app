@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import { useSWRConfig } from 'swr';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill, useLastVisitInfo } from './billing-form.resource';
@@ -16,6 +16,7 @@ type BillingCheckInFormProps = {
 
 const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, setExtraVisitInfo }) => {
   const { t } = useTranslation();
+  const { mutate } = useSWRConfig();
   const { categoryConcepts } = useConfig();
 
   const { lastVisitInfo, isLoading: isLoadingLastVisitInfo, error: lastVisitError } = useLastVisitInfo(patientUuid);
@@ -82,7 +83,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         });
       }
     },
-    [t, patientUuid],
+    [mutate, t, patientUuid],
   );
 
   const handleBillingService = useCallback(
