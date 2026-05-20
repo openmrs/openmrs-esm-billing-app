@@ -4,7 +4,7 @@ import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill, useLastVisitInfo } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
-import { BillStatus } from '../types';
+import { BillLineItemStatus, BillStatus } from '../types';
 import styles from './billing-checkin-form.scss';
 
 type BillingCheckInFormProps = {
@@ -102,7 +102,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
             priceName: 'Default',
             priceUuid: priceForPaymentMode ? priceForPaymentMode.uuid : '',
             lineItemOrder: 0,
-            paymentStatus: BillStatus.PENDING,
+            status: BillLineItemStatus.PENDING,
           },
         ],
         cashPoint: cashPointUuid,

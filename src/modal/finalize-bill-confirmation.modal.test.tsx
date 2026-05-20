@@ -6,7 +6,7 @@ import { showSnackbar } from '@openmrs/esm-framework';
 import { finalizeBill } from '../billing.resource';
 import FinalizeBillModal from './finalize-bill-confirmation.modal';
 import type { MappedBill } from '../types';
-import { BillStatus } from '../types';
+import { BillStatus, BillLineItemStatus } from '../types';
 
 const mockFinalizeBill = vi.mocked(finalizeBill);
 const mockShowSnackbar = vi.mocked(showSnackbar);
@@ -34,7 +34,7 @@ const mockBill: MappedBill = {
       item: 'X-Ray',
       quantity: 1,
       price: 500,
-      paymentStatus: BillStatus.PENDING,
+      status: BillLineItemStatus.PENDING,
       billableService: 'X-Ray Service',
     },
   ],

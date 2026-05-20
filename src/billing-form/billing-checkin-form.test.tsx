@@ -230,7 +230,7 @@ describe('BillingCheckInForm', () => {
             priceName: 'Default',
             priceUuid: 'price-2',
             lineItemOrder: 0,
-            paymentStatus: 'PENDING',
+            status: 'PENDING',
           },
         ],
         cashPoint: '54065383-b4d4-42d2-af4d-d250a1fd2590',

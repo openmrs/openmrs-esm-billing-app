@@ -128,7 +128,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
         no: `${index + 1}`,
         id: `${item.uuid}`,
         billItem: item.billableService ? item.billableService : item?.item,
-        status: item.paymentStatus,
+        status: item.status,
         quantity: item.quantity,
         price: convertToCurrency(item.price, defaultCurrency),
         total: convertToCurrency(getLineItemTotal(item), defaultCurrency),
