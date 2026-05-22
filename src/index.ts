@@ -1,26 +1,29 @@
-import { configSchema } from './config-schema';
+import { FinancialAssets, Settings, TagGroup, Wallet } from '@carbon/react/icons';
 import { createDashboard, defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { createLeftPanelLink } from './left-panel-link.component';
-import { dashboardMeta } from './dashboard.meta';
-import { Settings, TagGroup, Wallet } from '@carbon/react/icons';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
 import { createDiscountRequestsLeftPanelLink } from './discounts/admin/discount-requests-left-panel-link.component';
-import RequestDiscountModal from './discounts/request-discount.modal';
-import ReviewBillDiscountsModal from './discounts/admin/review-bill-discounts/review-bill-discounts.modal';
-import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
+import { createRefundRequestsLeftPanelLink } from './refunds/admin/refund-requests-left-panel-link.component';
 import appMenu from './billable-services/billable-services-menu-item/item.component';
 import BillableServiceHome from './billable-services/billable-services-home.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 import BillHistory from './bill-history/bill-history.component';
 import BillingCheckInForm from './billing-form/billing-checkin-form.component';
+import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 import DeletePaymentModeModal from './billable-services/payment-modes/delete-payment-mode.modal';
 import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
 import PaymentModeFormModal from './billable-services/payment-modes/payment-mode-form.modal';
 import RequirePaymentModal from './modal/require-payment.modal';
+import RequestRefundModal from './refunds/request-refund.modal';
+import ReviewBillRefundsModal from './refunds/admin/review-bill-refunds/review-bill-refunds.modal';
+import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
+import RequestDiscountModal from './discounts/request-discount.modal';
+import ReviewBillDiscountsModal from './discounts/admin/review-bill-discounts/review-bill-discounts.modal';
 import RootComponent from './root.component';
-import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 import PaymentStatusTag from './payment-status-tag/payment-status-tag.component';
+import { configSchema } from './config-schema';
+import { dashboardMeta } from './dashboard.meta';
 
 const moduleName = '@openmrs/esm-billing-app';
 
@@ -144,6 +147,21 @@ export const discountRequestsLeftPanelLink = getSyncLifecycle(
     title: 'discountRequests',
     path: 'discount-requests',
     icon: TagGroup,
+  }),
+  options,
+);
+
+export const requestRefundModal = getSyncLifecycle(RequestRefundModal, options);
+
+export const reviewBillRefundsModal = getSyncLifecycle(ReviewBillRefundsModal, options);
+
+// t('refundRequests', 'Refund requests')
+export const refundRequestsLeftPanelLink = getSyncLifecycle(
+  createRefundRequestsLeftPanelLink({
+    name: 'refund-requests',
+    title: 'refundRequests',
+    path: 'refund-requests',
+    icon: FinancialAssets,
   }),
   options,
 );
