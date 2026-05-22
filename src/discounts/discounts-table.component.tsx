@@ -14,13 +14,11 @@ import {
 import { isDesktop, useConfig, useLayoutType } from '@openmrs/esm-framework';
 import type { BillingConfig } from '../config-schema';
 import { convertToCurrency } from '../helpers';
-import { useBillDiscounts } from './discounts.resource';
 import { BillDiscountType, type BillDiscount, type MappedBill } from '../types';
 import styles from './discounts-table.scss';
 
 interface Props {
   bill: MappedBill;
-  billUuid: string;
 }
 
 function resolveScope(d: BillDiscount, bill: MappedBill, fallback: string) {
@@ -29,12 +27,12 @@ function resolveScope(d: BillDiscount, bill: MappedBill, fallback: string) {
   return li?.item || li?.billableService || fallback;
 }
 
-const DiscountsTable: React.FC<Props> = ({ bill, billUuid }) => {
+const DiscountsTable: React.FC<Props> = ({ bill }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const { discounts } = useBillDiscounts(billUuid);
+  const discounts = bill.discounts;
 
   const tableHeaders = [
     { header: t('discountItem', 'Item'), key: 'item', width: 25 },

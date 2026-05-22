@@ -23,9 +23,9 @@ import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
-import { BillDiscountStatus, BillStatus } from '../types';
-import { useBillDiscounts } from '../discounts/discounts.resource';
+import { BillDiscountStatus, BillStatus, RefundStatus } from '../types';
 import DiscountsTable from '../discounts/discounts-table.component';
+import RefundsTable from '../refunds/refunds-table.component';
 import styles from './invoice.scss';
 
 interface InvoiceDetailsProps {
@@ -44,13 +44,40 @@ const Invoice: React.FC = () => {
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
   const { defaultCurrency } = useConfig<BillingConfig>();
 
-  const { discounts, error: discountsError, mutate: mutateDiscounts } = useBillDiscounts(billUuid);
-  const billLevelDiscountExists = discounts?.some((d) => !d.lineItemUuid) ?? false;
-  const lineItemDiscountExists = discounts?.some((d) => !!d.lineItemUuid) ?? false;
+  const discounts = (bill?.discounts ?? []).filter((d) => !d.voided);
+  const billLevelDiscountExists = discounts.some((d) => !d.lineItemUuid);
+  const lineItemDiscountExists = discounts.some((d) => !!d.lineItemUuid);
   const billStatusEligible = bill?.status === BillStatus.PENDING || bill?.status === BillStatus.POSTED;
-  // Treat a discounts fetch failure as ineligible — otherwise the user could request a duplicate.
-  const showRequestDiscountButton = !!bill && billStatusEligible && !billLevelDiscountExists && !discountsError;
-  const hasApprovedDiscount = discounts?.some((d) => d.status === BillDiscountStatus.APPROVED) ?? false;
+  const showRequestDiscountButton = !!bill && billStatusEligible && !billLevelDiscountExists;
+  const hasApprovedDiscount = discounts.some((d) => d.status === BillDiscountStatus.APPROVED);
+
+  const refunds = (bill?.refunds ?? []).filter((r) => !r.voided);
+  const billStatusRefundEligible = bill?.status === BillStatus.PAID || bill?.status === BillStatus.PARTIALLY_REFUNDED;
+  const activeRefunds = refunds.filter(
+    (r) => r.status === RefundStatus.REQUESTED || r.status === RefundStatus.APPROVED,
+  );
+  const activeBillLevelRefund = activeRefunds.some((r) => !r.lineItemUuid);
+  const activeLineRefundUuids = new Set(activeRefunds.filter((r) => !!r.lineItemUuid).map((r) => r.lineItemUuid!));
+  const showRequestRefundButton = !!bill && billStatusRefundEligible && !activeBillLevelRefund;
+
+  const handleRequestRefund = () => {
+    const totalAlreadyRefunded = refunds
+      .filter((r) => r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED)
+      .reduce((s, r) => s + r.refundAmount, 0);
+    const remainingRefundable = (bill!.netAmount ?? bill!.totalAmount ?? 0) - totalAlreadyRefunded;
+    const dispose = showModal('request-refund-modal', {
+      bill: {
+        uuid: bill!.uuid,
+        total: bill!.totalAmount ?? 0,
+        amountAfterDiscount: bill!.netAmount ?? bill!.totalAmount ?? 0,
+        receiptNumber: bill!.receiptNumber,
+        lineItemCount: bill!.lineItems?.length ?? 0,
+      },
+      remainingRefundable: Math.max(0, remainingRefundable),
+      onMutate: () => mutate(),
+      closeModal: () => dispose(),
+    });
+  };
 
   const handleRequestDiscount = () => {
     const dispose = showModal('request-discount-modal', {
@@ -61,10 +88,7 @@ const Invoice: React.FC = () => {
         receiptNumber: bill!.receiptNumber,
         lineItemCount: bill!.lineItems?.length ?? 0,
       },
-      onMutate: () => {
-        mutate();
-        mutateDiscounts();
-      },
+      onMutate: () => mutate(),
       closeModal: () => dispose(),
     });
   };
@@ -181,6 +205,11 @@ const Invoice: React.FC = () => {
             {t('requestDiscount', 'Request discount')}
           </Button>
         )}
+        {showRequestRefundButton && (
+          <Button kind="tertiary" onClick={handleRequestRefund} disabled={activeLineRefundUuids.size > 0}>
+            {t('requestRefund', 'Request refund')}
+          </Button>
+        )}
         {bill?.status === BillStatus.PENDING && (
           <>
             <Button
@@ -221,15 +250,9 @@ const Invoice: React.FC = () => {
       </div>
 
       <div className={styles.invoiceContent}>
-        <InvoiceTable
-          bill={bill}
-          isLoadingBill={isLoadingBill}
-          onMutate={mutate}
-          discounts={discounts}
-          discountsError={discountsError}
-          mutateDiscounts={mutateDiscounts}
-        />
-        {bill && <DiscountsTable bill={bill} billUuid={bill.uuid} />}
+        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
+        {bill && <DiscountsTable bill={bill} />}
+        {bill && <RefundsTable bill={bill} onMutate={mutate} />}
         <Payments bill={bill} mutate={mutate} />
       </div>
 

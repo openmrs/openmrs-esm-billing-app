@@ -12,7 +12,7 @@ import { useSWRConfig } from 'swr';
 import { processBillPayment, patientPaymentStatusCacheKey } from '../../billing.resource';
 import { updateBillVisitAttribute } from './payment.resource';
 import { convertToCurrency } from '../../helpers';
-import { BillStatus, type MappedBill } from '../../types';
+import { BillStatus, RefundStatus, type MappedBill } from '../../types';
 import styles from './payments.scss';
 
 type PaymentProps = {
@@ -70,6 +70,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
   if (!bill) {
     return null;
   }
+
+  const refundTotal = (bill.refunds ?? [])
+    .filter((r) => r.status === RefundStatus.COMPLETED)
+    .reduce((sum, r) => sum + r.refundAmount, 0);
 
   const amountDue = (bill.netAmount ?? 0) - (bill.tenderedAmount ?? 0);
 
@@ -132,6 +136,10 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
           <InvoiceBreakDown
             label={t('discount', 'Discount')}
             value={`- ${convertToCurrency((bill.totalAmount ?? 0) - (bill.netAmount ?? 0), defaultCurrency)}`}
+          />
+          <InvoiceBreakDown
+            label={t('refunds', 'Refunds')}
+            value={`- ${convertToCurrency(refundTotal, defaultCurrency)}`}
           />
           <InvoiceBreakDown
             hasBalance={amountDue < 0}
