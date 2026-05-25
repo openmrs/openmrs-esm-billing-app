@@ -17,7 +17,7 @@ vi.mock('../invoice/invoice-table.component', () => ({
   default: () => <div>Invoice Table</div>,
 }));
 
-window.i18next = { language: 'en-US' } as any;
+globalThis.i18next = { language: 'en-US' } as any;
 
 const testProps = {
   visit: { uuid: 'visit-uuid-123' },

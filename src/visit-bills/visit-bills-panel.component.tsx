@@ -105,8 +105,8 @@ const VisitBillsPanel: React.FC<VisitBillsPanelProps> = ({ visit, patientUuid })
             <TableHead>
               <TableRow>
                 <TableExpandHeader enableToggle {...getExpandHeaderProps()} />
-                {headers.map((header, i) => (
-                  <TableHeader key={i} {...getHeaderProps({ header })}>
+                {headers.map((header) => (
+                  <TableHeader key={header.key} {...getHeaderProps({ header })}>
                     {header.header}
                   </TableHeader>
                 ))}
