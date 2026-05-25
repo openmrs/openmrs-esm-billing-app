@@ -77,6 +77,11 @@ const BillsTable: React.FC = () => {
         text: t('refundedBills', 'Refunded bills'),
         status: `${BillStatus.REFUNDED},${BillStatus.PARTIALLY_REFUNDED}`,
       },
+      {
+        id: BillStatus.REFUND_REQUESTED,
+        text: t('pendingRefundBills', 'Pending refunds'),
+        status: BillStatus.REFUND_REQUESTED,
+      },
     ],
     [t],
   );
