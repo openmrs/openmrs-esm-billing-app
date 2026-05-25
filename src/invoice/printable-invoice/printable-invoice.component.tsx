@@ -149,7 +149,7 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
                 </span>
               </div>
               <div className={styles.balanceContainer}>
-                <span className={styles.itemHeading}>{t('totalAmount', 'Total Amount')}:</span>{' '}
+                <span className={styles.itemHeading}>{t('totalAmount', 'Total amount')}:</span>{' '}
                 <span className={styles.itemLabel}>
                   <strong>
                     {defaultCurrency} {bill?.netAmount}
@@ -159,7 +159,7 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
             </>
           ) : (
             <div className={styles.balanceContainer}>
-              <span className={styles.itemHeading}>{t('totalAmount', 'Total Amount')}:</span>{' '}
+              <span className={styles.itemHeading}>{t('totalAmount', 'Total amount')}:</span>{' '}
               <span className={styles.itemLabel}>
                 <strong>
                   {defaultCurrency} {bill?.totalAmount}

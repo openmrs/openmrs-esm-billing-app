@@ -17,11 +17,11 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
   const { logo, country, defaultCurrency } = useConfig<BillingConfig>();
 
   const invoiceDetails = {
-    [t('invoiceNumber', 'Invoice #')]: bill?.receiptNumber,
+    [t('invoiceNo', 'Invoice #')]: bill?.receiptNumber,
     [t('invoiceDate', 'Invoice date')]: bill?.dateCreated
       ? formatDate(parseDate(bill.dateCreated), { mode: 'wide', noToday: true, time: false })
       : '--',
-    [t('totalAmount', 'Total Amount')]: `${defaultCurrency} ${bill?.totalAmount}`,
+    [t('totalAmount', 'Total amount')]: `${defaultCurrency} ${bill?.totalAmount}`,
     [t('totalPaid', 'Total paid')]: `${defaultCurrency} ${bill?.tenderedAmount}`,
     [t('amountBalance', 'Amount balance')]: `${defaultCurrency} ${bill?.totalAmount - bill?.tenderedAmount}`,
     ...(bill?.status && { [t('invoiceStatus', 'Invoice status')]: bill.status }),
