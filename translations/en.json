@@ -275,6 +275,7 @@
   "pendingConfirmationBills": "Pending confirmation",
   "pendingDiscounts": "Pending discounts",
   "pendingPaymentBills": "Pending payment",
+  "pendingRefundBills": "Pending refunds",
   "percentage": "Percentage",
   "percentageTooHigh": "Value cannot exceed 100",
   "policyNumber": "Policy number",

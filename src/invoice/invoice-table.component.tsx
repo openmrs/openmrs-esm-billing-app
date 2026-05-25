@@ -69,6 +69,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
     billStatusEligible && !hasBillLevelDiscount && !lineHasActiveDiscount(lineItem.uuid);
 
   const handleLineItemRefundRequest = (item: LineItem) => {
+    if (!item.uuid) return;
     const lineTotal = getLineItemTotal(item);
     const lineCommittedRefunds = billRefunds.filter(
       (r) =>
@@ -82,7 +83,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
         amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
       },
       lineItem: {
-        uuid: item.uuid!,
+        uuid: item.uuid,
         display: item.item || item.billableService || '--',
         total: lineTotal,
         quantity: item.quantity,
