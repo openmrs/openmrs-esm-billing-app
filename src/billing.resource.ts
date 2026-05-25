@@ -128,6 +128,7 @@ export function useBill(
   isValidating: boolean;
   mutate: KeyedMutator<{ data: PatientInvoice }>;
 };
+
 export function useBill(
   billUuid: string,
   mapProperties?: true,
@@ -138,6 +139,7 @@ export function useBill(
   isValidating: boolean;
   mutate: KeyedMutator<{ data: PatientInvoice }>;
 };
+
 export function useBill(billUuid: string, mapProperties = true) {
   const url = `${apiBasePath}bill/${billUuid}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientInvoice }>(
