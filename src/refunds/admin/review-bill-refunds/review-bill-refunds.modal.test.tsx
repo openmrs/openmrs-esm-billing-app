@@ -18,7 +18,7 @@ vi.mock('@openmrs/esm-framework', () => ({
 }));
 vi.mock('../../refunds.resource');
 
-window.i18next = { language: 'en-US' } as any;
+globalThis.i18next = { language: 'en-US' } as any;
 
 const closeModal = vi.fn();
 const onMutate = vi.fn();

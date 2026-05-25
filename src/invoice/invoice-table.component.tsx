@@ -68,6 +68,32 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
   const showLineItemRequest = (lineItem: LineItem) =>
     billStatusEligible && !hasBillLevelDiscount && !lineHasActiveDiscount(lineItem.uuid);
 
+  const handleLineItemRefundRequest = (item: LineItem) => {
+    const lineTotal = getLineItemTotal(item);
+    const lineCommittedRefunds = billRefunds.filter(
+      (r) =>
+        r.lineItemUuid === item.uuid && (r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED),
+    );
+    const remaining = lineTotal - lineCommittedRefunds.reduce((s, r) => s + r.refundAmount, 0);
+    const dispose = showModal('request-refund-modal', {
+      bill: {
+        uuid: bill.uuid,
+        total: bill.totalAmount ?? 0,
+        amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
+      },
+      lineItem: {
+        uuid: item.uuid!,
+        display: item.item || item.billableService || '--',
+        total: lineTotal,
+        quantity: item.quantity,
+        price: item.price,
+      },
+      remainingRefundable: Math.max(0, remaining),
+      onMutate: () => onMutate?.(),
+      closeModal: () => dispose(),
+    });
+  };
+
   const handleLineItemRequest = (lineItem: LineItem) => {
     const dispose = showModal('request-discount-modal', {
       bill: {
@@ -191,35 +217,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMuta
                             showDiscountRequest={showLineItemRequest(item)}
                             onDiscountRequest={() => handleLineItemRequest(item)}
                             showRefundRequest={showLineItemRefundRequest(item)}
-                            onRefundRequest={() => {
-                              const lineTotal = getLineItemTotal(item);
-                              const lineCommittedRefunds = billRefunds.filter(
-                                (r) =>
-                                  r.lineItemUuid === item.uuid &&
-                                  (r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED),
-                              );
-                              const remaining =
-                                lineTotal - lineCommittedRefunds.reduce((s, r) => s + r.refundAmount, 0);
-                              const dispose = showModal('request-refund-modal', {
-                                bill: {
-                                  uuid: bill.uuid,
-                                  total: bill.totalAmount ?? 0,
-                                  amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
-                                },
-                                lineItem: {
-                                  uuid: item.uuid!,
-                                  display: item.item || item.billableService || '--',
-                                  total: lineTotal,
-                                  quantity: item.quantity,
-                                  price: item.price,
-                                },
-                                remainingRefundable: Math.max(0, remaining),
-                                onMutate: () => {
-                                  onMutate?.();
-                                },
-                                closeModal: () => dispose(),
-                              });
-                            }}
+                            onRefundRequest={() => handleLineItemRefundRequest(item)}
                           />
                         )}
                       </TableCell>

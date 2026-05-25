@@ -26,7 +26,7 @@ vi.mock('@openmrs/esm-framework', () => ({
   ErrorState: ({ headerTitle }: { headerTitle: string }) => <div>{headerTitle} error</div>,
 }));
 
-window.i18next = { language: 'en-US' } as any;
+globalThis.i18next = { language: 'en-US' } as any;
 vi.mock('../refunds.resource');
 
 const sampleBill = {

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import useSWR from 'swr';
-import { openmrsFetch, useOpenmrsFetchAll } from '@openmrs/esm-framework';
+import { openmrsFetch } from '@openmrs/esm-framework';
 import { renderHook } from '@testing-library/react';
 import { useBillRefunds, requestRefund, actOnRefund, voidRefund } from './refunds.resource';
 import type { BillRefund } from '../types';
@@ -8,7 +8,6 @@ import { RefundStatus } from '../types';
 
 vi.mock('@openmrs/esm-framework', () => ({
   openmrsFetch: vi.fn(),
-  useOpenmrsFetchAll: vi.fn(),
   restBaseUrl: '/ws/rest/v1',
 }));
 
