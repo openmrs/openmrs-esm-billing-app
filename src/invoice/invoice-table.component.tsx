@@ -39,6 +39,7 @@ type InvoiceTableProps = {
   bill: MappedBill;
   isLoadingBill?: boolean;
   onMutate?: () => void;
+  viewOnly?: boolean;
   discounts?: UseBillDiscountsResult['discounts'];
   discountsError?: UseBillDiscountsResult['error'];
   mutateDiscounts?: UseBillDiscountsResult['mutate'];
@@ -48,6 +49,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
   bill,
   isLoadingBill,
   onMutate,
+  viewOnly,
   discounts: discountsProp,
   discountsError: discountsErrorProp,
   mutateDiscounts: mutateDiscountsProp,
@@ -164,13 +166,15 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
               </span>
             }
             title={t('lineItems', 'Line items')}>
-            <TableToolbarSearch
-              className={styles.searchbox}
-              expanded
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              placeholder={t('searchThisTable', 'Search this table')}
-              size={responsiveSize}
-            />
+            {!viewOnly && (
+              <TableToolbarSearch
+                className={styles.searchbox}
+                expanded
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                placeholder={t('searchThisTable', 'Search this table')}
+                size={responsiveSize}
+              />
+            )}
             <Table
               {...getTableProps()}
               aria-label={t('invoiceLineItems', 'Invoice line items')}
@@ -180,7 +184,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                   {headers.map((header) => (
                     <TableHeader key={header.key}>{header.header}</TableHeader>
                   ))}
-                  <TableHeader aria-label={getCoreTranslation('actions')} />
+                  {!viewOnly && <TableHeader aria-label={getCoreTranslation('actions')} />}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -191,17 +195,19 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                       {row.cells.map((cell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}
-                      <TableCell className="cds--table-column-menu">
-                        {item && (
-                          <LineItemActionMenu
-                            bill={bill}
-                            item={item}
-                            onMutate={onMutate}
-                            showDiscountRequest={showLineItemRequest(item)}
-                            onDiscountRequest={() => handleLineItemRequest(item)}
-                          />
-                        )}
-                      </TableCell>
+                      {!viewOnly && (
+                        <TableCell className="cds--table-column-menu">
+                          {item && (
+                            <LineItemActionMenu
+                              bill={bill}
+                              item={item}
+                              onMutate={onMutate}
+                              showDiscountRequest={showLineItemRequest(item)}
+                              onDiscountRequest={() => handleLineItemRequest(item)}
+                            />
+                          )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })}
@@ -217,7 +223,9 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
               <p className={styles.filterEmptyStateContent}>
                 {t('noMatchingItemsToDisplay', 'No matching items to display')}
               </p>
-              <p className={styles.filterEmptyStateHelper}>{t('checkFilters', 'Check the filters above')}</p>
+              {!viewOnly && (
+                <p className={styles.filterEmptyStateHelper}>{t('checkFilters', 'Check the filters above')}</p>
+              )}
             </Tile>
           </Layer>
         </div>

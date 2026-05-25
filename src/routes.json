@@ -36,6 +36,14 @@
       }
     },
     {
+      "name": "visit-bills-panel",
+      "component": "visitBillsPanel",
+      "slot": "visit-summary-panels",
+      "meta": {
+        "title": "Bills"
+      }
+    },
+    {
       "name": "billing-summary-dashboard-link",
       "component": "billingSummaryDashboardLink",
       "slot": "patient-chart-dashboard-slot",

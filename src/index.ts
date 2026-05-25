@@ -57,6 +57,8 @@ export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
 
 export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
 
+export const visitBillsPanel = getAsyncLifecycle(() => import('./visit-bills/visit-bills-panel.component'), options);
+
 export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
 
 export const paymentModeFormModal = getSyncLifecycle(PaymentModeFormModal, options);

@@ -59,6 +59,7 @@
   "billLineItemEmpty": "This bill has no line items",
   "billList": "Bill list",
   "billMetrics": "Bill metrics",
+  "billNotFound": "Bill details could not be loaded",
   "billPayment": "Bill payment",
   "billPaymentError": "Bill payment error",
   "billPaymentRequiredMessage": "The current patient has a pending bill. Advise the patient to settle the bill before receiving services",

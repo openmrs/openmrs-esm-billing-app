@@ -13,6 +13,7 @@ import {
 import {
   useConfig,
   useLayoutType,
+  useVisit,
   showSnackbar,
   getCoreTranslation,
   TrashCanIcon,
@@ -24,7 +25,14 @@ import { useBillableServices as useBillableServicesList } from '../billable-serv
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
 import type { BillingConfig } from '../config-schema';
-import { BillLineItemStatus, BillStatus, type BillableItem, type LineItem, type ServicePrice } from '../types';
+import {
+  BillLineItemStatus,
+  BillStatus,
+  type CreateBillPayload,
+  type BillableItem,
+  type LineItem,
+  type ServicePrice,
+} from '../types';
 import styles from './billing-form.scss';
 
 interface ExtendedLineItem extends LineItem {
@@ -56,6 +64,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     error: billableServicesError,
   } = useBillableServicesList();
   const isEditMode = !!billUuid && !!bill;
+  const { activeVisit } = useVisit(patientUuid);
   const existingItemsTotal = useMemo(
     () => (isEditMode ? calculateTotalAmount(bill.lineItems) : 0),
     [isEditMode, bill?.lineItems],
@@ -210,13 +219,14 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 
         await updateBillItems(payload);
       } else {
-        const payload = {
+        const payload: CreateBillPayload = {
           cashPoint: postBilledItems.cashPoint,
           cashier: postBilledItems.cashier,
           lineItems: newLineItems,
           payments: [],
           patient: patientUuid,
           status: BillStatus.PENDING,
+          ...(activeVisit?.uuid && { visit: activeVisit.uuid }),
         };
 
         await processBillItems(payload);

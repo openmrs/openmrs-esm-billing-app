@@ -46,6 +46,7 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     patientName: name,
     identifier: identifier,
     patientUuid: bill?.patient?.uuid,
+    visitUuid: bill?.visit?.uuid,
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
@@ -92,8 +93,7 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
   };
 };
 
-export const useBills = (patientUuid?: string, billStatus?: string) => {
-  // Build URL with status parameter if provided
+export const useBills = (patientUuid?: string, billStatus?: string, visitUuid?: string) => {
   let url = `${apiBasePath}bill?v=full`;
 
   if (patientUuid) {
@@ -102,6 +102,10 @@ export const useBills = (patientUuid?: string, billStatus?: string) => {
 
   if (billStatus) {
     url += `&status=${billStatus}`;
+  }
+
+  if (visitUuid) {
+    url += `&visitUuid=${visitUuid}`;
   }
 
   const { data, error, isLoading, isValidating, mutate } = useOpenmrsFetchAll<PatientInvoice>(url);
