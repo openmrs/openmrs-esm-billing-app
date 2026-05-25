@@ -57,21 +57,22 @@ const Invoice: React.FC = () => {
     (r) => r.status === RefundStatus.REQUESTED || r.status === RefundStatus.APPROVED,
   );
   const activeBillLevelRefund = activeRefunds.some((r) => !r.lineItemUuid);
-  const activeLineRefundUuids = new Set(activeRefunds.filter((r) => !!r.lineItemUuid).map((r) => r.lineItemUuid!));
+  const activeLineRefundUuids = new Set(activeRefunds.flatMap((r) => (r.lineItemUuid ? [r.lineItemUuid] : [])));
   const showRequestRefundButton = !!bill && billStatusRefundEligible && !activeBillLevelRefund;
 
   const handleRequestRefund = () => {
+    if (!bill) return;
     const totalAlreadyRefunded = refunds
       .filter((r) => r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED)
       .reduce((s, r) => s + r.refundAmount, 0);
-    const remainingRefundable = (bill!.netAmount ?? bill!.totalAmount ?? 0) - totalAlreadyRefunded;
+    const remainingRefundable = (bill.netAmount ?? bill.totalAmount ?? 0) - totalAlreadyRefunded;
     const dispose = showModal('request-refund-modal', {
       bill: {
-        uuid: bill!.uuid,
-        total: bill!.totalAmount ?? 0,
-        amountAfterDiscount: bill!.netAmount ?? bill!.totalAmount ?? 0,
-        receiptNumber: bill!.receiptNumber,
-        lineItemCount: bill!.lineItems?.length ?? 0,
+        uuid: bill.uuid,
+        total: bill.totalAmount ?? 0,
+        amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
+        receiptNumber: bill.receiptNumber,
+        lineItemCount: bill.lineItems?.length ?? 0,
       },
       remainingRefundable: Math.max(0, remainingRefundable),
       onMutate: () => mutate(),

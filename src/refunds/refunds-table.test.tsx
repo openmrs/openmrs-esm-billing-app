@@ -2,7 +2,7 @@ import React from 'react';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useSession, useConfig, showSnackbar } from '@openmrs/esm-framework';
+import { useSession, useConfig } from '@openmrs/esm-framework';
 import RefundsTable from './refunds-table.component';
 import { actOnRefund } from './refunds.resource';
 import { RefundStatus, type MappedBill } from '../types';
@@ -17,7 +17,7 @@ vi.mock('@openmrs/esm-framework', () => ({
 }));
 vi.mock('./refunds.resource');
 
-window.i18next = { language: 'en-US' } as any;
+globalThis.i18next = { language: 'en-US' } as any;
 
 const mockRefund = (overrides = {}) => ({
   uuid: 'r1',

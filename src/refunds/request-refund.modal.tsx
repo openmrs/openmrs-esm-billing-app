@@ -139,7 +139,7 @@ const RequestRefundModal: React.FC<Props> = ({ closeModal, bill, lineItem, remai
                 setAmount(null);
                 return;
               }
-              const n = typeof v === 'string' ? parseFloat(v) : v;
+              const n = typeof v === 'string' ? Number.parseFloat(v) : v;
               setAmount(Number.isNaN(n) ? null : n);
             }}
           />

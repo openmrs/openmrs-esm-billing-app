@@ -49,7 +49,7 @@ const filterToStatuses = (value: FilterValue): RefundStatus[] => {
   if (value === 'ALL') {
     return [RefundStatus.REQUESTED, RefundStatus.APPROVED, RefundStatus.REJECTED, RefundStatus.COMPLETED];
   }
-  return [value as RefundStatus];
+  return [value];
 };
 
 const RefundRequests: React.FC = () => {
@@ -143,6 +143,100 @@ const RefundRequests: React.FC = () => {
     [goTo],
   );
 
+  const handleTableRowClick = useCallback(
+    (rowId: string) => {
+      const match = rows.find((r) => r.id === rowId);
+      if (match) handleRowClick(match._raw);
+    },
+    [rows, handleRowClick],
+  );
+
+  let tableContent: React.ReactNode;
+  if (isLoading && !bills?.length) {
+    tableContent = (
+      <div className={styles.loaderContainer} aria-busy="true" aria-label={t('loading', 'Loading')}>
+        <DataTableSkeleton
+          rowCount={currentPageSize}
+          showHeader={false}
+          showToolbar={false}
+          zebra
+          columnCount={headers.length}
+        />
+      </div>
+    );
+  } else if (error) {
+    tableContent = (
+      <div className={styles.errorContainer}>
+        <Layer>
+          <ErrorState error={error} headerTitle={t('refundRequests', 'Refund requests')} />
+        </Layer>
+      </div>
+    );
+  } else if (rows.length > 0) {
+    tableContent = (
+      <>
+        <DataTable isSortable rows={rows} headers={headers} size={responsiveSize} useZebraStyles={rows.length > 1}>
+          {({ rows: dataRows, headers: dataHeaders, getRowProps, getTableProps }) => (
+            <TableContainer>
+              <Table {...getTableProps()} aria-label={t('refundRequests', 'Refund requests')}>
+                <TableHead>
+                  <TableRow>
+                    {dataHeaders.map((header) => (
+                      <TableHeader key={header.key}>{header.header}</TableHeader>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {dataRows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      {...getRowProps({ row })}
+                      className={styles.row}
+                      onClick={() => handleTableRowClick(row.id)}>
+                      {row.cells.map((cell) => (
+                        <TableCell key={cell.id}>{cell.value}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </DataTable>
+        {paginated && (
+          <Pagination
+            forwardText={t('nextPage', 'Next page')}
+            backwardText={t('previousPage', 'Previous page')}
+            page={currentPage}
+            pageSize={currentPageSize}
+            pageSizes={pageSizes}
+            totalItems={filteredBills.length}
+            size={responsiveSize}
+            onChange={({ pageSize: newPageSize, page: newPage }) => {
+              if (newPageSize !== currentPageSize) {
+                setCurrentPageSize(newPageSize);
+              }
+              if (newPage !== currentPage) {
+                goTo(newPage);
+              }
+            }}
+          />
+        )}
+      </>
+    );
+  } else {
+    tableContent = (
+      <Layer className={styles.emptyStateContainer}>
+        <Tile className={styles.tile}>
+          <div className={styles.illo}>
+            <EmptyCardIllustration />
+          </div>
+          <p className={styles.content}>{t('noRefundRequestsToDisplay', 'There are no refund requests to display.')}</p>
+        </Tile>
+      </Layer>
+    );
+  }
+
   return (
     <main className={styles.container}>
       <div className={styles.servicesTableContainer}>
@@ -174,92 +268,7 @@ const RefundRequests: React.FC = () => {
             searchString={searchString}
             t={t}
           />
-          {isLoading && !bills?.length ? (
-            <div className={styles.loaderContainer} role="progressbar" aria-label={t('loading', 'Loading')}>
-              <DataTableSkeleton
-                rowCount={currentPageSize}
-                showHeader={false}
-                showToolbar={false}
-                zebra
-                columnCount={headers.length}
-              />
-            </div>
-          ) : error ? (
-            <div className={styles.errorContainer}>
-              <Layer>
-                <ErrorState error={error} headerTitle={t('refundRequests', 'Refund requests')} />
-              </Layer>
-            </div>
-          ) : rows.length > 0 ? (
-            <>
-              <DataTable
-                isSortable
-                rows={rows}
-                headers={headers}
-                size={responsiveSize}
-                useZebraStyles={rows.length > 1}>
-                {({ rows: dataRows, headers: dataHeaders, getRowProps, getTableProps }) => (
-                  <TableContainer>
-                    <Table {...getTableProps()} aria-label={t('refundRequests', 'Refund requests')}>
-                      <TableHead>
-                        <TableRow>
-                          {dataHeaders.map((header) => (
-                            <TableHeader key={header.key}>{header.header}</TableHeader>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {dataRows.map((row) => (
-                          <TableRow
-                            key={row.id}
-                            {...getRowProps({ row })}
-                            className={styles.row}
-                            onClick={() => {
-                              const match = rows.find((r) => r.id === row.id);
-                              if (match) handleRowClick(match._raw);
-                            }}>
-                            {row.cells.map((cell) => (
-                              <TableCell key={cell.id}>{cell.value}</TableCell>
-                            ))}
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                )}
-              </DataTable>
-              {paginated && (
-                <Pagination
-                  forwardText={t('nextPage', 'Next page')}
-                  backwardText={t('previousPage', 'Previous page')}
-                  page={currentPage}
-                  pageSize={currentPageSize}
-                  pageSizes={pageSizes}
-                  totalItems={filteredBills.length}
-                  size={responsiveSize}
-                  onChange={({ pageSize: newPageSize, page: newPage }) => {
-                    if (newPageSize !== currentPageSize) {
-                      setCurrentPageSize(newPageSize);
-                    }
-                    if (newPage !== currentPage) {
-                      goTo(newPage);
-                    }
-                  }}
-                />
-              )}
-            </>
-          ) : (
-            <Layer className={styles.emptyStateContainer}>
-              <Tile className={styles.tile}>
-                <div className={styles.illo}>
-                  <EmptyCardIllustration />
-                </div>
-                <p className={styles.content}>
-                  {t('noRefundRequestsToDisplay', 'There are no refund requests to display.')}
-                </p>
-              </Tile>
-            </Layer>
-          )}
+          {tableContent}
         </div>
       </div>
     </main>
@@ -267,12 +276,12 @@ const RefundRequests: React.FC = () => {
 };
 
 interface FilterableTableHeaderProps {
-  layout: LayoutType;
-  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  isValidating: boolean;
-  responsiveSize: 'sm' | 'md' | 'lg';
-  searchString: string;
-  t: (key: string, fallback: string) => string;
+  readonly layout: LayoutType;
+  readonly handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  readonly isValidating: boolean;
+  readonly responsiveSize: 'sm' | 'md' | 'lg';
+  readonly searchString: string;
+  readonly t: (key: string, fallback: string) => string;
 }
 
 function FilterableTableHeader({
