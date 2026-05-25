@@ -328,6 +328,6 @@ export interface DecideDiscountPayload {
 }
 
 export interface PatientPaymentStatus {
-  status: string;
+  status: 'PAID' | 'UNPAID' | 'UNKNOWN';
   reason: string;
 }

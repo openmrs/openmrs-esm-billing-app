@@ -75,7 +75,7 @@
       "name": "patient-banner-payment-status-tag",
       "component": "patientPaymentStatusTag",
       "slot": "patient-banner-tags-slot",
-      "order": 2
+      "order": 3
     },
     {
       "name": "billable-services-left-panel-link",

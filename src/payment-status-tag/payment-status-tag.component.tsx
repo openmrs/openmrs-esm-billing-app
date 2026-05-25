@@ -15,12 +15,12 @@ type PaymentStatusTagProps = { patientUuid: string };
 
 const PaymentStatusTag: React.FC<PaymentStatusTagProps> = ({ patientUuid }) => {
   const { t } = useTranslation();
-  const { paymentStatus, isLoading, isValidating, error } = usePatientPaymentStatus(patientUuid);
+  const { paymentStatus, isLoading, error } = usePatientPaymentStatus(patientUuid);
   return (
     <>
-      {!isLoading && !isValidating && !error && (
+      {!isLoading && !error && paymentStatus && paymentStatus.status !== 'UNKNOWN' && (
         <Toggletip className={styles.tag}>
-          <ToggletipButton label={paymentStatus.status}>
+          <ToggletipButton label={t(paymentStatus.status, paymentStatus.status)}>
             <Tag type={paymentStatus.status === 'PAID' ? 'green' : paymentStatus.status === 'UNPAID' ? 'red' : 'gray'}>
               {t(paymentStatus.status, paymentStatus.status)}
             </Tag>

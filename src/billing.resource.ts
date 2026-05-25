@@ -221,8 +221,11 @@ export const deleteBill = (billUuid: string, reason: string) => {
   });
 };
 
+export const patientPaymentStatusCacheKey = (patientUuid: string) =>
+  `${apiBasePath}patientPaymentStatus/${patientUuid}`;
+
 export const usePatientPaymentStatus = (patientUuid: string) => {
-  const url = `${apiBasePath}patientPaymentStatus/${patientUuid}`;
+  const url = patientPaymentStatusCacheKey(patientUuid);
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientPaymentStatus }>(
     patientUuid ? url : null,
     openmrsFetch,
