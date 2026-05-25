@@ -120,8 +120,6 @@ export const useBills = (patientUuid?: string, billStatus?: string) => {
 
 export function useBill(
   billUuid: string,
-export function useBill(
-  billUuid: string,
   mapProperties: false,
 ): {
   bill: PatientInvoice | null;
