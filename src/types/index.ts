@@ -7,6 +7,7 @@ export const BillStatus = {
   ADJUSTED: 'ADJUSTED',
   PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
   REFUNDED: 'REFUNDED',
+  REFUND_REQUESTED: 'REFUND_REQUESTED',
 } as const;
 
 export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus];
