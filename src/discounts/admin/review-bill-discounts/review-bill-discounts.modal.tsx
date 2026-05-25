@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { ModalBody, ModalHeader } from '@carbon/react';
+import { ModalBody, ModalHeader, ProgressBar } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useSession } from '@openmrs/esm-framework';
 import BillReceiptRail from './bill-receipt-rail/bill-receipt-rail.component';
 import DiscountReviewStack from './discount-review-stack/discount-review-stack.component';
+import { useBill } from '../../../billing.resource';
 import { decideDiscount, voidDiscount } from '../../discounts.resource';
 import { useReviewBillModel } from './review-bill-discounts.utils';
 import { BillDiscountStatus, BillStatus, type BillDiscount, type PatientInvoice } from '../../../types';
@@ -21,10 +22,12 @@ interface Props {
 const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate }) => {
   const { t } = useTranslation();
   const session = useSession();
+  const { bill: localBill, mutate: localMutate, isLoading, isValidating } = useBill(bill.uuid, false);
+  const activeBill = localBill ?? bill;
   const [busy, setBusy] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const canDecide = bill.status === BillStatus.PENDING || bill.status === BillStatus.POSTED;
+  const canDecide = activeBill.status === BillStatus.PENDING || activeBill.status === BillStatus.POSTED;
 
   const {
     pendingDiscounts,
@@ -36,7 +39,7 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
     subtotal,
     currentNet,
     outstanding,
-  } = useReviewBillModel(bill);
+  } = useReviewBillModel(activeBill);
 
   const handleApprove = useCallback(
     async (d: BillDiscount) => {
@@ -53,8 +56,8 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
       try {
         await decideDiscount(d.uuid, BillDiscountStatus.APPROVED, session.user.uuid);
         showSnackbar({ title: t('discountApproved', 'Discount approved'), kind: 'success' });
+        await localMutate();
         onMutate();
-        closeModal();
       } catch (e: unknown) {
         showSnackbar({
           title: t('approveFailed', 'Approve failed'),
@@ -65,7 +68,7 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
         setBusy(null);
       }
     },
-    [canDecide, outstanding, t, session.user.uuid, onMutate, closeModal],
+    [canDecide, outstanding, t, session.user.uuid, localMutate, onMutate],
   );
 
   const confirmReject = useCallback(
@@ -75,8 +78,8 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
       try {
         await decideDiscount(d.uuid, BillDiscountStatus.REJECTED, session.user.uuid);
         showSnackbar({ title: t('discountRejected', 'Discount rejected'), kind: 'success' });
+        await localMutate();
         onMutate();
-        closeModal();
       } catch (e: unknown) {
         showSnackbar({ title: t('rejectFailed', 'Reject failed'), subtitle: extractErrorMessage(e), kind: 'error' });
       } finally {
@@ -84,7 +87,7 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
         setRejectingId(null);
       }
     },
-    [canDecide, t, session.user.uuid, onMutate, closeModal],
+    [canDecide, t, session.user.uuid, localMutate, onMutate],
   );
 
   const confirmDelete = useCallback(
@@ -102,8 +105,8 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
       try {
         await voidDiscount(d.uuid, 'Deleted by admin');
         showSnackbar({ title: t('discountDeleted', 'Discount deleted'), kind: 'success' });
+        await localMutate();
         onMutate();
-        closeModal();
       } catch (e: unknown) {
         showSnackbar({ title: t('deleteFailed', 'Delete failed'), subtitle: extractErrorMessage(e), kind: 'error' });
       } finally {
@@ -111,45 +114,51 @@ const ReviewBillDiscountsModal: React.FC<Props> = ({ closeModal, bill, onMutate 
         setDeletingId(null);
       }
     },
-    [outstanding, t, onMutate, closeModal],
+    [outstanding, t, localMutate, onMutate],
   );
 
   const handleCancelReject = useCallback(() => setRejectingId(null), []);
   const handleCancelDelete = useCallback(() => setDeletingId(null), []);
 
+  const showProgress = !!busy || isLoading || isValidating;
+
   return (
     <>
       <ModalHeader closeModal={closeModal} title={t('reviewDiscounts', 'Review discounts')} />
       <ModalBody>
-        <div className={styles.layout}>
-          <BillReceiptRail
-            bill={bill}
-            lineItems={lineItems}
-            payments={payments}
-            paymentsTotal={paymentsTotal}
-            subtotal={subtotal}
-            currentNet={currentNet}
-            outstanding={outstanding}
-            approvedDiscounts={approvedDiscounts}
-            pendingDiscounts={pendingDiscounts}
-          />
-          <DiscountReviewStack
-            pendingDiscounts={pendingDiscounts}
-            confirmedDiscounts={confirmedDiscounts}
-            lineItems={lineItems}
-            busy={busy}
-            rejectingId={rejectingId}
-            deletingId={deletingId}
-            canDecide={canDecide}
-            onApprove={handleApprove}
-            onStartReject={setRejectingId}
-            onCancelReject={handleCancelReject}
-            onConfirmReject={confirmReject}
-            onStartDelete={setDeletingId}
-            onCancelDelete={handleCancelDelete}
-            onConfirmDelete={confirmDelete}
-          />
-        </div>
+        {showProgress ? (
+          <ProgressBar label="" hideLabel />
+        ) : (
+          <div className={styles.layout}>
+            <BillReceiptRail
+              bill={activeBill}
+              lineItems={lineItems}
+              payments={payments}
+              paymentsTotal={paymentsTotal}
+              subtotal={subtotal}
+              currentNet={currentNet}
+              outstanding={outstanding}
+              approvedDiscounts={approvedDiscounts}
+              pendingDiscounts={pendingDiscounts}
+            />
+            <DiscountReviewStack
+              pendingDiscounts={pendingDiscounts}
+              confirmedDiscounts={confirmedDiscounts}
+              lineItems={lineItems}
+              busy={busy}
+              rejectingId={rejectingId}
+              deletingId={deletingId}
+              canDecide={canDecide}
+              onApprove={handleApprove}
+              onStartReject={setRejectingId}
+              onCancelReject={handleCancelReject}
+              onConfirmReject={confirmReject}
+              onStartDelete={setDeletingId}
+              onCancelDelete={handleCancelDelete}
+              onConfirmDelete={confirmDelete}
+            />
+          </div>
+        )}
       </ModalBody>
     </>
   );
