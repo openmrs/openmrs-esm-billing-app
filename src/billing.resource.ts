@@ -149,7 +149,10 @@ export function useBill(billUuid: string, mapProperties = true) {
     openmrsFetch,
   );
 
-  const bill = data?.data ? (mapProperties ? mapBillProperties(data.data) : data.data) : null;
+  let bill: MappedBill | PatientInvoice | null = null;
+  if (data?.data) {
+    bill = mapProperties ? mapBillProperties(data.data) : data.data;
+  }
 
   return { bill, error, isLoading, isValidating, mutate };
 }
