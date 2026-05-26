@@ -25,6 +25,7 @@ vi.mock('../billing.resource', () => ({
   updateBillItems: vi.fn().mockResolvedValue({}),
   useBill: vi.fn(),
   useBillableServices: vi.fn(),
+  patientPaymentStatusCacheKey: vi.fn().mockReturnValue('mocked-cache-key'),
 }));
 
 vi.mock('../billable-services/billable-service.resource', () => ({

@@ -17,6 +17,7 @@ import {
   type CreateBillPayload,
   type UpdateBillPayload,
   BillStatus,
+  type PatientPaymentStatus,
 } from './types';
 
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
@@ -241,4 +242,22 @@ export const deleteBill = (billUuid: string, reason: string) => {
   return openmrsFetch(url, {
     method: 'DELETE',
   });
+};
+
+export const patientPaymentStatusCacheKey = (patientUuid: string) =>
+  `${apiBasePath}patientPaymentStatus/${patientUuid}`;
+
+export const usePatientPaymentStatus = (patientUuid: string) => {
+  const url = patientPaymentStatusCacheKey(patientUuid);
+  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientPaymentStatus }>(
+    patientUuid ? url : null,
+    openmrsFetch,
+  );
+  return {
+    paymentStatus: data?.data,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+  };
 };

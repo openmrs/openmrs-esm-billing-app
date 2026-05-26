@@ -20,6 +20,7 @@ import PaymentModeFormModal from './billable-services/payment-modes/payment-mode
 import RequirePaymentModal from './modal/require-payment.modal';
 import RootComponent from './root.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
+import PaymentStatusTag from './payment-status-tag/payment-status-tag.component';
 
 const moduleName = '@openmrs/esm-billing-app';
 
@@ -72,6 +73,8 @@ export const editBillLineItemModal = getSyncLifecycle(EditBillLineItemModal, opt
 export const root = getSyncLifecycle(RootComponent, options);
 
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
+
+export const patientPaymentStatusTag = getSyncLifecycle(PaymentStatusTag, options);
 
 export const billingFormWorkspace = getAsyncLifecycle(() => import('./billing-form/billing-form.workspace'), options);
 
