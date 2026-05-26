@@ -17,6 +17,9 @@ vi.mock('@openmrs/esm-framework', () => ({
   restBaseUrl: '/ws/rest/v1',
 }));
 vi.mock('../../refunds.resource');
+vi.mock('../../../billing.resource', () => ({
+  useBill: vi.fn().mockReturnValue({ bill: null, mutate: vi.fn(), isLoading: false, isValidating: false }),
+}));
 
 globalThis.i18next = { language: 'en-US' } as any;
 
