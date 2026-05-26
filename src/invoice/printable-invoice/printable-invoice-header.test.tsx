@@ -118,4 +118,18 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByRole('heading', { name: /Invoice/i, level: 1 })).toBeInTheDocument();
     expect(screen.getByText(/john Doe/i)).toBeInTheDocument();
   });
+
+  it('should use netAmount to calculate amount balance when a discount is applied', () => {
+    const discountedBill = {
+      ...bill,
+      totalAmount: 100,
+      netAmount: 80,
+      tenderedAmount: 20,
+    } as MappedBill;
+
+    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} bill={discountedBill} />);
+
+    expect(screen.getByText(': KES 60')).toBeInTheDocument();
+    expect(screen.queryByText(': KES 80')).not.toBeInTheDocument();
+  });
 });
