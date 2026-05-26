@@ -110,16 +110,20 @@ const DiscountCard: React.FC<Props> = ({
         <div className={styles.cardActions}>
           {showDefaultActions && d.status === BillDiscountStatus.PENDING && (
             <>
-              <Button kind="danger--tertiary" size="sm" disabled={!canDecide} onClick={() => onStartReject(d.uuid)}>
+              <Button
+                kind="danger--tertiary"
+                size="sm"
+                disabled={!!busy || !canDecide}
+                onClick={() => onStartReject(d.uuid)}>
                 {t('reject', 'Reject')}
               </Button>
-              <Button kind="primary" size="sm" disabled={busy === d.uuid || !canDecide} onClick={() => onApprove(d)}>
+              <Button kind="primary" size="sm" disabled={!!busy || !canDecide} onClick={() => onApprove(d)}>
                 {t('approve', 'Approve')}
               </Button>
             </>
           )}
           {showDefaultActions && (
-            <Button kind="danger" size="sm" onClick={() => onStartDelete(d.uuid)}>
+            <Button kind="danger" size="sm" disabled={!!busy} onClick={() => onStartDelete(d.uuid)}>
               {t('delete', 'Delete')}
             </Button>
           )}
@@ -129,7 +133,7 @@ const DiscountCard: React.FC<Props> = ({
               <Button kind="ghost" size="sm" onClick={onCancelReject}>
                 {getCoreTranslation('cancel')}
               </Button>
-              <Button kind="danger" size="sm" disabled={busy === d.uuid} onClick={() => onConfirmReject(d)}>
+              <Button kind="danger" size="sm" disabled={!!busy} onClick={() => onConfirmReject(d)}>
                 {t('confirmReject', 'Confirm reject')}
               </Button>
             </>
@@ -140,7 +144,7 @@ const DiscountCard: React.FC<Props> = ({
               <Button kind="ghost" size="sm" onClick={onCancelDelete}>
                 {getCoreTranslation('cancel')}
               </Button>
-              <Button kind="danger" size="sm" disabled={busy === d.uuid} onClick={() => onConfirmDelete(d)}>
+              <Button kind="danger" size="sm" disabled={!!busy} onClick={() => onConfirmDelete(d)}>
                 {t('confirmDelete', 'Confirm delete')}
               </Button>
             </>
