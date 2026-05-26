@@ -41,7 +41,7 @@ const RefundsTable: React.FC<Props> = ({ bill, onMutate }) => {
 
   const tableHeaders = [
     { header: t('refundItem', 'Item'), key: 'item' },
-    { header: t('refundAmount', 'Amount'), key: 'amount' },
+    { header: t('refundAmount', 'Refund amount'), key: 'amount' },
     { header: t('reason', 'Reason'), key: 'reason' },
     { header: t('status', 'Status'), key: 'status' },
     { header: t('action', 'Action'), key: 'action' },

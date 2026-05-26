@@ -49,6 +49,11 @@ describe('DiscountsTable', () => {
     expect(container).toBeEmptyDOMElement();
   });
 
+  it('returns null when all discounts are voided', () => {
+    const { container } = render(<DiscountsTable bill={makeBill([mockDiscount({ voided: true })])} />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it('renders one row per discount with status tag', () => {
     render(
       <DiscountsTable
