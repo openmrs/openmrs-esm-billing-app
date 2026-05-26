@@ -1,4 +1,4 @@
-import useSWR from 'swr';
+import useSWR, { type KeyedMutator } from 'swr';
 import sortBy from 'lodash-es/sortBy';
 import {
   openmrsFetch,
@@ -118,23 +118,42 @@ export const useBills = (patientUuid?: string, billStatus?: string) => {
   };
 };
 
-export const useBill = (billUuid: string) => {
+export function useBill(
+  billUuid: string,
+  mapProperties: false,
+): {
+  bill: PatientInvoice | null;
+  error: any;
+  isLoading: boolean;
+  isValidating: boolean;
+  mutate: KeyedMutator<{ data: PatientInvoice }>;
+};
+
+export function useBill(
+  billUuid: string,
+  mapProperties?: true,
+): {
+  bill: MappedBill | null;
+  error: any;
+  isLoading: boolean;
+  isValidating: boolean;
+  mutate: KeyedMutator<{ data: PatientInvoice }>;
+};
+
+export function useBill(billUuid: string, mapProperties = true) {
   const url = `${apiBasePath}bill/${billUuid}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientInvoice }>(
     billUuid ? url : null,
     openmrsFetch,
   );
 
-  const formattedBill = data?.data ? mapBillProperties(data?.data) : null;
+  let bill: MappedBill | PatientInvoice | null = null;
+  if (data?.data) {
+    bill = mapProperties ? mapBillProperties(data.data) : data.data;
+  }
 
-  return {
-    bill: formattedBill,
-    error,
-    isLoading,
-    isValidating,
-    mutate,
-  };
-};
+  return { bill, error, isLoading, isValidating, mutate };
+}
 
 export const processBillPayment = (payload: PaymentRequestPayload, billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}/payment`;
