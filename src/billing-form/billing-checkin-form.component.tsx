@@ -6,7 +6,7 @@ import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framew
 import { useCashPoint, useBillableItems, createPatientBill, useLastVisitInfo } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import { BillLineItemStatus, BillStatus } from '../types';
-import { apiBasePath } from '../constants';
+import { patientPaymentStatusCacheKey } from '../billing.resource';
 import styles from './billing-checkin-form.scss';
 
 type BillingCheckInFormProps = {
@@ -69,7 +69,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     async (createBillPayload) => {
       try {
         await createPatientBill(createBillPayload);
-        mutate(`${apiBasePath}patientPaymentStatus/${patientUuid}`);
+        mutate(patientPaymentStatusCacheKey(patientUuid));
         showSnackbar({
           title: t('patientBill', 'Patient bill'),
           subtitle: t('billCreatedSuccessfully', 'Bill created successfully'),

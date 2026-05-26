@@ -5,8 +5,10 @@ import { usePatientPaymentStatus } from '../billing.resource';
 import styles from './payment-status-tag.scss';
 
 /**
- * DO NOT DELETE.
- * Adds translations for the payment status strings
+ * DO NOT DELETE — intentional extraction hints for i18next-parser.
+ * The t() calls in this component use a dynamic key (paymentStatus.status),
+ * which the parser cannot statically detect. These dummy calls ensure 'PAID'
+ * and 'UNPAID' are included in the translation catalogue.
  * t('PAID', 'PAID')
  * t('UNPAID', 'UNPAID')
  */
@@ -21,13 +23,13 @@ const PaymentStatusTag: React.FC<PaymentStatusTagProps> = ({ patientUuid }) => {
       {!isLoading && !error && paymentStatus && paymentStatus.status !== 'UNKNOWN' && (
         <Toggletip className={styles.tag}>
           <ToggletipButton label={t(paymentStatus.status, paymentStatus.status)}>
-            <Tag type={paymentStatus.status === 'PAID' ? 'green' : paymentStatus.status === 'UNPAID' ? 'red' : 'gray'}>
+            <Tag type={paymentStatus.status === 'PAID' ? 'green' : 'red'}>
               {t(paymentStatus.status, paymentStatus.status)}
             </Tag>
           </ToggletipButton>
           <ToggletipContent>
             <div role="tooltip">
-              <h6 className={styles.heading}>{paymentStatus.reason}</h6>
+              <p>{paymentStatus.reason}</p>
             </div>
           </ToggletipContent>
         </Toggletip>
