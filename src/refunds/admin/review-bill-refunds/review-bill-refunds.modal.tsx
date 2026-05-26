@@ -1,9 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { ModalBody, ModalHeader } from '@carbon/react';
+import { ModalBody, ModalHeader, ProgressBar } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, useSession } from '@openmrs/esm-framework';
 import BillReceiptRail from './bill-receipt-rail/bill-receipt-rail.component';
 import RefundReviewStack from './refund-review-stack/refund-review-stack.component';
+import { useBill } from '../../../billing.resource';
 import { actOnRefund } from '../../refunds.resource';
 import { useReviewRefundModel } from './review-bill-refunds.utils';
 import { RefundStatus, type BillRefund, type PatientInvoice } from '../../../types';
@@ -21,6 +22,8 @@ interface Props {
 const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate }) => {
   const { t } = useTranslation();
   const session = useSession();
+  const { bill: localBill, mutate: localMutate, isLoading, isValidating } = useBill(bill.uuid, false);
+  const activeBill = localBill ?? bill;
   const [busy, setBusy] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
 
@@ -36,11 +39,11 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
     payments,
     paymentsTotal,
     subtotal,
-  } = useReviewRefundModel(bill);
+  } = useReviewRefundModel(activeBill);
 
   const handleApprove = useCallback(
     async (r: BillRefund) => {
-      if (totalCommittedRefunds + r.refundAmount > bill.amountAfterDiscount) {
+      if (totalCommittedRefunds + r.refundAmount > activeBill.amountAfterDiscount) {
         showSnackbar({
           title: t('approveBlockedRefund', 'Cannot approve refund'),
           subtitle: t('approveBlockedExceedsTotal', 'Approving this refund would exceed the bill total.'),
@@ -52,8 +55,8 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
       try {
         await actOnRefund(r.uuid, { status: RefundStatus.APPROVED, approver: session.user?.uuid });
         showSnackbar({ title: t('refundApproved', 'Refund approved'), kind: 'success' });
+        await localMutate();
         onMutate();
-        closeModal();
       } catch (e: unknown) {
         showSnackbar({
           title: t('approveFailed', 'Approve failed'),
@@ -64,7 +67,7 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
         setBusy(null);
       }
     },
-    [totalCommittedRefunds, bill.amountAfterDiscount, t, session.user?.uuid, onMutate, closeModal],
+    [totalCommittedRefunds, activeBill.amountAfterDiscount, t, session.user?.uuid, localMutate, onMutate],
   );
 
   const confirmReject = useCallback(
@@ -73,8 +76,8 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
       try {
         await actOnRefund(r.uuid, { status: RefundStatus.REJECTED, approver: session.user?.uuid });
         showSnackbar({ title: t('refundRejected', 'Refund rejected'), kind: 'success' });
+        await localMutate();
         onMutate();
-        closeModal();
       } catch (e: unknown) {
         showSnackbar({ title: t('rejectFailed', 'Reject failed'), subtitle: extractErrorMessage(e), kind: 'error' });
       } finally {
@@ -82,37 +85,43 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
         setRejectingId(null);
       }
     },
-    [t, session.user?.uuid, onMutate, closeModal],
+    [t, session.user?.uuid, localMutate, onMutate],
   );
+
+  const showProgress = !!busy || isLoading || isValidating;
 
   return (
     <>
       <ModalHeader closeModal={closeModal} title={t('reviewRefunds', 'Review refunds')} />
       <ModalBody>
-        <div className={styles.layout}>
-          <BillReceiptRail
-            bill={bill}
-            lineItems={lineItems}
-            payments={payments}
-            paymentsTotal={paymentsTotal}
-            subtotal={subtotal}
-            totalApprovedRefunds={totalApprovedRefunds}
-            approvedRefunds={approvedRefunds}
-            completedRefunds={completedRefunds}
-            totalCompletedRefunds={totalCompletedRefunds}
-          />
-          <RefundReviewStack
-            requestedRefunds={requestedRefunds}
-            decidedRefunds={decidedRefunds}
-            lineItems={lineItems}
-            busy={busy}
-            rejectingId={rejectingId}
-            onApprove={handleApprove}
-            onStartReject={setRejectingId}
-            onCancelReject={() => setRejectingId(null)}
-            onConfirmReject={confirmReject}
-          />
-        </div>
+        {showProgress ? (
+          <ProgressBar label="" hideLabel />
+        ) : (
+          <div className={styles.layout}>
+            <BillReceiptRail
+              bill={activeBill}
+              lineItems={lineItems}
+              payments={payments}
+              paymentsTotal={paymentsTotal}
+              subtotal={subtotal}
+              totalApprovedRefunds={totalApprovedRefunds}
+              approvedRefunds={approvedRefunds}
+              completedRefunds={completedRefunds}
+              totalCompletedRefunds={totalCompletedRefunds}
+            />
+            <RefundReviewStack
+              requestedRefunds={requestedRefunds}
+              decidedRefunds={decidedRefunds}
+              lineItems={lineItems}
+              busy={busy}
+              rejectingId={rejectingId}
+              onApprove={handleApprove}
+              onStartReject={setRejectingId}
+              onCancelReject={() => setRejectingId(null)}
+              onConfirmReject={confirmReject}
+            />
+          </div>
+        )}
       </ModalBody>
     </>
   );

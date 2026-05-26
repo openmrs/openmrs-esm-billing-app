@@ -67,7 +67,10 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
   const hasBillLevelDiscount = discounts.some((d) => !d.lineItemUuid);
 
   const billRefunds = useMemo(() => (bill?.refunds ?? []).filter((r) => !r.voided), [bill?.refunds]);
-  const billStatusRefundEligible = bill?.status === BillStatus.PAID || bill?.status === BillStatus.PARTIALLY_REFUNDED;
+  const billStatusRefundEligible =
+    bill?.status === BillStatus.PAID ||
+    bill?.status === BillStatus.PARTIALLY_REFUNDED ||
+    bill?.status === BillStatus.REFUND_REQUESTED;
   const activeRefunds = billRefunds.filter(
     (r) => r.status === RefundStatus.REQUESTED || r.status === RefundStatus.APPROVED,
   );
