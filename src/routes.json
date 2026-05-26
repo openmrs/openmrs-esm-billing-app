@@ -72,6 +72,12 @@
       "order": 2
     },
     {
+      "name": "patient-banner-payment-status-tag",
+      "component": "patientPaymentStatusTag",
+      "slot": "patient-banner-tags-slot",
+      "order": 3
+    },
+    {
       "name": "billable-services-left-panel-link",
       "component": "billableServicesLeftPanelLink",
       "slot": "billable-services-left-panel-slot",

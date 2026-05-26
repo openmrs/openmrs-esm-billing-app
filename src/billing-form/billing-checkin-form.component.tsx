@@ -1,10 +1,12 @@
 import React, { useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSWRConfig } from 'swr';
 import { Dropdown, InlineLoading, InlineNotification } from '@carbon/react';
 import { showSnackbar, getCoreTranslation, useConfig } from '@openmrs/esm-framework';
 import { useCashPoint, useBillableItems, createPatientBill, useLastVisitInfo } from './billing-form.resource';
 import VisitAttributesForm from './visit-attributes/visit-attributes-form.component';
 import { BillLineItemStatus, BillStatus } from '../types';
+import { patientPaymentStatusCacheKey } from '../billing.resource';
 import styles from './billing-checkin-form.scss';
 
 type BillingCheckInFormProps = {
@@ -14,6 +16,7 @@ type BillingCheckInFormProps = {
 
 const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, setExtraVisitInfo }) => {
   const { t } = useTranslation();
+  const { mutate } = useSWRConfig();
   const { categoryConcepts } = useConfig();
 
   const { lastVisitInfo, isLoading: isLoadingLastVisitInfo, error: lastVisitError } = useLastVisitInfo(patientUuid);
@@ -66,6 +69,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     async (createBillPayload) => {
       try {
         await createPatientBill(createBillPayload);
+        mutate(patientPaymentStatusCacheKey(patientUuid));
         showSnackbar({
           title: t('patientBill', 'Patient bill'),
           subtitle: t('billCreatedSuccessfully', 'Bill created successfully'),
@@ -79,7 +83,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         });
       }
     },
-    [t],
+    [mutate, t, patientUuid],
   );
 
   const handleBillingService = useCallback(

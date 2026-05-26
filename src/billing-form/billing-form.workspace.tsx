@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSWRConfig } from 'swr';
 import {
   Button,
   ButtonSet,
@@ -19,7 +20,13 @@ import {
   type Workspace2DefinitionProps,
   Workspace2,
 } from '@openmrs/esm-framework';
-import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
+import {
+  processBillItems,
+  updateBillItems,
+  useBill,
+  useBillableServices,
+  patientPaymentStatusCacheKey,
+} from '../billing.resource';
 import { useBillableServices as useBillableServicesList } from '../billable-services/billable-service.resource';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
@@ -45,6 +52,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 }) => {
   const isTablet = useLayoutType() === 'tablet';
   const { t } = useTranslation();
+  const { mutate: swrMutate } = useSWRConfig();
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
@@ -224,6 +232,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 
       closeWorkspace({ discardUnsavedChanges: true });
       onMutate?.();
+      swrMutate(patientPaymentStatusCacheKey(patientUuid));
 
       showSnackbar({
         title: isEditMode ? t('itemsAddedToBill', 'Items added to bill') : t('billProcessed', 'Bill processed'),
