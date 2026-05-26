@@ -799,6 +799,19 @@ describe('Invoice', () => {
       expect(await screen.findByRole('button', { name: /request refund/i })).toBeInTheDocument();
     });
 
+    it('hides "Request refund" button when bill is in REFUND_REQUESTED status', async () => {
+      mockUseBill.mockReturnValue({
+        bill: { ...paidBill, status: BillStatus.REFUND_REQUESTED },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await waitForLoadingToFinish();
+      expect(screen.queryByRole('button', { name: /request refund/i })).not.toBeInTheDocument();
+    });
+
     it('passes remainingRefundable that deducts COMPLETED refunds when opening the request-refund modal', async () => {
       const completedRefund = {
         uuid: 'r-done',
