@@ -35,7 +35,7 @@ const BillTotalsSummary: React.FC<Props> = ({
       </div>
 
       <div className={classNames(styles.totalsRow, styles.totalsRowAdd)}>
-        <span>− {t('totalPaid', 'Total paid')}</span>
+        <span>{t('totalPaid', 'Total paid')}</span>
         <span>{convertToCurrency(paymentsTotal, defaultCurrency)}</span>
       </div>
 

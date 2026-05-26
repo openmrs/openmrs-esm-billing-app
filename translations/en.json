@@ -96,6 +96,7 @@
   "confirmDeleteMessage": "Are you sure you want to delete this payment mode? Proceed cautiously.",
   "confirmedDiscounts": "Confirmed discounts",
   "confirmReject": "Confirm reject",
+  "confirmVoid": "Confirm void",
   "createBill": "Create bill",
   "cumulativeBills": "Cumulative bills",
   "currentNet": "Current net",
@@ -326,6 +327,7 @@
   "refundScope": "Refund scope",
   "refundsOnBill": "Refunds on this bill",
   "refundSummary": "Refund summary",
+  "refundVoided": "Refund voided",
   "reject": "Reject",
   "rejectConfirm": "Reject this discount?",
   "rejectConfirmRefund": "Reject this refund?",
@@ -392,6 +394,9 @@
   "valueAmountLabel": "Value ({{currency}})",
   "valueMustBePositive": "Value must be greater than 0",
   "valuePercentLabel": "Value (%)",
+  "void": "Void",
+  "voidConfirmRefund": "Void this refund?",
+  "voidFailed": "Void failed",
   "wholeBill": "Whole bill",
   "wholeBillScope": "Whole bill"
 }

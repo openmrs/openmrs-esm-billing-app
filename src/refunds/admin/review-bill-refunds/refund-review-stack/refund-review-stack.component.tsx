@@ -10,10 +10,14 @@ interface Props {
   lineItems: Array<LineItem>;
   busy: string | null;
   rejectingId: string | null;
+  voidingId: string | null;
   onApprove: (r: BillRefund) => void;
   onStartReject: (uuid: string) => void;
   onCancelReject: () => void;
   onConfirmReject: (r: BillRefund) => void;
+  onStartVoid: (uuid: string) => void;
+  onCancelVoid: () => void;
+  onConfirmVoid: (r: BillRefund) => void;
 }
 
 const RefundReviewStack: React.FC<Props> = ({
@@ -22,10 +26,14 @@ const RefundReviewStack: React.FC<Props> = ({
   lineItems,
   busy,
   rejectingId,
+  voidingId,
   onApprove,
   onStartReject,
   onCancelReject,
   onConfirmReject,
+  onStartVoid,
+  onCancelVoid,
+  onConfirmVoid,
 }) => {
   const { t } = useTranslation();
 
@@ -36,10 +44,14 @@ const RefundReviewStack: React.FC<Props> = ({
       lineItems={lineItems}
       busy={busy}
       rejectingId={rejectingId}
+      voidingId={voidingId}
       onApprove={onApprove}
       onStartReject={onStartReject}
       onCancelReject={onCancelReject}
       onConfirmReject={onConfirmReject}
+      onStartVoid={onStartVoid}
+      onCancelVoid={onCancelVoid}
+      onConfirmVoid={onConfirmVoid}
     />
   );
 

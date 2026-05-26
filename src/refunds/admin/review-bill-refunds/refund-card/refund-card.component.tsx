@@ -20,10 +20,14 @@ interface Props {
   lineItems: Array<LineItem>;
   busy: string | null;
   rejectingId: string | null;
+  voidingId: string | null;
   onApprove: (r: BillRefund) => void;
   onStartReject: (uuid: string) => void;
   onCancelReject: () => void;
   onConfirmReject: (r: BillRefund) => void;
+  onStartVoid: (uuid: string) => void;
+  onCancelVoid: () => void;
+  onConfirmVoid: (r: BillRefund) => void;
 }
 
 const RefundCard: React.FC<Props> = ({
@@ -31,16 +35,21 @@ const RefundCard: React.FC<Props> = ({
   lineItems,
   busy,
   rejectingId,
+  voidingId,
   onApprove,
   onStartReject,
   onCancelReject,
   onConfirmReject,
+  onStartVoid,
+  onCancelVoid,
+  onConfirmVoid,
 }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
 
   const isRejecting = rejectingId === r.uuid;
-  const showDefaultActions = !isRejecting;
+  const isVoiding = voidingId === r.uuid;
+  const showDefaultActions = !isRejecting && !isVoiding;
 
   const cardClass = classNames(styles.card, {
     [styles.cardRequested]: r.status === RefundStatus.REQUESTED,
@@ -95,13 +104,18 @@ const RefundCard: React.FC<Props> = ({
         <div className={styles.cardActions}>
           {showDefaultActions && r.status === RefundStatus.REQUESTED && (
             <>
-              <Button kind="danger--tertiary" size="sm" onClick={() => onStartReject(r.uuid)}>
+              <Button kind="danger--tertiary" size="sm" disabled={!!busy} onClick={() => onStartReject(r.uuid)}>
                 {t('reject', 'Reject')}
               </Button>
               <Button kind="primary" size="sm" disabled={busy === r.uuid} onClick={() => onApprove(r)}>
                 {t('approve', 'Approve')}
               </Button>
             </>
+          )}
+          {showDefaultActions && (
+            <Button kind="danger" size="sm" disabled={!!busy} onClick={() => onStartVoid(r.uuid)}>
+              {t('void', 'Void')}
+            </Button>
           )}
           {isRejecting && (
             <>
@@ -111,6 +125,17 @@ const RefundCard: React.FC<Props> = ({
               </Button>
               <Button kind="danger" size="sm" disabled={busy === r.uuid} onClick={() => onConfirmReject(r)}>
                 {t('confirmReject', 'Confirm reject')}
+              </Button>
+            </>
+          )}
+          {isVoiding && (
+            <>
+              <span className={styles.confirmCopy}>{t('voidConfirmRefund', 'Void this refund?')}</span>
+              <Button kind="ghost" size="sm" onClick={onCancelVoid}>
+                {getCoreTranslation('cancel')}
+              </Button>
+              <Button kind="danger" size="sm" disabled={busy === r.uuid} onClick={() => onConfirmVoid(r)}>
+                {t('confirmVoid', 'Confirm void')}
               </Button>
             </>
           )}
