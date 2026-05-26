@@ -32,7 +32,7 @@ const DiscountsTable: React.FC<Props> = ({ bill }) => {
   const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-  const discounts = bill.discounts;
+  const discounts = useMemo(() => (bill.discounts ?? []).filter((d) => !d.voided), [bill.discounts]);
 
   const tableHeaders = [
     { header: t('discountItem', 'Item'), key: 'item', width: 25 },

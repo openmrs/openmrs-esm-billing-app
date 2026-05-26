@@ -5,7 +5,7 @@ import { showSnackbar, useSession } from '@openmrs/esm-framework';
 import BillReceiptRail from './bill-receipt-rail/bill-receipt-rail.component';
 import RefundReviewStack from './refund-review-stack/refund-review-stack.component';
 import { useBill } from '../../../billing.resource';
-import { actOnRefund } from '../../refunds.resource';
+import { actOnRefund, voidRefund } from '../../refunds.resource';
 import { useReviewRefundModel } from './review-bill-refunds.utils';
 import { RefundStatus, type BillRefund, type PatientInvoice } from '../../../types';
 import styles from './review-bill-refunds.modal.scss';
@@ -26,6 +26,7 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
   const activeBill = localBill ?? bill;
   const [busy, setBusy] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [voidingId, setVoidingId] = useState<string | null>(null);
 
   const {
     requestedRefunds,
@@ -88,6 +89,24 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
     [t, session.user?.uuid, localMutate, onMutate],
   );
 
+  const confirmVoid = useCallback(
+    async (r: BillRefund) => {
+      setBusy(r.uuid);
+      try {
+        await voidRefund(r.uuid, 'Voided by admin');
+        showSnackbar({ title: t('refundVoided', 'Refund voided'), kind: 'success' });
+        await localMutate();
+        onMutate();
+      } catch (e: unknown) {
+        showSnackbar({ title: t('voidFailed', 'Void failed'), subtitle: extractErrorMessage(e), kind: 'error' });
+      } finally {
+        setBusy(null);
+        setVoidingId(null);
+      }
+    },
+    [t, localMutate, onMutate],
+  );
+
   const showProgress = !!busy || isLoading || isValidating;
 
   return (
@@ -115,10 +134,14 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
               lineItems={lineItems}
               busy={busy}
               rejectingId={rejectingId}
+              voidingId={voidingId}
               onApprove={handleApprove}
               onStartReject={setRejectingId}
               onCancelReject={() => setRejectingId(null)}
               onConfirmReject={confirmReject}
+              onStartVoid={setVoidingId}
+              onCancelVoid={() => setVoidingId(null)}
+              onConfirmVoid={confirmVoid}
             />
           </div>
         )}
