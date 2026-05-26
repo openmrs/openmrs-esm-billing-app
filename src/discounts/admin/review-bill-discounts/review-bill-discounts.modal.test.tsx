@@ -1,5 +1,6 @@
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi, type Mock } from 'vitest';
+import { useBill } from '../../../billing.resource';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { showSnackbar } from '@openmrs/esm-framework';
@@ -23,6 +24,9 @@ vi.mock('@openmrs/esm-framework', () => ({
   restBaseUrl: '/ws/rest/v1',
 }));
 vi.mock('../../discounts.resource');
+vi.mock('../../../billing.resource', () => ({
+  useBill: vi.fn().mockReturnValue({ bill: null, mutate: vi.fn(), isLoading: false, isValidating: false }),
+}));
 
 (window as any).i18next = { language: 'en-US' };
 
@@ -109,5 +113,41 @@ describe('ReviewBillDiscountsModal', () => {
 
     await waitFor(() => expect(showSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error' })));
     expect(voidDiscount).not.toHaveBeenCalled();
+  });
+
+  it('does not close the modal after a successful approve', async () => {
+    const user = userEvent.setup();
+    const closeModal = vi.fn();
+    const onMutate = vi.fn();
+
+    vi.mocked(decideDiscount).mockResolvedValue({
+      ...makeDiscount(),
+      status: BillDiscountStatus.APPROVED,
+    } as any);
+
+    const bill = makeBill({
+      status: BillStatus.POSTED,
+      total: 1000,
+      amountAfterDiscount: 1000,
+      discounts: [makeDiscount({ discountAmount: 100 })],
+    });
+
+    render(<ReviewBillDiscountsModal closeModal={closeModal} bill={bill} onMutate={onMutate} />);
+
+    await user.click(screen.getByRole('button', { name: /approve/i }));
+
+    await waitFor(() => expect(showSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' })));
+    expect(closeModal).not.toHaveBeenCalled();
+    expect(onMutate).toHaveBeenCalledOnce();
+  });
+
+  it('renders a progress bar and hides content while isLoading', () => {
+    (useBill as Mock).mockReturnValue({ bill: null, mutate: vi.fn(), isLoading: true, isValidating: false });
+
+    const bill = makeBill({ discounts: [makeDiscount()] });
+    render(<ReviewBillDiscountsModal closeModal={vi.fn()} bill={bill} onMutate={vi.fn()} />);
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
   });
 });
