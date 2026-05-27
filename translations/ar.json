@@ -173,7 +173,7 @@
   "invoiceError": "خطأ في الفاتورة",
   "invoiceLabel": "Invoice {{number}}",
   "invoiceLineItems": "عناصر الفاتورة",
-  "invoiceNumber": "Invoice #",
+  "invoiceNumber": "Invoice number",
   "invoiceStatus": "حالة الفاتورة",
   "invoiceSummary": "ملخص الفاتورة",
   "issued": "Issued",
