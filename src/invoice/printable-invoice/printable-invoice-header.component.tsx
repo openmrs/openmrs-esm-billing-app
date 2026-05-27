@@ -23,7 +23,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
       : '--',
     [t('totalAmount', 'Total amount')]: `${defaultCurrency} ${bill?.totalAmount}`,
     [t('totalPaid', 'Total paid')]: `${defaultCurrency} ${bill?.tenderedAmount}`,
-    [t('amountBalance', 'Amount balance')]: `${defaultCurrency} ${bill?.totalAmount - bill?.tenderedAmount}`,
+    [t('amountBalance', 'Amount balance')]: `${defaultCurrency} ${bill?.netAmount - bill?.tenderedAmount}`,
     ...(bill?.status && { [t('invoiceStatus', 'Invoice status')]: bill.status }),
   };
 
