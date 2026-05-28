@@ -28,7 +28,6 @@ import {
   useConfig,
   useDebounce,
   parseDate,
-  getCoreTranslation,
   type LayoutType,
 } from '@openmrs/esm-framework';
 import { usePaginatedBills } from '../billing.resource';
@@ -175,7 +174,7 @@ const BillsTable: React.FC = () => {
       </div>
 
       {isLoading && !bills?.length ? (
-        <div className={styles.loaderContainer} role="progressbar" aria-label={getCoreTranslation('loading')}>
+        <div className={styles.loaderContainer}>
           <DataTableSkeleton
             rowCount={pageSize}
             showHeader={false}
