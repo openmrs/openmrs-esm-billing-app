@@ -174,7 +174,7 @@ const BillsTable: React.FC = () => {
       </div>
 
       {isLoading && !bills?.length ? (
-        <div className={styles.loaderContainer}>
+        <div className={styles.loaderContainer} data-testid="bills-table-skeleton">
           <DataTableSkeleton
             rowCount={pageSize}
             showHeader={false}
