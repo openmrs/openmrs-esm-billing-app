@@ -45,7 +45,7 @@ interface BillDisplayItem extends Omit<MappedBill, 'id'> {
 interface BillPaymentStatusFilterItem {
   id: BillStatus | '';
   text: string;
-  status: BillStatus | '';
+  status: string;
 }
 
 const mapLineItems = (bill: MappedBill) =>
@@ -72,6 +72,16 @@ const BillsTable: React.FC = () => {
       },
       { id: BillStatus.POSTED, text: t('pendingPaymentBills', 'Pending payment'), status: BillStatus.POSTED },
       { id: BillStatus.PAID, text: t('paidBills', 'Paid bills'), status: BillStatus.PAID },
+      {
+        id: BillStatus.REFUNDED,
+        text: t('refundedBills', 'Refunded bills'),
+        status: `${BillStatus.REFUNDED},${BillStatus.PARTIALLY_REFUNDED}`,
+      },
+      {
+        id: BillStatus.REFUND_REQUESTED,
+        text: t('pendingRefundBills', 'Pending refunds'),
+        status: BillStatus.REFUND_REQUESTED,
+      },
     ],
     [t],
   );

@@ -92,6 +92,7 @@ const createBaseBill = (overrides: Partial<PatientInvoice> = {}): PatientInvoice
     total: serverTotal,
     amountAfterDiscount: serverTotal,
     discounts: [],
+    refunds: [],
     ...overrides,
   };
 };

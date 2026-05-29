@@ -1,0 +1,63 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.ledger {
+  margin-bottom: $spacing-05;
+}
+
+.ledgerHeading {
+  @include type.type-style('label-01');
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cds-text-helper);
+  margin: 0 0 $spacing-03;
+}
+
+.ledgerTable {
+  width: 100%;
+  border-collapse: collapse;
+  @include type.type-style('body-compact-01');
+}
+
+.ledgerTable thead th {
+  text-align: left;
+  @include type.type-style('label-01');
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cds-text-helper);
+  font-weight: 500;
+  padding: $spacing-02 0;
+  border-bottom: 1px solid $ui-03;
+}
+
+.ledgerTable tbody td {
+  padding: $spacing-03 0;
+  border-bottom: 1px dashed $ui-03;
+  color: var(--cds-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.ledgerTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.right {
+  text-align: right;
+}
+
+.paymentKind {
+  @include type.type-style('label-01');
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cds-text-helper);
+  padding: 2px $spacing-02;
+  background: $ui-02;
+  border: 1px solid $ui-03;
+  display: inline-block;
+}
+
+.paymentDate {
+  @include type.type-style('label-01');
+  color: var(--cds-text-helper);
+}

@@ -25,33 +25,20 @@ import {
   useLayoutType,
 } from '@openmrs/esm-framework';
 import LineItemActionMenu from './line-item-action-menu.component';
-import { useBillDiscounts } from '../discounts/discounts.resource';
 import { convertToCurrency } from '../helpers';
 import type { BillingConfig } from '../config-schema';
-import { BillStatus, type LineItem, type MappedBill } from '../types';
+import { BillStatus, RefundStatus, type LineItem, type MappedBill } from '../types';
 import styles from './invoice-table.scss';
 
 const getLineItemTotal = (item: LineItem) => (item.price ?? 0) * (item.quantity ?? 0);
-
-type UseBillDiscountsResult = ReturnType<typeof useBillDiscounts>;
 
 type InvoiceTableProps = {
   bill: MappedBill;
   isLoadingBill?: boolean;
   onMutate?: () => void;
-  discounts?: UseBillDiscountsResult['discounts'];
-  discountsError?: UseBillDiscountsResult['error'];
-  mutateDiscounts?: UseBillDiscountsResult['mutate'];
 };
 
-const InvoiceTable: React.FC<InvoiceTableProps> = ({
-  bill,
-  isLoadingBill,
-  onMutate,
-  discounts: discountsProp,
-  discountsError: discountsErrorProp,
-  mutateDiscounts: mutateDiscountsProp,
-}) => {
+const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMutate }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
@@ -60,19 +47,56 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
 
-  const shouldFetchDiscounts = discountsProp === undefined;
-  const hookResult = useBillDiscounts(shouldFetchDiscounts ? bill?.uuid : undefined);
-  const discounts = discountsProp ?? hookResult.discounts;
-  const discountsError = discountsErrorProp ?? hookResult.error;
-  const mutateDiscounts = mutateDiscountsProp ?? hookResult.mutate;
+  const discounts = useMemo(() => (bill?.discounts ?? []).filter((d) => !d.voided), [bill?.discounts]);
   const billStatusEligible = bill?.status === BillStatus.PENDING || bill?.status === BillStatus.POSTED;
-  const hasBillLevelDiscount = discounts?.some((d) => !d.lineItemUuid) ?? false;
+  const hasBillLevelDiscount = discounts.some((d) => !d.lineItemUuid);
 
-  const lineHasActiveDiscount = (lineItemUuid: string) =>
-    discounts?.some((d) => d.lineItemUuid === lineItemUuid) ?? false;
+  const billRefunds = useMemo(() => (bill?.refunds ?? []).filter((r) => !r.voided), [bill?.refunds]);
+  const billStatusRefundEligible =
+    bill?.status === BillStatus.PAID ||
+    bill?.status === BillStatus.PARTIALLY_REFUNDED ||
+    bill?.status === BillStatus.REFUND_REQUESTED;
+  const activeRefunds = billRefunds.filter(
+    (r) => r.status === RefundStatus.REQUESTED || r.status === RefundStatus.APPROVED,
+  );
+  const activeBillLevelRefund = activeRefunds.some((r) => !r.lineItemUuid);
+
+  const lineHasActiveRefund = (lineItemUuid: string) => activeRefunds.some((r) => r.lineItemUuid === lineItemUuid);
+
+  const showLineItemRefundRequest = (lineItem: LineItem) =>
+    billStatusRefundEligible && !activeBillLevelRefund && !lineHasActiveRefund(lineItem.uuid ?? '') && !!lineItem.uuid;
+
+  const lineHasActiveDiscount = (lineItemUuid: string) => discounts.some((d) => d.lineItemUuid === lineItemUuid);
 
   const showLineItemRequest = (lineItem: LineItem) =>
-    billStatusEligible && !hasBillLevelDiscount && !lineHasActiveDiscount(lineItem.uuid) && !discountsError;
+    billStatusEligible && !hasBillLevelDiscount && !lineHasActiveDiscount(lineItem.uuid);
+
+  const handleLineItemRefundRequest = (item: LineItem) => {
+    if (!item.uuid) return;
+    const lineTotal = getLineItemTotal(item);
+    const lineCommittedRefunds = billRefunds.filter(
+      (r) =>
+        r.lineItemUuid === item.uuid && (r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED),
+    );
+    const remaining = lineTotal - lineCommittedRefunds.reduce((s, r) => s + r.refundAmount, 0);
+    const dispose = showModal('request-refund-modal', {
+      bill: {
+        uuid: bill.uuid,
+        total: bill.totalAmount ?? 0,
+        amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
+      },
+      lineItem: {
+        uuid: item.uuid,
+        display: item.item || item.billableService || '--',
+        total: lineTotal,
+        quantity: item.quantity,
+        price: item.price,
+      },
+      remainingRefundable: Math.max(0, remaining),
+      onMutate: () => onMutate?.(),
+      closeModal: () => dispose(),
+    });
+  };
 
   const handleLineItemRequest = (lineItem: LineItem) => {
     const dispose = showModal('request-discount-modal', {
@@ -90,10 +114,7 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
         quantity: lineItem.quantity,
         price: lineItem.price,
       },
-      onMutate: () => {
-        onMutate?.();
-        mutateDiscounts();
-      },
+      onMutate: () => onMutate?.(),
       closeModal: () => dispose(),
     });
   };
@@ -199,6 +220,8 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
                             onMutate={onMutate}
                             showDiscountRequest={showLineItemRequest(item)}
                             onDiscountRequest={() => handleLineItemRequest(item)}
+                            showRefundRequest={showLineItemRefundRequest(item)}
+                            onRefundRequest={() => handleLineItemRefundRequest(item)}
                           />
                         )}
                       </TableCell>
