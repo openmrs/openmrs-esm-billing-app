@@ -173,7 +173,7 @@
   "invoiceError": "Rechnungsfehler",
   "invoiceLabel": "Invoice {{number}}",
   "invoiceLineItems": "Rechnungspositionen",
-  "invoiceNumber": "Rechnung #",
+  "invoiceNumber": "Invoice number",
   "invoiceStatus": "Rechnungsstatus",
   "invoiceSummary": "Rechnungsübersicht",
   "issued": "Issued",

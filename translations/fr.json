@@ -173,7 +173,7 @@
   "invoiceError": "Erreur de facture",
   "invoiceLabel": "Invoice {{number}}",
   "invoiceLineItems": "Lignes de facture",
-  "invoiceNumber": "Facture #",
+  "invoiceNumber": "Invoice number",
   "invoiceStatus": "État de la facture",
   "invoiceSummary": "Invoice summary",
   "issued": "Issued",

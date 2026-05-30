@@ -2,14 +2,16 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { getDefaultsFromConfigSchema, showSnackbar, useConfig } from '@openmrs/esm-framework';
+import { getDefaultsFromConfigSchema, showSnackbar, useConfig, useVisit } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
+import { type BillLineItemStatus, type BillStatus } from '../types';
 import { useBillableServices as useBillableServicesList } from '../billable-services/billable-service.resource';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import BillingForm from './billing-form.workspace';
 
 const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+const mockUseVisit = vi.mocked(useVisit);
 const mockUseBillableServices = vi.mocked(useBillableServices);
 const mockUseBill = vi.mocked(useBill);
 const mockUseBillableServicesList = vi.mocked(useBillableServicesList);
@@ -67,7 +69,7 @@ const mockExistingBill = {
   uuid: 'bill-123',
   patientUuid: 'patient-uuid',
   patientName: 'John Doe',
-  status: 'PENDING',
+  status: 'PENDING' as BillStatus,
   cashPointUuid: 'cashpoint-uuid',
   cashPointName: 'Main Cashier',
   cashPointLocation: 'Main Hospital',
@@ -82,7 +84,7 @@ const mockExistingBill = {
       display: 'Hemoglobin',
       quantity: 1,
       price: 100,
-      status: 'PENDING',
+      status: 'PENDING' as BillLineItemStatus,
       lineItemOrder: 0,
       voided: false,
       voidReason: null,
@@ -139,6 +141,7 @@ describe('BillingForm', () => {
       mutate: vi.fn(),
     } as any);
     mockGetBillableServiceUuid.mockReturnValue('bs-uuid-1');
+    mockUseVisit.mockReturnValue({ activeVisit: null } as any);
   });
 
   describe('Create mode (no billUuid)', () => {
@@ -544,6 +547,38 @@ describe('BillingForm', () => {
         );
       });
       expect(mockUpdateBillItems).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('active visit in create-bill payload', () => {
+    it('should include visit UUID in payload when an active visit exists', async () => {
+      mockUseVisit.mockReturnValue({ activeVisit: { uuid: 'visit-uuid-789' } } as any);
+      const user = userEvent.setup();
+      render(<BillingForm {...defaultCreateProps} />);
+
+      const combobox = screen.getByRole('combobox');
+      await user.click(combobox);
+      await user.click(screen.getByText('Consultation'));
+      await user.click(screen.getByRole('button', { name: /save and close/i }));
+
+      await waitFor(() => {
+        expect(mockProcessBillItems).toHaveBeenCalledWith(expect.objectContaining({ visit: 'visit-uuid-789' }));
+      });
+    });
+
+    it('should not include visit field in payload when no active visit exists', async () => {
+      mockUseVisit.mockReturnValue({ activeVisit: null } as any);
+      const user = userEvent.setup();
+      render(<BillingForm {...defaultCreateProps} />);
+
+      const combobox = screen.getByRole('combobox');
+      await user.click(combobox);
+      await user.click(screen.getByText('Consultation'));
+      await user.click(screen.getByRole('button', { name: /save and close/i }));
+
+      await waitFor(() => {
+        expect(mockProcessBillItems).toHaveBeenCalledWith(expect.not.objectContaining({ visit: expect.anything() }));
+      });
     });
   });
 });

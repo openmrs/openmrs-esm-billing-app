@@ -173,7 +173,7 @@
   "invoiceError": "Faturë gabim",
   "invoiceLabel": "Invoice {{number}}",
   "invoiceLineItems": "Faturë line elemente",
-  "invoiceNumber": "Faturë #",
+  "invoiceNumber": "Invoice number",
   "invoiceStatus": "Faturë status",
   "invoiceSummary": "Invoice summary",
   "issued": "Issued",

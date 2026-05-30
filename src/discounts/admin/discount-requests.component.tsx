@@ -89,7 +89,7 @@ const DiscountRequests: React.FC = () => {
   const headers = useMemo(
     () => [
       { key: 'dateCreated', header: t('date', 'Date') },
-      { key: 'receiptNumber', header: t('invoiceNumber', 'Invoice #') },
+      { key: 'receiptNumber', header: t('invoiceNo', 'Invoice #') },
       { key: 'patient', header: t('patient', 'Patient') },
       { key: 'billAmount', header: t('billAmount', 'Bill amount') },
       { key: 'cashier', header: t('cashier', 'Cashier') },
@@ -174,7 +174,7 @@ const DiscountRequests: React.FC = () => {
             t={t}
           />
           {isLoading && !bills?.length ? (
-            <div className={styles.loaderContainer} role="progressbar" aria-label={t('loading', 'Loading')}>
+            <div className={styles.loaderContainer} role="progressbar" aria-label={t('loadingDescription', 'Loading')}>
               <DataTableSkeleton
                 rowCount={currentPageSize}
                 showHeader={false}
