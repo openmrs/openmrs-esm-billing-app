@@ -25,7 +25,6 @@ import {
   useLayoutType,
 } from '@openmrs/esm-framework';
 import LineItemActionMenu from './line-item-action-menu.component';
-import type { useBillDiscounts } from '../discounts/discounts.resource';
 import { convertToCurrency } from '../helpers';
 import type { BillingConfig } from '../config-schema';
 import { BillStatus, RefundStatus, type LineItem, type MappedBill } from '../types';
@@ -33,27 +32,14 @@ import styles from './invoice-table.scss';
 
 const getLineItemTotal = (item: LineItem) => (item.price ?? 0) * (item.quantity ?? 0);
 
-type UseBillDiscountsResult = ReturnType<typeof useBillDiscounts>;
-
 type InvoiceTableProps = {
   bill: MappedBill;
   isLoadingBill?: boolean;
   onMutate?: () => void;
   viewOnly?: boolean;
-  discounts?: UseBillDiscountsResult['discounts'];
-  discountsError?: UseBillDiscountsResult['error'];
-  mutateDiscounts?: UseBillDiscountsResult['mutate'];
 };
 
-const InvoiceTable: React.FC<InvoiceTableProps> = ({
-  bill,
-  isLoadingBill,
-  onMutate,
-  viewOnly,
-  discounts: discountsProp,
-  discountsError: discountsErrorProp,
-  mutateDiscounts: mutateDiscountsProp,
-}) => {
+const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMutate, viewOnly }) => {
   const { t } = useTranslation();
   const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
