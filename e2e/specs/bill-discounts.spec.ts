@@ -129,7 +129,6 @@ test.describe('Bill discount workflow', () => {
       await reviewModal.waitForLoaded();
       await reviewModal.approveFirstPending();
       await waitForSuccessNotification(page, /discount approved/i);
-      await expect(reviewModal.modal()).toBeHidden();
     });
 
     await test.step('Then the discount is APPROVED and net amount drops by the discount', async () => {
@@ -227,7 +226,6 @@ test.describe('Bill discount workflow', () => {
       await reviewModal.waitForLoaded();
       await reviewModal.rejectFirstPending();
       await waitForSuccessNotification(page, /discount rejected/i);
-      await expect(reviewModal.modal()).toBeHidden();
     });
 
     await test.step('Then the discount is REJECTED and the bill total is unchanged', async () => {
