@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.openmrs.org/routes.schema.json",
   "backendDependencies": {
-    "billing": ">=2.0.0",
+    "billing": ">=2.3.0-0",
     "webservices.rest": ">=2.24.0"
   },
   "pages": [
@@ -33,6 +33,14 @@
       "order": 10,
       "meta": {
         "columnSpan": 4
+      }
+    },
+    {
+      "name": "visit-bills-panel",
+      "component": "visitBillsPanel",
+      "slot": "visit-summary-panels",
+      "meta": {
+        "title": "Bills"
       }
     },
     {

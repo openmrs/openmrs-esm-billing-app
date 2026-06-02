@@ -415,6 +415,31 @@ describe('InvoiceTable', () => {
     expect(searchInput).toBeVisible();
   });
 
+  describe('viewOnly mode', () => {
+    it('hides the search box', () => {
+      render(<InvoiceTable bill={defaultBill} viewOnly />);
+      expect(screen.queryByPlaceholderText(/search this table/i)).not.toBeInTheDocument();
+    });
+
+    it('hides the actions column header', () => {
+      render(<InvoiceTable bill={defaultBill} viewOnly />);
+      // 6 data column headers; no 7th actions header
+      expect(screen.getAllByRole('columnheader')).toHaveLength(6);
+    });
+
+    it('hides per-row action menus', () => {
+      render(<InvoiceTable bill={defaultBill} viewOnly />);
+      expect(screen.queryAllByRole('button', { name: /options/i })).toHaveLength(0);
+    });
+
+    it('hides the filter helper text in the empty state', () => {
+      const emptyBill: MappedBill = { ...defaultBill, lineItems: [] };
+      render(<InvoiceTable bill={emptyBill} viewOnly />);
+      expect(screen.getByText(/no matching items to display/i)).toBeInTheDocument();
+      expect(screen.queryByText(/check the filters above/i)).not.toBeInTheDocument();
+    });
+  });
+
   describe('per-line-item discount action', () => {
     it('opens the request-discount modal with lineItem scope', async () => {
       const user = userEvent.setup();

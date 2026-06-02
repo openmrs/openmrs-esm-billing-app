@@ -3,7 +3,7 @@ import { type Page } from '@playwright/test';
 export class InvoicePage {
   constructor(readonly page: Page) {}
 
-  readonly invoiceNumberLabel = () => this.page.getByRole('heading', { name: /invoice #/i });
+  readonly invoiceNumberLabel = () => this.page.getByRole('heading', { name: /invoice number/i });
   readonly totalAmountLabel = () => this.page.getByRole('heading', { name: /^total amount$/i });
   readonly amountTenderedLabel = () => this.page.getByRole('heading', { name: /^amount tendered$/i });
   readonly amountDueLabel = () => this.page.getByRole('heading', { name: /^amount due$/i });

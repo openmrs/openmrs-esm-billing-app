@@ -39,7 +39,7 @@ const DeleteBillModal: React.FC<DeleteBillModalParams> = ({ closeModal, bill, on
       const message =
         err?.responseBody?.error?.message ||
         err?.message ||
-        t('deleteFailedTryAgain', 'Unable to delete bill. Please try again.');
+        t('deleteBillFailedTryAgain', 'Unable to delete bill. Please try again.');
 
       showSnackbar({
         title: t('billDeleteFailed', 'Failed to delete bill'),

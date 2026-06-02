@@ -123,7 +123,7 @@ const Invoice: React.FC = () => {
   /**
    * t('totalAmount', 'Total amount')
    * t('amountTendered', 'Amount tendered')
-   * t('invoiceNumber', 'Invoice #')
+   * t('invoiceNumber', 'Invoice number')
    * t('dateAndTime', 'Date and time')
    * t('invoiceStatus', 'Invoice status')
    */
