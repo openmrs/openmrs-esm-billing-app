@@ -42,6 +42,7 @@ export interface MappedBill {
   netAmount?: number;
   tenderedAmount?: number;
   display?: string;
+  visitUuid?: string;
 }
 
 interface LocationLink {
@@ -171,6 +172,7 @@ export interface PatientInvoice {
   status: string;
   adjustmentReason: string | null;
   id: number;
+  visit?: { uuid: string; display: string };
   resourceVersion: string;
   total: number;
   amountAfterDiscount: number;
@@ -247,6 +249,7 @@ export type CreateBillPayload = {
   payments: Array<PaymentPayload>;
   patient: string;
   status: string;
+  visit?: string;
 };
 
 export type UpdateBillPayload = {

@@ -149,7 +149,7 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByTestId('bills-table-skeleton')).toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
     expect(screen.getByText(/pending confirmation/i)).toBeInTheDocument();
   });
@@ -423,6 +423,6 @@ describe('BillsTable', () => {
     expect(screen.getByTitle('loading')).toBeInTheDocument();
 
     // Should NOT show skeleton
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bills-table-skeleton')).not.toBeInTheDocument();
   });
 });
