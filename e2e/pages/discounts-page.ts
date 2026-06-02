@@ -69,7 +69,7 @@ export class ReviewBillDiscountsModal {
 
   async rejectFirstPending() {
     const card = this.firstPendingCard();
-    await card.getByRole('button', { name: /^reject$/i }).click();
+    await card.getByRole('button', { name: /reject$/i }).click();
     await card.getByRole('button', { name: /confirm reject/i }).click();
   }
 }
