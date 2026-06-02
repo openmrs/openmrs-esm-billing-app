@@ -21,7 +21,7 @@ describe('PaymentStatusTag', () => {
       isValidating: false,
       mutate: vi.fn(),
     });
-    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} />);
+    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -33,7 +33,7 @@ describe('PaymentStatusTag', () => {
       isValidating: false,
       mutate: vi.fn(),
     });
-    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} />);
+    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -45,7 +45,7 @@ describe('PaymentStatusTag', () => {
       isValidating: false,
       mutate: vi.fn(),
     });
-    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} />);
+    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -57,7 +57,19 @@ describe('PaymentStatusTag', () => {
       isValidating: false,
       mutate: vi.fn(),
     });
-    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} />);
+    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it('renders nothing when not in patient-chart status', () => {
+    mockUsePatientPaymentStatus.mockReturnValue({
+      paymentStatus: { status: 'PAID', reason: 'Status could not be determined' },
+      isLoading: false,
+      error: undefined,
+      isValidating: false,
+      mutate: vi.fn(),
+    });
+    const { container } = render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-search" />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -69,7 +81,7 @@ describe('PaymentStatusTag', () => {
       isValidating: false,
       mutate: vi.fn(),
     });
-    render(<PaymentStatusTag patientUuid={patientUuid} />);
+    render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
     expect(screen.getByText('PAID')).toBeInTheDocument();
     expect(screen.getByText('Bill fully settled')).toBeInTheDocument();
   });
@@ -82,7 +94,7 @@ describe('PaymentStatusTag', () => {
       isValidating: false,
       mutate: vi.fn(),
     });
-    render(<PaymentStatusTag patientUuid={patientUuid} />);
+    render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
     expect(screen.getByText('UNPAID')).toBeInTheDocument();
     expect(screen.getByText('Outstanding balance of 500')).toBeInTheDocument();
   });
@@ -95,7 +107,7 @@ describe('PaymentStatusTag', () => {
       isValidating: true,
       mutate: vi.fn(),
     });
-    render(<PaymentStatusTag patientUuid={patientUuid} />);
+    render(<PaymentStatusTag patientUuid={patientUuid} renderedFrom="patient-chart" />);
     expect(screen.getByText('PAID')).toBeInTheDocument();
   });
 });

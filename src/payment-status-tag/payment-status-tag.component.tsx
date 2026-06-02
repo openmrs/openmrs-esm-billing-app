@@ -13,29 +13,38 @@ import styles from './payment-status-tag.scss';
  * t('UNPAID', 'UNPAID')
  */
 
-type PaymentStatusTagProps = { patientUuid: string };
+type PaymentStatusTagProps = {
+  patientUuid: string;
+  renderedFrom: string;
+};
 
-const PaymentStatusTag: React.FC<PaymentStatusTagProps> = ({ patientUuid }) => {
+const PaymentStatusTag: React.FC<PaymentStatusTagProps> = ({ patientUuid, renderedFrom }) => {
+  const isPatientChart = renderedFrom === 'patient-chart';
+
+  if (!isPatientChart) {
+    return null;
+  }
+
+  return <PaymentStatusTagInner patientUuid={patientUuid} />;
+};
+
+const PaymentStatusTagInner: React.FC<Omit<PaymentStatusTagProps, 'renderedFrom'>> = ({ patientUuid }) => {
   const { t } = useTranslation();
   const { paymentStatus, isLoading, error } = usePatientPaymentStatus(patientUuid);
-  return (
-    <>
-      {!isLoading && !error && paymentStatus && paymentStatus.status !== 'UNKNOWN' && (
-        <Toggletip className={styles.tag}>
-          <ToggletipButton label={t(paymentStatus.status, paymentStatus.status)}>
-            <Tag type={paymentStatus.status === 'PAID' ? 'green' : 'red'}>
-              {t(paymentStatus.status, paymentStatus.status)}
-            </Tag>
-          </ToggletipButton>
-          <ToggletipContent>
-            <div role="tooltip">
-              <p>{paymentStatus.reason}</p>
-            </div>
-          </ToggletipContent>
-        </Toggletip>
-      )}
-    </>
-  );
+  return !isLoading && !error && paymentStatus && paymentStatus.status !== 'UNKNOWN' ? (
+    <Toggletip className={styles.tag}>
+      <ToggletipButton label={t(paymentStatus.status, paymentStatus.status)}>
+        <Tag type={paymentStatus.status === 'PAID' ? 'green' : 'red'}>
+          {t(paymentStatus.status, paymentStatus.status)}
+        </Tag>
+      </ToggletipButton>
+      <ToggletipContent>
+        <div role="tooltip">
+          <p>{paymentStatus.reason}</p>
+        </div>
+      </ToggletipContent>
+    </Toggletip>
+  ) : null;
 };
 
 export default PaymentStatusTag;
