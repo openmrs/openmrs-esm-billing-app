@@ -8,7 +8,8 @@ interface Props {
   requestedRefunds: BillRefund[];
   decidedRefunds: BillRefund[];
   lineItems: Array<LineItem>;
-  busy: string | null;
+  processingRefundId: string | null;
+  disabled: boolean;
   rejectingId: string | null;
   voidingId: string | null;
   onApprove: (r: BillRefund) => void;
@@ -24,7 +25,8 @@ const RefundReviewStack: React.FC<Props> = ({
   requestedRefunds,
   decidedRefunds,
   lineItems,
-  busy,
+  processingRefundId,
+  disabled,
   rejectingId,
   voidingId,
   onApprove,
@@ -42,7 +44,8 @@ const RefundReviewStack: React.FC<Props> = ({
       key={r.uuid}
       refund={r}
       lineItems={lineItems}
-      busy={busy}
+      processingRefundId={processingRefundId}
+      disabled={disabled}
       rejectingId={rejectingId}
       voidingId={voidingId}
       onApprove={onApprove}

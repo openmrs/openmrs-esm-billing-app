@@ -109,6 +109,7 @@ describe('Payments', () => {
     dateCreated: '2023-09-01T12:00:00Z',
     lineItems: [],
     billingService: 'Billing Service',
+    netAmount: 0,
   };
 
   const mockMutate = vi.fn();

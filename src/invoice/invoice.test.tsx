@@ -88,6 +88,7 @@ describe('Invoice', () => {
     uuid: 'test-uuid',
     status: BillStatus.PENDING,
     totalAmount: 1000,
+    netAmount: 1000,
     tenderedAmount: 0,
     receiptNumber: 'RCPT-001',
     dateCreated: '2024-01-01',

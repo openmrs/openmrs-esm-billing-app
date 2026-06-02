@@ -44,7 +44,7 @@ export interface MappedBill {
   discounts?: Array<BillDiscount>;
   refunds?: Array<BillRefund>;
   totalAmount?: number;
-  netAmount?: number;
+  netAmount: number;
   tenderedAmount?: number;
   display?: string;
   visitUuid?: string;

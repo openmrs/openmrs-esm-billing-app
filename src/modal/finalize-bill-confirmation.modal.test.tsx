@@ -41,6 +41,7 @@ const mockBill: MappedBill = {
   billingService: 'X-Ray Service',
   payments: [],
   totalAmount: 500,
+  netAmount: 500,
   tenderedAmount: 0,
 };
 

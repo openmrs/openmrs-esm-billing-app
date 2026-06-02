@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { showSnackbar, useSession } from '@openmrs/esm-framework';
 import ReviewBillRefundsModal from './review-bill-refunds.modal';
 import { actOnRefund } from '../../refunds.resource';
+import { useBill } from '../../../billing.resource';
 import { RefundStatus, BillStatus, type PatientInvoice } from '../../../types';
 
 vi.mock('@openmrs/esm-framework', () => ({
@@ -138,6 +139,35 @@ describe('ReviewBillRefundsModal', () => {
     await waitFor(() =>
       expect(actOnRefund).toHaveBeenCalledWith('r1', { status: RefundStatus.APPROVED, approver: undefined }),
     );
+  });
+
+  it('shows a progress bar above the content and disables action buttons while loading', () => {
+    vi.mocked(useBill).mockReturnValueOnce({
+      bill: null,
+      mutate: vi.fn(),
+      isLoading: true,
+      isValidating: false,
+      error: undefined,
+    } as any);
+    render(<ReviewBillRefundsModal closeModal={closeModal} bill={makeBill([requestedRefund])} onMutate={onMutate} />);
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByText(/requested refunds/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /approve/i })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /reject/i })).toBeDisabled();
+  });
+
+  it('shows an error notification and hides bill content when bill fetch fails', () => {
+    vi.mocked(useBill).mockReturnValueOnce({
+      bill: null,
+      mutate: vi.fn(),
+      isLoading: false,
+      isValidating: false,
+      error: new Error('Network error'),
+    } as any);
+    render(<ReviewBillRefundsModal closeModal={closeModal} bill={makeBill([requestedRefund])} onMutate={onMutate} />);
+    expect(screen.getByText(/failed to load bill/i)).toBeInTheDocument();
+    expect(screen.queryByText(/requested refunds/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
   });
 
   it('does not throw when session.user is null and reject-confirm is clicked', async () => {

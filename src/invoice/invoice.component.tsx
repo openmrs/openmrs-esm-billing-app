@@ -62,15 +62,23 @@ const Invoice: React.FC = () => {
 
   const handleRequestRefund = () => {
     if (!bill) return;
+    if (bill.netAmount == null) {
+      showSnackbar({
+        title: t('refundUnavailable', 'Refund unavailable'),
+        subtitle: t('refundUnavailableSubtitle', 'Bill amount could not be determined. Please reload and try again.'),
+        kind: 'error',
+      });
+      return;
+    }
     const totalAlreadyRefunded = refunds
       .filter((r) => r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED)
       .reduce((s, r) => s + r.refundAmount, 0);
-    const remainingRefundable = (bill.netAmount ?? bill.totalAmount ?? 0) - totalAlreadyRefunded;
+    const remainingRefundable = bill.netAmount - totalAlreadyRefunded;
     const dispose = showModal('request-refund-modal', {
       bill: {
         uuid: bill.uuid,
         total: bill.totalAmount ?? 0,
-        amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
+        amountAfterDiscount: bill.netAmount,
         receiptNumber: bill.receiptNumber,
         lineItemCount: bill.lineItems?.length ?? 0,
       },

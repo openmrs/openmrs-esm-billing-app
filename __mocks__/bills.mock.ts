@@ -385,6 +385,7 @@ export const mockBill = {
   billingService: 'Hemoglobin',
   payments: [],
   totalAmount: 100,
+  netAmount: 100,
   tenderedAmount: 0,
 };
 

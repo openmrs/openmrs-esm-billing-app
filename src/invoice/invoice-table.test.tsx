@@ -73,6 +73,7 @@ describe('InvoiceTable', () => {
     billingService: 'billing-service-uuid',
     payments: [],
     totalAmount: 300,
+    netAmount: 300,
     tenderedAmount: 300,
   };
 

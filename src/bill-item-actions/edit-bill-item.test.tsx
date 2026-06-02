@@ -60,6 +60,7 @@ const mockBill: MappedBill = {
   dateCreated: new Date().toISOString(),
   billingService: 'billing-service-uuid',
   payments: [],
+  netAmount: 200,
   patientName: 'John Doe',
   cashPointName: 'Main Cashpoint',
   receiptNumber: '123456',

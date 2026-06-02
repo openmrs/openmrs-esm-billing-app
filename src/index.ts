@@ -15,8 +15,6 @@ import DeletePaymentModeModal from './billable-services/payment-modes/delete-pay
 import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
 import PaymentModeFormModal from './billable-services/payment-modes/payment-mode-form.modal';
 import RequirePaymentModal from './modal/require-payment.modal';
-import RequestRefundModal from './refunds/request-refund.modal';
-import ReviewBillRefundsModal from './refunds/admin/review-bill-refunds/review-bill-refunds.modal';
 import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
 import RequestDiscountModal from './discounts/request-discount.modal';
 import ReviewBillDiscountsModal from './discounts/admin/review-bill-discounts/review-bill-discounts.modal';
@@ -151,9 +149,12 @@ export const discountRequestsLeftPanelLink = getSyncLifecycle(
   options,
 );
 
-export const requestRefundModal = getSyncLifecycle(RequestRefundModal, options);
+export const requestRefundModal = getAsyncLifecycle(() => import('./refunds/request-refund.modal'), options);
 
-export const reviewBillRefundsModal = getSyncLifecycle(ReviewBillRefundsModal, options);
+export const reviewBillRefundsModal = getAsyncLifecycle(
+  () => import('./refunds/admin/review-bill-refunds/review-bill-refunds.modal'),
+  options,
+);
 
 // t('refundRequests', 'Refund requests')
 export const refundRequestsLeftPanelLink = getSyncLifecycle(
