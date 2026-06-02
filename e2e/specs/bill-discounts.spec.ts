@@ -11,12 +11,7 @@ import {
   ReviewBillDiscountsModal,
 } from '../pages';
 
-// Skipped until the backend supports purge for BillDiscount — without it, the
-// afterEach cleanup can't remove bills that carry a discount (FK from
-// cashier_bill_line_item.bill_discount) and the test patient leaks between runs.
-// Tracking PR: backend purge support for BillDiscount.
-// eslint-disable-next-line playwright/no-skipped-test
-test.describe.skip('Bill discount workflow', () => {
+test.describe('Bill discount workflow', () => {
   test.describe.configure({ mode: 'serial' });
 
   let testServiceName: string;
