@@ -113,6 +113,40 @@ describe('RequestRefundModal', () => {
     );
   });
 
+  it('shows already-refunded row when prior refunds exist on a discounted bill', async () => {
+    const user = userEvent.setup();
+    render(
+      <RequestRefundModal
+        closeModal={closeModal}
+        // bill.total=200, discount=50 → amountAfterDiscount=150, prior refund=40 → remainingRefundable=110
+        bill={{ uuid: 'b1', total: 200, amountAfterDiscount: 150 }}
+        remainingRefundable={110}
+        onMutate={onMutate}
+      />,
+    );
+    await user.type(screen.getByLabelText(/amount/i), '30');
+
+    expect(screen.getByText(/already refunded/i)).toBeInTheDocument();
+    // summary shows amountAfterDiscount (150) as bill total, prior refund (40), and remainder (80)
+    expect(screen.getByText('$150.00')).toBeInTheDocument();
+    expect(screen.getByText('$80.00')).toBeInTheDocument();
+  });
+
+  it('hides already-refunded row when there are no prior refunds', async () => {
+    const user = userEvent.setup();
+    render(
+      <RequestRefundModal
+        closeModal={closeModal}
+        bill={{ uuid: 'b1', total: 200, amountAfterDiscount: 150 }}
+        remainingRefundable={150}
+        onMutate={onMutate}
+      />,
+    );
+    await user.type(screen.getByLabelText(/amount/i), '30');
+
+    expect(screen.queryByText(/already refunded/i)).not.toBeInTheDocument();
+  });
+
   it('shows an error snackbar and keeps modal open on failure', async () => {
     vi.mocked(requestRefund).mockRejectedValue({
       responseBody: { error: { message: 'billing.error.refund.exceedsTotal' } },

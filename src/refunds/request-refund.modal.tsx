@@ -45,6 +45,7 @@ const RequestRefundModal: React.FC<Props> = ({ closeModal, bill, lineItem, remai
 
   const isLineItem = !!lineItem;
   const scopeTotal = lineItem?.total ?? bill.total;
+  const alreadyRefunded = isLineItem ? 0 : bill.amountAfterDiscount - remainingRefundable;
   const trimmedReason = reason.trim();
 
   const reasonError = reason.length > 1000 ? t('reasonTooLong', 'Reason cannot exceed 1000 characters') : null;
@@ -149,7 +150,18 @@ const RequestRefundModal: React.FC<Props> = ({ closeModal, bill, lineItem, remai
               <span className={styles.summaryLabel}>
                 {isLineItem ? t('lineTotal', 'Line total') : t('billTotal', 'Bill total')}
               </span>
-              <span className={styles.summaryValue}>{convertToCurrency(scopeTotal, defaultCurrency)}</span>
+              <span className={styles.summaryValue}>
+                {convertToCurrency(isLineItem ? scopeTotal : bill.amountAfterDiscount, defaultCurrency)}
+              </span>
+
+              {alreadyRefunded > 0 && (
+                <>
+                  <span className={styles.summaryLabel}>{t('alreadyRefunded', 'Already refunded')}</span>
+                  <span className={`${styles.summaryValue} ${styles.summaryRefund}`}>
+                    −{convertToCurrency(alreadyRefunded, defaultCurrency)}
+                  </span>
+                </>
+              )}
 
               <span className={styles.summaryLabel}>{t('refundAmount', 'Refund amount')}</span>
               <span className={`${styles.summaryValue} ${styles.summaryRefund}`}>
