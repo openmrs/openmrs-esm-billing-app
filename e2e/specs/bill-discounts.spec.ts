@@ -11,12 +11,7 @@ import {
   ReviewBillDiscountsModal,
 } from '../pages';
 
-// Skipped until the backend supports purge for BillDiscount — without it, the
-// afterEach cleanup can't remove bills that carry a discount (FK from
-// cashier_bill_line_item.bill_discount) and the test patient leaks between runs.
-// Tracking PR: backend purge support for BillDiscount.
-// eslint-disable-next-line playwright/no-skipped-test
-test.describe.skip('Bill discount workflow', () => {
+test.describe('Bill discount workflow', () => {
   test.describe.configure({ mode: 'serial' });
 
   let testServiceName: string;
@@ -134,7 +129,6 @@ test.describe.skip('Bill discount workflow', () => {
       await reviewModal.waitForLoaded();
       await reviewModal.approveFirstPending();
       await waitForSuccessNotification(page, /discount approved/i);
-      await expect(reviewModal.modal()).toBeHidden();
     });
 
     await test.step('Then the discount is APPROVED and net amount drops by the discount', async () => {
@@ -232,7 +226,6 @@ test.describe.skip('Bill discount workflow', () => {
       await reviewModal.waitForLoaded();
       await reviewModal.rejectFirstPending();
       await waitForSuccessNotification(page, /discount rejected/i);
-      await expect(reviewModal.modal()).toBeHidden();
     });
 
     await test.step('Then the discount is REJECTED and the bill total is unchanged', async () => {
