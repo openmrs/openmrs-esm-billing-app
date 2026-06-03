@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, InlineLoading } from '@carbon/react';
+import { Button, InlineLoading, Tooltip } from '@carbon/react';
 import { Add, Printer } from '@carbon/react/icons';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
@@ -214,11 +214,20 @@ const Invoice: React.FC = () => {
             {t('requestDiscount', 'Request discount')}
           </Button>
         )}
-        {showRequestRefundButton && (
-          <Button kind="tertiary" onClick={handleRequestRefund} disabled={activeLineRefundUuids.size > 0}>
-            {t('requestRefund', 'Request refund')}
-          </Button>
-        )}
+        {showRequestRefundButton &&
+          (activeLineRefundUuids.size > 0 ? (
+            <Tooltip
+              align="bottom"
+              label={t('refundInProgress', 'A refund is already in progress for one or more line items')}>
+              <Button kind="tertiary" onClick={handleRequestRefund} disabled>
+                {t('requestRefund', 'Request refund')}
+              </Button>
+            </Tooltip>
+          ) : (
+            <Button kind="tertiary" onClick={handleRequestRefund}>
+              {t('requestRefund', 'Request refund')}
+            </Button>
+          ))}
         {bill?.status === BillStatus.PENDING && (
           <>
             <Button

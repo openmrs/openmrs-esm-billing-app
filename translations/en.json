@@ -318,6 +318,7 @@
   "refundAmountLabel": "Refund amount ({{currency}})",
   "refundApproved": "Refund approved",
   "refundedBills": "Refunded bills",
+  "refundInProgress": "A refund is already in progress for one or more line items",
   "refundItem": "Item",
   "refundPaidOut": "Refund paid out",
   "refundPendingReview": "An admin will review your request",

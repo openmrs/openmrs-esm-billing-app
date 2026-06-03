@@ -813,6 +813,55 @@ describe('Invoice', () => {
       expect(screen.queryByRole('button', { name: /request refund/i })).not.toBeInTheDocument();
     });
 
+    const billWithActiveLineRefund: MappedBill = {
+      ...paidBill,
+      refunds: [
+        {
+          uuid: 'r-active',
+          billUuid: 'test-uuid',
+          lineItemUuid: 'item-1',
+          refundAmount: 200,
+          reason: 'duplicate',
+          initiator: { uuid: 'u1', display: 'cashier' },
+          approver: null,
+          completer: null,
+          dateApproved: null,
+          dateCompleted: null,
+          dateCreated: '2026-06-01T00:00:00.000+0000',
+          status: RefundStatus.REQUESTED,
+          voided: false,
+        },
+      ],
+    };
+
+    it('disables "Request refund" button when an active line-item refund is in progress', async () => {
+      mockUseBill.mockReturnValue({
+        bill: billWithActiveLineRefund,
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await waitForLoadingToFinish();
+      expect(
+        screen.getByRole('button', { name: /a refund is already in progress for one or more line items/i }),
+      ).toBeDisabled();
+    });
+
+    it('shows a tooltip explaining why "Request refund" is disabled when a line-item refund is in progress', async () => {
+      mockUseBill.mockReturnValue({
+        bill: billWithActiveLineRefund,
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await waitForLoadingToFinish();
+      expect(screen.getByText(/a refund is already in progress for one or more line items/i)).toBeInTheDocument();
+    });
+
     it('passes remainingRefundable that deducts COMPLETED refunds when opening the request-refund modal', async () => {
       const completedRefund = {
         uuid: 'r-done',
