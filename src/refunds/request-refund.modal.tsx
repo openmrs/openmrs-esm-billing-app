@@ -45,7 +45,9 @@ const RequestRefundModal: React.FC<Props> = ({ closeModal, bill, lineItem, remai
 
   const isLineItem = !!lineItem;
   const scopeTotal = lineItem?.total ?? bill.total;
-  const alreadyRefunded = isLineItem ? 0 : bill.amountAfterDiscount - remainingRefundable;
+  const alreadyRefunded = isLineItem
+    ? scopeTotal - remainingRefundable
+    : bill.amountAfterDiscount - remainingRefundable;
   const trimmedReason = reason.trim();
 
   const reasonError = reason.length > 1000 ? t('reasonTooLong', 'Reason cannot exceed 1000 characters') : null;
