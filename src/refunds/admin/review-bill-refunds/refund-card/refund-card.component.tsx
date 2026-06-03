@@ -128,7 +128,7 @@ const RefundCard: React.FC<Props> = ({
               size="sm"
               disabled={disabled || !!processingRefundId}
               onClick={() => onStartVoid(r.uuid)}>
-              {t('void', 'Void')}
+              {t('delete', 'Delete')}
             </Button>
           )}
           {isRejecting && (
@@ -148,7 +148,7 @@ const RefundCard: React.FC<Props> = ({
           )}
           {isVoiding && (
             <>
-              <span className={styles.confirmCopy}>{t('voidConfirmRefund', 'Void this refund?')}</span>
+              <span className={styles.confirmCopy}>{t('deleteConfirmRefund', 'Delete this refund?')}</span>
               <Button kind="ghost" size="sm" onClick={onCancelVoid}>
                 {getCoreTranslation('cancel')}
               </Button>
@@ -157,7 +157,7 @@ const RefundCard: React.FC<Props> = ({
                 size="sm"
                 disabled={disabled || processingRefundId === r.uuid}
                 onClick={() => onConfirmVoid(r)}>
-                {t('confirmVoid', 'Confirm void')}
+                {t('confirmDelete', 'Confirm delete')}
               </Button>
             </>
           )}

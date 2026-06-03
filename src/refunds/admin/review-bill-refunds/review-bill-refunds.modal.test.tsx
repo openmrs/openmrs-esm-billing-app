@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { showSnackbar, useSession } from '@openmrs/esm-framework';
 import ReviewBillRefundsModal from './review-bill-refunds.modal';
-import { actOnRefund } from '../../refunds.resource';
+import { actOnRefund, voidRefund } from '../../refunds.resource';
 import { useBill } from '../../../billing.resource';
 import { RefundStatus, BillStatus, type PatientInvoice } from '../../../types';
 
@@ -168,6 +168,84 @@ describe('ReviewBillRefundsModal', () => {
     expect(screen.getByText(/failed to load bill/i)).toBeInTheDocument();
     expect(screen.queryByText(/requested refunds/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /approve/i })).not.toBeInTheDocument();
+  });
+
+  describe('line item refunds', () => {
+    const lineItem = { uuid: 'li-1', item: 'Lab Test', price: 1000, quantity: 1, status: 'PENDING' as any };
+    const lineItemRefund = { ...requestedRefund, uuid: 'r-li', lineItemUuid: 'li-1', refundAmount: 500 };
+
+    it('shows the line item name as the refund scope instead of "Whole bill"', () => {
+      const bill = { ...makeBill([lineItemRefund]), lineItems: [lineItem] };
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={bill as any} onMutate={onMutate} />);
+      // "Lab Test" appears in both the receipt rail and the refund card scope
+      expect(screen.getAllByText('Lab Test').length).toBeGreaterThan(0);
+      // No refund should show "Whole bill" when all refunds are line-item-scoped
+      expect(screen.queryByText(/whole bill/i)).not.toBeInTheDocument();
+    });
+
+    it('approves a line-item refund within the line item total', async () => {
+      vi.mocked(actOnRefund).mockResolvedValue({} as any);
+      const bill = { ...makeBill([lineItemRefund]), lineItems: [lineItem] };
+      const user = userEvent.setup();
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={bill as any} onMutate={onMutate} />);
+      await user.click(screen.getByRole('button', { name: /approve/i }));
+      await waitFor(() =>
+        expect(actOnRefund).toHaveBeenCalledWith('r-li', { status: RefundStatus.APPROVED, approver: 'u-admin' }),
+      );
+      expect(showSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
+    });
+
+    it('blocks approving a line-item refund that would exceed the line item total', async () => {
+      const overRefund = { ...lineItemRefund, refundAmount: 1500 };
+      const bill = { ...makeBill([overRefund]), lineItems: [lineItem] };
+      const user = userEvent.setup();
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={bill as any} onMutate={onMutate} />);
+      await user.click(screen.getByRole('button', { name: /approve/i }));
+      expect(actOnRefund).not.toHaveBeenCalled();
+      expect(showSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error' }));
+    });
+  });
+
+  describe('delete (void) flow', () => {
+    // Carbon danger buttons get accessible name "danger{Label}" (e.g. "dangerDelete"),
+    // so we match with /delete/i (no anchors) which safely covers "dangerDelete".
+    it('shows the delete confirm prompt when Delete is clicked', async () => {
+      const user = userEvent.setup();
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={makeBill([requestedRefund])} onMutate={onMutate} />);
+      await user.click(screen.getByRole('button', { name: /delete/i }));
+      expect(screen.getByText(/delete this refund/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /confirm delete/i })).toBeInTheDocument();
+    });
+
+    it('cancels delete and restores the default actions when cancel is clicked', async () => {
+      const user = userEvent.setup();
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={makeBill([requestedRefund])} onMutate={onMutate} />);
+      await user.click(screen.getByRole('button', { name: /delete/i }));
+      await user.click(screen.getByRole('button', { name: /^cancel$/i }));
+      expect(screen.queryByText(/delete this refund/i)).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /delete/i })).toBeInTheDocument();
+    });
+
+    it('calls voidRefund and shows a success snackbar when delete is confirmed', async () => {
+      vi.mocked(voidRefund).mockResolvedValue({} as any);
+      const user = userEvent.setup();
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={makeBill([requestedRefund])} onMutate={onMutate} />);
+      await user.click(screen.getByRole('button', { name: /delete/i }));
+      await user.click(screen.getByRole('button', { name: /confirm delete/i }));
+      await waitFor(() => expect(voidRefund).toHaveBeenCalledWith('r1', 'Voided by admin'));
+      expect(onMutate).toHaveBeenCalled();
+      expect(showSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
+    });
+
+    it('shows an error snackbar and does not call onMutate when delete fails', async () => {
+      vi.mocked(voidRefund).mockRejectedValue(new Error('Network error'));
+      const user = userEvent.setup();
+      render(<ReviewBillRefundsModal closeModal={closeModal} bill={makeBill([requestedRefund])} onMutate={onMutate} />);
+      await user.click(screen.getByRole('button', { name: /delete/i }));
+      await user.click(screen.getByRole('button', { name: /confirm delete/i }));
+      await waitFor(() => expect(showSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'error' })));
+      expect(onMutate).not.toHaveBeenCalled();
+    });
   });
 
   it('does not throw when session.user is null and reject-confirm is clicked', async () => {

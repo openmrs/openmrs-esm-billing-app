@@ -119,11 +119,11 @@ const ReviewBillRefundsModal: React.FC<Props> = ({ closeModal, bill, onMutate })
       setProcessingRefundId(r.uuid);
       try {
         await voidRefund(r.uuid, 'Voided by admin');
-        showSnackbar({ title: t('refundVoided', 'Refund voided'), kind: 'success' });
+        showSnackbar({ title: t('refundDeleted', 'Refund deleted'), kind: 'success' });
         await localMutate();
         onMutate();
       } catch (e: unknown) {
-        showSnackbar({ title: t('voidFailed', 'Void failed'), subtitle: extractErrorMessage(e), kind: 'error' });
+        showSnackbar({ title: t('deleteFailed', 'Delete failed'), subtitle: extractErrorMessage(e), kind: 'error' });
       } finally {
         setProcessingRefundId(null);
         setVoidingId(null);
