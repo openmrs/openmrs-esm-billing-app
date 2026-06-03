@@ -132,6 +132,7 @@ const RequestRefundModal: React.FC<Props> = ({ closeModal, bill, lineItem, remai
           <NumberInput
             id="refund-amount"
             label={t('refundAmountLabel', 'Refund amount ({{currency}})', { currency: defaultCurrency })}
+            allowEmpty
             min={0}
             max={remainingRefundable}
             value={amount ?? ''}
