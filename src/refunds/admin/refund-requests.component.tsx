@@ -90,7 +90,7 @@ const RefundRequests: React.FC = () => {
   const headers = useMemo(
     () => [
       { key: 'dateCreated', header: t('date', 'Date') },
-      { key: 'receiptNumber', header: t('invoiceNumber', 'Invoice #') },
+      { key: 'receiptNumber', header: t('invoiceNo', 'Invoice #') },
       { key: 'patient', header: t('patient', 'Patient') },
       { key: 'billAmount', header: t('billAmount', 'Bill amount') },
       { key: 'cashier', header: t('cashier', 'Cashier') },

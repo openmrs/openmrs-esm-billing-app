@@ -248,6 +248,57 @@ describe('ReviewBillRefundsModal', () => {
     });
   });
 
+  it('disables Approve on all cards while any card approval is in flight', async () => {
+    let resolveApprove: (v: any) => void;
+    vi.mocked(actOnRefund).mockReturnValue(new Promise((res) => (resolveApprove = res)));
+
+    const refund2 = { ...requestedRefund, uuid: 'r2', reason: 'duplicate charge' };
+    const user = userEvent.setup();
+    render(
+      <ReviewBillRefundsModal
+        closeModal={closeModal}
+        bill={makeBill([requestedRefund, refund2])}
+        onMutate={onMutate}
+      />,
+    );
+
+    const [approveA, approveB] = screen.getAllByRole('button', { name: /approve/i });
+    await user.click(approveA);
+
+    expect(approveB).toBeDisabled();
+    resolveApprove!({});
+  });
+
+  it('disables Confirm reject on any card while another card approval is in flight', async () => {
+    let resolveApprove: (v: any) => void;
+    vi.mocked(actOnRefund).mockReturnValue(new Promise((res) => (resolveApprove = res)));
+
+    const refund2 = { ...requestedRefund, uuid: 'r2', reason: 'duplicate charge' };
+    const user = userEvent.setup();
+    render(
+      <ReviewBillRefundsModal
+        closeModal={closeModal}
+        bill={makeBill([requestedRefund, refund2])}
+        onMutate={onMutate}
+      />,
+    );
+
+    // Open reject confirmation on card 2 (no API call yet)
+    // Filter to plain Reject buttons (not "Confirm reject") — there is one per REQUESTED card
+    const rejectButtons = screen
+      .getAllByRole('button', { name: /reject/i })
+      .filter((btn) => !/confirm/i.test(btn.textContent ?? ''));
+    await user.click(rejectButtons[1]);
+    expect(screen.getByText(/reject this refund/i)).toBeInTheDocument();
+
+    // Approve card 1 — leaves processing in flight
+    await user.click(screen.getByRole('button', { name: /approve/i }));
+
+    // Confirm reject on card 2 should now be disabled
+    expect(screen.getByRole('button', { name: /confirm reject/i })).toBeDisabled();
+    resolveApprove!({});
+  });
+
   it('does not throw when session.user is null and reject-confirm is clicked', async () => {
     vi.mocked(useSession).mockReturnValue({ user: null } as any);
     vi.mocked(actOnRefund).mockResolvedValue({} as any);

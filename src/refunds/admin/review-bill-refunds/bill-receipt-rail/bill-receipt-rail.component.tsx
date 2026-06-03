@@ -20,6 +20,17 @@ interface Props {
   totalCompletedRefunds: number;
 }
 
+/**
+ * DO NOT DELETE — BillStatus values for translation.
+ * t('adjusted', 'Adjusted')
+ * t('paid', 'Paid')
+ * t('partially_refunded', 'Partially refunded')
+ * t('pending', 'Pending')
+ * t('posted', 'Posted')
+ * t('refunded', 'Refunded')
+ * t('refund_requested', 'Refund requested')
+ */
+
 const BillReceiptRail: React.FC<Props> = ({
   bill,
   lineItems,

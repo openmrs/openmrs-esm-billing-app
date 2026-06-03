@@ -113,11 +113,7 @@ const RefundCard: React.FC<Props> = ({
                 onClick={() => onStartReject(r.uuid)}>
                 {t('reject', 'Reject')}
               </Button>
-              <Button
-                kind="primary"
-                size="sm"
-                disabled={disabled || processingRefundId === r.uuid}
-                onClick={() => onApprove(r)}>
+              <Button kind="primary" size="sm" disabled={disabled || !!processingRefundId} onClick={() => onApprove(r)}>
                 {t('approve', 'Approve')}
               </Button>
             </>
@@ -140,7 +136,7 @@ const RefundCard: React.FC<Props> = ({
               <Button
                 kind="danger"
                 size="sm"
-                disabled={disabled || processingRefundId === r.uuid}
+                disabled={disabled || !!processingRefundId}
                 onClick={() => onConfirmReject(r)}>
                 {t('confirmReject', 'Confirm reject')}
               </Button>
@@ -155,7 +151,7 @@ const RefundCard: React.FC<Props> = ({
               <Button
                 kind="danger"
                 size="sm"
-                disabled={disabled || processingRefundId === r.uuid}
+                disabled={disabled || !!processingRefundId}
                 onClick={() => onConfirmVoid(r)}>
                 {t('confirmDelete', 'Confirm delete')}
               </Button>
