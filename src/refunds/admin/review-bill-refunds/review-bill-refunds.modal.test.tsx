@@ -266,7 +266,7 @@ describe('ReviewBillRefundsModal', () => {
     await user.click(approveA);
 
     expect(approveB).toBeDisabled();
-    resolveApprove!({});
+    resolveApprove({});
   });
 
   it('disables Confirm reject on any card while another card approval is in flight', async () => {
@@ -296,7 +296,7 @@ describe('ReviewBillRefundsModal', () => {
 
     // Confirm reject on card 2 should now be disabled
     expect(screen.getByRole('button', { name: /confirm reject/i })).toBeDisabled();
-    resolveApprove!({});
+    resolveApprove({});
   });
 
   it('does not throw when session.user is null and reject-confirm is clicked', async () => {
