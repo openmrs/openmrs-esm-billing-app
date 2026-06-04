@@ -15,7 +15,6 @@ test.describe('Bill refund workflow', () => {
   test.describe.configure({ mode: 'serial' });
 
   let testServiceName: string;
-  let expectedServicePrice: number;
   const billsToCleanup = new Set<string>();
 
   test.beforeAll(async ({ api }) => {
@@ -24,14 +23,13 @@ test.describe('Bill refund workflow', () => {
       throw new Error('E2E_TEST_SERVICE_UUID must be configured in .env file');
     }
 
-    const service = await ensureServiceHasPrices(api, serviceUuid, 30.0);
+    const service = await ensureServiceHasPrices(api, serviceUuid, 30);
     testServiceName = service.name;
 
     const cashPrice = service.servicePrices.find((sp) => sp.name === 'Cash');
     if (!cashPrice) {
       throw new Error('Cash price not found for test service');
     }
-    expectedServicePrice = parseFloat(cashPrice.price);
   });
 
   test.afterEach(async ({ api }) => {
