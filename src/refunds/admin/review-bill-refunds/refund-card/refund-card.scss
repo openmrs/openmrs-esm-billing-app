@@ -126,7 +126,7 @@
   display: flex;
   gap: $spacing-02;
   align-items: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .cardActions :global(.cds--btn) {
@@ -134,8 +134,22 @@
   justify-content: center;
 }
 
+.confirmRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: $spacing-03 $spacing-04;
+  width: 100%;
+}
+
 .confirmCopy {
   @include type.type-style('body-compact-01');
   color: var(--cds-text-secondary);
-  margin-right: $spacing-02;
+}
+
+.confirmButtons {
+  display: flex;
+  gap: $spacing-02;
+  align-items: center;
+  margin-left: auto;
 }

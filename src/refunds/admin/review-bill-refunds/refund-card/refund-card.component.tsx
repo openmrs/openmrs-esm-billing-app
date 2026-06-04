@@ -128,34 +128,38 @@ const RefundCard: React.FC<Props> = ({
             </Button>
           )}
           {isRejecting && (
-            <>
+            <div className={styles.confirmRow}>
               <span className={styles.confirmCopy}>{t('rejectConfirmRefund', 'Reject this refund?')}</span>
-              <Button kind="ghost" size="sm" onClick={onCancelReject}>
-                {getCoreTranslation('cancel')}
-              </Button>
-              <Button
-                kind="danger"
-                size="sm"
-                disabled={disabled || !!processingRefundId}
-                onClick={() => onConfirmReject(r)}>
-                {t('confirmReject', 'Confirm reject')}
-              </Button>
-            </>
+              <div className={styles.confirmButtons}>
+                <Button kind="ghost" size="sm" onClick={onCancelReject}>
+                  {getCoreTranslation('cancel')}
+                </Button>
+                <Button
+                  kind="danger"
+                  size="sm"
+                  disabled={disabled || !!processingRefundId}
+                  onClick={() => onConfirmReject(r)}>
+                  {t('confirmReject', 'Confirm reject')}
+                </Button>
+              </div>
+            </div>
           )}
           {isVoiding && (
-            <>
+            <div className={styles.confirmRow}>
               <span className={styles.confirmCopy}>{t('deleteConfirmRefund', 'Delete this refund?')}</span>
-              <Button kind="ghost" size="sm" onClick={onCancelVoid}>
-                {getCoreTranslation('cancel')}
-              </Button>
-              <Button
-                kind="danger"
-                size="sm"
-                disabled={disabled || !!processingRefundId}
-                onClick={() => onConfirmVoid(r)}>
-                {t('confirmDelete', 'Confirm delete')}
-              </Button>
-            </>
+              <div className={styles.confirmButtons}>
+                <Button kind="ghost" size="sm" onClick={onCancelVoid}>
+                  {getCoreTranslation('cancel')}
+                </Button>
+                <Button
+                  kind="danger"
+                  size="sm"
+                  disabled={disabled || !!processingRefundId}
+                  onClick={() => onConfirmVoid(r)}>
+                  {t('confirmDelete', 'Confirm delete')}
+                </Button>
+              </div>
+            </div>
           )}
         </div>
       </footer>
