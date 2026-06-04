@@ -1,0 +1,54 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.receipt {
+    border-right: 1px solid $ui-03;
+    background: $ui-01;
+    padding: $spacing-06 $spacing-06 $spacing-07;
+}
+
+.patient {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: $spacing-03;
+    margin-bottom: $spacing-04;
+}
+
+.patientName {
+    @include type.type-style('heading-03');
+    margin: 0 0 $spacing-01;
+    color: var(--cds-text-primary);
+}
+
+.patientId {
+    @include type.type-style('code-01');
+    color: var(--cds-text-helper);
+    margin: 0;
+}
+
+.meta {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: $spacing-02 $spacing-05;
+    padding: $spacing-04 0;
+    border-top: 1px solid $ui-03;
+    border-bottom: 1px solid $ui-03;
+    margin: 0 0 $spacing-05;
+}
+
+.meta dt {
+    @include type.type-style('label-01');
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cds-text-helper);
+    margin: 0;
+}
+
+.meta dd {
+    @include type.type-style('body-compact-01');
+    color: var(--cds-text-primary);
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+}

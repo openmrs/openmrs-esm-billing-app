@@ -1,0 +1,65 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.totals {
+    @include type.type-style('body-compact-01');
+}
+
+.totalsRow {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: $spacing-02 0;
+    font-variant-numeric: tabular-nums;
+}
+
+.totalsRow span:first-child {
+    color: var(--cds-text-secondary);
+}
+
+.totalsSubtotal span:first-child {
+    @include type.type-style('label-01');
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cds-text-secondary);
+}
+
+.totalsRowMinus,
+.totalsRowMinus span:first-child {
+    color: $danger;
+}
+
+.totalsRowAdd,
+.totalsRowAdd span:first-child {
+    color: $support-02;
+}
+
+.totalsRule {
+    border: 0;
+    border-top: 1px solid $ui-03;
+    margin: $spacing-02 0 $spacing-01;
+}
+
+.totalsRuleStrong {
+    border: 0;
+    border-top: 1px solid $ui-05;
+    margin: $spacing-03 0 $spacing-02;
+}
+
+.totalsOutstanding {
+    padding: $spacing-03 0 $spacing-02;
+}
+
+.totalsOutstanding span:first-child {
+    @include type.type-style('label-01');
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cds-text-primary);
+}
+
+.totalsOutstandingAmount {
+    @include type.type-style('heading-05');
+    color: var(--cds-text-primary);
+    letter-spacing: -0.015em;
+}

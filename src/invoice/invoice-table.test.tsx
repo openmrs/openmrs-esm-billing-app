@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, showModal, useConfig } from '@openmrs/esm-framework';
-import { type MappedBill } from '../types';
+import { BillStatus, RefundStatus, type BillRefund, type MappedBill } from '../types';
 import { configSchema, type BillingConfig } from '../config-schema';
 import InvoiceTable from './invoice-table.component';
 
@@ -73,6 +73,7 @@ describe('InvoiceTable', () => {
     billingService: 'billing-service-uuid',
     payments: [],
     totalAmount: 300,
+    netAmount: 300,
     tenderedAmount: 300,
   };
 
@@ -437,6 +438,88 @@ describe('InvoiceTable', () => {
       render(<InvoiceTable bill={emptyBill} viewOnly />);
       expect(screen.getByText(/no matching items to display/i)).toBeInTheDocument();
       expect(screen.queryByText(/check the filters above/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('line-item refund eligibility', () => {
+    const makeRefund = (overrides: Partial<BillRefund> = {}): BillRefund => ({
+      uuid: 'r-1',
+      billUuid: 'bill-uuid',
+      lineItemUuid: null,
+      refundAmount: 100,
+      reason: 'overcharged',
+      initiator: { uuid: 'u1', display: 'cashier' },
+      approver: null,
+      completer: null,
+      dateApproved: null,
+      dateCompleted: null,
+      dateCreated: '2024-01-01',
+      status: RefundStatus.REQUESTED,
+      voided: false,
+      ...overrides,
+    });
+
+    const paidBill: MappedBill = { ...defaultBill, status: BillStatus.PAID, totalAmount: 300, tenderedAmount: 300 };
+
+    it('shows the refund action for an eligible line item on a PAID bill', async () => {
+      const user = userEvent.setup();
+      render(<InvoiceTable bill={paidBill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.getByTestId('request-refund-button-1')).toBeInTheDocument();
+    });
+
+    it('hides the refund action for a line item that already has an active refund', async () => {
+      const user = userEvent.setup();
+      render(
+        <InvoiceTable bill={{ ...paidBill, refunds: [makeRefund({ lineItemUuid: '1' })] }} onMutate={mockOnMutate} />,
+      );
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+
+    it('hides the refund action for all line items when there is an active bill-level refund', async () => {
+      const user = userEvent.setup();
+      render(
+        <InvoiceTable bill={{ ...paidBill, refunds: [makeRefund({ lineItemUuid: null })] }} onMutate={mockOnMutate} />,
+      );
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+
+    it('shows the refund action for a line item when bill is REFUND_REQUESTED due to a different line item', async () => {
+      const user = userEvent.setup();
+      const bill: MappedBill = {
+        ...paidBill,
+        status: BillStatus.REFUND_REQUESTED,
+        refunds: [makeRefund({ uuid: 'r-1', lineItemUuid: '1' })],
+      };
+      render(<InvoiceTable bill={bill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-2'));
+      expect(screen.getByTestId('request-refund-button-2')).toBeInTheDocument();
+    });
+
+    it('hides the refund action for the line item that triggered REFUND_REQUESTED status', async () => {
+      const user = userEvent.setup();
+      const bill: MappedBill = {
+        ...paidBill,
+        status: BillStatus.REFUND_REQUESTED,
+        refunds: [makeRefund({ uuid: 'r-1', lineItemUuid: '1' })],
+      };
+      render(<InvoiceTable bill={bill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+
+    it('hides all line-item refund actions when there is an active bill-level refund on a REFUND_REQUESTED bill', async () => {
+      const user = userEvent.setup();
+      const bill: MappedBill = {
+        ...paidBill,
+        status: BillStatus.REFUND_REQUESTED,
+        refunds: [makeRefund({ lineItemUuid: null })],
+      };
+      render(<InvoiceTable bill={bill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
     });
   });
 

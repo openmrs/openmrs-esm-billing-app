@@ -163,6 +163,7 @@ const RequestDiscountModal: React.FC<Props> = ({ closeModal, bill, lineItem, onM
                     ? t('valuePercentLabel', 'Value (%)')
                     : t('valueAmountLabel', 'Value ({{currency}})', { currency: defaultCurrency })
                 }
+                allowEmpty
                 min={0}
                 value={value ?? ''}
                 invalid={!!valueError}

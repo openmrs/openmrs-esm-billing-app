@@ -52,6 +52,7 @@ const mockBillsData = [
     billingService: 'Service 1',
     payments: [],
     totalAmount: 100,
+    netAmount: 100,
     tenderedAmount: 0,
   },
   {
@@ -87,6 +88,7 @@ const mockBillsData = [
     billingService: 'Service 2',
     payments: [],
     totalAmount: 200,
+    netAmount: 200,
     tenderedAmount: 200,
   },
 ] satisfies MappedBill[];

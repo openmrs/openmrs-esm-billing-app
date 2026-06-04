@@ -74,6 +74,7 @@ describe('PaymentHistory Component', () => {
     dateCreated: '2023-09-01T12:00:00Z',
     lineItems: [],
     billingService: 'Billing Service',
+    netAmount: 0,
   };
 
   const emptyBill: MappedBill = {
@@ -102,6 +103,7 @@ describe('PaymentHistory Component', () => {
     dateCreated: '2023-09-02T10:00:00Z',
     lineItems: [],
     billingService: 'Billing Service',
+    netAmount: 0,
   };
 
   it('renders without crashing', () => {

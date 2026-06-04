@@ -11,6 +11,8 @@ type LineItemActionMenuProps = {
   onMutate?: () => void;
   showDiscountRequest?: boolean;
   onDiscountRequest?: () => void;
+  showRefundRequest?: boolean;
+  onRefundRequest?: () => void;
 };
 
 const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({
@@ -19,6 +21,8 @@ const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({
   onMutate,
   showDiscountRequest,
   onDiscountRequest,
+  showRefundRequest,
+  onRefundRequest,
 }) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
@@ -70,6 +74,14 @@ const LineItemActionMenu: React.FC<LineItemActionMenuProps> = ({
             data-testid={`request-discount-button-${item.uuid}`}
             itemText={t('requestDiscount', 'Request discount')}
             onClick={onDiscountRequest}
+          />
+        )}
+        {showRefundRequest && (
+          <OverflowMenuItem
+            className={styles.menuitem}
+            data-testid={`request-refund-button-${item.uuid}`}
+            itemText={t('requestRefund', 'Request refund')}
+            onClick={onRefundRequest}
           />
         )}
       </OverflowMenu>
