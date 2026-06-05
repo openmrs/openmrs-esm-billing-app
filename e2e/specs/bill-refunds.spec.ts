@@ -154,8 +154,11 @@ test.describe('Bill refund workflow', () => {
     });
 
     await test.step('And the completed refund is visible in the refunds table on the invoice', async () => {
+      const billDataLoaded = page.waitForResponse(
+        (response) => response.url().includes(`billing/bill/${billUuid}`) && response.status() === 200,
+      );
       await invoicePage.goto(patientUuid, billUuid);
-      await invoicePage.waitForInvoiceToLoad();
+      await billDataLoaded;
 
       const refundsTable = page.getByRole('table', { name: /bill refunds/i });
       await expect(refundsTable).toBeVisible();
