@@ -160,7 +160,7 @@ test.describe('Bill refund workflow', () => {
       await invoicePage.goto(patientUuid, billUuid);
       await billDataLoaded;
 
-      const refundsTable = page.getByRole('table', { name: /bill refunds/i });
+      const refundsTable = page.getByRole('table', { name: /^refunds$/i });
       await expect(refundsTable).toBeVisible();
 
       const refundRows = refundsTable.locator('tbody tr');
