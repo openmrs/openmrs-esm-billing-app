@@ -2147,7 +2147,7 @@ __metadata:
     vitest: "npm:^4.0.18"
     zod: "npm:^3.22.4"
   peerDependencies:
-    "@openmrs/esm-framework": 9.x
+    "@openmrs/esm-framework": 10.x
     react: 18.x
     react-dom: 18.x
     react-i18next: 16.x
