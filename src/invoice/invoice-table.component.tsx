@@ -1,8 +1,8 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState } from 'react';
+import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import fuzzy from 'fuzzy';
 import {
-  Button,
   DataTable,
   DataTableSkeleton,
   Layer,
@@ -13,152 +13,172 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableSelectRow,
   TableToolbarSearch,
   Tile,
-  type DataTableRow,
 } from '@carbon/react';
-import { Edit } from '@carbon/react/icons';
-import { isDesktop, showModal, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
-import { type LineItem, type MappedBill } from '../types';
+import {
+  getCoreTranslation,
+  isDesktop,
+  showModal,
+  useConfig,
+  useDebounce,
+  useLayoutType,
+} from '@openmrs/esm-framework';
+import LineItemActionMenu from './line-item-action-menu.component';
 import { convertToCurrency } from '../helpers';
+import type { BillingConfig } from '../config-schema';
+import { BillStatus, RefundStatus, type LineItem, type MappedBill } from '../types';
 import styles from './invoice-table.scss';
+
+const getLineItemTotal = (item: LineItem) => (item.price ?? 0) * (item.quantity ?? 0);
 
 type InvoiceTableProps = {
   bill: MappedBill;
-  isSelectable?: boolean;
   isLoadingBill?: boolean;
-  onSelectItem?: (selectedLineItems: LineItem[]) => void;
-  hasActions?: boolean;
+  onMutate?: () => void;
+  viewOnly?: boolean;
 };
 
-const InvoiceTable: React.FC<InvoiceTableProps> = ({
-  bill,
-  isSelectable = true,
-  isLoadingBill,
-  onSelectItem,
-  hasActions = true,
-}) => {
+const InvoiceTable: React.FC<InvoiceTableProps> = ({ bill, isLoadingBill, onMutate, viewOnly }) => {
   const { t } = useTranslation();
-  const { defaultCurrency, showEditBillButton } = useConfig();
+  const { defaultCurrency } = useConfig<BillingConfig>();
   const layout = useLayoutType();
   const lineItems = useMemo(() => bill?.lineItems ?? [], [bill?.lineItems]);
-  const paidLineItems = useMemo(() => lineItems?.filter((item) => item.paymentStatus === 'PAID') ?? [], [lineItems]);
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
-
-  const [selectedLineItems, setSelectedLineItems] = useState(paidLineItems ?? []);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm);
 
-  useEffect(() => {
-    if (onSelectItem) {
-      onSelectItem(selectedLineItems);
-    }
-  }, [selectedLineItems, onSelectItem]);
+  const discounts = useMemo(() => (bill?.discounts ?? []).filter((d) => !d.voided), [bill?.discounts]);
+  const billStatusEligible = bill?.status === BillStatus.PENDING || bill?.status === BillStatus.POSTED;
+  const hasBillLevelDiscount = discounts.some((d) => !d.lineItemUuid);
+
+  const billRefunds = useMemo(() => (bill?.refunds ?? []).filter((r) => !r.voided), [bill?.refunds]);
+  const billStatusRefundEligible =
+    bill?.status === BillStatus.PAID ||
+    bill?.status === BillStatus.PARTIALLY_REFUNDED ||
+    bill?.status === BillStatus.REFUND_REQUESTED;
+  const activeRefunds = billRefunds.filter(
+    (r) => r.status === RefundStatus.REQUESTED || r.status === RefundStatus.APPROVED,
+  );
+  const activeBillLevelRefund = activeRefunds.some((r) => !r.lineItemUuid);
+
+  const lineHasActiveRefund = (lineItemUuid: string) => activeRefunds.some((r) => r.lineItemUuid === lineItemUuid);
+
+  const showLineItemRefundRequest = (lineItem: LineItem) =>
+    billStatusRefundEligible && !activeBillLevelRefund && !lineHasActiveRefund(lineItem.uuid ?? '') && !!lineItem.uuid;
+
+  const lineHasActiveDiscount = (lineItemUuid: string) => discounts.some((d) => d.lineItemUuid === lineItemUuid);
+
+  const showLineItemRequest = (lineItem: LineItem) =>
+    billStatusEligible && !hasBillLevelDiscount && !lineHasActiveDiscount(lineItem.uuid);
+
+  const handleLineItemRefundRequest = (item: LineItem) => {
+    if (!item.uuid) return;
+    const lineTotal = getLineItemTotal(item);
+    const lineCommittedRefunds = billRefunds.filter(
+      (r) =>
+        r.lineItemUuid === item.uuid && (r.status === RefundStatus.APPROVED || r.status === RefundStatus.COMPLETED),
+    );
+    const remaining = lineTotal - lineCommittedRefunds.reduce((s, r) => s + r.refundAmount, 0);
+    const dispose = showModal('request-refund-modal', {
+      bill: {
+        uuid: bill.uuid,
+        total: bill.totalAmount ?? 0,
+        amountAfterDiscount: bill.netAmount ?? bill.totalAmount ?? 0,
+      },
+      lineItem: {
+        uuid: item.uuid,
+        display: item.item || item.billableService || '--',
+        total: lineTotal,
+        quantity: item.quantity,
+        price: item.price,
+      },
+      remainingRefundable: Math.max(0, remaining),
+      onMutate: () => onMutate?.(),
+      closeModal: () => dispose(),
+    });
+  };
+
+  const handleLineItemRequest = (lineItem: LineItem) => {
+    const dispose = showModal('request-discount-modal', {
+      bill: {
+        uuid: bill.uuid,
+        total: bill.totalAmount ?? 0,
+        amountDue: Math.max(0, (bill.netAmount ?? bill.totalAmount ?? 0) - (bill.tenderedAmount ?? 0)),
+        receiptNumber: bill.receiptNumber,
+        lineItemCount: lineItems.length,
+      },
+      lineItem: {
+        uuid: lineItem.uuid,
+        display: lineItem.item || lineItem.billableService || '--',
+        total: getLineItemTotal(lineItem),
+        quantity: lineItem.quantity,
+        price: lineItem.price,
+      },
+      onMutate: () => onMutate?.(),
+      closeModal: () => dispose(),
+    });
+  };
 
   const filteredLineItems = useMemo(() => {
     if (!debouncedSearchTerm) {
       return lineItems;
     }
 
-    return debouncedSearchTerm
-      ? fuzzy
-          .filter(debouncedSearchTerm, lineItems, {
-            extract: (lineItem: LineItem) => `${lineItem.item}`,
-          })
-          .sort((r1, r2) => r1.score - r2.score)
-          .map((result) => result.original)
-      : lineItems;
+    return fuzzy
+      .filter(debouncedSearchTerm, lineItems, {
+        extract: (lineItem: LineItem) => `${lineItem.billableService} ${lineItem.item}`,
+      })
+      .sort((r1, r2) => r1.score - r2.score)
+      .map((result) => result.original);
   }, [debouncedSearchTerm, lineItems]);
 
+  const lineItemsByUuid = useMemo(() => new Map(lineItems.map((item) => [item.uuid, item])), [lineItems]);
+
   const tableHeaders = [
-    { header: 'No', key: 'no', width: 7 }, // Width as a percentage
-    { header: 'Bill item', key: 'billItem', width: 25 },
-    { header: 'Bill code', key: 'billCode', width: 20 },
-    { header: 'Status', key: 'status', width: 25 },
-    { header: 'Quantity', key: 'quantity', width: 15 },
-    { header: 'Price', key: 'price', width: 24 },
-    { header: 'Total', key: 'total', width: 15 },
-    hasActions ? { header: t('actions', 'Actions'), key: 'actionButton' } : {},
+    { header: t('number', 'Number'), key: 'no', width: 7 }, // Width as a percentage
+    { header: t('billItem', 'Bill item'), key: 'billItem', width: 25 },
+    { header: t('status', 'Status'), key: 'status', width: 25 },
+    { header: t('quantity', 'Quantity'), key: 'quantity', width: 15 },
+    { header: t('price', 'Price'), key: 'price', width: 24 },
+    { header: t('total', 'Total'), key: 'total', width: 15 },
   ];
 
-  const handleSelectBillItem = useCallback(
-    (row: LineItem) => {
-      const dispose = showModal('edit-bill-line-item-dialog', {
-        bill,
-        item: row,
-        closeModal: () => dispose(),
-      });
-    },
-    [bill],
-  );
-
-  const tableRows: Array<typeof DataTableRow> = useMemo(
+  const tableRows = useMemo(
     () =>
-      filteredLineItems?.map((item, index) => {
-        return {
-          no: `${index + 1}`,
-          id: `${item.uuid}`,
-          billItem: item.billableService ? item.billableService : item?.item,
-          billCode: <span data-testid={`receipt-number-${index}`}>{bill?.receiptNumber}</span>,
-          status: item.paymentStatus,
-          quantity: item.quantity,
-          price: convertToCurrency(item.price, defaultCurrency),
-          total: item.price * item.quantity,
-          actionButton: (
-            <span>
-              {showEditBillButton ? (
-                <Button
-                  data-testid={`edit-button-${item.uuid}`}
-                  renderIcon={Edit}
-                  hasIconOnly
-                  kind="ghost"
-                  iconDescription={t('editThisBillItem', 'Edit this bill item')}
-                  tooltipPosition="left"
-                  onClick={() => handleSelectBillItem(item)}
-                />
-              ) : (
-                '--'
-              )}
-            </span>
-          ),
-        };
-      }) ?? [],
-    [filteredLineItems, bill?.receiptNumber, defaultCurrency, showEditBillButton, t, handleSelectBillItem],
+      filteredLineItems?.map((item, index) => ({
+        no: `${index + 1}`,
+        id: `${item.uuid}`,
+        billItem: item.billableService ? item.billableService : item?.item,
+        status: item.status,
+        quantity: item.quantity,
+        price: convertToCurrency(item.price, defaultCurrency),
+        total: convertToCurrency(getLineItemTotal(item), defaultCurrency),
+      })) ?? [],
+    [filteredLineItems, defaultCurrency],
   );
 
   if (isLoadingBill) {
     return (
-      <div className={styles.loaderContainer}>
-        <DataTableSkeleton
-          data-testid="loader"
-          columnCount={tableHeaders.length}
-          showHeader={false}
-          showToolbar={false}
-          size={responsiveSize}
-          zebra
-        />
-      </div>
+      <DataTableSkeleton
+        data-testid="loader"
+        columnCount={tableHeaders.length}
+        showHeader={false}
+        showToolbar={false}
+        zebra
+      />
     );
   }
 
-  const handleRowSelection = (row: typeof DataTableRow, checked: boolean) => {
-    const matchingRow = filteredLineItems.find((item) => item.uuid === row.id);
-    let newSelectedLineItems;
-
-    if (checked) {
-      newSelectedLineItems = [...selectedLineItems, matchingRow];
-    } else {
-      newSelectedLineItems = selectedLineItems.filter((item) => item.uuid !== row.id);
-    }
-    setSelectedLineItems(newSelectedLineItems);
-    onSelectItem(newSelectedLineItems);
-  };
-
   return (
-    <div className={styles.invoiceContainer}>
-      <DataTable headers={tableHeaders} isSortable rows={tableRows} size={responsiveSize} useZebraStyles>
-        {({ rows, headers, getRowProps, getSelectionProps, getTableProps, getToolbarProps }) => (
+    <div className={styles.lineItemsWrapper}>
+      <DataTable
+        headers={tableHeaders}
+        rows={tableRows}
+        size={responsiveSize}
+        useZebraStyles
+        overflowMenuOnHover={isDesktop(layout)}>
+        {({ rows, headers, getRowProps, getTableProps }) => (
           <TableContainer
             description={
               <span className={styles.tableDescription}>
@@ -166,48 +186,50 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
               </span>
             }
             title={t('lineItems', 'Line items')}>
-            <TableToolbarSearch
-              className={styles.searchbox}
-              expanded
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              placeholder={t('searchThisTable', 'Search this table')}
-              size={responsiveSize}
-            />
+            {!viewOnly && (
+              <TableToolbarSearch
+                className={styles.searchbox}
+                expanded
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                placeholder={t('searchThisTable', 'Search this table')}
+                size={responsiveSize}
+              />
+            )}
             <Table
               {...getTableProps()}
-              aria-label="Invoice line items"
-              className={`${styles.invoiceTable} billingTable`}>
+              aria-label={t('invoiceLineItems', 'Invoice line items')}
+              className={classNames(styles.invoiceTable, 'billingTable')}>
               <TableHead>
                 <TableRow>
-                  {rows.length >= 1 && isSelectable ? <TableHeader /> : null}
                   {headers.map((header) => (
                     <TableHeader key={header.key}>{header.header}</TableHeader>
                   ))}
+                  {!viewOnly && <TableHeader aria-label={getCoreTranslation('actions')} />}
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.map((row, index) => {
+                {rows.map((row) => {
+                  const item = lineItemsByUuid.get(row.id);
                   return (
-                    <TableRow
-                      key={row.id}
-                      {...getRowProps({
-                        row,
-                      })}>
-                      {rows.length >= 1 && isSelectable && (
-                        <TableSelectRow
-                          aria-label="Select row"
-                          {...getSelectionProps({ row })}
-                          disabled={tableRows[index].status === 'PAID'}
-                          onChange={(checked: boolean) => handleRowSelection(row, checked)}
-                          checked={
-                            tableRows[index].status === 'PAID' ||
-                            Boolean(selectedLineItems?.find((item) => item?.uuid === row?.id))
-                          }
-                        />
-                      )}
+                    <TableRow key={row.id} {...getRowProps({ row })}>
                       {row.cells.map((cell) => (
                         <TableCell key={cell.id}>{cell.value}</TableCell>
                       ))}
+                      {!viewOnly && (
+                        <TableCell className="cds--table-column-menu">
+                          {item && (
+                            <LineItemActionMenu
+                              bill={bill}
+                              item={item}
+                              onMutate={onMutate}
+                              showDiscountRequest={showLineItemRequest(item)}
+                              onDiscountRequest={() => handleLineItemRequest(item)}
+                              showRefundRequest={showLineItemRefundRequest(item)}
+                              onRefundRequest={() => handleLineItemRefundRequest(item)}
+                            />
+                          )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   );
                 })}
@@ -223,7 +245,9 @@ const InvoiceTable: React.FC<InvoiceTableProps> = ({
               <p className={styles.filterEmptyStateContent}>
                 {t('noMatchingItemsToDisplay', 'No matching items to display')}
               </p>
-              <p className={styles.filterEmptyStateHelper}>{t('checkFilters', 'Check the filters above')}</p>
+              {!viewOnly && (
+                <p className={styles.filterEmptyStateHelper}>{t('checkFilters', 'Check the filters above')}</p>
+              )}
             </Tile>
           </Layer>
         </div>

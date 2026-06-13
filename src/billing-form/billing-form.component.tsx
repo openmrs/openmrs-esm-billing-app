@@ -24,7 +24,7 @@ import { z } from 'zod';
 import { showSnackbar, showToast, useConfig, useDebounce, useLayoutType } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import { convertToCurrency } from '../helpers';
-import { type BillabeItem } from '../types';
+import { type BillableItem } from '../types';
 import { useFetchSearchResults, processBillItems } from '../billing.resource';
 import styles from './billing-form.scss';
 
@@ -117,7 +117,7 @@ const BillingForm: React.FC<BillingFormProps> = ({ patientUuid, closeWorkspace }
   const { data, error, isLoading, isValidating } = useFetchSearchResults(debouncedSearchTerm, category);
 
   useEffect(() => {
-    const res = data as { results: BillabeItem[] };
+    const res = data as { results: BillableItem[] };
     setSearchOptions(
       res?.results?.map((item) =>
         category === 'Commodity'

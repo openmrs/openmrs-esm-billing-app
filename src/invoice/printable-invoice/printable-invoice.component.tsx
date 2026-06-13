@@ -8,134 +8,208 @@ import {
   TableBody,
   TableHeader,
   TableCell,
-  DataTableSkeleton,
 } from '@carbon/react';
-import { age, isDesktop, useLayoutType } from '@openmrs/esm-framework';
+import { formatDate, isDesktop, type SessionLocation, useConfig, useLayoutType } from '@openmrs/esm-framework';
 import { getGender } from '../../helpers';
 import { type MappedBill } from '../../types';
 import { useTranslation } from 'react-i18next';
 import PrintableFooter from './printable-footer.component';
 import PrintableInvoiceHeader from './printable-invoice-header.component';
 import styles from './printable-invoice.scss';
+import { type BillingConfig } from '../../config-schema';
 
 type PrintableInvoiceProps = {
   bill: MappedBill;
   patient: fhir.Patient;
-  facility: string;
-  isLoading: boolean;
+  componentRef: React.RefObject<HTMLDivElement>;
+  defaultFacility: SessionLocation;
 };
 
-const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, facility, isLoading }) => {
+const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, componentRef, defaultFacility }) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
+  const { defaultCurrency } = useConfig<BillingConfig>();
   const responsiveSize = isDesktop(layout) ? 'sm' : 'lg';
   const headerData = [
-    { header: 'Billable item', key: 'billItem' },
-    { header: 'Quantity', key: 'quantity' },
-    { header: 'Unit price', key: 'price' },
-    { header: 'Total', key: 'total' },
+    { header: t('inventoryItem', 'Inventory item'), key: 'billItem' },
+    { header: t('quantity', 'Quantity'), key: 'quantity' },
+    { header: t('unitPrice', 'Unit price'), key: 'price' },
+    { header: t('total', 'Total'), key: 'total' },
   ];
 
   const rowData =
     bill?.lineItems?.map((item) => {
       return {
         id: `${item.uuid}`,
-        billItem: item?.item || item?.billableService,
+        billItem: item.billableService ? item.billableService : item.item,
         quantity: item.quantity,
-        price: item.price,
-        total: item.price * item.quantity,
+        price: `${defaultCurrency} ${item.price}`,
+        total: `${defaultCurrency} ${item.price * item.quantity}`,
       };
     }) ?? [];
 
-  const invoiceTotal = {
-    'Total Amount': bill?.totalAmount,
-    'Amount Tendered': bill?.tenderedAmount,
-    'Discount Amount': 0,
-    'Amount due': bill?.totalAmount - bill?.tenderedAmount,
-  };
+  const paymentHistoryHeaders = [
+    {
+      key: 'no',
+      header: t('no', 'No'),
+    },
+    {
+      key: 'paymentMethod',
+      header: t('paymentMethod', 'Payment method'),
+    },
+
+    {
+      key: 'amountPaid',
+      header: t('amountPaid', 'Amount paid'),
+    },
+    {
+      key: 'dateCreated',
+      header: t('dateOfPayment', 'Date of payment'),
+    },
+  ];
+
+  const paymentHistoryRows = useMemo(() => {
+    if (bill) {
+      return bill.payments?.map((payment, index) => {
+        return {
+          no: index + 1,
+          id: `${payment.uuid}-${index}`,
+          paymentMethod: payment.instanceType.name,
+          amountPaid: `${defaultCurrency} ${payment.amountTendered.toFixed(2)}`,
+          dateCreated: formatDate(new Date(payment.dateCreated)),
+        };
+      });
+    }
+    return [];
+  }, [bill, defaultCurrency]);
 
   const patientDetails = useMemo(() => {
+    const address = patient?.address?.[0];
+    const addressParts = [address?.line?.join(' '), address?.city, address?.district, address?.state].filter(Boolean);
+    const formattedAddress = addressParts.join(', ');
+
     return {
       name: `${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
-      age: age(patient?.birthDate),
+      birthDate: patient?.birthDate,
       gender: getGender(patient?.gender, t),
-      city: patient?.address?.[0].city,
-      county: patient?.address?.[0].district,
-      subCounty: patient?.address?.[0].state,
+      address: formattedAddress,
     };
   }, [patient, t]);
 
-  const invoiceDetails = {
-    'Invoice #': bill?.receiptNumber,
-    'Invoice date': bill.dateCreated,
-    Status: bill?.status,
-  };
-
-  if (isLoading) {
-    return (
-      <div className={styles.loaderContainer}>
-        <DataTableSkeleton
-          columnCount={headerData?.length ?? 0}
-          showHeader={false}
-          showToolbar={false}
-          size={responsiveSize}
-          zebra
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.container}>
-      <PrintableInvoiceHeader patientDetails={patientDetails} facility={facility} />
-      <div className={styles.printableInvoiceContainer}>
-        <div className={styles.detailsContainer}>
-          {Object.entries(invoiceDetails).map(([key, val]) => (
-            <div key={key} className={styles.item}>
-              <p className={styles.itemHeading}>{key}</p>
-              <span>{val}</span>
-            </div>
-          ))}
-        </div>
+    <div className={styles.container} ref={componentRef}>
+      <PrintableInvoiceHeader patientDetails={patientDetails} facility={defaultFacility.display} />
 
-        <div className={styles.itemsContainer}>
-          <div className={styles.tableContainer}>
-            <DataTable isSortable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles={false}>
-              {({ rows, headers, getRowProps, getTableProps }) => (
-                <TableContainer>
-                  <Table {...getTableProps()} aria-label="Invoice line items">
-                    <TableHead>
-                      <TableRow>
-                        {headers.map((header) => (
-                          <TableHeader key={header.key}>{header.header}</TableHeader>
+      <div className={styles.itemsContainer}>
+        <div className={styles.tableContainer}>
+          <DataTable rows={rowData} headers={headerData} size={responsiveSize} useZebraStyles={false}>
+            {({ rows, headers, getRowProps, getTableProps }) => (
+              <TableContainer>
+                <Table {...getTableProps()} aria-label={t('invoiceLineItems', 'Invoice line items')}>
+                  <TableHead>
+                    <TableRow>
+                      {headers.map((header) => (
+                        <TableHeader key={header.key}>{header.header}</TableHeader>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        {...getRowProps({
+                          row,
+                        })}>
+                        {row.cells.map((cell) => (
+                          <TableCell key={cell.id}>{cell.value}</TableCell>
                         ))}
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {rows.map((row) => (
-                        <TableRow
-                          key={row.id}
-                          {...getRowProps({
-                            row,
-                          })}>
-                          {row.cells.map((cell) => (
-                            <TableCell key={cell.id}>{cell.value}</TableCell>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </DataTable>
+          {bill?.netAmount != null && bill.totalAmount !== bill.netAmount ? (
+            <>
+              <div className={styles.balanceContainer}>
+                <span className={styles.itemHeading}>{t('subtotal', 'Subtotal')}:</span>{' '}
+                <span className={styles.itemLabel}>
+                  <strong>
+                    {defaultCurrency} {bill?.totalAmount}
+                  </strong>
+                </span>
+              </div>
+              <div className={styles.balanceContainer}>
+                <span className={styles.itemHeading}>{t('discount', 'Discount')}:</span>{' '}
+                <span className={styles.itemLabel}>
+                  <strong>
+                    - {defaultCurrency} {(bill?.totalAmount ?? 0) - (bill?.netAmount ?? 0)}
+                  </strong>
+                </span>
+              </div>
+              <div className={styles.balanceContainer}>
+                <span className={styles.itemHeading}>{t('totalAmount', 'Total amount')}:</span>{' '}
+                <span className={styles.itemLabel}>
+                  <strong>
+                    {defaultCurrency} {bill?.netAmount}
+                  </strong>
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className={styles.balanceContainer}>
+              <span className={styles.itemHeading}>{t('totalAmount', 'Total amount')}:</span>{' '}
+              <span className={styles.itemLabel}>
+                <strong>
+                  {defaultCurrency} {bill?.totalAmount}
+                </strong>
+              </span>
+            </div>
+          )}
+          {bill?.payments?.length > 0 && (
+            <div className={styles.paymentHistoryContainer}>
+              <DataTable rows={paymentHistoryRows} headers={paymentHistoryHeaders} size={responsiveSize}>
+                {({ rows, headers, getRowProps, getTableProps }) => (
+                  <TableContainer>
+                    <Table {...getTableProps()} aria-label={t('paymentHistory', 'Payment History')}>
+                      <TableHead>
+                        <TableRow>
+                          {headers.map((header) => (
+                            <TableHeader key={header.key}>{header.header}</TableHeader>
                           ))}
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
-            </DataTable>
+                      </TableHead>
+                      <TableBody>
+                        {rows.map((row) => (
+                          <TableRow key={row.id} {...getRowProps({ row })}>
+                            {row.cells.map((cell) => (
+                              <TableCell key={cell.id}>{cell.value}</TableCell>
+                            ))}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </DataTable>
+            </div>
+          )}
+          <div className={styles.balanceContainer}>
+            <span className={styles.itemHeading}>{t('totalTendered', 'Total tendered')}:</span>
+            <span className={styles.itemLabel}>
+              <strong>
+                {defaultCurrency} {bill?.tenderedAmount}
+              </strong>
+            </span>
           </div>
-
-          <div className={styles.totalContainer}>
-            {Object.entries(invoiceTotal).map(([key, val]) => (
-              <p key={key} className={styles.itemTotal}>
-                <span className={styles.itemHeading}>{key}</span>: <span className={styles.itemLabel}>{val}</span>
-              </p>
-            ))}
+          <div className={styles.balanceContainer}>
+            <span className={styles.itemHeading}>{t('balance', 'Balance')}:</span>
+            <span className={styles.itemLabel}>
+              <strong>
+                {defaultCurrency} {bill?.netAmount - bill?.tenderedAmount}
+              </strong>
+            </span>
           </div>
         </div>
       </div>

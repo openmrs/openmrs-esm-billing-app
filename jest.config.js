@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /**
  * @returns {Promise<import('jest').Config>}
  */
@@ -14,9 +15,9 @@ module.exports = {
     '!**/e2e/**',
   ],
   transform: {
-    '^.+\\.(j|t)sx?$': '@swc/jest',
+    '^.+\\.[jt]sx?$': ['@swc/jest'],
   },
-  transformIgnorePatterns: ['/node_modules/(?!@openmrs)'],
+  transformIgnorePatterns: ['/node_modules/(?!@openmrs|.+\\.pnp\\.[^\\/]+$)'],
   moduleNameMapper: {
     '\\.(s?css)$': 'identity-obj-proxy',
     '@openmrs/esm-framework': '@openmrs/esm-framework/mock',
@@ -25,8 +26,10 @@ module.exports = {
     '^lodash-es$': 'lodash',
     '^react-i18next$': path.resolve(__dirname, '__mocks__', 'react-i18next.js'),
     '^uuid$': path.resolve(__dirname, 'node_modules', 'uuid', 'dist', 'index.js'),
+    '^mocks/(.*)$': path.resolve(__dirname, '__mocks__', '$1'),
+    '^tools/(.*)$': path.resolve(__dirname, 'tools', '$1'),
   },
-  setupFilesAfterEnv: ['<rootDir>/src/setup-tests.ts'],
+  setupFilesAfterEnv: [path.resolve(__dirname, 'tools', 'setup-tests.ts')],
   testPathIgnorePatterns: [path.resolve(__dirname, 'e2e')],
   testEnvironment: 'jsdom',
   testEnvironmentOptions: {

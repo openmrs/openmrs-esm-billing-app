@@ -21,8 +21,15 @@ import {
   Tile,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
-import { useLayoutType, isDesktop, useConfig, usePagination, ErrorState, navigate } from '@openmrs/esm-framework';
-import { EmptyState } from '@openmrs/esm-patient-common-lib';
+import {
+  useLayoutType,
+  isDesktop,
+  useConfig,
+  usePagination,
+  ErrorState,
+  navigate,
+  EmptyCard,
+} from '@openmrs/esm-framework';
 import { type BillableService } from '../types/index';
 import { useBillableServices } from './billable-service.resource';
 import AddBillableService from './create-edit/add-billable-service.component';
@@ -166,7 +173,7 @@ const BillableServices = () => {
     return <ErrorState headerTitle={t('billableService', 'Billable Service')} error={error} />;
   }
   if (billableServices.length === 0) {
-    <EmptyState
+    <EmptyCard
       displayText={t('billableService', 'Billable Service')}
       headerTitle={t('billableService', 'Billable Service')}
       launchForm={launchBillableServiceForm}
@@ -250,7 +257,7 @@ const BillableServices = () => {
           />
         </div>
       ) : (
-        <EmptyState
+        <EmptyCard
           launchForm={launchBillableServiceForm}
           displayText={t('noServicesToDisplay', 'There are no services to display')}
           headerTitle={t('billableService', 'Billable service')}

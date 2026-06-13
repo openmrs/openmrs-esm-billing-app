@@ -11,9 +11,10 @@ import {
   useVisit,
   restBaseUrl,
   useOpenmrsFetchAll,
+  useOpenmrsPagination,
 } from '@openmrs/esm-framework';
 import { apiBasePath } from './constants';
-import type { FacilityDetail, MappedBill, PatientInvoice, StockItem } from './types';
+import type { FacilityDetail, MappedBill, PatientInvoice, StockItem, BillStatus } from './types';
 import SelectedDateContext from './hooks/selectedDateContext';
 
 export const useBills = (patientUuid: string = '', billStatus: string = '') => {
@@ -33,7 +34,7 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
     patientName: bill?.patient?.display.split('-')?.[1],
     identifier: bill?.patient?.display.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
-    status: bill.lineItems.some((item) => item.paymentStatus === 'PENDING') ? 'PENDING' : 'PAID',
+    status: (bill.status as BillStatus) ?? 'PENDING',
     receiptNumber: bill?.receiptNumber,
     cashier: bill?.cashier,
     cashPointUuid: bill?.cashPoint?.uuid,
@@ -46,6 +47,9 @@ export const useBills = (patientUuid: string = '', billStatus: string = '') => {
     payments: bill?.payments,
     display: bill?.display,
     totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
+    netAmount: bill?.total ?? 0,
+    tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),
+    visitUuid: bill?.visit?.uuid,
   });
 
   const sortedBills = sortBy(data?.data?.results ?? [], ['dateCreated']).reverse();
@@ -87,12 +91,7 @@ export const useBill = (billUuid: string) => {
     patientName: bill?.patient?.display.split('-')?.[1],
     identifier: bill?.patient?.display.split('-')?.[0],
     patientUuid: bill?.patient?.uuid,
-    status:
-      bill.lineItems.length > 1
-        ? bill.lineItems.some((item) => item.paymentStatus === 'PENDING')
-          ? 'PENDING'
-          : 'PAID'
-        : bill.status,
+    status: (bill.status as BillStatus) ?? 'PENDING',
     receiptNumber: bill?.receiptNumber,
     cashier: bill?.cashier,
     cashPointUuid: bill?.cashPoint?.uuid,
@@ -103,7 +102,9 @@ export const useBill = (billUuid: string) => {
     billingService: bill?.lineItems.map((bill) => bill.item).join(' '),
     payments: bill.payments,
     totalAmount: bill?.lineItems?.map((item) => item.price * item.quantity).reduce((prev, curr) => prev + curr, 0),
+    netAmount: bill?.total ?? 0,
     tenderedAmount: bill?.payments?.map((item) => item.amountTendered).reduce((prev, curr) => prev + curr, 0),
+    visitUuid: bill?.visit?.uuid,
   });
 
   const formattedBill = data?.data ? mapBillProperties(data?.data) : null;
@@ -237,3 +238,123 @@ export function useFacilityName() {
     isError: error,
   };
 }
+
+export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
+  const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) ?? [];
+  const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
+    if (!display) {
+      return { identifier: '', name: '' };
+    }
+
+    const separator = ' - ';
+    const index = display.indexOf(separator);
+
+    if (index === -1) {
+      return { identifier: '', name: display.trim() };
+    }
+
+    return {
+      identifier: display.substring(0, index).trim(),
+      name: display.substring(index + separator.length).trim(),
+    };
+  };
+  const { identifier, name } = parsePatientDisplay(bill?.patient?.display);
+
+  return {
+    ...bill,
+    patientName: name,
+    identifier: identifier,
+    patientUuid: bill?.patient?.uuid,
+    visitUuid: bill?.visit?.uuid,
+    cashPointUuid: bill?.cashPoint?.uuid,
+    cashPointName: bill?.cashPoint?.name,
+    cashPointLocation: bill?.cashPoint?.location?.display,
+    status: bill.status as any,
+    lineItems: activeLineItems,
+    billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
+    totalAmount: bill.total,
+    netAmount: bill.amountAfterDiscount,
+    tenderedAmount: (bill?.payments ?? [])
+      .map((item) => item.amountTendered ?? 0)
+      .reduce((prev, curr) => prev + curr, 0),
+  };
+};
+
+export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
+  const customRepresentation =
+    '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
+
+  let url = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=${pageSize}`;
+
+  if (status) {
+    url += `&status=${status}`;
+  }
+
+  if (patientName) {
+    url += `&patientName=${encodeURIComponent(patientName)}`;
+  }
+
+  const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
+    useOpenmrsPagination<PatientInvoice>(url, pageSize);
+
+  // Backend already sorts by ID descending (newest first), so no need to sort on frontend
+  const mappedResults = data?.map((bill) => mapBillProperties(bill));
+
+  return {
+    bills: mappedResults,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+    currentPage,
+    totalCount,
+    goTo,
+  };
+};
+
+export const useBillableServices = () => {
+  const url = `${apiBasePath}billableService?v=custom:(uuid,name,shortName,serviceStatus,serviceType:(display),servicePrices:(uuid,name,price,paymentMode))`;
+  return useOpenmrsFetchAll<any>(url);
+};
+
+export const finalizeBill = (billUuid: string) => {
+  const url = `${apiBasePath}bill/${billUuid}`;
+  return openmrsFetch(url, {
+    method: 'POST',
+    body: { status: 'POSTED' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+export const deleteBillItem = (itemUuid: string, voidReason: string) => {
+  const url = `${apiBasePath}billLineItem/${itemUuid}?reason=${encodeURIComponent(voidReason)}`;
+
+  return openmrsFetch(url, {
+    method: 'DELETE',
+  });
+};
+
+export const deleteBill = (billUuid: string, reason: string) => {
+  const url = `${apiBasePath}bill/${billUuid}?reason=${encodeURIComponent(reason)}`;
+
+  return openmrsFetch(url, {
+    method: 'DELETE',
+  });
+};
+
+export const patientPaymentStatusCacheKey = (patientUuid: string) =>
+  `${apiBasePath}patientPaymentStatus/${patientUuid}`;
+
+export const usePatientPaymentStatus = (patientUuid: string) => {
+  const url = patientPaymentStatusCacheKey(patientUuid);
+  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(patientUuid ? url : null, openmrsFetch);
+  return {
+    paymentStatus: data?.data,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+  };
+};

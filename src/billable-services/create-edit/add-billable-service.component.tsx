@@ -54,8 +54,8 @@ const DEFAULT_PAYMENT_OPTION = { paymentMode: '', price: 0 };
 const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }> = ({ editingService, onClose }) => {
   const { t } = useTranslation();
 
-  const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
-  const { serviceTypes, isLoading: isLoadingServicesTypes } = useServiceTypes();
+  const { paymentModes, isLoadingPaymentModes } = usePaymentModes();
+  const { serviceTypes, isLoadingServiceTypes } = useServiceTypes();
   const [billableServicePayload, setBillableServicePayload] = useState(editingService || {});
 
   const {
@@ -164,7 +164,7 @@ const AddBillableService: React.FC<{ editingService?: any; onClose: () => void }
     return null;
   };
 
-  if (isLoadingPaymentModes && isLoadingServicesTypes) {
+  if (isLoadingPaymentModes && isLoadingServiceTypes) {
     return (
       <InlineLoading
         status="active"

@@ -48,7 +48,7 @@ const AddBillableStock: React.FC<AddBillableStockProps> = ({ onClose, editingIte
   const { searchResults, error, isLoading } = useFetchChargeItems(debouncedSearchTerm);
   const searchInputRef = useRef(null);
   const handleSearchTermChange = (event: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(event.target.value);
-  const { paymentModes, isLoading: isLoadingPaymentModes } = usePaymentModes();
+  const { paymentModes, isLoadingPaymentModes } = usePaymentModes();
   const servicePriceSchema = z.object({
     paymentMode: z.string().refine((value) => !!value, 'Payment method is required'),
     price: z.union([

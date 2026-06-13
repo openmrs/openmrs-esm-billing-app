@@ -31,7 +31,7 @@ const visitAttributesFormSchema = z.object({
 
 const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes, setPaymentMethod }) => {
   const { t } = useTranslation();
-  const { patientCatergory, catergoryConcepts, nonPayingPatientCategories } = useConfig();
+  const { patientCategory: patientCategoryConfig, categoryConcepts, nonPayingPatientCategories } = useConfig();
   const { control, getValues, watch } = useForm<VisitAttributesFormValue>({
     mode: 'all',
     defaultValues: {},
@@ -59,11 +59,11 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
     setPaymentMethod?.(paymentMethods);
 
     const formPayload = [
-      { uuid: patientCatergory.paymentDetails, value: paymentDetails },
-      { uuid: patientCatergory.paymentMethods, value: paymentMethods },
-      { uuid: patientCatergory.insuranceScheme, value: insuranceScheme },
-      { uuid: patientCatergory.policyNumber, value: policyNumber },
-      { uuid: patientCatergory.patientCategory, value: patientCategory },
+      { uuid: patientCategoryConfig.paymentDetails, value: paymentDetails },
+      { uuid: patientCategoryConfig.paymentMethods, value: paymentMethods },
+      { uuid: patientCategoryConfig.insuranceScheme, value: insuranceScheme },
+      { uuid: patientCategoryConfig.policyNumber, value: policyNumber },
+      { uuid: patientCategoryConfig.patientCategory, value: patientCategory },
     ];
 
     const visitAttributesPayload = formPayload.filter(
@@ -75,11 +75,11 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
     }));
   }, [
     getValues,
-    patientCatergory.insuranceScheme,
-    patientCatergory.patientCategory,
-    patientCatergory.paymentDetails,
-    patientCatergory.paymentMethods,
-    patientCatergory.policyNumber,
+    patientCategoryConfig.insuranceScheme,
+    patientCategoryConfig.patientCategory,
+    patientCategoryConfig.paymentDetails,
+    patientCategoryConfig.paymentMethods,
+    patientCategoryConfig.policyNumber,
     setPaymentMethod,
   ]);
 
@@ -117,13 +117,13 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
             orientation="vertical"
             legendText={t('paymentDetails', 'Payment Details')}
             name="payment-details">
-            <RadioButton labelText="Paying" value={catergoryConcepts.payingDetails} id="radio-1" />
-            <RadioButton labelText="Non paying" value={catergoryConcepts.nonPayingDetails} id="radio-2" />
+            <RadioButton labelText="Paying" value={categoryConcepts.payingDetails} id="radio-1" />
+            <RadioButton labelText="Non paying" value={categoryConcepts.nonPayingDetails} id="radio-2" />
           </RadioButtonGroup>
         )}
       />
 
-      {paymentDetails === catergoryConcepts.payingDetails && (
+      {paymentDetails === categoryConcepts.payingDetails && (
         <Controller
           control={control}
           name="paymentMethods"
@@ -141,7 +141,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
         />
       )}
 
-      {paymentMethods === catergoryConcepts.insuranceDetails && paymentDetails === catergoryConcepts.payingDetails && (
+      {paymentMethods === categoryConcepts.insuranceDetails && paymentDetails === categoryConcepts.payingDetails && (
         <>
           <Controller
             control={control}
@@ -173,7 +173,7 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
         </>
       )}
 
-      {paymentDetails === catergoryConcepts.nonPayingDetails && (
+      {paymentDetails === categoryConcepts.nonPayingDetails && (
         <Controller
           control={control}
           name="patientCategory"

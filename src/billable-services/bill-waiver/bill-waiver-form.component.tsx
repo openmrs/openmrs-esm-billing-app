@@ -25,7 +25,7 @@ const BillWaiverForm: React.FC<BillWaiverFormProps> = ({ bill, lineItems, setPat
   const { lineItems: billableLineItems, isLoading: isLoadingLineItems, error: lineError } = useBillableItems();
   const totalAmount = lineItems.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
   const { defaultCurrency } = useConfig();
-  const { isLoading, paymentModes } = usePaymentModes();
+  const { isLoadingPaymentModes, paymentModes } = usePaymentModes();
 
   if (lineItems?.length === 0) {
     return null;

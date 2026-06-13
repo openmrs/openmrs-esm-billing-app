@@ -1,6 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/react';
+import { vi } from 'vitest';
 import { type FetchResponse, navigate } from '@openmrs/esm-framework';
 import {
   useBillableServices,
@@ -10,17 +11,17 @@ import {
 } from '../billable-service.resource';
 import AddBillableService from './add-billable-service.component';
 
-const mockUseBillableServices = useBillableServices as jest.MockedFunction<typeof useBillableServices>;
-const mockUsePaymentModes = usePaymentModes as jest.MockedFunction<typeof usePaymentModes>;
-const mockUseServiceTypes = useServiceTypes as jest.MockedFunction<typeof useServiceTypes>;
-const mockCreateBillableSerice = createBillableSerice as jest.MockedFunction<typeof createBillableSerice>;
-const mockNavigate = navigate as jest.MockedFunction<typeof navigate>;
+const mockUseBillableServices = useBillableServices as any;
+const mockUsePaymentModes = usePaymentModes as any;
+const mockUseServiceTypes = useServiceTypes as any;
+const mockCreateBillableSerice = createBillableSerice as any;
+const mockNavigate = navigate as any;
 
-jest.mock('../billable-service.resource', () => ({
-  useBillableServices: jest.fn(),
-  usePaymentModes: jest.fn(),
-  useServiceTypes: jest.fn(),
-  createBillableSerice: jest.fn(),
+vi.mock('../billable-service.resource', () => ({
+  useBillableServices: vi.fn(),
+  usePaymentModes: vi.fn(),
+  useServiceTypes: vi.fn(),
+  createBillableSerice: vi.fn(),
 }));
 
 const mockPaymentModes = [
@@ -49,19 +50,19 @@ const mockServiceTypes = [
   { uuid: 'a487a743-62ce-4f93-a66b-c5154ee8987d', display: 'Adherence counselling  service' },
 ];
 
-xdescribe('AddBillableService', () => {
+describe.skip('AddBillableService', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test('should render billable services form and generate correct payload', async () => {
     const user = userEvent.setup();
-    const mockOnClose = jest.fn();
+    const mockOnClose = vi.fn();
     mockUseBillableServices.mockReturnValue({
       billableServices: [],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
       isValidating: false,
     });
     mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoading: false });
@@ -132,12 +133,12 @@ xdescribe('AddBillableService', () => {
 
   test("should navigate back to billable services dashboard when 'Cancel' button is clicked", async () => {
     const user = userEvent.setup();
-    const mockOnClose = jest.fn();
+    const mockOnClose = vi.fn();
     mockUseBillableServices.mockReturnValue({
       billableServices: [],
       isLoading: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
       isValidating: false,
     });
     mockUsePaymentModes.mockReturnValue({ paymentModes: mockPaymentModes, error: null, isLoading: false });

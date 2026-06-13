@@ -144,7 +144,7 @@ const ChangeStatus: React.FC<BillLineItemProps> = ({ bill, item, closeModal }) =
                 {t('currentPrice', 'Current price')} : {item?.price}
               </p>
               <p className={styles.label}>
-                {t('status', 'status')} : {item?.paymentStatus}
+                {t('status', 'status')} : {item?.status}
               </p>
               <Controller
                 name="quantity"

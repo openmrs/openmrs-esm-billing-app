@@ -19,8 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { showSnackbar, openmrsFetch, restBaseUrl } from '@openmrs/esm-framework';
-import { CardHeader } from '@openmrs/esm-patient-common-lib';
+import { showSnackbar, openmrsFetch, restBaseUrl, CardHeader } from '@openmrs/esm-framework';
 import styles from './payment-modes-config.scss';
 
 // Validation schema

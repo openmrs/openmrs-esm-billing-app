@@ -1,6 +1,7 @@
 import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { screen, render } from '@testing-library/react';
+import { vi, type Mock } from 'vitest';
 import { useBillableItems, useCashPoint, createPatientBill, usePaymentMethods } from './billing-form.resource';
 import BillingCheckInForm from './billing-checkin-form.component';
 
@@ -40,22 +41,23 @@ const mockBillableItems = [
   },
 ];
 
-const mockUseCashPoint = useCashPoint as jest.MockedFunction<typeof useCashPoint>;
-const mockUseBillableItems = useBillableItems as jest.MockedFunction<typeof useBillableItems>;
-const mockCreatePatientBill = createPatientBill as jest.MockedFunction<typeof createPatientBill>;
-const mockusePaymentMethods = usePaymentMethods as jest.MockedFunction<typeof usePaymentMethods>;
+const mockUseCashPoint = useCashPoint as Mock<typeof useCashPoint>;
+const mockUseBillableItems = useBillableItems as Mock<typeof useBillableItems>;
+const mockCreatePatientBill = createPatientBill as Mock<typeof createPatientBill>;
+const mockusePaymentMethods = usePaymentMethods as Mock<typeof usePaymentMethods>;
 
-jest.mock('./billing-form.resource', () => ({
-  useBillableItems: jest.fn(),
-  useCashPoint: jest.fn(),
-  createPatientBill: jest.fn(),
+vi.mock('./billing-form.resource', () => ({
+  useBillableItems: vi.fn(),
+  useCashPoint: vi.fn(),
+  createPatientBill: vi.fn(),
+  usePaymentMethods: vi.fn(),
 }));
 
-const testProps = { patientUuid: 'some-patient-uuid', setExtraVisitInfo: jest.fn() };
+const testProps = { patientUuid: 'some-patient-uuid', setExtraVisitInfo: vi.fn() };
 
-xdescribe('BillingCheckInForm', () => {
+describe.skip('BillingCheckInForm', () => {
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   test('should show the loading spinner while retrieving data', () => {

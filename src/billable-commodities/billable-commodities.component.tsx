@@ -20,8 +20,7 @@ import {
   Tile,
 } from '@carbon/react';
 import { ArrowRight } from '@carbon/react/icons';
-import { useLayoutType, isDesktop, usePagination, ErrorState, showModal } from '@openmrs/esm-framework';
-import { EmptyState } from '@openmrs/esm-patient-common-lib';
+import { useLayoutType, isDesktop, usePagination, ErrorState, showModal, EmptyCard } from '@openmrs/esm-framework';
 import { useBillableCommodities, useBillableServices } from '../billable-services/billable-service.resource';
 import styles from '../billable-services/billable-services.scss';
 import AddBillableStock from './add-billable-commodity.component';
@@ -132,7 +131,7 @@ const BillableStock = () => {
   }
   if (!chargeItems || chargeItems.length === 0) {
     return (
-      <EmptyState
+      <EmptyCard
         displayText={t('billableCommodity', 'Billable commodity')}
         headerTitle={t('billableCommodity', 'Billable commodity')}
         launchForm={launchBillableCommoditiesForm}

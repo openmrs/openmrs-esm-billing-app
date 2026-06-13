@@ -25,8 +25,8 @@ import {
   usePagination,
   ErrorState,
   ConfigurableLink,
+  EmptyCardIllustration,
 } from '@openmrs/esm-framework';
-import { EmptyDataIllustration } from '@openmrs/esm-patient-common-lib';
 import { useBills } from '../billing.resource';
 import styles from './bills-table.scss';
 
@@ -252,7 +252,7 @@ const BillsTable = () => {
         <Layer className={styles.emptyStateContainer}>
           <Tile className={styles.tile}>
             <div className={styles.illo}>
-              <EmptyDataIllustration />
+              <EmptyCardIllustration />
             </div>
             <p className={styles.content}>There are no bills to display.</p>
           </Tile>

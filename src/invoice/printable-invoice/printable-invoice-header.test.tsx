@@ -1,19 +1,20 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
+import { vi } from 'vitest';
 import { useConfig, useSession } from '@openmrs/esm-framework';
 import { useDefaultFacility } from '../../billing.resource';
 import PrintableInvoiceHeader from './printable-invoice-header.component';
 
-const mockUseDefaultFacility = useDefaultFacility as jest.MockedFunction<typeof useDefaultFacility>;
-const mockUseConfig = useConfig as jest.MockedFunction<typeof useConfig>;
+const mockUseDefaultFacility = useDefaultFacility as any;
+const mockUseConfig = useConfig as any;
 
-jest.mock('../../billing.resource', () => ({
-  useDefaultFacility: jest.fn(),
+vi.mock('../../billing.resource', () => ({
+  useDefaultFacility: vi.fn(),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  useConfig: jest.fn(),
-  useSession: jest.fn().mockReturnValue({
+vi.mock('@openmrs/esm-framework', () => ({
+  useConfig: vi.fn(),
+  useSession: vi.fn().mockReturnValue({
     sessionLocation: {
       display: 'Test location',
     },

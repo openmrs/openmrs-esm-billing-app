@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { InlineLoading } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
-import { ErrorState } from '@openmrs/esm-patient-common-lib';
+import { ErrorState } from '@openmrs/esm-framework';
 import { useBills } from '../billing.resource';
 import { useBillMetrics } from './metrics.resource';
 import Card from './card.component';

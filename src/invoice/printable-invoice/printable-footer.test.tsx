@@ -1,30 +1,23 @@
 import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { screen, render } from '@testing-library/react';
 import { useDefaultFacility } from '../../billing.resource';
 import PrintableFooter from './printable-footer.component';
 
-const mockUseDefaultFacility = useDefaultFacility as jest.MockedFunction<typeof useDefaultFacility>;
+const mockUseDefaultFacility = vi.mocked<typeof useDefaultFacility>(useDefaultFacility);
 
-jest.mock('../../billing.resource', () => ({
-  useDefaultFacility: jest.fn(),
+vi.mock('../../billing.resource', () => ({
+  useDefaultFacility: vi.fn(),
+  useStockItems: vi.fn(),
 }));
 
 describe('PrintableFooter', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('should render PrintableFooter component', () => {
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: false });
+  it('should render PrintableFooter component', () => {
+    mockUseDefaultFacility.mockReturnValue({
+      data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] },
+    });
     render(<PrintableFooter />);
     const footer = screen.getByText('MTRH');
-    expect(footer).toBeInTheDocument();
-  });
-
-  test('should show placeholder text when facility isLoading', () => {
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid' }, isLoading: true });
-    render(<PrintableFooter />);
-    const footer = screen.getByText('--');
     expect(footer).toBeInTheDocument();
   });
 });

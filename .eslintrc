@@ -2,14 +2,39 @@
   "env": {
     "node": true
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:vitest/recommended"],
+  "globals": {
+    "describe": "readonly",
+    "it": "readonly",
+    "test": "readonly",
+    "expect": "readonly",
+    "beforeAll": "readonly",
+    "afterAll": "readonly",
+    "beforeEach": "readonly",
+    "afterEach": "readonly",
+    "vi": "readonly"
+  },
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": true,
-    "tsconfigRootDir": "__dirname"
+    "project": ["./tsconfig.json", "./tsconfig.spec.json"],
+    "tsconfigRootDir": "."
   },
-  "plugins": ["@typescript-eslint", "import", "react-hooks"],
+  "plugins": ["@typescript-eslint", "import", "react-hooks", "vitest"],
   "root": true,
+  "overrides": [
+    {
+      "files": ["tools/**/*.ts", "vitest.config.ts", "__mocks__/**/*.ts", "e2e/**/*.ts", "playwright.config.ts", "test-helpers.tsx", "*.config.ts"],
+      "parserOptions": {
+        "project": null
+      },
+      "rules": {
+        "@typescript-eslint/consistent-type-exports": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
+        "react-hooks/rules-of-hooks": "off",
+        "import/no-duplicates": "off"
+      }
+    }
+  ],
   "rules": {
     // The following rules need `noImplicitAny` to be set to `true` in our tsconfig. They are too restrictive for now, but should be reconsidered in future
     "@typescript-eslint/ban-types": "off",

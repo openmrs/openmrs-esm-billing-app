@@ -1,0 +1,105 @@
+@use '@carbon/colors';
+@use '@carbon/layout';
+@use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.paymentButtons {
+  margin: layout.$spacing-05 0;
+}
+
+.paymentMethodContainer {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(auto, 1fr));
+  align-items: baseline;
+  column-gap: layout.$spacing-05;
+  margin: 0.625rem 0;
+  width: 100%;
+}
+
+.removeButtonContainer {
+  display: flex;
+  align-self: center;
+  cursor: pointer;
+  margin-left: layout.$spacing-07;
+}
+
+.removeButton {
+  color: colors.$red-60;
+}
+
+.service {
+  padding: layout.$spacing-05 layout.$spacing-04;
+}
+
+.conceptsList {
+  background-color: $ui-02;
+  max-height: 14rem;
+  overflow-y: auto;
+  border: 1px solid $ui-03;
+
+  li:hover {
+    background-color: $ui-03;
+  }
+}
+
+.emptyResults {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+  min-height: layout.$spacing-05;
+  border: 1px solid $ui-03;
+}
+
+.conceptLabel {
+  @include type.type-style('label-02');
+  margin-bottom: layout.$spacing-05;
+}
+
+.errorMessage {
+  @include type.type-style('label-02');
+  color: $danger;
+  margin-bottom: layout.$spacing-05;
+}
+
+.loader {
+  padding: layout.$spacing-04 layout.$spacing-03;
+}
+
+.serviceNameLabel {
+  @include type.type-style('body-compact-02');
+}
+
+.button {
+  height: layout.$spacing-10;
+  display: flex;
+  align-content: flex-start;
+  align-items: baseline;
+  min-width: 50%;
+
+  :global(.cds--inline-loading) {
+    min-height: layout.$spacing-05 !important;
+  }
+
+  :global(.cds--inline-loading__text) {
+    @include type.type-style('body-01');
+  }
+}
+
+.tablet {
+  padding: layout.$spacing-06 layout.$spacing-05;
+  background-color: $ui-02;
+}
+
+.desktop {
+  padding: 0;
+}
+
+.stack {
+  margin: layout.$spacing-05;
+}

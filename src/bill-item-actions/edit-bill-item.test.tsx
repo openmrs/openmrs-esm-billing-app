@@ -1,28 +1,30 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 import { showSnackbar } from '@openmrs/esm-framework';
 import { type MappedBill } from '../types';
 import { updateBillItems, useStockItems } from '../billing.resource';
 import ChangeStatus from './edit-bill-item.component';
 
 // Mock external dependencies
-jest.mock('../billing.resource', () => ({
-  updateBillItems: jest.fn(() => Promise.resolve({})),
+vi.mock('../billing.resource', () => ({
+  updateBillItems: vi.fn(() => Promise.resolve({})),
 }));
 
-jest.mock('@openmrs/esm-framework', () => ({
-  showSnackbar: jest.fn(),
+vi.mock('@openmrs/esm-framework', () => ({
+  showSnackbar: vi.fn(),
+  restBaseUrl: 'http://localhost',
 }));
 
-jest.mock('../billable-services/billable-service.resource', () => ({
-  useBillableServices: jest.fn(() => ({
+vi.mock('../billable-services/billable-service.resource', () => ({
+  useBillableServices: vi.fn(() => ({
     billableServices: [],
   })),
 }));
 
-jest.mock('../billing.resource', () => ({
-  useStockItems: jest.fn(),
-  updateBillItems: jest.fn(),
+vi.mock('../billing.resource', () => ({
+  useStockItems: vi.fn(),
+  updateBillItems: vi.fn(),
 }));
 
 const mockBill: MappedBill = {
@@ -80,11 +82,11 @@ const mockItem = {
 };
 
 describe('ChangeStatus component', () => {
-  const closeModalMock = jest.fn();
+  const closeModalMock = vi.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    (useStockItems as jest.Mock).mockReturnValue({ stockItems: [], isLoadingItem: false });
+    vi.clearAllMocks();
+    (useStockItems as Mock).mockReturnValue({ stockItems: [], isLoadingItem: false });
   });
 
   test('renders the form with correct fields and default values', () => {
@@ -107,7 +109,7 @@ describe('ChangeStatus component', () => {
   });
 
   test('submits the form and shows a success notification', async () => {
-    (updateBillItems as jest.Mock).mockResolvedValueOnce({});
+    (updateBillItems as Mock).mockResolvedValueOnce({});
 
     render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 
@@ -126,7 +128,7 @@ describe('ChangeStatus component', () => {
   });
 
   test('shows error notification when submission fails', async () => {
-    (updateBillItems as jest.Mock).mockRejectedValueOnce({ message: 'Error occurred' });
+    (updateBillItems as Mock).mockRejectedValueOnce({ message: 'Error occurred' });
 
     render(<ChangeStatus bill={mockBill} item={mockItem} closeModal={closeModalMock} />);
 

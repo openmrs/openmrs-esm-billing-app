@@ -1,50 +1,133 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { useTranslation } from 'react-i18next';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { render, screen, waitFor } from '@testing-library/react';
 import PrintReceipt from './print-receipt.component';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: jest.fn(),
-}));
-
-jest.mock('@carbon/react/icons', () => ({
-  Printer: jest.fn(() => <div data-testid="printer-icon" />),
-}));
-
 describe('PrintReceipt', () => {
-  const mockT = jest.fn((key) => key);
+  const TEST_BILL_UUID = 'a0655e54-126b-4b88-8c7c-579cb4f331f2';
+  const originalLocation = window.location;
+  let mockLink: HTMLAnchorElement;
 
   beforeEach(() => {
-    (useTranslation as jest.Mock).mockReturnValue({ t: mockT });
-    jest.useFakeTimers();
-    window.URL.createObjectURL = jest.fn();
+    Object.defineProperty(window, 'location', {
+      value: {
+        ...originalLocation,
+        href: 'http://localhost:8080/openmrs/spa/home',
+        origin: 'http://localhost:8080',
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    mockLink = document.createElement('a');
+    vi.spyOn(mockLink, 'click').mockImplementation(() => {});
+
+    const originalCreateElement = document.createElement.bind(document);
+    vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
+      if (tagName === 'a') {
+        mockLink.href = '';
+        mockLink.download = '';
+        return mockLink;
+      }
+      return originalCreateElement(tagName);
+    });
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.restoreAllMocks();
+    Object.defineProperty(window, 'location', {
+      value: originalLocation,
+      writable: true,
+      configurable: true,
+    });
   });
 
-  it('renders button with correct text and icon', () => {
-    render(<PrintReceipt billId={123} />);
-    expect(screen.getByText('printReceipt')).toBeInTheDocument();
-    expect(screen.getByTestId('printer-icon')).toBeInTheDocument();
+  it('renders the print receipt button', () => {
+    render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+    expect(button).toBeInTheDocument();
+    expect(button).toBeEnabled();
   });
 
-  it('displays "Loading" and disables button when isRedirecting is true', () => {
-    render(<PrintReceipt billId={123} />);
-    const button = screen.getByRole('button');
-    fireEvent.click(button);
-    expect(screen.getByText('loading')).toBeInTheDocument();
+  it('shows loading state and disables button during download', async () => {
+    const user = userEvent.setup();
+    render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+    await user.click(button);
+
     expect(button).toBeDisabled();
+    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.queryByText(/print receipt/i)).not.toBeInTheDocument();
   });
 
-  it('applies correct CSS class to button', () => {
-    render(<PrintReceipt billId={123} />);
-    expect(screen.getByRole('button')).toHaveClass('button');
+  it('initiates download when button is clicked', async () => {
+    const user = userEvent.setup();
+    render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(mockLink.click).toHaveBeenCalled();
+    });
+
+    expect(mockLink.href).toContain(TEST_BILL_UUID);
+    expect(mockLink.href).toContain('receipt');
   });
 
-  it('translates button text correctly', () => {
-    render(<PrintReceipt billId={123} />);
-    expect(mockT).toHaveBeenCalledWith('printReceipt', 'Print receipt');
+  it('re-enables button after download completes', async () => {
+    const user = userEvent.setup();
+    render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+    await user.click(button);
+
+    expect(button).toBeDisabled();
+
+    await waitFor(() => {
+      expect(button).toBeEnabled();
+    });
+
+    expect(screen.getByText(/print receipt/i)).toBeInTheDocument();
+    expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+  });
+
+  it('prevents multiple simultaneous downloads', async () => {
+    const user = userEvent.setup();
+    render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+
+    await user.click(button);
+    await user.click(button);
+    await user.click(button);
+
+    expect(button).toBeDisabled();
+
+    await waitFor(() => {
+      expect(button).toBeEnabled();
+    });
+  });
+
+  it('renders printer icon', () => {
+    render(<PrintReceipt billUuid={TEST_BILL_UUID} />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+    expect(button).toBeInTheDocument();
+  });
+
+  it('handles empty bill UUID', async () => {
+    const user = userEvent.setup();
+    render(<PrintReceipt billUuid="" />);
+
+    const button = screen.getByRole('button', { name: /print receipt/i });
+    await user.click(button);
+
+    await waitFor(() => {
+      expect(mockLink.click).toHaveBeenCalled();
+    });
   });
 });

@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { useBills } from '../billing.resource';
 import BillsTable from './bills-table.component';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
   }),
@@ -33,8 +33,8 @@ const mockBillsData = [
   },
 ];
 
-jest.mock('../billing.resource', () => ({
-  useBills: jest.fn(() => ({
+vi.mock('../billing.resource', () => ({
+  useBills: vi.fn(() => ({
     bills: mockBillsData,
     isLoading: false,
     isValidating: false,
@@ -42,27 +42,24 @@ jest.mock('../billing.resource', () => ({
   })),
 }));
 
-jest.mock('@openmrs/esm-patient-common-lib', () => ({
-  EmptyDataIllustration: jest.fn(() => <div>Empty state illustration</div>),
-}));
-
-jest.mock('@openmrs/esm-framework', () => ({
-  useLayoutType: jest.fn(() => 'desktop'),
-  isDesktop: jest.fn(() => true),
-  ErrorState: jest.fn(({ error }) => <div data-testid="error-state">{error?.message || error}</div>),
-  useConfig: jest.fn(() => ({
+vi.mock('@openmrs/esm-framework', () => ({
+  useLayoutType: vi.fn(() => 'desktop'),
+  isDesktop: vi.fn(() => true),
+  ErrorState: vi.fn(({ error }) => <div data-testid="error-state">{error?.message || error}</div>),
+  EmptyCardIllustration: vi.fn(() => <div>Empty state illustration</div>),
+  useConfig: vi.fn(() => ({
     bills: {
       pageSizes: [10, 20, 30, 40, 50],
       pageSize: 10,
     },
   })),
-  usePagination: jest.fn().mockImplementation((data) => ({
+  usePagination: vi.fn().mockImplementation((data) => ({
     currentPage: 1,
-    goTo: jest.fn(),
+    goTo: vi.fn(),
     results: data,
     paginated: true,
   })),
-  ConfigurableLink: jest.fn(({ children, to, templateParams }) => {
+  ConfigurableLink: vi.fn(({ children, to, templateParams }) => {
     const resolvedTo = '/home/billing/patient/' + templateParams.patientUuid + '/' + templateParams.uuid;
     return <a href={resolvedTo}>{children}</a>;
   }),
@@ -70,7 +67,7 @@ jest.mock('@openmrs/esm-framework', () => ({
 }));
 
 describe('BillsTable', () => {
-  const mockBills = useBills as jest.Mock;
+  const mockBills = useBills as Mock;
   let user;
 
   beforeEach(() => {

@@ -3,7 +3,7 @@
 @use '@carbon/type';
 
 .container {
-  height: 100%;
+  height: calc(100vh - layout.$spacing-09);
 }
 
 .servicesTableContainer {

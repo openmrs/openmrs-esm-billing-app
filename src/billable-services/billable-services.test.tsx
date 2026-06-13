@@ -1,56 +1,54 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 import BillableServices from './billable-services.component';
 import { useBillableServices } from './billable-service.resource';
 
 // Mock the resource
-jest.mock('./billable-service.resource', () => ({
-  useBillableServices: jest.fn(),
+vi.mock('./billable-service.resource', () => ({
+  useBillableServices: vi.fn(),
 }));
 
-// Mock the empty state component
-jest.mock('@openmrs/esm-patient-common-lib', () => ({
-  EmptyState: jest.fn(({ displayText, headerTitle }) => (
-    <div data-testid="empty-state">
+// Mock @openmrs/esm-framework
+vi.mock('@openmrs/esm-framework', () => ({
+  EmptyCard: vi.fn(({ displayText, headerTitle }) => (
+    <div data-testid="empty-card">
       <h1>{headerTitle}</h1>
       <p>{displayText}</p>
     </div>
   )),
-}));
-
-// Mock navigation
-jest.mock('@openmrs/esm-framework', () => ({
-  useLayoutType: jest.fn(() => 'desktop'),
-  isDesktop: jest.fn(() => true),
-  useConfig: jest.fn(() => ({
+  useLayoutType: vi.fn(() => 'desktop'),
+  isDesktop: vi.fn(() => true),
+  useConfig: vi.fn(() => ({
     billableServices: {
       pageSizes: [10, 20, 30, 40, 50],
       pageSize: 10,
     },
   })),
-  usePagination: jest.fn().mockImplementation((data) => ({
+  usePagination: vi.fn().mockImplementation((data) => ({
     currentPage: 1,
-    goTo: jest.fn(),
+    goTo: vi.fn(),
     results: data,
     paginated: true,
   })),
-  navigate: jest.fn(),
-  ErrorState: jest.fn(({ error }) => <div>Error: {error?.message || error}</div>),
+  navigate: vi.fn(),
+  ErrorState: vi.fn(({ error }) => <div>Error: {error?.message || error}</div>),
+  restBaseUrl: 'http://localhost',
 }));
 
 // Mock i18next
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, fallback: string) => fallback || key,
   }),
 }));
 
 describe('BillableService', () => {
-  const mockedUseBillableServices = useBillableServices as jest.Mock;
+  const mockedUseBillableServices = useBillableServices as any;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('renders an empty state when there are no billable services', () => {
@@ -59,12 +57,12 @@ describe('BillableService', () => {
       isLoading: false,
       isValidating: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<BillableServices />);
 
-    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    expect(screen.getByTestId('empty-card')).toBeInTheDocument();
     expect(screen.getByText('Billable service')).toBeInTheDocument();
     expect(screen.getByText('There are no services to display')).toBeInTheDocument();
   });
@@ -94,7 +92,7 @@ describe('BillableService', () => {
       isLoading: false,
       isValidating: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     render(<BillableServices />);
@@ -135,7 +133,7 @@ describe('BillableService', () => {
       isLoading: false,
       isValidating: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     const user = userEvent.setup();
@@ -165,7 +163,7 @@ describe('BillableService', () => {
       isLoading: false,
       isValidating: false,
       error: null,
-      mutate: jest.fn(),
+      mutate: vi.fn(),
     });
 
     const user = userEvent.setup();

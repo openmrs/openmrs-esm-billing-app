@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.openmrs.org/routes.schema.json",
   "backendDependencies": {
-    "webservices.rest": ">=2.24.0",
-    "fhir2": ">=1.2"
+    "billing": ">=2.3.0-0",
+    "webservices.rest": ">=2.24.0"
   },
   "pages": [
     {
@@ -36,6 +36,14 @@
       }
     },
     {
+      "name": "visit-bills-panel",
+      "component": "visitBillsPanel",
+      "slot": "visit-summary-panels",
+      "meta": {
+        "title": "Bills"
+      }
+    },
+    {
       "name": "billing-summary-dashboard-link",
       "component": "billingSummaryDashboardLink",
       "slot": "patient-chart-dashboard-slot",
@@ -44,7 +52,7 @@
         "columns": 1,
         "columnSpan": 1,
         "slot": "patient-chart-billing-dashboard-slot",
-        "path": "Billing history"
+        "path": "billing-history"
       }
     },
     {
@@ -72,43 +80,105 @@
       "order": 2
     },
     {
-      "name": "billing-home-tiles-ext",
-      "slot": "billing-home-tiles-slot",
-      "component": "serviceMetrics"
+      "name": "patient-banner-payment-status-tag",
+      "component": "patientPaymentStatusTag",
+      "slot": "patient-banner-tags-slot",
+      "order": 3
     },
     {
-      "name": "edit-bill-line-item-dialog",
-      "component": "editBillLineItemDialog",
-      "online": true,
-      "offline": true
+      "name": "billable-services-left-panel-link",
+      "component": "billableServicesLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 0
+    },
+    {
+      "name": "billing-settings-left-panel-menu",
+      "component": "billingSettingsLeftPanelMenu",
+      "slot": "billable-services-left-panel-slot",
+      "order": 1
+    },
+    {
+      "name": "discount-requests-left-panel-link",
+      "component": "discountRequestsLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 2
+    },
+    {
+      "name": "refund-requests-left-panel-link",
+      "component": "refundRequestsLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 3
     }
   ],
   "modals": [
+    {
+      "name": "add-cash-point-modal",
+      "component": "addCashPointModal"
+    },
+    {
+      "name": "payment-mode-form-modal",
+      "component": "paymentModeFormModal"
+    },
+    {
+      "name": "delete-payment-mode-modal",
+      "component": "deletePaymentModeModal"
+    },
+    {
+      "name": "edit-bill-item-modal",
+      "component": "editBillLineItemModal"
+    },
+    {
+      "name": "edit-bill-line-item-modal",
+      "component": "editBillLineItemModal"
+    },
     {
       "name": "require-billing-modal",
       "component": "requirePaymentModal"
     },
     {
-      "name": "charge-item-modal",
-      "component": "chargeItemsModal"
-    }
-  ],
-  "workspaces": [
-    {
-      "name": "billing-form-workspace",
-      "title": "billingForm",
-      "component": "billingFormWorkspace",
-      "type": "form",
-      "width": "extra-wide",
-      "canMaximize": true
+      "name": "delete-line-item-confirmation-modal",
+      "component": "deleteLineItemConfirmationModal"
     },
     {
-      "name": "charge-item-workspace",
-      "title": "chargeItem",
-      "component": "chargeItemsFormWorkspace",
-      "type": "form",
-      "width": "extra-wide",
-      "canMaximize": true
+      "name": "finalize-bill-confirmation-modal",
+      "component": "finalizeBillConfirmationModal"
+    },
+    {
+      "name": "delete-bill-confirmation-modal",
+      "component": "deleteBillConfirmationModal"
+    },
+    { "name": "request-discount-modal", "component": "requestDiscountModal" },
+    { "name": "review-bill-discounts-modal", "component": "reviewBillDiscountsModal" },
+    { "name": "request-refund-modal", "component": "requestRefundModal" },
+    { "name": "review-bill-refunds-modal", "component": "reviewBillRefundsModal" }
+  ],
+  "workspaces2": [
+    {
+      "name": "billing-form-workspace",
+      "component": "billingFormWorkspace",
+      "window": "billing-form-window"
+    },
+    {
+      "name": "billable-service-form",
+      "component": "billableServiceFormWorkspace",
+      "window": "billable-service-form-window"
+    }
+  ],
+  "workspaceWindows2": [
+    {
+      "name": "billing-form-window",
+      "group": "billingFormWorkspaceGroup"
+    },
+    {
+      "name": "billable-service-form-window",
+      "group": "billingFormWorkspaceGroup",
+      "width": "wider"
+    }
+  ],
+  "workspaceGroups2": [
+    {
+      "name": "billingFormWorkspaceGroup",
+      "overlay": false
     }
   ]
 }
