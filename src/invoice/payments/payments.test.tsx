@@ -241,6 +241,34 @@ describe('Payments', () => {
     expect(screen.queryByText(/select payment method/i)).not.toBeInTheDocument();
   });
 
+  it('should show a notice prompting the user to finalize the bill when it is in PENDING state', () => {
+    const pendingBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.PENDING,
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={pendingBill} mutate={mockMutate} />);
+
+    expect(screen.getByText(/bill is pending/i)).toBeInTheDocument();
+    expect(screen.getByText(/finalize this bill to enable recording a payment/i)).toBeInTheDocument();
+  });
+
+  it('should not show the finalize notice when bill is in POSTED state', () => {
+    const postedBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 100,
+      netAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={postedBill} mutate={mockMutate} />);
+
+    expect(screen.queryByText(/bill is pending/i)).not.toBeInTheDocument();
+  });
+
   it('should show payment form when bill is in POSTED state', () => {
     const postedBill: MappedBill = {
       ...mockBill,
