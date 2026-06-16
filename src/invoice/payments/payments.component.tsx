@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@carbon/react';
+import { Button, InlineNotification } from '@carbon/react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -119,6 +119,19 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             <span></span>
           </CardHeader>
           <div>
+            {bill.status === BillStatus.PENDING && (
+              <InlineNotification
+                className={styles.pendingNotification}
+                kind="info"
+                lowContrast
+                hideCloseButton
+                title={t('billPending', 'Bill is pending')}
+                subtitle={t(
+                  'finalizeBillToRecordPayment',
+                  'Click the "Finalize bill" button to finalize this bill to enable recording a payment.',
+                )}
+              />
+            )}
             <PaymentHistory bill={bill} />
             <PaymentForm disablePayment={amountDue <= 0 || bill.status === BillStatus.PENDING} />
           </div>

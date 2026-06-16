@@ -23,6 +23,11 @@
   margin: layout.$layout-01 0;
 }
 
+.pendingNotification {
+  margin: layout.$spacing-03 0 layout.$spacing-05;
+  max-width: 100%;
+}
+
 .paymentMethodContainer {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
