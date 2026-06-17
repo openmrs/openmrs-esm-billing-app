@@ -559,7 +559,9 @@ describe('Invoice', () => {
     render(<Invoice />);
     await waitForLoadingToFinish();
 
-    expect(screen.getByRole('button', { name: /finalize bill/i })).toBeInTheDocument();
+    // A pending bill surfaces "Finalize bill" both in the action bar and in the payments
+    // empty state, so there are two matching buttons.
+    expect(screen.getAllByRole('button', { name: /finalize bill/i })).toHaveLength(2);
   });
 
   it('should not show "Finalize bill" button for POSTED bills', async () => {
@@ -607,7 +609,9 @@ describe('Invoice', () => {
     render(<Invoice />);
     await waitForLoadingToFinish();
 
-    await user.click(screen.getByRole('button', { name: /finalize bill/i }));
+    // Click the action bar's "Finalize bill" button (the payments empty state renders a
+    // second one); both open the same confirmation modal.
+    await user.click(screen.getAllByRole('button', { name: /finalize bill/i })[0]);
 
     expect(mockShowModal).toHaveBeenCalledWith('finalize-bill-confirmation-modal', {
       bill: defaultBillData,
