@@ -802,7 +802,9 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('And the payment form should not be visible for a PENDING bill', async () => {
       await expect(paymentPage.paymentMethodCombobox()).toBeHidden();
       await expect(paymentPage.amountInput()).toBeHidden();
-      await expect(paymentPage.processPaymentButton()).toBeDisabled();
+      // The empty state now hides the Process Payment button on pending bills (instead of
+      // showing it disabled), so the dead-end action is gone entirely.
+      await expect(paymentPage.processPaymentButton()).toBeHidden();
     });
 
     await test.step('When I finalize the bill', async () => {
