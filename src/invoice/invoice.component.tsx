@@ -271,7 +271,7 @@ const Invoice: React.FC = () => {
         <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
         {bill && <DiscountsTable bill={bill} />}
         {bill && <RefundsTable bill={bill} onMutate={mutate} />}
-        <Payments bill={bill} mutate={mutate} />
+        <Payments bill={bill} mutate={mutate} onFinalizeBill={handleFinalizeBill} />
       </div>
 
       {bill && patient && (
