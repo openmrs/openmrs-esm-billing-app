@@ -13,7 +13,9 @@ export class InvoicePage {
   readonly printReceiptButton = () => this.page.getByRole('button', { name: /print receipt/i });
   readonly invoiceTable = () => this.page.getByRole('table').first();
   readonly discardButton = () => this.page.getByRole('button', { name: /discard/i });
-  readonly finalizeBillButton = () => this.page.getByRole('button', { name: /^finalize bill$/i });
+  // A pending bill shows "Finalize bill" both in the action bar and in the payments empty
+  // state. Scope to the first (action bar) so the locator stays unambiguous.
+  readonly finalizeBillButton = () => this.page.getByRole('button', { name: /^finalize bill$/i }).first();
   readonly addItemsToBillButton = () => this.page.getByRole('button', { name: /add items to bill/i });
   readonly finalizeBillModal = () => this.page.getByRole('dialog', { name: /finalize bill/i });
   readonly confirmFinalizeButton = () => this.page.getByRole('button', { name: /^finalize$/i });
