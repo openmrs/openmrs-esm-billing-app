@@ -1,4 +1,4 @@
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import type {
@@ -92,9 +92,6 @@ export const createBillableService = async (payload: CreateBillableServicePayloa
     },
   });
 
-  // Revalidate the billable services cache using the exact URL
-  await mutate(`${apiBasePath}${BILLABLE_SERVICES_URL}`);
-
   return response;
 };
 
@@ -107,9 +104,6 @@ export const updateBillableService = async (uuid: string, payload: UpdateBillabl
       'Content-Type': 'application/json',
     },
   });
-
-  // Revalidate the billable services cache using the exact URL
-  await mutate(`${apiBasePath}${BILLABLE_SERVICES_URL}`);
 
   return response;
 };
