@@ -192,7 +192,7 @@ describe('BillHistory', () => {
     const addItemsMenuItem = screen.getByText(/add items to bill/i);
     await user.click(addItemsMenuItem);
 
-    expect(mockLaunchWorkspace2).toHaveBeenCalledWith('billing-form-workspace', {
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith('patient-chart-billing-form-workspace', {
       patientUuid: 'some-uuid',
       billUuid: '1',
       onMutate: mockMutate,
