@@ -196,6 +196,29 @@ describe('BillingForm', () => {
       const submitButton = screen.getByRole('button', { name: /save and close/i });
       expect(submitButton).toBeDisabled();
     });
+
+    it('keeps the quantity field empty when cleared instead of snapping back to "0"', async () => {
+      const user = userEvent.setup();
+      render(<BillingForm {...defaultCreateProps} />);
+
+      const combobox = screen.getByRole('combobox');
+      await user.click(combobox);
+      await user.click(screen.getByText('Consultation'));
+
+      const quantityInput = screen.getByRole('spinbutton');
+      expect(quantityInput).toHaveValue(1);
+
+      // Regression: clearing the field used to coerce the controlled value to 0, which both
+      // displayed a stuck "0" and produced a leading zero on the next keystroke. It should stay
+      // empty and surface the validation error instead.
+      await user.clear(quantityInput);
+      expect(quantityInput).toHaveValue(null);
+      expect(screen.getByText(/quantity must be at least 1/i)).toBeInTheDocument();
+
+      // Typing a new value replaces the empty field cleanly, with no leading zero.
+      await user.type(quantityInput, '5');
+      expect(quantityInput).toHaveValue(5);
+    });
   });
 
   describe('Edit mode (with billUuid)', () => {
