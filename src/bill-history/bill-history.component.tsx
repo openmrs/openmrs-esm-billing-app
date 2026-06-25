@@ -114,7 +114,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
           <p className={styles.content}>{t('noBillsToDisplay', 'There are no bills to display.')}</p>
           <Button
             onClick={() =>
-              launchWorkspace2('billing-form-workspace', {
+              launchWorkspace2('patient-chart-billing-form-workspace', {
                 patientUuid,
                 onMutate: mutate,
               })
@@ -138,7 +138,7 @@ const BillHistory: React.FC<BillHistoryProps> = ({ patientUuid }) => {
         <Button
           kind="ghost"
           onClick={() =>
-            launchWorkspace2('billing-form-workspace', {
+            launchWorkspace2('patient-chart-billing-form-workspace', {
               patientUuid,
               onMutate: mutate,
             })

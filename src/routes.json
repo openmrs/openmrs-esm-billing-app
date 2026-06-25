@@ -159,6 +159,11 @@
       "window": "billing-form-window"
     },
     {
+      "name": "patient-chart-billing-form-workspace",
+      "component": "billingFormWorkspace",
+      "window": "patient-chart-billing-form"
+    },
+    {
       "name": "billable-service-form",
       "component": "billableServiceFormWorkspace",
       "window": "billable-service-form-window"
@@ -168,6 +173,10 @@
     {
       "name": "billing-form-window",
       "group": "billingFormWorkspaceGroup"
+    },
+    {
+      "name": "patient-chart-billing-form",
+      "group": "patient-chart"
     },
     {
       "name": "billable-service-form-window",
