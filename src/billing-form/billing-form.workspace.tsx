@@ -396,7 +396,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
                           const number = parseFloat(String(value));
                           updateQuantity(item.uuid, isNaN(number) ? 0 : number);
                         }}
-                        value={item.quantity}
+                        value={item.quantity || ''}
                       />
                     </div>
 
