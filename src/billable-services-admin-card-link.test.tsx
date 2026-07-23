@@ -6,13 +6,13 @@ import BillableServicesCardLink from './billable-services-admin-card-link.compon
 describe('BillableServicesCardLink', () => {
   it('should render billable services admin link', () => {
     renderBillableServicesCardLink();
-    const manageBillableServicesText = screen.getByText('Manage billable services');
-    expect(manageBillableServicesText).toHaveClass('heading');
+    const billingAdministrationText = screen.getByText('Billing administration');
+    expect(billingAdministrationText).toHaveClass('heading');
 
-    const billiableText = screen.getByText('Billable services', { exact: true });
-    expect(billiableText).toHaveClass('content');
+    const descriptionText = screen.getByText('Billable services, cash points, discounts, and refunds', { exact: true });
+    expect(descriptionText).toHaveClass('content');
 
-    const billiableServiceLink = screen.getByRole('link', { name: /Manage billable services/i });
+    const billiableServiceLink = screen.getByRole('link', { name: /Billing administration/i });
     expect(billiableServiceLink).toHaveAttribute('href', '/spa/billable-services');
   });
 });

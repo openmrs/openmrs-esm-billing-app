@@ -5,14 +5,16 @@ import { ArrowRight } from '@carbon/react/icons';
 
 const BillableServicesCardLink: React.FC = () => {
   const { t } = useTranslation();
-  const header = t('manageBillableServices', 'Manage billable services');
+  const header = t('billingAdministration', 'Billing administration');
 
   return (
     <Layer>
       <ClickableTile href={`${window.spaBase}/billable-services`}>
         <div>
           <div className="heading">{header}</div>
-          <div className="content">{t('billableServices', 'Billable services')}</div>
+          <div className="content">
+            {t('billingAdministrationDescription', 'Billable services, cash points, discounts, and refunds')}
+          </div>
         </div>
         <div className="iconWrapper">
           <ArrowRight size={16} />
