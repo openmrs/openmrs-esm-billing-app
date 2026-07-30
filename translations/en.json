@@ -62,7 +62,7 @@
   "billFinalizeFailed": "Failed to finalize bill",
   "billing": "Billing",
   "billingAdministration": "Billing administration",
-  "billingAdministrationDescription": "Billable services, cash points, discounts, and refunds",
+  "billingAdministrationDescription": "Billable services, cash points, payment modes, discounts, and refunds",
   "billingDetails": "Billing details",
   "billingHistory": "Billing history",
   "billingSettings": "Billing settings",

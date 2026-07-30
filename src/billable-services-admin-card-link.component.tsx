@@ -13,7 +13,10 @@ const BillableServicesCardLink: React.FC = () => {
         <div>
           <div className="heading">{header}</div>
           <div className="content">
-            {t('billingAdministrationDescription', 'Billable services, cash points, discounts, and refunds')}
+            {t(
+              'billingAdministrationDescription',
+              'Billable services, cash points, payment modes, discounts, and refunds',
+            )}
           </div>
         </div>
         <div className="iconWrapper">

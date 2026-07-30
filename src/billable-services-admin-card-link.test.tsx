@@ -9,7 +9,9 @@ describe('BillableServicesCardLink', () => {
     const billingAdministrationText = screen.getByText('Billing administration');
     expect(billingAdministrationText).toHaveClass('heading');
 
-    const descriptionText = screen.getByText('Billable services, cash points, discounts, and refunds', { exact: true });
+    const descriptionText = screen.getByText('Billable services, cash points, payment modes, discounts, and refunds', {
+      exact: true,
+    });
     expect(descriptionText).toHaveClass('content');
 
     const billiableServiceLink = screen.getByRole('link', { name: /Billing administration/i });
