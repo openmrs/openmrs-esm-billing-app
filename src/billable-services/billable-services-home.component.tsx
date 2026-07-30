@@ -22,7 +22,7 @@ const BillableServiceHome: React.FC = () => {
     <BrowserRouter basename={basePath}>
       <div className={styles.pageWrapper}>
         <main className={classNames(styles.pageContent, { [styles.hasLeftNav]: isDesktop(layout) })}>
-          <BillingHeader title={t('billableServicesManagement', 'Billable services management')} />
+          <BillingHeader title={t('billingAdministration', 'Billing administration')} />
           <Routes>
             <Route path="/" element={<BillableServicesDashboard />} />
             <Route path="/cash-point-config" element={<CashPointConfiguration />} />
