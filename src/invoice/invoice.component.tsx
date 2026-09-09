@@ -33,6 +33,26 @@ interface InvoiceDetailsProps {
   value: string | number;
 }
 
+/** Styles injected into the print iframe that react-to-print builds. */
+const printPageStyle = `
+  @page {
+    /* Remove the browser's default header (title) and footer (url) */
+    margin: 0;
+  }
+
+  @media print {
+    html,
+    body {
+      display: block !important;
+      background-color: #ffffff !important;
+      /* Tell browsers to print background colors */
+      color-adjust: exact;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+  }
+`;
+
 const Invoice: React.FC = () => {
   const { t } = useTranslation();
   const { data } = useDefaultFacility();
@@ -135,6 +155,7 @@ const Invoice: React.FC = () => {
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: `Invoice ${bill?.receiptNumber} - ${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
+    pageStyle: printPageStyle,
     onBeforePrint: handleOnBeforeGetContent,
     onAfterPrint: handleAfterPrint,
     preserveAfterPrint: false,
