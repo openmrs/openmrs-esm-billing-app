@@ -1,7 +1,31 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mapBillProperties } from './billing.resource';
+import dayjs from 'dayjs';
+import { renderHook } from '@testing-library/react';
+import { useOpenmrsPagination } from '@openmrs/esm-framework';
+import { mapBillProperties, usePaginatedBills } from './billing.resource';
+import { apiBasePath } from './constants';
 import { calculateTotalAmount } from './helpers/functions';
 import type { LineItem, PatientInvoice, Payment } from './types';
+import type * as EsmFramework from '@openmrs/esm-framework';
+
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const actual = await importOriginal<typeof EsmFramework>();
+  return {
+    ...actual,
+    useOpenmrsPagination: vi.fn(() => ({
+      data: [],
+      error: undefined,
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: vi.fn(),
+    })),
+  };
+});
+
+const mockUseOpenmrsPagination = vi.mocked(useOpenmrsPagination);
 
 type CashPoint = PatientInvoice['cashPoint'];
 type Provider = PatientInvoice['cashier'];
@@ -466,5 +490,51 @@ describe('mapBillProperties', () => {
       expect(result.billingService).toBe(longServiceName);
       expect(result.billingService.length).toBe(500);
     });
+  });
+});
+
+describe('usePaginatedBills', () => {
+  const customRepresentation =
+    '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
+  const baseUrl = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=10`;
+  const startDate = new Date('2026-01-15T00:00:00.000Z');
+  const endDate = new Date('2026-01-20T00:00:00.000Z');
+  const expectedStartDateText = encodeURIComponent(dayjs(startDate).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'));
+  const expectedEndDateText = encodeURIComponent(dayjs(endDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'));
+
+  it('requests the unchanged URL when no dates are set', () => {
+    renderHook(() => usePaginatedBills(10));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(baseUrl, 10);
+  });
+
+  it('appends only startDate when only the start date is set', () => {
+    renderHook(() => usePaginatedBills(10, undefined, undefined, startDate, null));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(`${baseUrl}&startDate=${expectedStartDateText}`, 10);
+  });
+
+  it('appends only endDate when only the end date is set', () => {
+    renderHook(() => usePaginatedBills(10, undefined, undefined, null, endDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(`${baseUrl}&endDate=${expectedEndDateText}`, 10);
+  });
+
+  it('appends both startDate and endDate when both are set', () => {
+    renderHook(() => usePaginatedBills(10, undefined, undefined, startDate, endDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(
+      `${baseUrl}&startDate=${expectedStartDateText}&endDate=${expectedEndDateText}`,
+      10,
+    );
+  });
+
+  it('keeps the status and patientName parameters alongside the dates', () => {
+    renderHook(() => usePaginatedBills(10, 'PENDING', 'John', startDate, endDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(
+      `${baseUrl}&status=PENDING&patientName=John&startDate=${expectedStartDateText}&endDate=${expectedEndDateText}`,
+      10,
+    );
   });
 });

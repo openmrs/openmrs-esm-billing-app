@@ -25,6 +25,11 @@
 }
 
 .filterContainer {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: layout.$spacing-04;
+  justify-content: space-between;
   flex: 1;
 
   :global(.cds--dropdown__wrapper--inline) {
@@ -41,6 +46,15 @@
 
   :global(.cds--list-box) {
     margin-left: layout.$spacing-03;
+  }
+}
+
+.datePickerContainer {
+  display: flex;
+  gap: layout.$spacing-04;
+
+  button {
+    align-self: end;
   }
 }
 
@@ -91,7 +105,7 @@
   margin: 1rem auto;
 }
 
-.expandedActiveVisitRow > td > div {
+.expandedActiveVisitRow>td>div {
   max-height: max-content !important;
 }
 
@@ -99,7 +113,7 @@
   padding: 0 layout.$spacing-05;
 }
 
-.expandedActiveVisitRow th[colspan] td[colspan] > div:first-child {
+.expandedActiveVisitRow th[colspan] td[colspan]>div:first-child {
   padding: 0 layout.$spacing-05;
 }
 

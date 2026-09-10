@@ -1,10 +1,12 @@
 import React from 'react';
+import dayjs from 'dayjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
 import { BillLineItemStatus, BillStatus, type MappedBill } from '../types';
 import BillsTable from './bills-table.component';
+import type * as EsmFramework from '@openmrs/esm-framework';
 
 vi.mock('../billing.resource', () => ({
   usePaginatedBills: vi.fn(() => ({
@@ -15,6 +17,26 @@ vi.mock('../billing.resource', () => ({
     mutate: vi.fn(),
   })),
 }));
+
+// Override the framework's OpenmrsDatePicker mock so it can fire `undefined` on an
+// emptied input, matching the real component's onChange contract (Date | null | undefined).
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const actual = await importOriginal<typeof EsmFramework>();
+  return {
+    ...actual,
+    OpenmrsDatePicker: vi.fn(({ id, labelText, value, onChange }) => (
+      <>
+        <label htmlFor={id}>{labelText}</label>
+        <input
+          id={id}
+          type="text"
+          value={value ? dayjs(value).format('DD/MM/YYYY') : ''}
+          onChange={(evt) => onChange?.(evt.target.value ? dayjs(evt.target.value).toDate() : undefined)}
+        />
+      </>
+    )),
+  };
+});
 
 const mockBills = vi.mocked(usePaginatedBills);
 
@@ -202,7 +224,7 @@ describe('BillsTable', () => {
     await user.type(searchInput, 'John');
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', 'John');
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', 'John', null, null);
     });
 
     expect(mockGoTo).toHaveBeenCalledWith(1);
@@ -331,7 +353,7 @@ describe('BillsTable', () => {
     render(<BillsTable />);
 
     expect(screen.getByText('Pending confirmation')).toBeInTheDocument();
-    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
+    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined, null, null);
   });
 
   it('should show "Pending payment" option in filter dropdown', async () => {
@@ -367,7 +389,7 @@ describe('BillsTable', () => {
     await user.click(screen.getByRole('option', { name: /pending payment/i }));
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined, null, null);
     });
   });
 
@@ -399,8 +421,127 @@ describe('BillsTable', () => {
     await user.click(screen.getByRole('option', { name: /pending confirmation/i }));
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined, null, null);
     });
+  });
+
+  it('should render the From and To date pickers', () => {
+    render(<BillsTable />);
+
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
+    expect(screen.getByLabelText('To')).toBeInTheDocument();
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+  });
+
+  it('should call usePaginatedBills with the selected start date and reset to page 1', async () => {
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, new Date('2026-01-15'), null);
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+  });
+
+  it('should call usePaginatedBills with the selected end date and reset to page 1', async () => {
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-01-20' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, new Date('2026-01-20'));
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+  });
+
+  it('should show the clear dates button only when a date is set, and clear both dates on click', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+
+    const clearButton = await screen.findByText('Clear dates');
+    expect(clearButton).toBeInTheDocument();
+
+    mockGoTo.mockClear();
+    await user.click(clearButton);
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, null);
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+  });
+
+  it('should treat onChange(undefined) from the picker as clearing the date', async () => {
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+    expect(await screen.findByText('Clear dates')).toBeInTheDocument();
+
+    mockGoTo.mockClear();
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, null);
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
   });
 
   it('should keep data visible during subsequent loads', () => {

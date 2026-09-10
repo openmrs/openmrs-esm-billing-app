@@ -1,4 +1,5 @@
 import useSWR, { type KeyedMutator } from 'swr';
+import dayjs from 'dayjs';
 import sortBy from 'lodash-es/sortBy';
 import {
   openmrsFetch,
@@ -62,7 +63,13 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   };
 };
 
-export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
+export const usePaginatedBills = (
+  pageSize: number,
+  status?: string,
+  patientName?: string,
+  startDate?: Date | null,
+  endDate?: Date | null,
+) => {
   const customRepresentation =
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
@@ -74,6 +81,14 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
 
   if (patientName) {
     url += `&patientName=${encodeURIComponent(patientName)}`;
+  }
+
+  if (startDate) {
+    url += `&startDate=${encodeURIComponent(dayjs(startDate).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'))}`;
+  }
+
+  if (endDate) {
+    url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'))}`;
   }
 
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
