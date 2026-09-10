@@ -452,7 +452,7 @@ describe('BillsTable', () => {
     fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, new Date('2026-01-15'), null);
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, new Date(2026, 0, 15), null);
     });
     expect(mockGoTo).toHaveBeenCalledWith(1);
   });
@@ -476,7 +476,7 @@ describe('BillsTable', () => {
     fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-01-20' } });
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, new Date('2026-01-20'));
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, new Date(2026, 0, 20));
     });
     expect(mockGoTo).toHaveBeenCalledWith(1);
   });
@@ -542,6 +542,17 @@ describe('BillsTable', () => {
     });
     expect(mockGoTo).toHaveBeenCalledWith(1);
     expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+  });
+
+  it('should not send the dates when the end date is before the start date', async () => {
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-01-10' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenLastCalledWith(10, 'PENDING', undefined, null, null);
+    });
   });
 
   it('should keep data visible during subsequent loads', () => {

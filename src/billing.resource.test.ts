@@ -497,10 +497,11 @@ describe('usePaginatedBills', () => {
   const customRepresentation =
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
   const baseUrl = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=10`;
-  const startDate = new Date('2026-01-15T00:00:00.000Z');
-  const endDate = new Date('2026-01-20T00:00:00.000Z');
-  const expectedStartDateText = encodeURIComponent(dayjs(startDate).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'));
-  const expectedEndDateText = encodeURIComponent(dayjs(endDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'));
+  const startDate = new Date(2026, 0, 15, 10, 30);
+  const endDate = new Date(2026, 0, 20, 10, 30);
+  // Day boundaries are literal; only the UTC offset comes from the machine
+  const expectedStartDateText = encodeURIComponent(`2026-01-15T00:00:00.000${dayjs(startDate).format('ZZ')}`);
+  const expectedEndDateText = encodeURIComponent(`2026-01-20T23:59:59.999${dayjs(endDate).format('ZZ')}`);
 
   it('requests the unchanged URL when no dates are set', () => {
     renderHook(() => usePaginatedBills(10));

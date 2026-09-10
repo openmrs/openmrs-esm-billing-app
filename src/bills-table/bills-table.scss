@@ -53,7 +53,7 @@
   display: flex;
   gap: layout.$spacing-04;
 
-  button {
+  .clearDatesButton {
     align-self: end;
   }
 }
@@ -105,7 +105,7 @@
   margin: 1rem auto;
 }
 
-.expandedActiveVisitRow>td>div {
+.expandedActiveVisitRow > td > div {
   max-height: max-content !important;
 }
 
@@ -113,7 +113,7 @@
   padding: 0 layout.$spacing-05;
 }
 
-.expandedActiveVisitRow th[colspan] td[colspan]>div:first-child {
+.expandedActiveVisitRow th[colspan] td[colspan] > div:first-child {
   padding: 0 layout.$spacing-05;
 }
 

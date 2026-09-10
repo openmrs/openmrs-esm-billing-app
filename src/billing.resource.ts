@@ -9,7 +9,7 @@ import {
   useOpenmrsFetchAll,
   useOpenmrsPagination,
 } from '@openmrs/esm-framework';
-import { apiBasePath } from './constants';
+import { apiBasePath, omrsDateFormat } from './constants';
 import {
   type MappedBill,
   type PatientInvoice,
@@ -84,11 +84,11 @@ export const usePaginatedBills = (
   }
 
   if (startDate) {
-    url += `&startDate=${encodeURIComponent(dayjs(startDate).startOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'))}`;
+    url += `&startDate=${encodeURIComponent(dayjs(startDate).startOf('day').format(omrsDateFormat))}`;
   }
 
   if (endDate) {
-    url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss.SSSZZ'))}`;
+    url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format(omrsDateFormat))}`;
   }
 
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =

@@ -154,6 +154,7 @@
   "editBillableService": "Edit billable service",
   "editBillLineItem": "Edit bill line item",
   "editPaymentMode": "Edit payment mode",
+  "endDateBeforeStartDate": "End date must be after the start date",
   "enterAmount": "Enter amount",
   "enterReferenceNumber": "Enter reference number",
   "enterSellingPrice": "Enter selling price",
