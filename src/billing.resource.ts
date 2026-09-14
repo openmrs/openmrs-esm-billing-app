@@ -91,11 +91,13 @@ export const usePaginatedBills = (
     url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format(omrsDateFormat))}`;
   }
 
+  // The backend rejects an inverted range with a 400, so skip the request (null URL disables fetching)
+  const isRangeValid = !startDate || !endDate || startDate <= endDate;
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
-    useOpenmrsPagination<PatientInvoice>(url, pageSize);
+    useOpenmrsPagination<PatientInvoice>(isRangeValid ? url : null, pageSize);
 
   // Backend already sorts by ID descending (newest first), so no need to sort on frontend
-  const mappedResults = data?.map((bill) => mapBillProperties(bill));
+  const mappedResults = data?.map((bill) => mapBillProperties(bill)) ?? [];
 
   return {
     bills: mappedResults,

@@ -97,14 +97,12 @@ const BillsTable: React.FC = () => {
   const debouncedSearchString = useDebounce(searchString, 500);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  // The pickers mark an inverted range invalid but still call onChange, and the backend rejects it with a 400
-  const isRangeValid = !startDate || !endDate || startDate <= endDate;
   const { bills, error, currentPage, isLoading, isValidating, totalCount, goTo } = usePaginatedBills(
     pageSize,
     billPaymentStatus.status,
     debouncedSearchString || undefined,
-    isRangeValid ? startDate : null,
-    isRangeValid ? endDate : null,
+    startDate,
+    endDate,
   );
 
   const headerData = [

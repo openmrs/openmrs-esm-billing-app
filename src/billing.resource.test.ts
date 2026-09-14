@@ -530,6 +530,15 @@ describe('usePaginatedBills', () => {
     );
   });
 
+  it('passes a null URL so nothing is fetched when the end date is before the start date', () => {
+    // A null SWR key yields undefined data; the hook should still hand the table an array
+    mockUseOpenmrsPagination.mockReturnValueOnce({ data: undefined } as any);
+    const { result } = renderHook(() => usePaginatedBills(10, undefined, undefined, endDate, startDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(null, 10);
+    expect(result.current.bills).toEqual([]);
+  });
+
   it('keeps the status and patientName parameters alongside the dates', () => {
     renderHook(() => usePaginatedBills(10, 'PENDING', 'John', startDate, endDate));
 

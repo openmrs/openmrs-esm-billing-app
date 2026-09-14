@@ -544,17 +544,6 @@ describe('BillsTable', () => {
     expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
   });
 
-  it('should not send the dates when the end date is before the start date', async () => {
-    render(<BillsTable />);
-
-    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
-    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-01-10' } });
-
-    await waitFor(() => {
-      expect(mockBills).toHaveBeenLastCalledWith(10, 'PENDING', undefined, null, null);
-    });
-  });
-
   it('should keep data visible during subsequent loads', () => {
     mockBills.mockImplementationOnce(() => ({
       bills: mockBillsData,

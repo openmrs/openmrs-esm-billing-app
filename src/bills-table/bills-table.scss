@@ -51,6 +51,7 @@
 
 .datePickerContainer {
   display: flex;
+  flex-wrap: wrap;
   gap: layout.$spacing-04;
 
   .clearDatesButton {
