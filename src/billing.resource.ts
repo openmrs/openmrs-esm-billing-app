@@ -1,4 +1,5 @@
 import useSWR, { type KeyedMutator } from 'swr';
+import dayjs from 'dayjs';
 import sortBy from 'lodash-es/sortBy';
 import {
   openmrsFetch,
@@ -8,7 +9,7 @@ import {
   useOpenmrsFetchAll,
   useOpenmrsPagination,
 } from '@openmrs/esm-framework';
-import { apiBasePath } from './constants';
+import { apiBasePath, omrsDateFormat } from './constants';
 import {
   type MappedBill,
   type PatientInvoice,
@@ -62,7 +63,13 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   };
 };
 
-export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
+export const usePaginatedBills = (
+  pageSize: number,
+  status?: string,
+  patientName?: string,
+  startDate?: Date | null,
+  endDate?: Date | null,
+) => {
   const customRepresentation =
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
@@ -76,11 +83,21 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
     url += `&patientName=${encodeURIComponent(patientName)}`;
   }
 
+  if (startDate) {
+    url += `&startDate=${encodeURIComponent(dayjs(startDate).startOf('day').format(omrsDateFormat))}`;
+  }
+
+  if (endDate) {
+    url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format(omrsDateFormat))}`;
+  }
+
+  // The backend rejects an inverted range with a 400, so skip the request (null URL disables fetching)
+  const isRangeValid = !startDate || !endDate || startDate <= endDate;
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
-    useOpenmrsPagination<PatientInvoice>(url, pageSize);
+    useOpenmrsPagination<PatientInvoice>(isRangeValid ? url : null, pageSize);
 
   // Backend already sorts by ID descending (newest first), so no need to sort on frontend
-  const mappedResults = data?.map((bill) => mapBillProperties(bill));
+  const mappedResults = data?.map((bill) => mapBillProperties(bill)) ?? [];
 
   return {
     bills: mappedResults,
