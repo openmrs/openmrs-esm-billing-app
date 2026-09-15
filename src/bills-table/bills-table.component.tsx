@@ -117,6 +117,10 @@ const BillsTable: React.FC = () => {
       key: 'patientName',
     },
     {
+      header: t('department', 'Department'),
+      key: 'cashPointName',
+    },
+    {
       header: t('billedItems', 'Billed items'),
       key: 'billedItems',
     },

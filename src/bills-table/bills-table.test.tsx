@@ -115,6 +115,8 @@ describe('BillsTable', () => {
     expect(screen.getByText(/patient identifier/i)).toBeInTheDocument();
     expect(screen.getByText(/John Doe/)).toBeInTheDocument();
     expect(screen.getByText(/12345678/i)).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: /department/i })).toBeInTheDocument();
+    expect(screen.getAllByText('Main Cash Point').length).toBeGreaterThan(0);
   });
 
   it('displays empty state when there are no bills with default filter', () => {

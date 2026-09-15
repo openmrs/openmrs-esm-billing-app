@@ -37,6 +37,15 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
   const [attributes, setAttributes] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [selectedBillableItem, setSelectedBillableItem] = useState<any | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<any | null>(null);
+
+  // A facility with only one department has nothing to choose between, so skip the prompt.
+  // Facilities with several departments must have one picked explicitly before a bill can be created.
+  useEffect(() => {
+    if (cashPoints?.length === 1 && !selectedDepartment) {
+      setSelectedDepartment(cashPoints[0]);
+    }
+  }, [cashPoints, selectedDepartment]);
 
   const attributesRef = useRef(attributes);
   useEffect(() => {
@@ -90,7 +99,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
     ({ selectedItem }: { selectedItem }) => {
       setSelectedBillableItem(selectedItem);
 
-      const cashPointUuid = cashPoints?.[0]?.uuid ?? '';
+      const cashPointUuid = selectedDepartment?.uuid ?? '';
       const itemUuid = selectedItem?.uuid ?? '';
 
       // should default to first price if check returns empty. todo - update backend to return default price
@@ -120,7 +129,7 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         attributes,
       });
     },
-    [attributes, cashPoints, handleCreateExtraVisitInfo, paymentMethod, patientUuid, setExtraVisitInfo],
+    [attributes, selectedDepartment, handleCreateExtraVisitInfo, paymentMethod, patientUuid, setExtraVisitInfo],
   );
 
   if (isLoadingLineItems || isLoadingCashPoints) {
@@ -170,7 +179,32 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
         )}
         <VisitAttributesForm setAttributes={setAttributes} setPaymentMethod={setPaymentMethod} />
 
-        {lineList.length > 0 && (
+        {!isLoadingCashPoints && cashPoints?.length === 0 && (
+          <InlineNotification
+            hideCloseButton
+            kind="warning"
+            lowContrast
+            title={t('noDepartmentsConfigured', 'No departments configured')}
+            subtitle={t(
+              'noDepartmentsConfiguredMsg',
+              'This facility has no billing departments set up yet. A bill cannot be created until one exists.',
+            )}
+          />
+        )}
+
+        {cashPoints?.length > 1 && (
+          <Dropdown
+            id="billing-department"
+            items={cashPoints}
+            itemToString={(item) => (item ? item.name : '')}
+            label={t('selectDepartment', 'Select a department')}
+            onChange={({ selectedItem }) => setSelectedDepartment(selectedItem)}
+            selectedItem={selectedDepartment}
+            titleText={t('department', 'Department')}
+          />
+        )}
+
+        {lineList.length > 0 && selectedDepartment && (
           <Dropdown
             key={`billable-${paymentMethod}`}
             id="billable-items"
@@ -180,6 +214,16 @@ const BillingCheckInForm: React.FC<BillingCheckInFormProps> = ({ patientUuid, se
             onChange={handleBillingService}
             selectedItem={selectedBillableItem}
             titleText={t('billableService', 'Billable service')}
+          />
+        )}
+
+        {lineList.length > 0 && !selectedDepartment && cashPoints?.length > 1 && (
+          <InlineNotification
+            hideCloseButton
+            kind="info"
+            lowContrast
+            title={t('departmentRequired', 'Department required')}
+            subtitle={t('selectDepartmentFirstMsg', 'Select a department before choosing a billable service')}
           />
         )}
       </div>

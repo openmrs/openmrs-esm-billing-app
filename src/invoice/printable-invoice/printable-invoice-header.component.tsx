@@ -21,6 +21,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
     [t('invoiceDate', 'Invoice date')]: bill?.dateCreated
       ? formatDate(parseDate(bill.dateCreated), { mode: 'wide', noToday: true, time: false })
       : '--',
+    [t('department', 'Department')]: bill?.cashPointName || '--',
     [t('totalAmount', 'Total amount')]: `${defaultCurrency} ${bill?.totalAmount}`,
     [t('totalPaid', 'Total paid')]: `${defaultCurrency} ${bill?.tenderedAmount}`,
     [t('amountBalance', 'Amount balance')]: `${defaultCurrency} ${bill?.netAmount - bill?.tenderedAmount}`,
@@ -63,6 +64,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
         </div>
         <div className={styles.facilityDetails}>
           <p className={styles.facilityName}>{defaultFacility?.display}</p>
+          {bill?.cashPointName && <p className={styles.facilityName}>{bill.cashPointName}</p>}
           <p className={styles.itemLabel}>{country}</p>
         </div>
       </div>

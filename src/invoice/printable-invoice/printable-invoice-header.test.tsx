@@ -119,6 +119,20 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText(/john Doe/i)).toBeInTheDocument();
   });
 
+  it('should display the department name when the bill has one', () => {
+    const billWithDepartment = { ...bill, cashPointName: 'Pharmacy' } as MappedBill;
+
+    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} bill={billWithDepartment} />);
+
+    expect(screen.getAllByText('Pharmacy').length).toBeGreaterThan(0);
+  });
+
+  it('should not render a department line when the bill has no cash point name', () => {
+    render(<PrintableInvoiceHeader {...testProps} defaultFacility={defaultFacility} bill={bill} />);
+
+    expect(screen.queryByText('Pharmacy')).not.toBeInTheDocument();
+  });
+
   it('should use netAmount to calculate amount balance when a discount is applied', () => {
     const discountedBill = {
       ...bill,

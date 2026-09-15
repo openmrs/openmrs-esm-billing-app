@@ -22,6 +22,21 @@ const mockCashPoints = [
   },
 ];
 
+const mockMultipleCashPoints = [
+  {
+    uuid: '54065383-b4d4-42d2-af4d-d250a1fd2590',
+    name: 'Pharmacy',
+    description: '',
+    retired: false,
+  },
+  {
+    uuid: 'ba685651-ed3b-4e63-9b35-78893060758a',
+    name: 'Laboratory',
+    description: '',
+    retired: false,
+  },
+];
+
 const mockBillableItems = [
   {
     uuid: 'b37dddd6-4490-4bf7-b694-43bf19d04059',
@@ -250,6 +265,62 @@ describe('BillingCheckInForm', () => {
         }),
       ]),
     });
+  });
+
+  it('should show a warning when the facility has no departments configured', async () => {
+    const user = userEvent.setup();
+    mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+    mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
+    renderBillingCheckinForm();
+
+    await user.click(screen.getByRole('radio', { name: 'Paying' }));
+    await user.click(await screen.findByRole('combobox', { name: /payment method/i }));
+    await user.click(await screen.findByText('Insurance'));
+
+    expect(screen.getByText(/no departments configured/i)).toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /^department$/i })).not.toBeInTheDocument();
+  });
+
+  it('should require a department to be selected before the billable service dropdown appears, when there is more than one department', async () => {
+    const user = userEvent.setup();
+    mockUseCashPoint.mockReturnValue({ cashPoints: mockMultipleCashPoints, isLoading: false, error: null });
+    mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
+    renderBillingCheckinForm();
+
+    await user.click(screen.getByRole('radio', { name: 'Paying' }));
+    await user.click(await screen.findByRole('combobox', { name: /payment method/i }));
+    await user.click(await screen.findByText('Insurance'));
+
+    expect(screen.getByRole('combobox', { name: /^department$/i })).toBeInTheDocument();
+    expect(screen.queryByRole('combobox', { name: /billable service/i })).not.toBeInTheDocument();
+    expect(screen.getByText(/select a department before choosing a billable service/i)).toBeInTheDocument();
+  });
+
+  it('should capture the selected department on the bill payload when more than one department exists', async () => {
+    const user = userEvent.setup();
+    mockUseCashPoint.mockReturnValue({ cashPoints: mockMultipleCashPoints, isLoading: false, error: null });
+    mockUseBillableItems.mockReturnValue({ lineItems: mockBillableItems, isLoading: false, error: null });
+    renderBillingCheckinForm();
+
+    await user.click(screen.getByRole('radio', { name: 'Paying' }));
+    await user.click(await screen.findByRole('combobox', { name: /payment method/i }));
+    await user.click(await screen.findByText('Insurance'));
+
+    const departmentDropdown = screen.getByRole('combobox', { name: /^department$/i });
+    await user.click(departmentDropdown);
+    await user.click(await screen.findByText('Laboratory'));
+
+    const billableSelect = await screen.findByRole('combobox', { name: /billable service/i });
+    await user.click(billableSelect);
+    await user.click(await screen.findByText(/Lab Testing \(Default: 500\.00001\)/));
+
+    expect(testProps.setExtraVisitInfo).toHaveBeenCalledWith(
+      expect.objectContaining({
+        createBillPayload: expect.objectContaining({
+          cashPoint: 'ba685651-ed3b-4e63-9b35-78893060758a',
+        }),
+      }),
+    );
   });
 });
 

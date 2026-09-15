@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSWRConfig } from 'swr';
 import {
   Button,
   ButtonSet,
   ComboBox,
+  Dropdown,
   Form,
   IconButton,
   InlineLoading,
@@ -28,6 +29,7 @@ import {
   useBillableServices,
   patientPaymentStatusCacheKey,
 } from '../billing.resource';
+import { useCashPoint } from './billing-form.resource';
 import { useBillableServices as useBillableServicesList } from '../billable-services/billable-service.resource';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import { calculateTotalAmount, convertToCurrency } from '../helpers/functions';
@@ -64,6 +66,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<ExtendedLineItem[]>([]);
+  const [selectedDepartment, setSelectedDepartment] = useState<any | null>(null);
   const { data, error, isLoading } = useBillableServices();
   const { bill, isLoading: isLoadingBill, error: billError } = useBill(billUuid);
   const {
@@ -73,6 +76,15 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
   } = useBillableServicesList();
   const isEditMode = !!billUuid && !!bill;
   const { activeVisit } = useVisit(patientUuid);
+  const { cashPoints, isLoading: isLoadingCashPoints } = useCashPoint();
+
+  // A new bill needs a department; editing an existing bill keeps the department it already has.
+  // When a facility has exactly one department there's nothing to choose, so pick it automatically.
+  useEffect(() => {
+    if (!isEditMode && cashPoints?.length === 1 && !selectedDepartment) {
+      setSelectedDepartment(cashPoints[0]);
+    }
+  }, [isEditMode, cashPoints, selectedDepartment]);
   const existingItemsTotal = useMemo(
     () => (isEditMode ? calculateTotalAmount(bill.lineItems) : 0),
     [isEditMode, bill?.lineItems],
@@ -156,6 +168,14 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
     if (selectedItems.length === 0) {
       return false;
     }
+    if (!isEditMode && !selectedDepartment) {
+      showSnackbar({
+        title: t('validationError', 'Validation error'),
+        subtitle: t('departmentRequiredForBill', 'A department must be selected before a bill can be created'),
+        kind: 'error',
+      });
+      return false;
+    }
     for (const item of selectedItems) {
       if (item.availablePaymentMethods && item.availablePaymentMethods.length > 1 && !item.selectedPaymentMethod) {
         showSnackbar({
@@ -228,7 +248,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
         await updateBillItems(payload);
       } else {
         const payload: CreateBillPayload = {
-          cashPoint: postBilledItems.cashPoint,
+          cashPoint: selectedDepartment?.uuid ?? postBilledItems.cashPoint,
           cashier: postBilledItems.cashier,
           lineItems: newLineItems,
           payments: [],
@@ -291,6 +311,29 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
             />
           ) : (
             <>
+              {!isEditMode && !isLoadingCashPoints && cashPoints?.length === 0 && (
+                <InlineNotification
+                  hideCloseButton
+                  kind="warning"
+                  lowContrast
+                  title={t('noDepartmentsConfigured', 'No departments configured')}
+                  subtitle={t(
+                    'noDepartmentsConfiguredMsg',
+                    'This facility has no billing departments set up yet. A bill cannot be created until one exists.',
+                  )}
+                />
+              )}
+              {!isEditMode && cashPoints?.length > 1 && (
+                <Dropdown
+                  id="billing-department"
+                  items={cashPoints}
+                  itemToString={(item) => (item ? item.name : '')}
+                  label={t('selectDepartment', 'Select a department')}
+                  onChange={({ selectedItem }) => setSelectedDepartment(selectedItem)}
+                  selectedItem={selectedDepartment}
+                  titleText={t('department', 'Department')}
+                />
+              )}
               {isEditMode && (
                 <div className={styles.existingItemsContainer}>
                   <h4 className={styles.sectionHeading}>{t('existingItems', 'Existing items')}</h4>
@@ -431,7 +474,12 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
           <Button
             className={styles.button}
             kind="primary"
-            disabled={isSubmitting || selectedItems.length === 0 || (isEditMode && isLoadingBillableServices)}
+            disabled={
+              isSubmitting ||
+              selectedItems.length === 0 ||
+              (isEditMode && isLoadingBillableServices) ||
+              (!isEditMode && !selectedDepartment)
+            }
             type="submit">
             {isSubmitting ? (
               <InlineLoading description={t('saving', 'Saving') + '...'} />

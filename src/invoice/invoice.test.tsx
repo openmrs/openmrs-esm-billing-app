@@ -206,6 +206,8 @@ describe('Invoice', () => {
     expect(screen.getByRole('heading', { name: /invoice number/i })).toBeInTheDocument();
     expect(screen.getByText(/date bill created/i)).toBeInTheDocument();
     expect(screen.getByText(/invoice status/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /^department$/i })).toBeInTheDocument();
+    expect(screen.getAllByText(defaultBillData.cashPointName).length).toBeGreaterThan(0);
     expect(screen.getAllByText('RCPT-001').length).toBeGreaterThan(0);
     expect(screen.getAllByText('PENDING').length).toBeGreaterThan(0);
     expect(screen.getByText(/line items/i)).toBeInTheDocument();

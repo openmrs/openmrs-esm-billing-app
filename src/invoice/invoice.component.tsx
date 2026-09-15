@@ -180,6 +180,7 @@ const Invoice: React.FC = () => {
    * t('invoiceNumber', 'Invoice number')
    * t('dateAndTime', 'Date and time')
    * t('invoiceStatus', 'Invoice status')
+   * t('department', 'Department')
    */
   const invoiceDetails: Record<string, string | number | undefined> = {
     [t('dateBillCreated', 'Date bill created')]: bill?.dateCreated
@@ -199,6 +200,7 @@ const Invoice: React.FC = () => {
       defaultCurrency,
     ),
     [t('invoiceNumber', 'Invoice number')]: bill?.receiptNumber,
+    [t('department', 'Department')]: bill?.cashPointName || '--',
     [t('invoiceStatus', 'Invoice status')]: bill?.status,
   };
 
