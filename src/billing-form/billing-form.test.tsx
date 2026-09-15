@@ -7,6 +7,7 @@ import { configSchema, type BillingConfig } from '../config-schema';
 import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
 import { type BillLineItemStatus, type BillStatus } from '../types';
 import { useBillableServices as useBillableServicesList } from '../billable-services/billable-service.resource';
+import { useCashPoint } from './billing-form.resource';
 import { getBillableServiceUuid } from '../invoice/payments/utils';
 import BillingForm from './billing-form.workspace';
 
@@ -15,6 +16,7 @@ const mockUseVisit = vi.mocked(useVisit);
 const mockUseBillableServices = vi.mocked(useBillableServices);
 const mockUseBill = vi.mocked(useBill);
 const mockUseBillableServicesList = vi.mocked(useBillableServicesList);
+const mockUseCashPoint = vi.mocked(useCashPoint);
 const mockProcessBillItems = vi.mocked(processBillItems);
 const mockUpdateBillItems = vi.mocked(updateBillItems);
 const mockGetBillableServiceUuid = vi.mocked(getBillableServiceUuid);
@@ -31,6 +33,17 @@ vi.mock('../billing.resource', () => ({
 vi.mock('../billable-services/billable-service.resource', () => ({
   useBillableServices: vi.fn(),
 }));
+
+vi.mock('./billing-form.resource', () => ({
+  useCashPoint: vi.fn(),
+}));
+
+const mockSingleCashPoint = [{ uuid: 'cashpoint-uuid', name: 'Main Cashier', description: '', retired: false }];
+
+const mockMultipleCashPoints = [
+  { uuid: 'pharmacy-uuid', name: 'Pharmacy', description: '', retired: false },
+  { uuid: 'lab-uuid', name: 'Laboratory', description: '', retired: false },
+];
 
 vi.mock('../invoice/payments/utils', () => ({
   getBillableServiceUuid: vi.fn(),
@@ -142,6 +155,10 @@ describe('BillingForm', () => {
     } as any);
     mockGetBillableServiceUuid.mockReturnValue('bs-uuid-1');
     mockUseVisit.mockReturnValue({ activeVisit: null } as any);
+    // Default to a single department so existing tests (written before department selection
+    // existed) keep exercising the auto-select path unchanged. Multi-department behavior is
+    // covered separately below.
+    mockUseCashPoint.mockReturnValue({ cashPoints: mockSingleCashPoint, isLoading: false, error: null });
   });
 
   describe('Create mode (no billUuid)', () => {
@@ -602,6 +619,72 @@ describe('BillingForm', () => {
       await waitFor(() => {
         expect(mockProcessBillItems).toHaveBeenCalledWith(expect.not.objectContaining({ visit: expect.anything() }));
       });
+    });
+  });
+
+  describe('Department (cash point) selection', () => {
+    it('shows a warning and keeps submit disabled when the facility has no departments configured', () => {
+      mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+      render(<BillingForm {...defaultCreateProps} />);
+
+      expect(screen.getByText(/no departments configured/i)).toBeInTheDocument();
+      expect(screen.queryByRole('combobox', { name: /^department$/i })).not.toBeInTheDocument();
+    });
+
+    it('does not show a department dropdown when the facility has exactly one department', () => {
+      render(<BillingForm {...defaultCreateProps} />);
+      expect(screen.queryByRole('combobox', { name: /^department$/i })).not.toBeInTheDocument();
+      expect(screen.queryByText(/no departments configured/i)).not.toBeInTheDocument();
+    });
+
+    it('requires a department to be chosen before the bill can be submitted, when there is more than one', async () => {
+      const user = userEvent.setup();
+      mockUseCashPoint.mockReturnValue({ cashPoints: mockMultipleCashPoints, isLoading: false, error: null });
+      render(<BillingForm {...defaultCreateProps} />);
+
+      expect(screen.getByRole('combobox', { name: /^department$/i })).toBeInTheDocument();
+
+      const itemCombobox = screen.getByRole('combobox', { name: /search items and services/i });
+      await user.click(itemCombobox);
+      await user.click(screen.getByText('Consultation'));
+
+      expect(screen.getByRole('button', { name: /save and close/i })).toBeDisabled();
+    });
+
+    it('sends the selected department as the cashPoint when submitting a new bill', async () => {
+      const user = userEvent.setup();
+      mockUseCashPoint.mockReturnValue({ cashPoints: mockMultipleCashPoints, isLoading: false, error: null });
+      render(<BillingForm {...defaultCreateProps} />);
+
+      await user.click(screen.getByRole('combobox', { name: /^department$/i }));
+      await user.click(await screen.findByText('Laboratory'));
+
+      const itemCombobox = screen.getByRole('combobox', { name: /search items and services/i });
+      await user.click(itemCombobox);
+      await user.click(screen.getByText('Consultation'));
+
+      const submitButton = screen.getByRole('button', { name: /save and close/i });
+      expect(submitButton).not.toBeDisabled();
+      await user.click(submitButton);
+
+      await waitFor(() => {
+        expect(mockProcessBillItems).toHaveBeenCalledWith(expect.objectContaining({ cashPoint: 'lab-uuid' }));
+      });
+    });
+
+    it('does not require a department in edit mode, since the bill already has one', () => {
+      mockUseBill.mockReturnValue({
+        bill: mockExistingBill as any,
+        error: null,
+        isLoading: false,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      mockUseCashPoint.mockReturnValue({ cashPoints: [], isLoading: false, error: null });
+      render(<BillingForm {...editModeProps} />);
+
+      expect(screen.queryByText(/no departments configured/i)).not.toBeInTheDocument();
+      expect(screen.queryByRole('combobox', { name: /^department$/i })).not.toBeInTheDocument();
     });
   });
 });
