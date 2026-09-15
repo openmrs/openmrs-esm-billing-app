@@ -664,7 +664,7 @@ describe('BillingForm', () => {
       await user.click(screen.getByText('Consultation'));
 
       const submitButton = screen.getByRole('button', { name: /save and close/i });
-      expect(submitButton).not.toBeDisabled();
+      expect(submitButton).toBeEnabled();
       await user.click(submitButton);
 
       await waitFor(() => {
