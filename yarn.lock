@@ -356,7 +356,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@carbon/react@npm:^1.83.0, @carbon/react@npm:^1.92.1":
+"@carbon/react@npm:^1.92.1":
   version: 1.92.1
   resolution: "@carbon/react@npm:1.92.1"
   dependencies:
@@ -2545,7 +2545,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@openmrs/esm-billing-app@workspace:."
   dependencies:
-    "@carbon/react": "npm:^1.83.0"
+    "@carbon/react": "npm:^1.92.1"
     "@hookform/resolvers": "npm:^3.3.4"
     "@openmrs/eslint-config": "npm:^2.0.0"
     "@openmrs/esm-framework": "npm:next"
@@ -2590,6 +2590,7 @@ __metadata:
     vitest: "npm:^4.0.18"
     zod: "npm:^3.22.4"
   peerDependencies:
+    "@carbon/react": 1.x
     "@openmrs/esm-framework": 10.x
     react: 18.x
     react-dom: 18.x
