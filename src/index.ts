@@ -5,20 +5,8 @@ import { createBillableServicesLeftPanelLink } from './billable-services/billabl
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
 import { createDiscountRequestsLeftPanelLink } from './discounts/admin/discount-requests-left-panel-link.component';
 import { createRefundRequestsLeftPanelLink } from './refunds/admin/refund-requests-left-panel-link.component';
-import appMenu from './billable-services/billable-services-menu-item/item.component';
-import BillableServiceHome from './billable-services/billable-services-home.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
-import BillHistory from './bill-history/bill-history.component';
-import BillingCheckInForm from './billing-form/billing-checkin-form.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
-import DeletePaymentModeModal from './billable-services/payment-modes/delete-payment-mode.modal';
-import EditBillLineItemModal from './bill-item-actions/edit-bill-item.modal';
-import PaymentModeFormModal from './billable-services/payment-modes/payment-mode-form.modal';
-import RequirePaymentModal from './modal/require-payment.modal';
-import AddCashPointModal from './billable-services/cash-point/add-cash-point.modal';
-import RequestDiscountModal from './discounts/request-discount.modal';
-import ReviewBillDiscountsModal from './discounts/admin/review-bill-discounts/review-bill-discounts.modal';
-import RootComponent from './root.component';
 import PaymentStatusTag from './payment-status-tag/payment-status-tag.component';
 import { configSchema } from './config-schema';
 import { dashboardMeta } from './dashboard.meta';
@@ -48,30 +36,45 @@ export function startupApp() {
 // t('billingHistory', 'Billing History')
 export const billingSummaryDashboardLink = getSyncLifecycle(createDashboard(dashboardMeta), options);
 
-// t('billableServices', 'Billable services')
-export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);
-
 export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
 
-export const billableServicesHome = getSyncLifecycle(BillableServiceHome, options);
+export const billableServicesHome = getAsyncLifecycle(
+  () => import('./billable-services/billable-services-home.component'),
+  options,
+);
 
-export const billingCheckInForm = getSyncLifecycle(BillingCheckInForm, options);
+export const billingCheckInForm = getAsyncLifecycle(
+  () => import('./billing-form/billing-checkin-form.component'),
+  options,
+);
 
-export const billingPatientSummary = getSyncLifecycle(BillHistory, options);
+export const billingPatientSummary = getAsyncLifecycle(() => import('./bill-history/bill-history.component'), options);
 
 export const visitBillsPanel = getAsyncLifecycle(() => import('./visit-bills/visit-bills-panel.component'), options);
 
-export const requirePaymentModal = getSyncLifecycle(RequirePaymentModal, options);
+export const requirePaymentModal = getAsyncLifecycle(() => import('./modal/require-payment.modal'), options);
 
-export const paymentModeFormModal = getSyncLifecycle(PaymentModeFormModal, options);
+export const paymentModeFormModal = getAsyncLifecycle(
+  () => import('./billable-services/payment-modes/payment-mode-form.modal'),
+  options,
+);
 
-export const deletePaymentModeModal = getSyncLifecycle(DeletePaymentModeModal, options);
+export const deletePaymentModeModal = getAsyncLifecycle(
+  () => import('./billable-services/payment-modes/delete-payment-mode.modal'),
+  options,
+);
 
-export const addCashPointModal = getSyncLifecycle(AddCashPointModal, options);
+export const addCashPointModal = getAsyncLifecycle(
+  () => import('./billable-services/cash-point/add-cash-point.modal'),
+  options,
+);
 
-export const editBillLineItemModal = getSyncLifecycle(EditBillLineItemModal, options);
+export const editBillLineItemModal = getAsyncLifecycle(
+  () => import('./bill-item-actions/edit-bill-item.modal'),
+  options,
+);
 
-export const root = getSyncLifecycle(RootComponent, options);
+export const root = getAsyncLifecycle(() => import('./root.component'), options);
 
 export const visitAttributeTags = getSyncLifecycle(VisitAttributeTags, options);
 
@@ -134,9 +137,12 @@ export const deleteBillConfirmationModal = getAsyncLifecycle(
   options,
 );
 
-export const requestDiscountModal = getSyncLifecycle(RequestDiscountModal, options);
+export const requestDiscountModal = getAsyncLifecycle(() => import('./discounts/request-discount.modal'), options);
 
-export const reviewBillDiscountsModal = getSyncLifecycle(ReviewBillDiscountsModal, options);
+export const reviewBillDiscountsModal = getAsyncLifecycle(
+  () => import('./discounts/admin/review-bill-discounts/review-bill-discounts.modal'),
+  options,
+);
 
 // t('discountRequests', 'Discount requests')
 export const discountRequestsLeftPanelLink = getSyncLifecycle(
