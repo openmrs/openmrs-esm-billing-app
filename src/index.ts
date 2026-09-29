@@ -5,7 +5,6 @@ import { createBillableServicesLeftPanelLink } from './billable-services/billabl
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
 import { createDiscountRequestsLeftPanelLink } from './discounts/admin/discount-requests-left-panel-link.component';
 import { createRefundRequestsLeftPanelLink } from './refunds/admin/refund-requests-left-panel-link.component';
-import appMenu from './billable-services/billable-services-menu-item/item.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 import PaymentStatusTag from './payment-status-tag/payment-status-tag.component';
@@ -36,9 +35,6 @@ export function startupApp() {
 
 // t('billingHistory', 'Billing History')
 export const billingSummaryDashboardLink = getSyncLifecycle(createDashboard(dashboardMeta), options);
-
-// t('billableServices', 'Billable services')
-export const billableServicesAppMenuItem = getSyncLifecycle(appMenu, options);
 
 export const billableServicesCardLink = getSyncLifecycle(BillableServicesCardLink, options);
 
