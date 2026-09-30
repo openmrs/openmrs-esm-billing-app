@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLeftNav, WorkspaceContainer, useLayoutType, isDesktop } from '@openmrs/esm-framework';
+import { useLeftNav, useLayoutType, isDesktop } from '@openmrs/esm-framework';
 import BillableServicesDashboard from './dashboard/dashboard.component';
 import BillingHeader from '../billing-header/billing-header.component';
 import CashPointConfiguration from './cash-point/cash-point-configuration.component';
@@ -32,7 +32,6 @@ const BillableServiceHome: React.FC = () => {
           </Routes>
         </main>
       </div>
-      <WorkspaceContainer contextKey="billable-services" />
     </BrowserRouter>
   );
 };
