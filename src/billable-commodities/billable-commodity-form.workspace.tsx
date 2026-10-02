@@ -30,7 +30,7 @@ import {
 import type { StockItem } from '../types';
 import { useFetchChargeItems } from '../billing.resource';
 import {
-  createBillableCommodity,
+  createBillableCommodities,
   updateBillableCommodity,
   usePaymentModes,
 } from '../billable-services/billable-service.resource';
@@ -56,7 +56,7 @@ interface BillableCommodityFormData {
 
 const DEFAULT_PAYMENT_OPTION: PaymentModeForm = { paymentMode: '', price: '' };
 
-const createBillableCommoditySchema = (t: TFunction) => {
+export const createBillableCommoditySchema = (t: TFunction) => {
   const servicePriceSchema = z.object({
     paymentMode: z
       .string({
@@ -84,7 +84,27 @@ const createBillableCommoditySchema = (t: TFunction) => {
   });
 
   return z.object({
-    payment: z.array(servicePriceSchema).min(1, t('paymentOptionRequired', 'At least one payment option is required')),
+    payment: z
+      .array(servicePriceSchema)
+      .min(1, t('paymentOptionRequired', 'At least one payment option is required'))
+      .superRefine((payments, ctx) => {
+        const selectedPaymentModes = new Set<string>();
+
+        payments.forEach(({ paymentMode }, index) => {
+          if (!paymentMode || selectedPaymentModes.has(paymentMode)) {
+            if (paymentMode) {
+              ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                path: [index, 'paymentMode'],
+                message: t('paymentModeMustBeUnique', 'Each payment mode can only be selected once'),
+              });
+            }
+            return;
+          }
+
+          selectedPaymentModes.add(paymentMode);
+        });
+      }),
   });
 };
 
@@ -185,7 +205,7 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
       if (itemToEdit) {
         await updateBillableCommodity(itemToEdit.uuid, payloads[0]);
       } else {
-        await Promise.all(payloads.map((payload) => createBillableCommodity(payload)));
+        await createBillableCommodities(payloads);
       }
 
       showSnackbar({

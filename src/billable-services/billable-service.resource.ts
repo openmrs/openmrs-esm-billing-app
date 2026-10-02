@@ -1,5 +1,12 @@
 import useSWR from 'swr';
-import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
+import {
+  type FetchResponse,
+  type OpenmrsResource,
+  openmrsFetch,
+  restBaseUrl,
+  useOpenmrsFetchAll,
+  useConfig,
+} from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import type {
   BillableCommodity,
@@ -135,13 +142,10 @@ const BILLABLE_COMMODITIES_URL = `${apiBasePath}cashierItemPrice`;
 
 export const useBillableCommodities = () => {
   const url = `${BILLABLE_COMMODITIES_URL}?v=default`;
-  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: BillableCommodity[] } }, Error>(
-    url,
-    openmrsFetch,
-  );
+  const { data, error, isLoading, isValidating, mutate } = useOpenmrsFetchAll<BillableCommodity>(url);
 
   return {
-    billableCommodities: (data?.data?.results ?? []).filter((commodity) => commodity.item?.trim()),
+    billableCommodities: (data ?? []).filter((commodity) => commodity.item?.trim()),
     error,
     isLoading,
     isValidating,
@@ -149,12 +153,47 @@ export const useBillableCommodities = () => {
   };
 };
 
-export const createBillableCommodity = (payload: Omit<BillableCommodity, 'uuid'>) =>
-  openmrsFetch(BILLABLE_COMMODITIES_URL, {
+export const createBillableCommodity = (
+  payload: Omit<BillableCommodity, 'uuid'>,
+): Promise<FetchResponse<BillableCommodity>> =>
+  openmrsFetch<BillableCommodity>(BILLABLE_COMMODITIES_URL, {
     method: 'POST',
     body: payload,
     headers: { 'Content-Type': 'application/json' },
   });
+
+export const deleteBillableCommodity = (uuid: string) =>
+  openmrsFetch(
+    `${BILLABLE_COMMODITIES_URL}/${uuid}?reason=${encodeURIComponent('Rolling back an incomplete multi-price save')}`,
+    { method: 'DELETE' },
+  );
+
+export const createBillableCommodities = async (payloads: Array<Omit<BillableCommodity, 'uuid'>>) => {
+  const createResults = await Promise.allSettled(payloads.map(createBillableCommodity));
+  const failedCreate = createResults.find((result) => result.status === 'rejected');
+
+  if (!failedCreate) {
+    return createResults.map((result) => (result as PromiseFulfilledResult<FetchResponse<BillableCommodity>>).value);
+  }
+
+  const createdCommodities = createResults
+    .filter(
+      (result): result is PromiseFulfilledResult<FetchResponse<BillableCommodity>> => result.status === 'fulfilled',
+    )
+    .map((result) => result.value.data);
+  const rollbackResults = await Promise.allSettled(
+    createdCommodities.map((commodity) => deleteBillableCommodity(commodity.uuid)),
+  );
+
+  if (rollbackResults.some((result) => result.status === 'rejected')) {
+    throw new Error(
+      'Some commodity prices were saved and could not be rolled back. Refresh the catalog before trying again.',
+      { cause: failedCreate.reason },
+    );
+  }
+
+  throw failedCreate.reason;
+};
 
 export const updateBillableCommodity = (uuid: string, payload: Partial<BillableCommodity>) =>
   openmrsFetch(`${BILLABLE_COMMODITIES_URL}/${uuid}`, {

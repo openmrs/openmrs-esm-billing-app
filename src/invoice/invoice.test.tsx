@@ -287,6 +287,18 @@ describe('Invoice', () => {
     });
   });
 
+  it('applies document-scoped styles to both invoice print flows', () => {
+    render(<Invoice />);
+
+    expect(mockUseReactToPrint).toHaveBeenCalledTimes(2);
+    mockUseReactToPrint.mock.calls.forEach(([options]) => {
+      expect(options.pageStyle).toContain('@page');
+      expect(options.pageStyle).toContain('margin: 0');
+      expect(options.pageStyle).toContain('background-color: #ffffff !important');
+      expect(options.pageStyle).toContain('print-color-adjust: exact');
+    });
+  });
+
   it('shows print all pending bills when the patient has multiple pending bills', async () => {
     mockUseBills.mockReturnValue({
       bills: [defaultBillData, { ...defaultBillData, uuid: 'second-bill', receiptNumber: 'RCPT-002' }],
