@@ -7,6 +7,7 @@ import {
   type SessionLocation,
   useOpenmrsFetchAll,
   useOpenmrsPagination,
+  restBaseUrl,
 } from '@openmrs/esm-framework';
 import { apiBasePath } from './constants';
 import {
@@ -18,6 +19,7 @@ import {
   type UpdateBillPayload,
   BillStatus,
   type PatientPaymentStatus,
+  type StockItem,
 } from './types';
 
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
@@ -95,7 +97,7 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
 };
 
 export const useBills = (patientUuid?: string, billStatus?: string, visitUuid?: string) => {
-  let url = `${apiBasePath}bill?v=full`;
+  let url = `${apiBasePath}bill?q=all&v=full`;
 
   if (patientUuid) {
     url += `&patientUuid=${patientUuid}`;
@@ -216,6 +218,20 @@ export const updateBillItems = (payload: UpdateBillPayload) => {
     },
   });
 };
+
+export function useFetchChargeItems(searchValue: string) {
+  const url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${encodeURIComponent(searchValue)}`;
+  const { data, isLoading, error } = useSWR<{ data: { results: StockItem[] } }, Error>(
+    searchValue ? url : null,
+    openmrsFetch,
+  );
+
+  return {
+    searchResults: data?.data?.results ?? [],
+    error,
+    isLoading,
+  };
+}
 
 export const finalizeBill = (billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}`;

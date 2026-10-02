@@ -2,6 +2,7 @@ import useSWR from 'swr';
 import { type OpenmrsResource, openmrsFetch, restBaseUrl, useOpenmrsFetchAll, useConfig } from '@openmrs/esm-framework';
 import { apiBasePath } from '../constants';
 import type {
+  BillableCommodity,
   BillableService,
   ConceptSearchResult,
   CreateBillableServicePayload,
@@ -129,3 +130,35 @@ export const updatePaymentMode = (uuid: string, payload: PaymentModePayload) => 
     },
   });
 };
+
+const BILLABLE_COMMODITIES_URL = `${apiBasePath}cashierItemPrice`;
+
+export const useBillableCommodities = () => {
+  const url = `${BILLABLE_COMMODITIES_URL}?v=default`;
+  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: { results: BillableCommodity[] } }, Error>(
+    url,
+    openmrsFetch,
+  );
+
+  return {
+    billableCommodities: (data?.data?.results ?? []).filter((commodity) => commodity.item?.trim()),
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+  };
+};
+
+export const createBillableCommodity = (payload: Omit<BillableCommodity, 'uuid'>) =>
+  openmrsFetch(BILLABLE_COMMODITIES_URL, {
+    method: 'POST',
+    body: payload,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+export const updateBillableCommodity = (uuid: string, payload: Partial<BillableCommodity>) =>
+  openmrsFetch(`${BILLABLE_COMMODITIES_URL}/${uuid}`, {
+    method: 'POST',
+    body: payload,
+    headers: { 'Content-Type': 'application/json' },
+  });

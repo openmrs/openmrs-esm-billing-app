@@ -8,7 +8,7 @@
   "license": "MPL-2.0",
   "homepage": "https://github.com/openmrs/openmrs-esm-billing-app#readme",
   "scripts": {
-    "start": "openmrs develop",
+    "start": "cross-env NODE_OPTIONS=--disable-warning=DEP0060 openmrs develop",
     "analyze": "rspack --mode=production --env.analyze=true",
     "build": "rspack --mode production",
     "debug": "npm run serve",
@@ -60,7 +60,7 @@
   },
   "devDependencies": {
     "@openmrs/eslint-config": "^2.0.0",
-    "@openmrs/esm-framework": "next",
+    "@openmrs/esm-framework": "^10.0.1-pre.5630",
     "@playwright/test": "^1.53.2",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.3.0",
@@ -84,7 +84,7 @@
     "jsdom": "^29.0.2",
     "lint-staged": "^15.2.10",
     "lodash": "^4.17.21",
-    "openmrs": "next",
+    "openmrs": "^10.0.1-pre.5630",
     "prettier": "^3.2.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
