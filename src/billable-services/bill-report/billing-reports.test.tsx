@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBillingReportRows } from './billing-reports.component';
+import { createBillingReportRows, escapeCsvValue } from './billing-reports.component';
 import { BillStatus, type MappedBill } from '../../types';
 
 const createBill = (overrides: Partial<MappedBill>): MappedBill =>
@@ -59,5 +59,18 @@ describe('createBillingReportRows', () => {
       status: BillStatus.PAID,
       paymentMode: 'Cash',
     });
+  });
+});
+
+describe('escapeCsvValue', () => {
+  it.each(['=HYPERLINK("https://example.com")', '+SUM(1,1)', '-1+1', '@SUM(1,1)', '\t=1+1', '\r=1+1'])(
+    'neutralizes formula-leading CSV values: %s',
+    (value) => {
+      expect(escapeCsvValue(value)).toBe(`"'${value.replaceAll('"', '""')}"`);
+    },
+  );
+
+  it('preserves regular values while escaping embedded quotation marks', () => {
+    expect(escapeCsvValue('Jane "JJ" Doe')).toBe('"Jane ""JJ"" Doe"');
   });
 });

@@ -76,7 +76,11 @@ export const createBillingReportRows = (bills: MappedBill[], range: [Date, Date]
       paymentMode: formatPaymentModes(bill.payments),
     }));
 
-const escapeCsvValue = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+export const escapeCsvValue = (value: unknown) => {
+  const stringValue = String(value ?? '');
+  const spreadsheetSafeValue = /^[=+\-@\t\r]/.test(stringValue) ? `'${stringValue}` : stringValue;
+  return `"${spreadsheetSafeValue.replaceAll('"', '""')}"`;
+};
 
 const downloadCsv = (rows: BillingReportRow[], columns: Array<{ key: keyof BillingReportRow; header: string }>) => {
   const csv = [
