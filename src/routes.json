@@ -84,22 +84,28 @@
       "order": 0
     },
     {
+      "name": "billing-reports-left-panel-link",
+      "component": "billingReportsLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 1
+    },
+    {
       "name": "billing-settings-left-panel-menu",
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
-      "order": 1
+      "order": 2
     },
     {
       "name": "discount-requests-left-panel-link",
       "component": "discountRequestsLeftPanelLink",
       "slot": "billable-services-left-panel-slot",
-      "order": 2
+      "order": 3
     },
     {
       "name": "refund-requests-left-panel-link",
       "component": "refundRequestsLeftPanelLink",
       "slot": "billable-services-left-panel-slot",
-      "order": 3
+      "order": 4
     }
   ],
   "modals": [
@@ -159,6 +165,11 @@
       "name": "billable-service-form",
       "component": "billableServiceFormWorkspace",
       "window": "billable-service-form-window"
+    },
+    {
+      "name": "billable-commodity-form",
+      "component": "billableCommodityFormWorkspace",
+      "window": "billable-commodity-form-window"
     }
   ],
   "workspaceWindows2": [
@@ -172,6 +183,11 @@
     },
     {
       "name": "billable-service-form-window",
+      "group": "billingFormWorkspaceGroup",
+      "width": "wider"
+    },
+    {
+      "name": "billable-commodity-form-window",
       "group": "billingFormWorkspaceGroup",
       "width": "wider"
     }

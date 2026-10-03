@@ -1,9 +1,18 @@
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { screen, render } from '@testing-library/react';
+import { getDefaultsFromConfigSchema, useConfig } from '@openmrs/esm-framework';
+import { configSchema, type BillingConfig } from '../config-schema';
 import { BillingDashboard } from './billing-dashboard.component';
 
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
+
 vi.mock('../billing.resource', () => ({
+  useBills: vi.fn(() => ({
+    bills: [],
+    error: null,
+    isLoading: false,
+  })),
   usePaginatedBills: vi.fn(() => ({
     bills: [],
     error: null,
@@ -17,6 +26,11 @@ vi.mock('../billing.resource', () => ({
 }));
 
 describe('BillingDashboard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockUseConfig.mockReturnValue({ ...getDefaultsFromConfigSchema(configSchema), defaultCurrency: 'UGX' });
+  });
+
   it('renders an empty state when there are no billing records', () => {
     renderBillingDashboard();
 

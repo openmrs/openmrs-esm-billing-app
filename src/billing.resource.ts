@@ -1,5 +1,4 @@
 import useSWR, { type KeyedMutator } from 'swr';
-import dayjs from 'dayjs';
 import sortBy from 'lodash-es/sortBy';
 import {
   openmrsFetch,
@@ -8,8 +7,9 @@ import {
   type SessionLocation,
   useOpenmrsFetchAll,
   useOpenmrsPagination,
+  restBaseUrl,
 } from '@openmrs/esm-framework';
-import { apiBasePath, omrsDateFormat } from './constants';
+import { apiBasePath } from './constants';
 import {
   type MappedBill,
   type PatientInvoice,
@@ -19,6 +19,7 @@ import {
   type UpdateBillPayload,
   BillStatus,
   type PatientPaymentStatus,
+  type StockItem,
 } from './types';
 
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
@@ -63,13 +64,7 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   };
 };
 
-export const usePaginatedBills = (
-  pageSize: number,
-  status?: string,
-  patientName?: string,
-  startDate?: Date | null,
-  endDate?: Date | null,
-) => {
+export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
   const customRepresentation =
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
@@ -83,18 +78,8 @@ export const usePaginatedBills = (
     url += `&patientName=${encodeURIComponent(patientName)}`;
   }
 
-  if (startDate) {
-    url += `&startDate=${encodeURIComponent(dayjs(startDate).startOf('day').format(omrsDateFormat))}`;
-  }
-
-  if (endDate) {
-    url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format(omrsDateFormat))}`;
-  }
-
-  // The backend rejects an inverted range with a 400, so skip the request (null URL disables fetching)
-  const isRangeValid = !startDate || !endDate || startDate <= endDate;
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
-    useOpenmrsPagination<PatientInvoice>(isRangeValid ? url : null, pageSize);
+    useOpenmrsPagination<PatientInvoice>(url, pageSize);
 
   // Backend already sorts by ID descending (newest first), so no need to sort on frontend
   const mappedResults = data?.map((bill) => mapBillProperties(bill)) ?? [];
@@ -112,7 +97,7 @@ export const usePaginatedBills = (
 };
 
 export const useBills = (patientUuid?: string, billStatus?: string, visitUuid?: string) => {
-  let url = `${apiBasePath}bill?v=full`;
+  let url = `${apiBasePath}bill?q=all&v=full`;
 
   if (patientUuid) {
     url += `&patientUuid=${patientUuid}`;
@@ -233,6 +218,20 @@ export const updateBillItems = (payload: UpdateBillPayload) => {
     },
   });
 };
+
+export function useFetchChargeItems(searchValue: string) {
+  const url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${encodeURIComponent(searchValue)}`;
+  const { data, isLoading, error } = useSWR<{ data: { results: StockItem[] } }, Error>(
+    searchValue ? url : null,
+    openmrsFetch,
+  );
+
+  return {
+    searchResults: data?.data?.results ?? [],
+    error,
+    isLoading,
+  };
+}
 
 export const finalizeBill = (billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}`;

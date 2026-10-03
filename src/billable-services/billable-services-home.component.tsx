@@ -3,12 +3,13 @@ import classNames from 'classnames';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLeftNav, useLayoutType, isDesktop } from '@openmrs/esm-framework';
-import BillableServicesDashboard from './dashboard/dashboard.component';
 import BillingHeader from '../billing-header/billing-header.component';
 import CashPointConfiguration from './cash-point/cash-point-configuration.component';
 import PaymentModesConfig from './payment-modes/payment-modes-config.component';
 import DiscountRequests from '../discounts/admin/discount-requests.component';
 import RefundRequests from '../refunds/admin/refund-requests.component';
+import BillingReports from './bill-report/billing-reports.component';
+import BillablesConfigurationTabs from './billables-config-tabs/billables-config-tabs.component';
 import styles from './billable-services.scss';
 
 const BillableServiceHome: React.FC = () => {
@@ -24,9 +25,11 @@ const BillableServiceHome: React.FC = () => {
         <main className={classNames(styles.pageContent, { [styles.hasLeftNav]: isDesktop(layout) })}>
           <BillingHeader title={t('billingAdministration', 'Billing administration')} />
           <Routes>
-            <Route path="/" element={<BillableServicesDashboard />} />
+            <Route path="/" element={<BillablesConfigurationTabs />} />
             <Route path="/cash-point-config" element={<CashPointConfiguration />} />
             <Route path="/payment-modes-config" element={<PaymentModesConfig />} />
+            <Route path="/billable-commodities" element={<BillablesConfigurationTabs />} />
+            <Route path="/bill-report" element={<BillingReports />} />
             <Route path="/discount-requests" element={<DiscountRequests />} />
             <Route path="/refund-requests" element={<RefundRequests />} />
           </Routes>
