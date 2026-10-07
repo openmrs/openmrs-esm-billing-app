@@ -1,33 +1,7 @@
-@use '@carbon/layout';
-@use '@carbon/type';
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
 .header {
-  @include type.type-style('body-compact-02');
-  color: $text-02;
-  height: layout.$spacing-12;
   background-color: $ui-02;
   border-bottom: 1px solid $ui-03;
-  display: flex;
-  justify-content: space-between;
-  padding: layout.$spacing-05;
-}
-
-.left-justified-items {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  cursor: pointer;
-}
-
-.page-name {
-  @include type.type-style('heading-04');
-}
-
-.page-labels {
-  margin: layout.$spacing-05;
-
-  p:first-of-type {
-    margin-bottom: layout.$spacing-02;
-  }
+  flex-shrink: 0;
 }

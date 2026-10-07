@@ -17,10 +17,12 @@ vi.mock('../billing.resource', () => ({
 }));
 
 describe('BillingDashboard', () => {
-  it('renders an empty state when there are no billing records', () => {
+  it('renders the billing page header', () => {
     renderBillingDashboard();
 
-    expect(screen.getByTitle(/billing module illustration/i)).toBeInTheDocument();
+    const header = screen.getByTestId('billing-header');
+    expect(header).toHaveTextContent('Billing');
+    expect(header).toHaveTextContent('PaymentsDeskPictogram');
   });
 });
 
