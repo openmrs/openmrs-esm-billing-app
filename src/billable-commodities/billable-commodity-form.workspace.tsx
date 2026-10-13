@@ -31,6 +31,7 @@ import type { StockItem } from '../types';
 import { useFetchChargeItems } from '../billing.resource';
 import {
   createBillableCommodities,
+  type PaymentMode,
   updateBillableCommodity,
   usePaymentModes,
 } from '../billable-services/billable-service.resource';
@@ -119,6 +120,19 @@ export const normalizePrice = (price: string | number | undefined): number => {
   return parseFloat(String(price));
 };
 
+export const buildBillableCommodityPricePayload = (payment: PaymentModeForm, paymentModes: PaymentMode[]) => {
+  const paymentMode = paymentModes.find((mode) => mode.uuid === payment.paymentMode);
+
+  return {
+    name: paymentMode?.name || 'Unknown',
+    price: normalizePrice(payment.price),
+    paymentMode: {
+      uuid: payment.paymentMode,
+      name: paymentMode?.name || '',
+    },
+  };
+};
+
 const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<BillableCommodityFormWorkspaceProps>> = ({
   workspaceProps: { itemToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
@@ -188,24 +202,18 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
 
     setIsSubmitting(true);
 
-    const payloads = data.payment.map((payment) => {
-      const paymentMode = paymentModes.find((mode) => mode.uuid === payment.paymentMode);
-      return {
-        name: paymentMode?.name || 'Unknown',
-        price: normalizePrice(payment.price),
-        paymentMode: {
-          uuid: payment.paymentMode,
-          name: paymentMode?.name || '',
-        },
-        item: selectedItem?.uuid || itemToEdit?.item,
-      };
-    });
+    const pricePayloads = data.payment.map((payment) => buildBillableCommodityPricePayload(payment, paymentModes));
 
     try {
       if (itemToEdit) {
-        await updateBillableCommodity(itemToEdit.uuid, payloads[0]);
+        await updateBillableCommodity(itemToEdit.uuid, pricePayloads[0]);
       } else {
-        await createBillableCommodities(payloads);
+        await createBillableCommodities(
+          pricePayloads.map((payload) => ({
+            ...payload,
+            item: selectedItem.uuid,
+          })),
+        );
       }
 
       showSnackbar({

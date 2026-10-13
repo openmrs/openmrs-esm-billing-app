@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { TFunction } from 'i18next';
-import { createBillableCommoditySchema } from './billable-commodity-form.workspace';
+import { buildBillableCommodityPricePayload, createBillableCommoditySchema } from './billable-commodity-form.workspace';
 
 const t = ((_key: string, fallback: string) => fallback) as TFunction;
 
@@ -33,5 +33,23 @@ describe('createBillableCommoditySchema', () => {
         }),
       );
     }
+  });
+});
+
+describe('buildBillableCommodityPricePayload', () => {
+  it('does not include the item name in an update payload', () => {
+    const payload = buildBillableCommodityPricePayload({ paymentMode: 'cash-uuid', price: '100' }, [
+      { uuid: 'cash-uuid', name: 'Cash', description: '', links: [], resourceVersion: '' },
+    ]);
+
+    expect(payload).toEqual({
+      name: 'Cash',
+      price: 100,
+      paymentMode: {
+        uuid: 'cash-uuid',
+        name: 'Cash',
+      },
+    });
+    expect(payload).not.toHaveProperty('item');
   });
 });
