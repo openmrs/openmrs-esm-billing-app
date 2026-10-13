@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import type { TFunction } from 'i18next';
-import { buildBillableCommodityPricePayload, createBillableCommoditySchema } from './billable-commodity-form.workspace';
+import type { BillableCommodity } from '../types';
+import {
+  buildBillableCommodityPricePayload,
+  createBillableCommoditySchema,
+  isDuplicateCommodityPrice,
+} from './billable-commodity-form.workspace';
 
 const t = ((_key: string, fallback: string) => fallback) as TFunction;
 
@@ -51,5 +56,28 @@ describe('buildBillableCommodityPricePayload', () => {
       },
     });
     expect(payload).not.toHaveProperty('item');
+  });
+});
+
+describe('isDuplicateCommodityPrice', () => {
+  const existingPrices: BillableCommodity[] = [
+    {
+      uuid: 'price-uuid',
+      item: 'Paracetamol 500mg',
+      price: 100,
+      paymentMode: { uuid: 'cash-uuid', name: 'Cash' },
+    },
+  ];
+
+  it('detects an existing item and payment-mode pair', () => {
+    expect(isDuplicateCommodityPrice(existingPrices, ' paracetamol 500MG ', 'cash-uuid')).toBe(true);
+  });
+
+  it('allows another payment mode for the same item', () => {
+    expect(isDuplicateCommodityPrice(existingPrices, 'Paracetamol 500mg', 'insurance-uuid')).toBe(false);
+  });
+
+  it('excludes the price currently being edited', () => {
+    expect(isDuplicateCommodityPrice(existingPrices, 'Paracetamol 500mg', 'cash-uuid', 'price-uuid')).toBe(false);
   });
 });

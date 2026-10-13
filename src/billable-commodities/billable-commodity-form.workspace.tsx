@@ -27,12 +27,13 @@ import {
   Workspace2,
   type Workspace2DefinitionProps,
 } from '@openmrs/esm-framework';
-import type { StockItem } from '../types';
+import type { BillableCommodity, StockItem } from '../types';
 import { useFetchChargeItems } from '../billing.resource';
 import {
   createBillableCommodities,
   type PaymentMode,
   updateBillableCommodity,
+  useBillableCommodities,
   usePaymentModes,
 } from '../billable-services/billable-service.resource';
 import styles from './charge-items-form.scss';
@@ -133,6 +134,22 @@ export const buildBillableCommodityPricePayload = (payment: PaymentModeForm, pay
   };
 };
 
+export const isDuplicateCommodityPrice = (
+  billableCommodities: BillableCommodity[],
+  itemName: string,
+  paymentModeUuid: string,
+  commodityUuidToExclude?: string,
+) => {
+  const normalizedItemName = itemName.trim().toLocaleLowerCase();
+
+  return billableCommodities.some(
+    (commodity) =>
+      commodity.uuid !== commodityUuidToExclude &&
+      commodity.item.trim().toLocaleLowerCase() === normalizedItemName &&
+      commodity.paymentMode?.uuid === paymentModeUuid,
+  );
+};
+
 const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<BillableCommodityFormWorkspaceProps>> = ({
   workspaceProps: { itemToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
@@ -141,6 +158,11 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
   const layout = useLayoutType();
   const isTablet = layout === 'tablet';
   const { paymentModes, isLoadingPaymentModes } = usePaymentModes();
+  const {
+    billableCommodities,
+    error: billableCommoditiesError,
+    isLoading: isLoadingBillableCommodities,
+  } = useBillableCommodities();
 
   const billableCommoditySchema = useMemo(() => createBillableCommoditySchema(t), [t]);
 
@@ -149,6 +171,7 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
     handleSubmit,
     formState: { errors, isDirty },
     reset,
+    setError,
   } = useForm<BillableCommodityFormData>({
     mode: 'all',
     defaultValues: {
@@ -197,6 +220,35 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
         ),
         kind: 'error',
       });
+      return;
+    }
+
+    if (billableCommoditiesError) {
+      showSnackbar({
+        title: t('commodityValidationError', 'Unable to validate commodity price'),
+        subtitle: t(
+          'commodityValidationErrorMessage',
+          'Existing commodity prices could not be loaded. Please try again.',
+        ),
+        kind: 'error',
+      });
+      return;
+    }
+
+    const itemName = itemToEdit?.item || selectedItem?.drugName || '';
+    let hasDuplicatePrice = false;
+
+    data.payment.forEach(({ paymentMode }, index) => {
+      if (isDuplicateCommodityPrice(billableCommodities, itemName, paymentMode, itemToEdit?.uuid)) {
+        hasDuplicatePrice = true;
+        setError(`payment.${index}.paymentMode`, {
+          type: 'validate',
+          message: t('commodityPaymentModeAlreadyExists', 'A price already exists for this commodity and payment mode'),
+        });
+      }
+    });
+
+    if (hasDuplicatePrice) {
       return;
     }
 
@@ -258,7 +310,7 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
     ? t('editBillableCommodity', 'Edit billable commodity')
     : t('addBillableCommodity', 'Add billable commodity');
 
-  if (isLoadingPaymentModes) {
+  if (isLoadingPaymentModes || isLoadingBillableCommodities) {
     return (
       <Workspace2 title={title} hasUnsavedChanges={isDirty}>
         <InlineLoading
