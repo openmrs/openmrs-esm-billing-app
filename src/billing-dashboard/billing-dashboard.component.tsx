@@ -10,7 +10,7 @@ export function BillingDashboard() {
 
   return (
     <>
-      <BillingHeader title={t('home', 'Home')} />
+      <BillingHeader title={t('billing', 'Billing')} />
       <MetricsCards />
       <section className={styles.billsTableContainer}>
         <BillsTable />
