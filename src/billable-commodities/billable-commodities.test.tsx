@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import BillableCommodities from './billable-commodities.component';
 import { useBillableCommodities } from '../billable-services/billable-service.resource';
+import type * as EsmFramework from '@openmrs/esm-framework';
 
 // Mock the resource
 vi.mock('../billable-services/billable-service.resource', () => ({
@@ -11,31 +12,30 @@ vi.mock('../billable-services/billable-service.resource', () => ({
 }));
 
 // Mock @openmrs/esm-framework
-vi.mock('@openmrs/esm-framework', () => ({
-  EmptyCard: vi.fn(({ displayText, headerTitle }) => (
-    <div data-testid="empty-card">
-      <h1>{headerTitle}</h1>
-      <p>{displayText}</p>
-    </div>
-  )),
-  useLayoutType: vi.fn(() => 'desktop'),
-  isDesktop: vi.fn(() => true),
-  useConfig: vi.fn(() => ({
-    billableServices: {
-      pageSizes: [10, 20, 30, 40, 50],
-      pageSize: 10,
-    },
-  })),
-  usePagination: vi.fn().mockImplementation((data) => ({
-    currentPage: 1,
-    goTo: vi.fn(),
-    results: data,
-    paginated: true,
-  })),
-  launchWorkspace2: vi.fn(),
-  ErrorState: vi.fn(({ error }) => <div>Error: {error?.message || error}</div>),
-  restBaseUrl: 'http://localhost',
-}));
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const actual = await importOriginal<typeof EsmFramework>();
+
+  return {
+    ...actual,
+    EmptyCard: vi.fn(({ displayText, headerTitle }) => (
+      <div data-testid="empty-card">
+        <h1>{headerTitle}</h1>
+        <p>{displayText}</p>
+      </div>
+    )),
+    useLayoutType: vi.fn(() => 'desktop'),
+    isDesktop: vi.fn(() => true),
+    useConfig: vi.fn(() => ({
+      billableServices: {
+        pageSizes: [10, 20, 30, 40, 50],
+        pageSize: 10,
+      },
+    })),
+    launchWorkspace2: vi.fn(),
+    ErrorState: vi.fn(({ error }) => <div>Error: {error?.message || error}</div>),
+    restBaseUrl: 'http://localhost',
+  };
+});
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
@@ -185,6 +185,35 @@ describe('BillableCommodities', () => {
 
     expect(screen.getByText('Amoxicillin 250mg')).toBeInTheDocument();
     expect(screen.queryByText('Paracetamol 500mg')).not.toBeInTheDocument();
+  });
+
+  it('moves between pages using the real pagination hook', async () => {
+    const mockCommodities = Array.from({ length: 11 }, (_, index) => ({
+      uuid: `${index + 1}`,
+      item: `Commodity ${index + 1}`,
+      shortName: `ITEM-${index + 1}`,
+      paymentMode: { uuid: 'pm1', name: 'Cash' },
+      price: 100 + index,
+    }));
+
+    mockedUseBillableCommodities.mockReturnValue({
+      billableCommodities: mockCommodities,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+    });
+
+    const user = userEvent.setup();
+    render(<BillableCommodities />);
+
+    expect(screen.getByText('Commodity 1')).toBeInTheDocument();
+    expect(screen.queryByText('Commodity 11')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Next page' }));
+
+    expect(screen.getByText('Commodity 11')).toBeInTheDocument();
+    expect(screen.queryByText('Commodity 1')).not.toBeInTheDocument();
   });
 
   it('shows empty state message when search returns no results', async () => {

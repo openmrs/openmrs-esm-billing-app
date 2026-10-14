@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { openmrsFetch } from '@openmrs/esm-framework';
-import { createBillableCommodities } from './billable-service.resource';
+import { renderHook } from '@testing-library/react';
+import { openmrsFetch, useOpenmrsFetchAll } from '@openmrs/esm-framework';
+import { createBillableCommodities, useBillableCommodities } from './billable-service.resource';
 import type { BillableCommodity } from '../types';
 
 vi.mock('@openmrs/esm-framework', () => ({
@@ -53,5 +54,26 @@ describe('createBillableCommodities', () => {
     await expect(createBillableCommodities([payload('cash'), payload('insurance')])).rejects.toThrow(
       'Some commodity prices were saved and could not be rolled back. Refresh the catalog before trying again.',
     );
+  });
+});
+
+describe('useBillableCommodities', () => {
+  it('includes a commodity returned from a later server page', () => {
+    const firstPageCommodity = { ...payload('cash'), uuid: 'price-page-1' };
+    const secondPageCommodity = { ...payload('insurance'), uuid: 'price-page-2' };
+
+    vi.mocked(useOpenmrsFetchAll).mockReturnValue({
+      data: [firstPageCommodity, secondPageCommodity],
+      error: undefined,
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+    } as any);
+
+    const { result } = renderHook(() => useBillableCommodities());
+
+    expect(result.current.billableCommodities).toEqual([firstPageCommodity, secondPageCommodity]);
+    expect(result.current.billableCommodities).toContainEqual(secondPageCommodity);
+    expect(useOpenmrsFetchAll).toHaveBeenCalledWith(expect.stringContaining('cashierItemPrice?v=default'));
   });
 });
