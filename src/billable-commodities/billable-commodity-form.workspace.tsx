@@ -164,6 +164,26 @@ export const CommoditySearchError = ({ onRetry, t }: { onRetry: () => void; t: T
   />
 );
 
+export const CommoditySearchResult = ({
+  searchResult,
+  onSelect,
+}: {
+  searchResult: StockItem;
+  onSelect: (item: StockItem) => void;
+}) => (
+  <li>
+    <button className={styles.service} onClick={() => onSelect(searchResult)} type="button">
+      {searchResult.drugName}
+    </button>
+  </li>
+);
+
+export const RemovePaymentOptionButton = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
+  <button aria-label={label} className={styles.removeButton} onClick={onRemove} type="button">
+    <TrashCan aria-hidden="true" size={20} />
+  </button>
+);
+
 const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<BillableCommodityFormWorkspaceProps>> = ({
   workspaceProps: { itemToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
@@ -388,16 +408,14 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
                     return (
                       <ul className={styles.conceptsList}>
                         {searchResults?.map((searchResult) => (
-                          <li
-                            className={styles.service}
+                          <CommoditySearchResult
                             key={searchResult.uuid}
-                            onClick={() => {
-                              setSelectedItem(searchResult);
+                            onSelect={(item) => {
+                              setSelectedItem(item);
                               setSearchTerm('');
                             }}
-                            role="menuitem">
-                            {searchResult.drugName}
-                          </li>
+                            searchResult={searchResult}
+                          />
                         ))}
                       </ul>
                     );
@@ -462,10 +480,9 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
                     )}
                   />
                   <div className={styles.removeButtonContainer}>
-                    <TrashCan
-                      onClick={() => handleRemovePaymentMode(index)}
-                      className={styles.removeButton}
-                      size={20}
+                    <RemovePaymentOptionButton
+                      label={t('removePaymentOption', 'Remove payment option')}
+                      onRemove={() => handleRemovePaymentMode(index)}
                     />
                   </div>
                 </div>

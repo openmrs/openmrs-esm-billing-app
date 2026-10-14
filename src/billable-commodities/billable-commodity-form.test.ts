@@ -7,8 +7,10 @@ import type { BillableCommodity } from '../types';
 import {
   buildBillableCommodityPricePayload,
   CommoditySearchError,
+  CommoditySearchResult,
   createBillableCommoditySchema,
   isDuplicateCommodityPrice,
+  RemovePaymentOptionButton,
 } from './billable-commodity-form.workspace';
 
 const t = ((_key: string, fallback: string) => fallback) as TFunction;
@@ -99,5 +101,41 @@ describe('CommoditySearchError', () => {
     await user.click(screen.getByRole('button', { name: 'Retry' }));
 
     expect(onRetry).toHaveBeenCalledOnce();
+  });
+});
+
+describe('commodity form keyboard controls', () => {
+  it('selects a commodity search result with the keyboard', async () => {
+    const onSelect = vi.fn();
+    const searchResult = {
+      uuid: 'stock-item-uuid',
+      drugUuid: 'drug-uuid',
+      drugName: 'Paracetamol 500mg',
+      conceptUuid: 'concept-uuid',
+      conceptName: 'Paracetamol',
+      commonName: 'Paracetamol',
+    };
+    const user = userEvent.setup();
+
+    render(React.createElement('ul', null, React.createElement(CommoditySearchResult, { onSelect, searchResult })));
+
+    const resultButton = screen.getByRole('button', { name: 'Paracetamol 500mg' });
+    resultButton.focus();
+    await user.keyboard('{Enter}');
+
+    expect(onSelect).toHaveBeenCalledWith(searchResult);
+  });
+
+  it('removes a payment row with the keyboard', async () => {
+    const onRemove = vi.fn();
+    const user = userEvent.setup();
+
+    render(React.createElement(RemovePaymentOptionButton, { label: 'Remove payment option', onRemove }));
+
+    const removeButton = screen.getByRole('button', { name: 'Remove payment option' });
+    removeButton.focus();
+    await user.keyboard('{Enter}');
+
+    expect(onRemove).toHaveBeenCalledOnce();
   });
 });
