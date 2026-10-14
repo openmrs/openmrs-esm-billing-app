@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import BillablesConfigurationTabs from './billables-config-tabs.component';
@@ -33,9 +33,14 @@ describe('BillablesConfigurationTabs', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('tab', { name: /billable services/i })).toBeInTheDocument();
+    const servicesTab = screen.getByRole('tab', { name: /billable services/i });
+    const activePanel = screen.getByRole('tabpanel');
+
+    expect(servicesTab).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: /billable commodities/i })).toBeInTheDocument();
-    expect(screen.getByText('Services content')).toBeInTheDocument();
+    expect(servicesTab).toHaveAttribute('aria-controls', activePanel.id);
+    expect(activePanel).toHaveAttribute('aria-labelledby', servicesTab.id);
+    expect(within(activePanel).getByText('Services content')).toBeInTheDocument();
     expect(screen.queryByText('Commodities content')).not.toBeInTheDocument();
   });
 
@@ -46,7 +51,12 @@ describe('BillablesConfigurationTabs', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText('Commodities content')).toBeInTheDocument();
+    const commoditiesTab = screen.getByRole('tab', { name: /billable commodities/i });
+    const activePanel = screen.getByRole('tabpanel');
+
+    expect(commoditiesTab).toHaveAttribute('aria-controls', activePanel.id);
+    expect(activePanel).toHaveAttribute('aria-labelledby', commoditiesTab.id);
+    expect(within(activePanel).getByText('Commodities content')).toBeInTheDocument();
     expect(screen.queryByText('Services content')).not.toBeInTheDocument();
   });
 });

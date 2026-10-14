@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tab, TabList, Tabs } from '@carbon/react';
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@carbon/react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import BillableCommodities from '../../billable-commodities/billable-commodities.component';
@@ -21,10 +21,13 @@ const BillablesConfigurationTabs: React.FC = () => {
           <Tab>{t('billableServices', 'Billable services')}</Tab>
           <Tab>{t('billableCommodities', 'Billable commodities')}</Tab>
         </TabList>
+        <div className={styles.content}>
+          <TabPanels>
+            <TabPanel>{selectedIndex === 0 && <BillableServicesDashboard />}</TabPanel>
+            <TabPanel>{selectedIndex === 1 && <BillableCommodities />}</TabPanel>
+          </TabPanels>
+        </div>
       </Tabs>
-      <div className={styles.content}>
-        {selectedIndex === 0 ? <BillableServicesDashboard /> : <BillableCommodities />}
-      </div>
     </div>
   );
 };
