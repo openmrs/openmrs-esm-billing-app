@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import {
+  ActionableNotification,
   Button,
   ButtonSet,
   Form,
@@ -150,6 +151,19 @@ export const isDuplicateCommodityPrice = (
   );
 };
 
+export const CommoditySearchError = ({ onRetry, t }: { onRetry: () => void; t: TFunction }) => (
+  <ActionableNotification
+    actionButtonLabel={t('retry', 'Retry')}
+    hideCloseButton
+    inline
+    kind="error"
+    lowContrast
+    onActionButtonClick={onRetry}
+    subtitle={t('commoditySearchErrorMessage', 'Commodity search failed. Please try again.')}
+    title={t('commoditySearchError', 'Unable to search commodities')}
+  />
+);
+
 const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<BillableCommodityFormWorkspaceProps>> = ({
   workspaceProps: { itemToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
@@ -191,7 +205,7 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
   const [selectedItem, setSelectedItem] = useState<StockItem | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearchTerm = useDebounce(searchTerm.trim());
-  const { searchResults, isLoading } = useFetchChargeItems(debouncedSearchTerm);
+  const { searchResults, isLoading, error: searchError, retry: retrySearch } = useFetchChargeItems(debouncedSearchTerm);
 
   // Re-initialize form when editing and dependencies load
   useEffect(() => {
@@ -366,6 +380,9 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
                     return (
                       <InlineLoading className={styles.loader} description={t('searching', 'Searching') + '...'} />
                     );
+                  }
+                  if (searchError) {
+                    return <CommoditySearchError onRetry={() => retrySearch()} t={t} />;
                   }
                   if (searchResults && searchResults.length) {
                     return (

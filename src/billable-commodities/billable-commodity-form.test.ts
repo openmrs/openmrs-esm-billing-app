@@ -1,8 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import React from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import type { TFunction } from 'i18next';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { BillableCommodity } from '../types';
 import {
   buildBillableCommodityPricePayload,
+  CommoditySearchError,
   createBillableCommoditySchema,
   isDuplicateCommodityPrice,
 } from './billable-commodity-form.workspace';
@@ -79,5 +83,21 @@ describe('isDuplicateCommodityPrice', () => {
 
   it('excludes the price currently being edited', () => {
     expect(isDuplicateCommodityPrice(existingPrices, 'Paracetamol 500mg', 'cash-uuid', 'price-uuid')).toBe(false);
+  });
+});
+
+describe('CommoditySearchError', () => {
+  it('shows a search failure and retries the request', async () => {
+    const onRetry = vi.fn();
+    const user = userEvent.setup();
+
+    render(React.createElement(CommoditySearchError, { onRetry, t }));
+
+    expect(screen.getByText('Unable to search commodities')).toBeInTheDocument();
+    expect(screen.getByText('Commodity search failed. Please try again.')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Retry' }));
+
+    expect(onRetry).toHaveBeenCalledOnce();
   });
 });

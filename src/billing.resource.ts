@@ -238,7 +238,7 @@ export const updateBillItems = (payload: UpdateBillPayload) => {
 
 export function useFetchChargeItems(searchValue: string) {
   const url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${encodeURIComponent(searchValue)}`;
-  const { data, isLoading, error } = useSWR<{ data: { results: StockItem[] } }, Error>(
+  const { data, isLoading, error, mutate } = useSWR<{ data: { results: StockItem[] } }, Error>(
     searchValue ? url : null,
     openmrsFetch,
   );
@@ -247,6 +247,7 @@ export function useFetchChargeItems(searchValue: string) {
     searchResults: data?.data?.results ?? [],
     error,
     isLoading,
+    retry: mutate,
   };
 }
 
