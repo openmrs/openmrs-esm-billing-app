@@ -73,11 +73,13 @@ const BillableCommodities = () => {
 
     if (flatBillableCommodities !== undefined && flatBillableCommodities.length > 0) {
       if (searchString && searchString.trim() !== '') {
-        const search = searchString.toLowerCase();
+        const search = searchString.trim().toLocaleLowerCase();
         return flatBillableCommodities.filter((commodity: BillableCommodity) =>
-          Object.entries(commodity).some(([header, value]) => {
-            return header === 'uuid' ? false : `${value}`.toLowerCase().includes(search);
-          }),
+          [commodity.item, commodity.shortName, commodity.paymentMode?.name, commodity.price].some((value) =>
+            String(value ?? '')
+              .toLocaleLowerCase()
+              .includes(search),
+          ),
         );
       }
     }

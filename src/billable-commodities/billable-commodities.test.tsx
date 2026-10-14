@@ -152,6 +152,41 @@ describe('BillableCommodities', () => {
     expect(screen.queryByText('Amoxicillin 250mg')).not.toBeInTheDocument();
   });
 
+  it('filters commodities by the displayed payment-mode name', async () => {
+    const mockCommodities = [
+      {
+        uuid: '1',
+        item: 'Paracetamol 500mg',
+        shortName: 'PARA',
+        paymentMode: { uuid: 'pm1', name: 'Cash' },
+        price: 100,
+      },
+      {
+        uuid: '2',
+        item: 'Amoxicillin 250mg',
+        shortName: 'AMOX',
+        paymentMode: { uuid: 'pm2', name: 'Mobile Money' },
+        price: 200,
+      },
+    ];
+
+    mockedUseBillableCommodities.mockReturnValue({
+      billableCommodities: mockCommodities,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+    });
+
+    const user = userEvent.setup();
+    render(<BillableCommodities />);
+
+    await user.type(screen.getByRole('searchbox'), 'mobile money');
+
+    expect(screen.getByText('Amoxicillin 250mg')).toBeInTheDocument();
+    expect(screen.queryByText('Paracetamol 500mg')).not.toBeInTheDocument();
+  });
+
   it('shows empty state message when search returns no results', async () => {
     const mockCommodities = [
       {
