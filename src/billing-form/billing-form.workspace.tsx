@@ -12,8 +12,10 @@ import {
   NumberInput,
 } from '@carbon/react';
 import {
+  ExtensionSlot,
   useConfig,
   useLayoutType,
+  usePatient,
   useVisit,
   showSnackbar,
   getCoreTranslation,
@@ -60,6 +62,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 }) => {
   const isTablet = useLayoutType() === 'tablet';
   const { t } = useTranslation();
+  const { patient } = usePatient(patientUuid);
   const { mutate: swrMutate } = useSWRConfig();
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -272,6 +275,9 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       title={isEditMode ? t('addItemsToBill', 'Add items to bill') : t('addBillItems', 'Add bill items')}
       hasUnsavedChanges={selectedItems.length > 0}>
       <Form className={styles.form} onSubmit={handleSubmit}>
+        {patient && patientUuid && (
+          <ExtensionSlot name="patient-header-slot" state={{ patient, patientUuid, hideActionsOverflow: true }} />
+        )}
         <div className={styles.grid}>
           {billUuid && isLoadingBill ? (
             <InlineLoading description={getCoreTranslation('loading') + '...'} />

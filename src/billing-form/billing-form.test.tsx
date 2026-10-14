@@ -2,7 +2,15 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { getDefaultsFromConfigSchema, showSnackbar, useConfig, useVisit } from '@openmrs/esm-framework';
+import {
+  ExtensionSlot,
+  getDefaultsFromConfigSchema,
+  showSnackbar,
+  useConfig,
+  usePatient,
+  useVisit,
+} from '@openmrs/esm-framework';
+import { mockPatient } from '@mocks/bills.mock';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
 import { type BillLineItemStatus, type BillStatus } from '../types';
@@ -12,6 +20,8 @@ import BillingForm from './billing-form.workspace';
 
 const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
 const mockUseVisit = vi.mocked(useVisit);
+const mockUsePatient = vi.mocked(usePatient);
+const mockExtensionSlot = vi.mocked(ExtensionSlot);
 const mockUseBillableServices = vi.mocked(useBillableServices);
 const mockUseBill = vi.mocked(useBill);
 const mockUseBillableServicesList = vi.mocked(useBillableServicesList);
@@ -602,6 +612,33 @@ describe('BillingForm', () => {
       await waitFor(() => {
         expect(mockProcessBillItems).toHaveBeenCalledWith(expect.not.objectContaining({ visit: expect.anything() }));
       });
+    });
+  });
+
+  describe('patient header', () => {
+    it('renders the patient header banner with the patient and hidden actions overflow', () => {
+      mockUsePatient.mockReturnValue({ patient: mockPatient, isLoading: false, patientUuid: 'patient-uuid' } as any);
+
+      render(<BillingForm {...defaultCreateProps} />);
+
+      const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
+      expect(headerCall).toBeDefined();
+      expect(headerCall[0].state).toEqual(
+        expect.objectContaining({
+          patient: mockPatient,
+          patientUuid: 'patient-uuid',
+          hideActionsOverflow: true,
+        }),
+      );
+    });
+
+    it('does not render the patient header when the patient has not loaded', () => {
+      mockUsePatient.mockReturnValue({ patient: null, isLoading: true, patientUuid: null } as any);
+
+      render(<BillingForm {...defaultCreateProps} />);
+
+      const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
+      expect(headerCall).toBeUndefined();
     });
   });
 });
