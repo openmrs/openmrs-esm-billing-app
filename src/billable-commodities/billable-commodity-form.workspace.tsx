@@ -184,6 +184,9 @@ export const RemovePaymentOptionButton = ({ label, onRemove }: { label: string; 
   </button>
 );
 
+export const hasUnsavedCommodityChanges = (isDirty: boolean, selectedItem: StockItem | null) =>
+  isDirty || selectedItem !== null;
+
 const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<BillableCommodityFormWorkspaceProps>> = ({
   workspaceProps: { itemToEdit, closeWorkspaceWithSavedChanges, onWorkspaceClose },
   closeWorkspace,
@@ -343,10 +346,11 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
   const title = itemToEdit
     ? t('editBillableCommodity', 'Edit billable commodity')
     : t('addBillableCommodity', 'Add billable commodity');
+  const hasUnsavedChanges = hasUnsavedCommodityChanges(isDirty, selectedItem);
 
   if (isLoadingPaymentModes || isLoadingBillableCommodities) {
     return (
-      <Workspace2 title={title} hasUnsavedChanges={isDirty}>
+      <Workspace2 title={title} hasUnsavedChanges={hasUnsavedChanges}>
         <InlineLoading
           status="active"
           iconDescription={t('loadingDescription', 'Loading')}
@@ -357,7 +361,7 @@ const BillableCommodityFormWorkspace: React.FC<Workspace2DefinitionProps<Billabl
   }
 
   return (
-    <Workspace2 title={title} hasUnsavedChanges={isDirty}>
+    <Workspace2 title={title} hasUnsavedChanges={hasUnsavedChanges}>
       <Form
         aria-label={t('billableCommodityForm', 'Billable commodity form')}
         className={styles.form}

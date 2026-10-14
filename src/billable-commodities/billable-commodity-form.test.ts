@@ -9,6 +9,7 @@ import {
   CommoditySearchError,
   CommoditySearchResult,
   createBillableCommoditySchema,
+  hasUnsavedCommodityChanges,
   isDuplicateCommodityPrice,
   RemovePaymentOptionButton,
 } from './billable-commodity-form.workspace';
@@ -137,5 +138,25 @@ describe('commodity form keyboard controls', () => {
     await user.keyboard('{Enter}');
 
     expect(onRemove).toHaveBeenCalledOnce();
+  });
+});
+
+describe('hasUnsavedCommodityChanges', () => {
+  const selectedItem = {
+    uuid: 'stock-item-uuid',
+    drugUuid: 'drug-uuid',
+    drugName: 'Paracetamol 500mg',
+    conceptUuid: 'concept-uuid',
+    conceptName: 'Paracetamol',
+    commonName: 'Paracetamol',
+  };
+
+  it('treats a selected commodity as an unsaved change', () => {
+    expect(hasUnsavedCommodityChanges(false, selectedItem)).toBe(true);
+  });
+
+  it('preserves the form dirty state when no commodity is selected', () => {
+    expect(hasUnsavedCommodityChanges(true, null)).toBe(true);
+    expect(hasUnsavedCommodityChanges(false, null)).toBe(false);
   });
 });
