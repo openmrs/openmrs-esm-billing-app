@@ -42,7 +42,7 @@
   @include type.type-style('body-compact-01');
   background: transparent;
   border: 0;
-  color: $text-01;
+  color: var(--cds-text-primary);
   cursor: pointer;
   display: block;
   padding: layout.$spacing-05 layout.$spacing-04;
@@ -60,7 +60,6 @@
   max-height: 14rem;
   overflow-y: auto;
   border: 1px solid $ui-03;
-
 }
 
 .emptyResults {
