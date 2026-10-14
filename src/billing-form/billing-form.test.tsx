@@ -616,16 +616,20 @@ describe('BillingForm', () => {
   });
 
   describe('patient header', () => {
-    it('renders the patient header banner with the patient and hidden actions overflow', () => {
+    beforeEach(() => {
+      mockExtensionSlot.mockImplementation((({ name, state }: any) =>
+        name === 'patient-header-slot' && state?.patient ? <div>{state.patient.display}</div> : null) as any);
+    });
+
+    it('renders the patient header showing the patient being billed', () => {
       mockUsePatient.mockReturnValue({ patient: mockPatient, isLoading: false, patientUuid: 'patient-uuid' } as any);
 
       render(<BillingForm {...defaultCreateProps} />);
 
+      expect(screen.getByText(mockPatient.display)).toBeInTheDocument();
       const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
-      expect(headerCall).toBeDefined();
       expect(headerCall[0].state).toEqual(
         expect.objectContaining({
-          patient: mockPatient,
           patientUuid: 'patient-uuid',
           hideActionsOverflow: true,
         }),
@@ -637,6 +641,7 @@ describe('BillingForm', () => {
 
       render(<BillingForm {...defaultCreateProps} />);
 
+      expect(screen.queryByText(mockPatient.display)).not.toBeInTheDocument();
       const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
       expect(headerCall).toBeUndefined();
     });

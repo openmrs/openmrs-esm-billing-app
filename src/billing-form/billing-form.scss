@@ -72,6 +72,11 @@
   background-color: $ui-02;
 }
 
+.formContent {
+  display: flex;
+  flex-direction: column;
+}
+
 .grid {
   margin: layout.$spacing-05;
   display: flex;
