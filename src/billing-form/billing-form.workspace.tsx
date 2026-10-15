@@ -276,7 +276,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       hasUnsavedChanges={selectedItems.length > 0}>
       <Form className={styles.form} onSubmit={handleSubmit}>
         <div className={styles.formContent}>
-          {patient && patientUuid && (
+          {isTablet && patient && patientUuid && (
             <ExtensionSlot name="patient-header-slot" state={{ patient, patientUuid, hideActionsOverflow: true }} />
           )}
           <div className={styles.grid}>
