@@ -2,7 +2,16 @@ import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
-import { getDefaultsFromConfigSchema, showSnackbar, useConfig, useVisit } from '@openmrs/esm-framework';
+import {
+  ExtensionSlot,
+  getDefaultsFromConfigSchema,
+  showSnackbar,
+  useConfig,
+  useLayoutType,
+  usePatient,
+  useVisit,
+} from '@openmrs/esm-framework';
+import { mockPatient } from '@mocks/bills.mock';
 import { configSchema, type BillingConfig } from '../config-schema';
 import { processBillItems, updateBillItems, useBill, useBillableServices } from '../billing.resource';
 import { type BillLineItemStatus, type BillStatus } from '../types';
@@ -12,6 +21,9 @@ import BillingForm from './billing-form.workspace';
 
 const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
 const mockUseVisit = vi.mocked(useVisit);
+const mockUsePatient = vi.mocked(usePatient);
+const mockUseLayoutType = vi.mocked(useLayoutType);
+const mockExtensionSlot = vi.mocked(ExtensionSlot);
 const mockUseBillableServices = vi.mocked(useBillableServices);
 const mockUseBill = vi.mocked(useBill);
 const mockUseBillableServicesList = vi.mocked(useBillableServicesList);
@@ -142,6 +154,7 @@ describe('BillingForm', () => {
     } as any);
     mockGetBillableServiceUuid.mockReturnValue('bs-uuid-1');
     mockUseVisit.mockReturnValue({ activeVisit: null } as any);
+    mockUseLayoutType.mockReturnValue('small-desktop');
   });
 
   describe('Create mode (no billUuid)', () => {
@@ -602,6 +615,50 @@ describe('BillingForm', () => {
       await waitFor(() => {
         expect(mockProcessBillItems).toHaveBeenCalledWith(expect.not.objectContaining({ visit: expect.anything() }));
       });
+    });
+  });
+
+  describe('patient header', () => {
+    beforeEach(() => {
+      mockUseLayoutType.mockReturnValue('tablet');
+      mockExtensionSlot.mockImplementation((({ name, state }: any) =>
+        name === 'patient-header-slot' && state?.patient ? <div>{state.patient.display}</div> : null) as any);
+    });
+
+    it('renders the patient header showing the patient being billed', () => {
+      mockUsePatient.mockReturnValue({ patient: mockPatient, isLoading: false, patientUuid: 'patient-uuid' } as any);
+
+      render(<BillingForm {...defaultCreateProps} />);
+
+      expect(screen.getByText(mockPatient.display)).toBeInTheDocument();
+      const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
+      expect(headerCall[0].state).toEqual(
+        expect.objectContaining({
+          patientUuid: 'patient-uuid',
+          hideActionsOverflow: true,
+        }),
+      );
+    });
+
+    it('does not render the patient header when the patient has not loaded', () => {
+      mockUsePatient.mockReturnValue({ patient: null, isLoading: true, patientUuid: null } as any);
+
+      render(<BillingForm {...defaultCreateProps} />);
+
+      expect(screen.queryByText(mockPatient.display)).not.toBeInTheDocument();
+      const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
+      expect(headerCall).toBeUndefined();
+    });
+
+    it('does not render the patient header on desktop', () => {
+      mockUseLayoutType.mockReturnValue('small-desktop');
+      mockUsePatient.mockReturnValue({ patient: mockPatient, isLoading: false, patientUuid: 'patient-uuid' } as any);
+
+      render(<BillingForm {...defaultCreateProps} />);
+
+      expect(screen.queryByText(mockPatient.display)).not.toBeInTheDocument();
+      const headerCall = mockExtensionSlot.mock.calls.find(([props]) => props?.name === 'patient-header-slot');
+      expect(headerCall).toBeUndefined();
     });
   });
 });

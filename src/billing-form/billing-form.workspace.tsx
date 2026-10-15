@@ -12,8 +12,10 @@ import {
   NumberInput,
 } from '@carbon/react';
 import {
+  ExtensionSlot,
   useConfig,
   useLayoutType,
+  usePatient,
   useVisit,
   showSnackbar,
   getCoreTranslation,
@@ -60,6 +62,7 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
 }) => {
   const isTablet = useLayoutType() === 'tablet';
   const { t } = useTranslation();
+  const { patient } = usePatient(patientUuid);
   const { mutate: swrMutate } = useSWRConfig();
   const { defaultCurrency, postBilledItems } = useConfig<BillingConfig>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -272,152 +275,157 @@ const BillingForm: React.FC<Workspace2DefinitionProps<BillingFormProps>> = ({
       title={isEditMode ? t('addItemsToBill', 'Add items to bill') : t('addBillItems', 'Add bill items')}
       hasUnsavedChanges={selectedItems.length > 0}>
       <Form className={styles.form} onSubmit={handleSubmit}>
-        <div className={styles.grid}>
-          {billUuid && isLoadingBill ? (
-            <InlineLoading description={getCoreTranslation('loading') + '...'} />
-          ) : billUuid && billError ? (
-            <InlineNotification
-              kind="error"
-              lowContrast
-              title={t('errorLoadingBill', 'Error loading bill')}
-              subtitle={billError?.message}
-            />
-          ) : isEditMode && billableServicesError ? (
-            <InlineNotification
-              kind="error"
-              lowContrast
-              title={t('errorLoadingBillableServices', 'Error loading billable services')}
-              subtitle={billableServicesError?.message}
-            />
-          ) : (
-            <>
-              {isEditMode && (
-                <div className={styles.existingItemsContainer}>
-                  <h4 className={styles.sectionHeading}>{t('existingItems', 'Existing items')}</h4>
-                  {bill.lineItems.map((item) => (
-                    <div key={item.uuid} className={styles.existingItemRow}>
-                      <span className={styles.existingItemName}>
-                        {item.billableService || item.item || item.display}
-                      </span>
-                      <span className={styles.existingItemDetail}>
-                        {item.quantity} x {convertToCurrency(item.price, defaultCurrency)}
-                      </span>
-                      <span className={styles.existingItemTotal}>
-                        {convertToCurrency(item.price * item.quantity, defaultCurrency)}
-                      </span>
-                    </div>
-                  ))}
-                  <div className={styles.existingItemsSubtotal}>
-                    <strong>
-                      {t('subtotal', 'Subtotal')}: {convertToCurrency(existingItemsTotal, defaultCurrency)}
-                    </strong>
-                  </div>
-                </div>
-              )}
-              {isEditMode && <h4 className={styles.sectionHeading}>{t('newItems', 'New items')}</h4>}
-              {isLoading ? (
-                <InlineLoading description={getCoreTranslation('loading') + '...'} />
-              ) : error ? (
-                <InlineNotification
-                  kind="error"
-                  lowContrast
-                  title={t('errorLoadingBillableServices', 'Error loading billable services')}
-                  subtitle={error?.message}
-                />
-              ) : (
-                <ComboBox
-                  id="searchItems"
-                  onChange={({ selectedItem: item }: { selectedItem: BillableItem }) => selectBillableItem(item)}
-                  itemToString={(item: BillableItem) => item?.name || ''}
-                  items={availableBillableItems}
-                  titleText={t('searchItems', 'Search items and services')}
-                />
-              )}
-            </>
+        <div className={styles.formContent}>
+          {isTablet && patient && patientUuid && (
+            <ExtensionSlot name="patient-header-slot" state={{ patient, patientUuid, hideActionsOverflow: true }} />
           )}
-          {selectedItems && selectedItems.length > 0 && (
-            <div className={styles.selectedItemsContainer}>
-              <h4 className={styles.sectionHeading}>{t('selectedItems', 'Selected items')}</h4>
-              {selectedItems.map((item) => (
-                <div key={item.uuid} className={styles.itemCard}>
-                  <div className={styles.itemHeader}>
-                    <span className={styles.itemName}>{item.display}</span>
-                    <IconButton
-                      align="top-end"
-                      kind="ghost"
-                      label={t('remove', 'Remove')}
-                      onClick={() => removeSelectedBillableItem(item.uuid)}>
-                      <TrashCanIcon size={16} />
-                    </IconButton>
+          <div className={styles.grid}>
+            {billUuid && isLoadingBill ? (
+              <InlineLoading description={getCoreTranslation('loading') + '...'} />
+            ) : billUuid && billError ? (
+              <InlineNotification
+                kind="error"
+                lowContrast
+                title={t('errorLoadingBill', 'Error loading bill')}
+                subtitle={billError?.message}
+              />
+            ) : isEditMode && billableServicesError ? (
+              <InlineNotification
+                kind="error"
+                lowContrast
+                title={t('errorLoadingBillableServices', 'Error loading billable services')}
+                subtitle={billableServicesError?.message}
+              />
+            ) : (
+              <>
+                {isEditMode && (
+                  <div className={styles.existingItemsContainer}>
+                    <h4 className={styles.sectionHeading}>{t('existingItems', 'Existing items')}</h4>
+                    {bill.lineItems.map((item) => (
+                      <div key={item.uuid} className={styles.existingItemRow}>
+                        <span className={styles.existingItemName}>
+                          {item.billableService || item.item || item.display}
+                        </span>
+                        <span className={styles.existingItemDetail}>
+                          {item.quantity} x {convertToCurrency(item.price, defaultCurrency)}
+                        </span>
+                        <span className={styles.existingItemTotal}>
+                          {convertToCurrency(item.price * item.quantity, defaultCurrency)}
+                        </span>
+                      </div>
+                    ))}
+                    <div className={styles.existingItemsSubtotal}>
+                      <strong>
+                        {t('subtotal', 'Subtotal')}: {convertToCurrency(existingItemsTotal, defaultCurrency)}
+                      </strong>
+                    </div>
                   </div>
+                )}
+                {isEditMode && <h4 className={styles.sectionHeading}>{t('newItems', 'New items')}</h4>}
+                {isLoading ? (
+                  <InlineLoading description={getCoreTranslation('loading') + '...'} />
+                ) : error ? (
+                  <InlineNotification
+                    kind="error"
+                    lowContrast
+                    title={t('errorLoadingBillableServices', 'Error loading billable services')}
+                    subtitle={error?.message}
+                  />
+                ) : (
+                  <ComboBox
+                    id="searchItems"
+                    onChange={({ selectedItem: item }: { selectedItem: BillableItem }) => selectBillableItem(item)}
+                    itemToString={(item: BillableItem) => item?.name || ''}
+                    items={availableBillableItems}
+                    titleText={t('searchItems', 'Search items and services')}
+                  />
+                )}
+              </>
+            )}
+            {selectedItems && selectedItems.length > 0 && (
+              <div className={styles.selectedItemsContainer}>
+                <h4 className={styles.sectionHeading}>{t('selectedItems', 'Selected items')}</h4>
+                {selectedItems.map((item) => (
+                  <div key={item.uuid} className={styles.itemCard}>
+                    <div className={styles.itemHeader}>
+                      <span className={styles.itemName}>{item.display}</span>
+                      <IconButton
+                        align="top-end"
+                        kind="ghost"
+                        label={t('remove', 'Remove')}
+                        onClick={() => removeSelectedBillableItem(item.uuid)}>
+                        <TrashCanIcon size={16} />
+                      </IconButton>
+                    </div>
 
-                  <div className={styles.itemControls}>
-                    {item.availablePaymentMethods && item.availablePaymentMethods.length > 1 ? (
-                      <div className={styles.controlSection}>
-                        <label>{t('selectPaymentMethod', 'Select payment method')}</label>
-                        <ComboBox
-                          id={`payment-method-${item.uuid}`}
-                          items={item.availablePaymentMethods}
-                          itemToString={(method: ServicePrice) =>
-                            method
-                              ? `${method.name} - ${convertToCurrency(
-                                  typeof method.price === 'number' ? method.price : parseFloat(method.price),
-                                  defaultCurrency,
-                                )}`
-                              : ''
-                          }
-                          selectedItem={item.selectedPaymentMethod}
-                          onChange={({ selectedItem }) => {
-                            if (selectedItem) {
-                              updatePaymentMethod(item.uuid, selectedItem);
+                    <div className={styles.itemControls}>
+                      {item.availablePaymentMethods && item.availablePaymentMethods.length > 1 ? (
+                        <div className={styles.controlSection}>
+                          <label>{t('selectPaymentMethod', 'Select payment method')}</label>
+                          <ComboBox
+                            id={`payment-method-${item.uuid}`}
+                            items={item.availablePaymentMethods}
+                            itemToString={(method: ServicePrice) =>
+                              method
+                                ? `${method.name} - ${convertToCurrency(
+                                    typeof method.price === 'number' ? method.price : parseFloat(method.price),
+                                    defaultCurrency,
+                                  )}`
+                                : ''
                             }
+                            selectedItem={item.selectedPaymentMethod}
+                            onChange={({ selectedItem }) => {
+                              if (selectedItem) {
+                                updatePaymentMethod(item.uuid, selectedItem);
+                              }
+                            }}
+                            placeholder={t('selectPaymentMethod', 'Select payment method')}
+                            titleText=""
+                          />
+                        </div>
+                      ) : (
+                        <div className={styles.controlSection}>
+                          <label>{t('unitPrice', 'Unit price')}</label>
+                          <span className={styles.priceDisplay}>{convertToCurrency(item.price, defaultCurrency)}</span>
+                        </div>
+                      )}
+
+                      <div className={styles.controlSection}>
+                        <label>{t('quantity', 'Quantity')}</label>
+                        <NumberInput
+                          allowEmpty
+                          disableWheel
+                          hideSteppers
+                          id={`quantity-${item.uuid}`}
+                          invalid={!item.quantity || item.quantity < 1}
+                          invalidText={t('quantityMustBeAtLeastOne', 'Quantity must be at least 1')}
+                          onChange={(_, { value }) => {
+                            const number = parseFloat(String(value));
+                            updateQuantity(item.uuid, isNaN(number) ? 0 : number);
                           }}
-                          placeholder={t('selectPaymentMethod', 'Select payment method')}
-                          titleText=""
+                          value={item.quantity || ''}
                         />
                       </div>
-                    ) : (
+
                       <div className={styles.controlSection}>
-                        <label>{t('unitPrice', 'Unit price')}</label>
-                        <span className={styles.priceDisplay}>{convertToCurrency(item.price, defaultCurrency)}</span>
+                        <label>{t('total', 'Total')}</label>
+                        <span className={styles.totalDisplay}>
+                          {convertToCurrency(item.price * item.quantity, defaultCurrency)}
+                        </span>
                       </div>
-                    )}
-
-                    <div className={styles.controlSection}>
-                      <label>{t('quantity', 'Quantity')}</label>
-                      <NumberInput
-                        allowEmpty
-                        disableWheel
-                        hideSteppers
-                        id={`quantity-${item.uuid}`}
-                        invalid={!item.quantity || item.quantity < 1}
-                        invalidText={t('quantityMustBeAtLeastOne', 'Quantity must be at least 1')}
-                        onChange={(_, { value }) => {
-                          const number = parseFloat(String(value));
-                          updateQuantity(item.uuid, isNaN(number) ? 0 : number);
-                        }}
-                        value={item.quantity || ''}
-                      />
-                    </div>
-
-                    <div className={styles.controlSection}>
-                      <label>{t('total', 'Total')}</label>
-                      <span className={styles.totalDisplay}>
-                        {convertToCurrency(item.price * item.quantity, defaultCurrency)}
-                      </span>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
 
-              <div className={styles.grandTotal}>
-                <strong>
-                  {t('grandTotal', 'Grand total')}:{' '}
-                  {convertToCurrency(existingItemsTotal + calculateTotalAmount(selectedItems), defaultCurrency)}
-                </strong>
+                <div className={styles.grandTotal}>
+                  <strong>
+                    {t('grandTotal', 'Grand total')}:{' '}
+                    {convertToCurrency(existingItemsTotal + calculateTotalAmount(selectedItems), defaultCurrency)}
+                  </strong>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         <ButtonSet className={isTablet ? styles.tablet : styles.desktop}>
