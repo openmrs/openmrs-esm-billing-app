@@ -1,6 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { useConfig } from '@openmrs/esm-framework';
+import type { BillingConfig } from '../../config-schema';
 import { BillStatus, type MappedBill } from '../../types';
-import { combinePendingBills } from './printable-pending-bills.component';
+import PrintablePendingBills, { combinePendingBills } from './printable-pending-bills.component';
+
+const mockUseConfig = vi.mocked(useConfig<BillingConfig>);
 
 const createBill = (overrides: Partial<MappedBill> = {}): MappedBill =>
   ({
@@ -26,6 +32,14 @@ const createBill = (overrides: Partial<MappedBill> = {}): MappedBill =>
   }) as MappedBill;
 
 describe('combinePendingBills', () => {
+  beforeEach(() => {
+    mockUseConfig.mockReturnValue({
+      logo: { src: '', alt: '' },
+      country: 'Uganda',
+      defaultCurrency: 'UGX',
+    } as unknown as BillingConfig);
+  });
+
   it('combines invoice numbers, line items, payments, and totals', () => {
     const payment = {
       uuid: 'payment-1',
@@ -67,5 +81,37 @@ describe('combinePendingBills', () => {
 
   it('returns null when there are no pending bills', () => {
     expect(combinePendingBills([])).toBeNull();
+  });
+
+  it('renders the real combined document with every invoice reference and line item', () => {
+    const bills = [
+      createBill(),
+      createBill({
+        uuid: 'bill-2',
+        receiptNumber: '10835-7',
+        dateCreated: '2026-09-18T09:00:00.000Z',
+        lineItems: [{ uuid: 'line-2', item: 'Laboratory', quantity: 2, price: 500, status: 'PENDING' }],
+      }),
+    ];
+    const patient = {
+      name: [{ given: ['Jane'], family: 'Doe' }],
+      gender: 'female',
+    } as fhir.Patient;
+
+    render(
+      React.createElement(PrintablePendingBills, {
+        bills,
+        patient,
+        componentRef: React.createRef<HTMLDivElement>(),
+        defaultFacility: { uuid: 'facility-1', display: 'Kagadi Hospital', links: [] },
+      }),
+    );
+
+    expect(screen.getByText(': 10836-5')).toBeInTheDocument();
+    expect(screen.getByText(': 16 — Sept — 2026')).toBeInTheDocument();
+    expect(screen.getByText(': 10835-7')).toBeInTheDocument();
+    expect(screen.getByText(': 18 — Sept — 2026')).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: 'Consultation' })).toBeInTheDocument();
+    expect(screen.getByRole('cell', { name: 'Laboratory' })).toBeInTheDocument();
   });
 });

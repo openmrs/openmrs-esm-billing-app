@@ -3,12 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { mockBill, mockPatient } from '@mocks/bills.mock';
 import { waitForLoadingToFinish } from '@tools/test-helpers';
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { useReactToPrint } from 'react-to-print';
 import {
   getDefaultsFromConfigSchema,
   launchWorkspace2,
   showModal,
+  showSnackbar,
   useConfig,
   usePatient,
 } from '@openmrs/esm-framework';
@@ -32,6 +33,7 @@ const mockUsePatient = vi.mocked(usePatient);
 const mockUsePaymentModes = vi.mocked(usePaymentModes);
 const mockUseReactToPrint = vi.mocked(useReactToPrint);
 const mockShowModal = vi.mocked(showModal);
+const mockShowSnackbar = vi.mocked(showSnackbar);
 
 vi.mock('../helpers/functions', () => ({
   convertToCurrency: vi.fn((amount) => `USD ${amount}`),
@@ -351,12 +353,69 @@ describe('Invoice', () => {
     expect(printSingleBill).not.toHaveBeenCalled();
   });
 
-  it('should disable print button while printing', async () => {
-    render(<Invoice />);
-    await waitForLoadingToFinish();
+  it('disables both print actions while preparing the combined document', async () => {
+    mockUseBills.mockReturnValue({
+      bills: [defaultBillData, { ...defaultBillData, uuid: 'second-bill', receiptNumber: 'RCPT-002' }],
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: vi.fn(),
+    });
 
-    const printButton = screen.getByRole('button', { name: /print bill/i });
-    expect(printButton).toBeEnabled();
+    render(<Invoice />);
+
+    const printBillButton = screen.getByRole('button', { name: /^print bill$/i });
+    const printPendingBillsButton = screen.getByRole('button', { name: /print all pending bills/i });
+    const pendingPrintOptions = mockUseReactToPrint.mock.calls[1][0];
+
+    let beforePrintPromise: Promise<void> | void;
+    act(() => {
+      beforePrintPromise = pendingPrintOptions.onBeforePrint?.();
+    });
+    await beforePrintPromise;
+
+    expect(printBillButton).toBeDisabled();
+    expect(printPendingBillsButton).toBeDisabled();
+
+    act(() => pendingPrintOptions.onAfterPrint?.());
+
+    expect(printBillButton).toBeEnabled();
+    expect(printPendingBillsButton).toBeEnabled();
+  });
+
+  it('disables combined printing while pending bills are loading', () => {
+    mockUseBills.mockReturnValue({
+      bills: [defaultBillData, { ...defaultBillData, uuid: 'second-bill', receiptNumber: 'RCPT-002' }],
+      isLoading: true,
+      error: null,
+      isValidating: false,
+      mutate: vi.fn(),
+    });
+
+    render(<Invoice />);
+
+    expect(screen.getByRole('button', { name: /print all pending bills/i })).toBeDisabled();
+  });
+
+  it('shows an error notification when combined printing fails', () => {
+    mockUseBills.mockReturnValue({
+      bills: [defaultBillData, { ...defaultBillData, uuid: 'second-bill', receiptNumber: 'RCPT-002' }],
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: vi.fn(),
+    });
+
+    render(<Invoice />);
+    const pendingPrintOptions = mockUseReactToPrint.mock.calls[1][0];
+
+    pendingPrintOptions.onPrintError?.('print', new Error('Printer unavailable'));
+
+    expect(mockShowSnackbar).toHaveBeenCalledWith({
+      title: 'Error printing pending bills',
+      kind: 'error',
+      subtitle: 'Printer unavailable',
+    });
   });
 
   it('should render patient header when patient data is available', async () => {
