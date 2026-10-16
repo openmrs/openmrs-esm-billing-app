@@ -132,4 +132,26 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText(': KES 60')).toBeInTheDocument();
     expect(screen.queryByText(': KES 80')).not.toBeInTheDocument();
   });
+
+  it('should display each invoice number with its own date for a combined invoice', () => {
+    const invoiceReferences = [
+      { receiptNumber: '10836-5', dateCreated: '2026-09-16T09:00:00.000Z' },
+      { receiptNumber: '10835-7', dateCreated: '2026-09-18T09:00:00.000Z' },
+    ];
+
+    render(
+      <PrintableInvoiceHeader
+        {...testProps}
+        defaultFacility={defaultFacility}
+        bill={{ ...bill, receiptNumber: '10836-5, 10835-7', dateCreated: '' }}
+        invoiceReferences={invoiceReferences}
+      />,
+    );
+
+    expect(screen.getByText(': 10836-5')).toBeInTheDocument();
+    expect(screen.getByText(': 16 — Sept — 2026')).toBeInTheDocument();
+    expect(screen.getByText(': 10835-7')).toBeInTheDocument();
+    expect(screen.getByText(': 18 — Sept — 2026')).toBeInTheDocument();
+    expect(screen.queryByText(/10836-5, 10835-7/)).not.toBeInTheDocument();
+  });
 });

@@ -20,6 +20,7 @@ export const combinePendingBills = (bills: MappedBill[]): MappedBill | null => {
   return {
     ...bills[0],
     uuid: bills.map((bill) => bill.uuid).join(','),
+    dateCreated: '',
     receiptNumber: bills
       .map((bill) => bill.receiptNumber)
       .filter(Boolean)
@@ -54,6 +55,7 @@ const PrintablePendingBills: React.FC<PrintablePendingBillsProps> = ({
       patient={patient}
       defaultFacility={defaultFacility}
       componentRef={componentRef}
+      invoiceReferences={bills.map(({ receiptNumber, dateCreated }) => ({ receiptNumber, dateCreated }))}
     />
   );
 };

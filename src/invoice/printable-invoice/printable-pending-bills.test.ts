@@ -42,6 +42,7 @@ describe('combinePendingBills', () => {
       createBill({
         uuid: 'bill-2',
         receiptNumber: '10835-7',
+        dateCreated: '2026-09-18T09:00:00.000Z',
         lineItems: [{ uuid: 'line-2', item: 'Laboratory', quantity: 2, price: 500, status: 'PENDING' }],
         payments: [payment],
         totalAmount: 1000,
@@ -58,6 +59,7 @@ describe('combinePendingBills', () => {
       totalAmount: 2000,
       netAmount: 1900,
       tenderedAmount: 300,
+      dateCreated: '',
     });
     expect(combinedBill?.lineItems).toHaveLength(2);
     expect(combinedBill?.payments).toEqual([payment]);
