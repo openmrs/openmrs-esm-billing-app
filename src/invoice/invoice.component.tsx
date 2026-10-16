@@ -17,12 +17,13 @@ import {
   usePatient,
 } from '@openmrs/esm-framework';
 import { convertToCurrency } from '../helpers';
-import { useBill, useDefaultFacility } from '../billing.resource';
+import { useBill, useBills, useDefaultFacility } from '../billing.resource';
 import type { BillingConfig } from '../config-schema';
 import InvoiceTable from './invoice-table.component';
 import Payments from './payments/payments.component';
 import PrintReceipt from './printable-invoice/print-receipt.component';
 import PrintableInvoice from './printable-invoice/printable-invoice.component';
+import PrintablePendingBills from './printable-invoice/printable-pending-bills.component';
 import { BillDiscountStatus, BillStatus, RefundStatus } from '../types';
 import DiscountsTable from '../discounts/discounts-table.component';
 import RefundsTable from '../refunds/refunds-table.component';
@@ -59,9 +60,17 @@ const Invoice: React.FC = () => {
   const { billUuid, patientUuid } = useParams();
   const { patient, isLoading: isLoadingPatient } = usePatient(patientUuid);
   const { bill, isLoading: isLoadingBill, error, isValidating, mutate } = useBill(billUuid);
+  const {
+    bills: pendingBills = [],
+    isLoading: isLoadingPendingBills,
+    mutate: mutatePendingBills,
+  } = useBills(patientUuid, BillStatus.PENDING);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isPrintingPendingBills, setIsPrintingPendingBills] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
+  const pendingBillsComponentRef = useRef<HTMLDivElement>(null);
   const onBeforeGetContentResolve = useRef<(() => void) | null>(null);
+  const onBeforePendingBillsContentResolve = useRef<(() => void) | null>(null);
   const { defaultCurrency } = useConfig<BillingConfig>();
 
   const discounts = (bill?.discounts ?? []).filter((d) => !d.voided);
@@ -79,6 +88,10 @@ const Invoice: React.FC = () => {
   const activeBillLevelRefund = activeRefunds.some((r) => !r.lineItemUuid);
   const activeLineRefundUuids = new Set(activeRefunds.flatMap((r) => (r.lineItemUuid ? [r.lineItemUuid] : [])));
   const showRequestRefundButton = !!bill && billStatusRefundEligible && !activeBillLevelRefund;
+
+  const refreshBillData = useCallback(async () => {
+    await Promise.all([mutate(), mutatePendingBills()]);
+  }, [mutate, mutatePendingBills]);
 
   const handleRequestRefund = () => {
     if (!bill) return;
@@ -103,7 +116,7 @@ const Invoice: React.FC = () => {
         lineItemCount: bill.lineItems?.length ?? 0,
       },
       remainingRefundable: Math.max(0, remainingRefundable),
-      onMutate: () => mutate(),
+      onMutate: refreshBillData,
       closeModal: () => dispose(),
     });
   };
@@ -117,7 +130,7 @@ const Invoice: React.FC = () => {
         receiptNumber: bill!.receiptNumber,
         lineItemCount: bill!.lineItems?.length ?? 0,
       },
-      onMutate: () => mutate(),
+      onMutate: refreshBillData,
       closeModal: () => dispose(),
     });
   };
@@ -125,6 +138,11 @@ const Invoice: React.FC = () => {
   const handleAfterPrint = useCallback(() => {
     onBeforeGetContentResolve.current = null;
     setIsPrinting(false);
+  }, []);
+
+  const handleAfterPrintPendingBills = useCallback(() => {
+    onBeforePendingBillsContentResolve.current = null;
+    setIsPrintingPendingBills(false);
   }, []);
 
   const handleOnBeforeGetContent = useCallback(() => {
@@ -136,10 +154,19 @@ const Invoice: React.FC = () => {
     });
   }, [bill, patient]);
 
+  const handleOnBeforePendingBillsContent = useCallback(() => {
+    return new Promise<void>((resolve) => {
+      if (patient && pendingBills.length > 1) {
+        setIsPrintingPendingBills(true);
+        onBeforePendingBillsContentResolve.current = resolve;
+      }
+    });
+  }, [patient, pendingBills.length]);
+
   const handleFinalizeBill = () => {
     const dispose = showModal('finalize-bill-confirmation-modal', {
       bill,
-      onMutate: mutate,
+      onMutate: refreshBillData,
       closeModal: () => dispose(),
     });
   };
@@ -167,11 +194,32 @@ const Invoice: React.FC = () => {
       }),
   });
 
+  const handlePrintPendingBills = useReactToPrint({
+    contentRef: pendingBillsComponentRef,
+    documentTitle: `Pending invoices - ${patient?.name?.[0]?.given?.join(' ')} ${patient?.name?.[0].family}`,
+    pageStyle: printPageStyle,
+    onBeforePrint: handleOnBeforePendingBillsContent,
+    onAfterPrint: handleAfterPrintPendingBills,
+    preserveAfterPrint: false,
+    onPrintError: (_, error) =>
+      showSnackbar({
+        title: t('errorPrintingPendingBills', 'Error printing pending bills'),
+        kind: 'error',
+        subtitle: error.message,
+      }),
+  });
+
   useEffect(() => {
     if (isPrinting && onBeforeGetContentResolve.current) {
       onBeforeGetContentResolve.current();
     }
   }, [isPrinting]);
+
+  useEffect(() => {
+    if (isPrintingPendingBills && onBeforePendingBillsContentResolve.current) {
+      onBeforePendingBillsContentResolve.current();
+    }
+  }, [isPrintingPendingBills]);
 
   // Do not remove this comment. Adds the translation keys for the invoice details
   /**
@@ -258,7 +306,7 @@ const Invoice: React.FC = () => {
                 launchWorkspace2('billing-form-workspace', {
                   patientUuid,
                   billUuid: bill.uuid,
-                  onMutate: mutate,
+                  onMutate: refreshBillData,
                 })
               }>
               {t('addItemsToBill', 'Add items to bill')}
@@ -272,12 +320,22 @@ const Invoice: React.FC = () => {
           </>
         )}
         <Button
-          disabled={isPrinting || isLoadingPatient || isLoadingBill}
+          disabled={isPrinting || isPrintingPendingBills || isLoadingPatient || isLoadingBill}
           onClick={handlePrint}
           renderIcon={(props) => <Printer size={24} {...props} />}
           iconDescription={t('printBill', 'Print bill')}>
           {t('printBill', 'Print bill')}
         </Button>
+        {patient && pendingBills.length > 1 && (
+          <Button
+            kind="secondary"
+            disabled={isPrinting || isPrintingPendingBills || isLoadingPendingBills || isLoadingPatient}
+            onClick={handlePrintPendingBills}
+            renderIcon={(props) => <Printer size={24} {...props} />}
+            iconDescription={t('printAllPendingBills', 'Print all pending bills')}>
+            {t('printAllPendingBills', 'Print all pending bills')}
+          </Button>
+        )}
         {bill && (bill.status === BillStatus.PAID || bill.tenderedAmount > 0) && <PrintReceipt billUuid={bill.uuid} />}
       </div>
       <div className={styles.detailsContainer}>
@@ -289,15 +347,25 @@ const Invoice: React.FC = () => {
       </div>
 
       <div className={styles.invoiceContent}>
-        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
+        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={refreshBillData} />
         {bill && <DiscountsTable bill={bill} />}
-        {bill && <RefundsTable bill={bill} onMutate={mutate} />}
-        <Payments bill={bill} mutate={mutate} onFinalizeBill={handleFinalizeBill} />
+        {bill && <RefundsTable bill={bill} onMutate={refreshBillData} />}
+        <Payments bill={bill} mutate={refreshBillData} onFinalizeBill={handleFinalizeBill} />
       </div>
 
       {bill && patient && (
         <div className={styles.printContainer}>
           <PrintableInvoice bill={bill} patient={patient} defaultFacility={data} componentRef={componentRef} />
+        </div>
+      )}
+      {patient && pendingBills.length > 1 && (
+        <div className={styles.printContainer}>
+          <PrintablePendingBills
+            bills={pendingBills}
+            patient={patient}
+            defaultFacility={data}
+            componentRef={pendingBillsComponentRef}
+          />
         </div>
       )}
     </div>
