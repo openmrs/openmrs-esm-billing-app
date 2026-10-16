@@ -60,7 +60,11 @@ const Invoice: React.FC = () => {
   const { billUuid, patientUuid } = useParams();
   const { patient, isLoading: isLoadingPatient } = usePatient(patientUuid);
   const { bill, isLoading: isLoadingBill, error, isValidating, mutate } = useBill(billUuid);
-  const { bills: pendingBills = [], isLoading: isLoadingPendingBills } = useBills(patientUuid, BillStatus.PENDING);
+  const {
+    bills: pendingBills = [],
+    isLoading: isLoadingPendingBills,
+    mutate: mutatePendingBills,
+  } = useBills(patientUuid, BillStatus.PENDING);
   const [isPrinting, setIsPrinting] = useState(false);
   const [isPrintingPendingBills, setIsPrintingPendingBills] = useState(false);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -85,6 +89,10 @@ const Invoice: React.FC = () => {
   const activeLineRefundUuids = new Set(activeRefunds.flatMap((r) => (r.lineItemUuid ? [r.lineItemUuid] : [])));
   const showRequestRefundButton = !!bill && billStatusRefundEligible && !activeBillLevelRefund;
 
+  const refreshBillData = useCallback(async () => {
+    await Promise.all([mutate(), mutatePendingBills()]);
+  }, [mutate, mutatePendingBills]);
+
   const handleRequestRefund = () => {
     if (!bill) return;
     if (bill.netAmount == null) {
@@ -108,7 +116,7 @@ const Invoice: React.FC = () => {
         lineItemCount: bill.lineItems?.length ?? 0,
       },
       remainingRefundable: Math.max(0, remainingRefundable),
-      onMutate: () => mutate(),
+      onMutate: refreshBillData,
       closeModal: () => dispose(),
     });
   };
@@ -122,7 +130,7 @@ const Invoice: React.FC = () => {
         receiptNumber: bill!.receiptNumber,
         lineItemCount: bill!.lineItems?.length ?? 0,
       },
-      onMutate: () => mutate(),
+      onMutate: refreshBillData,
       closeModal: () => dispose(),
     });
   };
@@ -158,7 +166,7 @@ const Invoice: React.FC = () => {
   const handleFinalizeBill = () => {
     const dispose = showModal('finalize-bill-confirmation-modal', {
       bill,
-      onMutate: mutate,
+      onMutate: refreshBillData,
       closeModal: () => dispose(),
     });
   };
@@ -298,7 +306,7 @@ const Invoice: React.FC = () => {
                 launchWorkspace2('billing-form-workspace', {
                   patientUuid,
                   billUuid: bill.uuid,
-                  onMutate: mutate,
+                  onMutate: refreshBillData,
                 })
               }>
               {t('addItemsToBill', 'Add items to bill')}
@@ -339,10 +347,10 @@ const Invoice: React.FC = () => {
       </div>
 
       <div className={styles.invoiceContent}>
-        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={mutate} />
+        <InvoiceTable bill={bill} isLoadingBill={isLoadingBill} onMutate={refreshBillData} />
         {bill && <DiscountsTable bill={bill} />}
-        {bill && <RefundsTable bill={bill} onMutate={mutate} />}
-        <Payments bill={bill} mutate={mutate} onFinalizeBill={handleFinalizeBill} />
+        {bill && <RefundsTable bill={bill} onMutate={refreshBillData} />}
+        <Payments bill={bill} mutate={refreshBillData} onFinalizeBill={handleFinalizeBill} />
       </div>
 
       {bill && patient && (

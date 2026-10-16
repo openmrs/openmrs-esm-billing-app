@@ -674,6 +674,7 @@ describe('Invoice', () => {
 
   it('should open finalize confirmation modal when "Finalize bill" button is clicked', async () => {
     const mockMutate = vi.fn();
+    const mockMutatePendingBills = vi.fn();
     const user = userEvent.setup();
 
     mockUseBill.mockReturnValue({
@@ -682,6 +683,13 @@ describe('Invoice', () => {
       error: null,
       isValidating: false,
       mutate: mockMutate,
+    });
+    mockUseBills.mockReturnValue({
+      bills: [defaultBillData],
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: mockMutatePendingBills,
     });
 
     render(<Invoice />);
@@ -693,9 +701,15 @@ describe('Invoice', () => {
 
     expect(mockShowModal).toHaveBeenCalledWith('finalize-bill-confirmation-modal', {
       bill: defaultBillData,
-      onMutate: mockMutate,
+      onMutate: expect.any(Function),
       closeModal: expect.any(Function),
     });
+
+    const [, props] = mockShowModal.mock.calls.at(-1)!;
+    await (props as { onMutate: () => Promise<void> }).onMutate();
+
+    expect(mockMutate).toHaveBeenCalledOnce();
+    expect(mockMutatePendingBills).toHaveBeenCalledOnce();
   });
 
   describe('discount entry points', () => {
@@ -979,6 +993,7 @@ describe('Invoice', () => {
 
   it('should launch workspace with billUuid when "Add items to bill" is clicked', async () => {
     const mockMutate = vi.fn();
+    const mockMutatePendingBills = vi.fn();
     const mockLaunchWorkspace2 = vi.mocked(launchWorkspace2);
 
     mockUseBill.mockReturnValue({
@@ -987,6 +1002,13 @@ describe('Invoice', () => {
       error: null,
       isValidating: false,
       mutate: mockMutate,
+    });
+    mockUseBills.mockReturnValue({
+      bills: [defaultBillData],
+      isLoading: false,
+      error: null,
+      isValidating: false,
+      mutate: mockMutatePendingBills,
     });
 
     const user = userEvent.setup();
@@ -999,7 +1021,13 @@ describe('Invoice', () => {
     expect(mockLaunchWorkspace2).toHaveBeenCalledWith('billing-form-workspace', {
       patientUuid: 'patientUuid',
       billUuid: 'test-uuid',
-      onMutate: mockMutate,
+      onMutate: expect.any(Function),
     });
+
+    const [, props] = mockLaunchWorkspace2.mock.calls.at(-1)!;
+    await (props as { onMutate: () => Promise<void> }).onMutate();
+
+    expect(mockMutate).toHaveBeenCalledOnce();
+    expect(mockMutatePendingBills).toHaveBeenCalledOnce();
   });
 });
