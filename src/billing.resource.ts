@@ -178,10 +178,10 @@ export function useDefaultFacility() {
   const url = `${restBaseUrl}/kenyaemr/default-facility`;
   const { authenticated, sessionLocation } = useSession();
 
-  const { data, isLoading, error } = useSWR<{ data: FacilityDetail }>(authenticated ? url : null, openmrsFetch);
+  const { data, isLoading } = useSWR<{ data: FacilityDetail }>(authenticated ? url : null, openmrsFetch);
 
-  // Fall back to session location if kenyaemr endpoint fails or returns no data
-  const facility = data?.data ?? (error ? sessionLocation : null);
+  // Fall back to session location while the kenyaemr endpoint loads or if it fails / returns no data
+  const facility = data?.data ?? sessionLocation;
 
   return { data: facility, isLoading: isLoading };
 }
