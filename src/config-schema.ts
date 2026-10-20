@@ -85,6 +85,14 @@ export const configSchema = {
       billableService: '21b8cf43-9f9f-4d02-9f4a-d710ece54261',
     },
   },
+  billingLink: {
+    privilege: {
+      _type: Type.String,
+      _description:
+        'Privilege required for a user to see the Billing link in the left navigation. Leave empty to show the link to all users.',
+      _default: '',
+    },
+  },
   defaultCurrency: {
     _type: Type.String,
     _description: 'The default currency for the application. Specify the currency code (e.g., KES, UGX, GBP).',
@@ -132,6 +140,9 @@ export interface BillingConfig {
   };
   serviceTypes: {
     billableService: string;
+  };
+  billingLink: {
+    privilege: string;
   };
   defaultCurrency: string;
   pageSize: number;
