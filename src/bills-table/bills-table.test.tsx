@@ -1,10 +1,12 @@
 import React from 'react';
+import dayjs from 'dayjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { usePaginatedBills } from '../billing.resource';
-import { BillStatus } from '../types';
+import { BillLineItemStatus, BillStatus, type MappedBill } from '../types';
 import BillsTable from './bills-table.component';
+import type * as EsmFramework from '@openmrs/esm-framework';
 
 vi.mock('../billing.resource', () => ({
   usePaginatedBills: vi.fn(() => ({
@@ -16,6 +18,26 @@ vi.mock('../billing.resource', () => ({
   })),
 }));
 
+// Override the framework's OpenmrsDatePicker mock so it can fire `undefined` on an
+// emptied input, matching the real component's onChange contract (Date | null | undefined).
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const actual = await importOriginal<typeof EsmFramework>();
+  return {
+    ...actual,
+    OpenmrsDatePicker: vi.fn(({ id, labelText, value, onChange }) => (
+      <>
+        <label htmlFor={id}>{labelText}</label>
+        <input
+          id={id}
+          type="text"
+          value={value ? dayjs(value).format('DD/MM/YYYY') : ''}
+          onChange={(evt) => onChange?.(evt.target.value ? dayjs(evt.target.value).toDate() : undefined)}
+        />
+      </>
+    )),
+  };
+});
+
 const mockBills = vi.mocked(usePaginatedBills);
 
 const mockBillsData = [
@@ -24,7 +46,6 @@ const mockBillsData = [
     id: 1,
     patientName: 'John Doe',
     identifier: '12345678',
-    visitType: 'Checkup',
     patientUuid: 'uuid1',
     dateCreated: '2024-01-01',
     lineItems: [
@@ -41,7 +62,7 @@ const mockBillsData = [
         priceUuid: 'price-1',
         lineItemOrder: 1,
         resourceVersion: '1.0',
-        paymentStatus: 'PENDING',
+        status: BillLineItemStatus.PENDING,
       },
     ],
     status: BillStatus.PENDING,
@@ -53,6 +74,7 @@ const mockBillsData = [
     billingService: 'Service 1',
     payments: [],
     totalAmount: 100,
+    netAmount: 100,
     tenderedAmount: 0,
   },
   {
@@ -60,7 +82,6 @@ const mockBillsData = [
     id: 2,
     patientName: 'Mary Smith',
     identifier: '98765432',
-    visitType: 'Wake up',
     patientUuid: 'uuid2',
     dateCreated: '2024-01-02',
     lineItems: [
@@ -77,7 +98,7 @@ const mockBillsData = [
         priceUuid: 'price-1',
         lineItemOrder: 1,
         resourceVersion: '1.0',
-        paymentStatus: 'PENDING',
+        status: BillLineItemStatus.PENDING,
       },
     ],
     status: BillStatus.PENDING,
@@ -89,9 +110,10 @@ const mockBillsData = [
     billingService: 'Service 2',
     payments: [],
     totalAmount: 200,
+    netAmount: 200,
     tenderedAmount: 200,
   },
-];
+] satisfies MappedBill[];
 
 describe('BillsTable', () => {
   beforeEach(() => {
@@ -151,9 +173,9 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    expect(screen.getByRole('progressbar')).toBeInTheDocument();
+    expect(screen.getByTestId('bills-table-skeleton')).toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
-    expect(screen.getByText(/pending payment/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending confirmation/i)).toBeInTheDocument();
   });
 
   it('should display an error state if there is a problem loading bill data', () => {
@@ -173,7 +195,7 @@ describe('BillsTable', () => {
     expect(screen.getByText(/error state/i)).toBeInTheDocument();
     expect(screen.queryByRole('table')).not.toBeInTheDocument();
     expect(screen.getByText(/filter by/i)).toBeInTheDocument();
-    expect(screen.getByText(/pending payment/i)).toBeInTheDocument();
+    expect(screen.getByText(/pending confirmation/i)).toBeInTheDocument();
   });
 
   it('should pass search term to backend API', async () => {
@@ -202,7 +224,7 @@ describe('BillsTable', () => {
     await user.type(searchInput, 'John');
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(10, 'POSTED', 'John');
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', 'John', null, null);
     });
 
     expect(mockGoTo).toHaveBeenCalledWith(1);
@@ -246,7 +268,7 @@ describe('BillsTable', () => {
 
     render(<BillsTable />);
 
-    const filterDropdown = screen.getByText('Pending payment');
+    const filterDropdown = screen.getByText('Pending confirmation');
     await user.click(filterDropdown);
 
     const paidBillsOption = screen.getAllByText('Paid bills')[0];
@@ -327,48 +349,21 @@ describe('BillsTable', () => {
     });
   });
 
-  it('should default to "Pending payment" filter showing POSTED bills', () => {
+  it('should default to "Pending confirmation" filter showing PENDING bills', () => {
     render(<BillsTable />);
 
-    expect(screen.getByText('Pending payment')).toBeInTheDocument();
-    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+    expect(screen.getByText('Pending confirmation')).toBeInTheDocument();
+    expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined, null, null);
   });
 
-  it('should show "Pending confirmation" option in filter dropdown', async () => {
+  it('should show "Pending payment" option in filter dropdown', async () => {
     const user = userEvent.setup();
     render(<BillsTable />);
 
-    const filterDropdown = screen.getByText('Pending payment');
+    const filterDropdown = screen.getByText('Pending confirmation');
     await user.click(filterDropdown);
 
-    expect(screen.getByRole('option', { name: /pending confirmation/i })).toBeInTheDocument();
-  });
-
-  it('should filter by PENDING status when "Pending confirmation" is selected', async () => {
-    const user = userEvent.setup();
-    const mockGoTo = vi.fn();
-
-    mockBills.mockImplementation((_pageSize, status) => ({
-      bills: status === 'PENDING' ? [mockBillsData[0]] : mockBillsData,
-      isLoading: false,
-      isValidating: false,
-      error: null,
-      mutate: vi.fn(),
-      currentPage: 1,
-      totalCount: status === 'PENDING' ? 1 : 2,
-      goTo: mockGoTo,
-    }));
-
-    render(<BillsTable />);
-
-    const filterDropdown = screen.getByText('Pending payment');
-    await user.click(filterDropdown);
-
-    await user.click(screen.getByRole('option', { name: /pending confirmation/i }));
-
-    await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined);
-    });
+    expect(screen.getByRole('option', { name: /pending payment/i })).toBeInTheDocument();
   });
 
   it('should filter by POSTED status when "Pending payment" is selected', async () => {
@@ -382,25 +377,171 @@ describe('BillsTable', () => {
       error: null,
       mutate: vi.fn(),
       currentPage: 1,
+      totalCount: status === 'POSTED' ? 1 : 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    const filterDropdown = screen.getByText('Pending confirmation');
+    await user.click(filterDropdown);
+
+    await user.click(screen.getByRole('option', { name: /pending payment/i }));
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined, null, null);
+    });
+  });
+
+  it('should filter by PENDING status when "Pending confirmation" is selected', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation((_pageSize, status) => ({
+      bills: status === 'PENDING' ? [mockBillsData[0]] : mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
       totalCount: 1,
       goTo: mockGoTo,
     }));
 
     render(<BillsTable />);
 
-    // Navigate away from the default POSTED filter first, then select it again
-    const filterDropdown = screen.getByText('Pending payment');
+    // Navigate away from the default PENDING filter first, then select it again
+    const filterDropdown = screen.getByText('Pending confirmation');
     await user.click(filterDropdown);
     await user.click(screen.getByRole('option', { name: /all bills/i }));
 
     mockBills.mockClear();
 
     await user.click(screen.getByText('All bills'));
-    await user.click(screen.getByRole('option', { name: /pending payment/i }));
+    await user.click(screen.getByRole('option', { name: /pending confirmation/i }));
 
     await waitFor(() => {
-      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'POSTED', undefined);
+      expect(mockBills).toHaveBeenCalledWith(expect.any(Number), 'PENDING', undefined, null, null);
     });
+  });
+
+  it('should render the From and To date pickers', () => {
+    render(<BillsTable />);
+
+    expect(screen.getByLabelText('From')).toBeInTheDocument();
+    expect(screen.getByLabelText('To')).toBeInTheDocument();
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+  });
+
+  it('should call usePaginatedBills with the selected start date and reset to page 1', async () => {
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, new Date(2026, 0, 15), null);
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+  });
+
+  it('should call usePaginatedBills with the selected end date and reset to page 1', async () => {
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-01-20' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, new Date(2026, 0, 20));
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+  });
+
+  it('should show the clear dates button only when a date is set, and clear both dates on click', async () => {
+    const user = userEvent.setup();
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+
+    const clearButton = await screen.findByText('Clear dates');
+    expect(clearButton).toBeInTheDocument();
+
+    mockGoTo.mockClear();
+    await user.click(clearButton);
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, null);
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
+  });
+
+  it('should treat onChange(undefined) from the picker as clearing the date', async () => {
+    const mockGoTo = vi.fn();
+
+    mockBills.mockImplementation(() => ({
+      bills: mockBillsData,
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 2,
+      goTo: mockGoTo,
+    }));
+
+    render(<BillsTable />);
+
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-01-15' } });
+    expect(await screen.findByText('Clear dates')).toBeInTheDocument();
+
+    mockGoTo.mockClear();
+    fireEvent.change(screen.getByLabelText('From'), { target: { value: '' } });
+
+    await waitFor(() => {
+      expect(mockBills).toHaveBeenCalledWith(10, 'PENDING', undefined, null, null);
+    });
+    expect(mockGoTo).toHaveBeenCalledWith(1);
+    expect(screen.queryByText('Clear dates')).not.toBeInTheDocument();
   });
 
   it('should keep data visible during subsequent loads', () => {
@@ -425,6 +566,6 @@ describe('BillsTable', () => {
     expect(screen.getByTitle('loading')).toBeInTheDocument();
 
     // Should NOT show skeleton
-    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bills-table-skeleton')).not.toBeInTheDocument();
   });
 });

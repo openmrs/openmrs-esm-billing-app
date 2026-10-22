@@ -3,17 +3,19 @@ import { type Page } from '@playwright/test';
 export class InvoicePage {
   constructor(readonly page: Page) {}
 
-  readonly invoiceNumberLabel = () => this.page.getByRole('heading', { name: /invoice #/i });
-  readonly totalAmountLabel = () => this.page.getByText(/total amount/i).first();
-  readonly amountTenderedLabel = () => this.page.getByText(/amount tendered/i);
-  readonly amountDueLabel = () => this.page.getByText(/amount due/i);
-  readonly invoiceStatusLabel = () => this.page.getByText(/invoice status/i);
-  readonly dateAndTimeLabel = () => this.page.getByText(/date and time/i);
+  readonly invoiceNumberLabel = () => this.page.getByRole('heading', { name: /invoice number/i });
+  readonly totalAmountLabel = () => this.page.getByRole('heading', { name: /^total amount$/i });
+  readonly amountTenderedLabel = () => this.page.getByRole('heading', { name: /^amount tendered$/i });
+  readonly amountDueLabel = () => this.page.getByRole('heading', { name: /^amount due$/i });
+  readonly invoiceStatusLabel = () => this.page.getByRole('heading', { name: /^invoice status$/i });
+  readonly dateBillCreatedLabel = () => this.page.getByRole('heading', { name: /^date bill created$/i });
   readonly printBillButton = () => this.page.getByRole('button', { name: /print bill/i });
   readonly printReceiptButton = () => this.page.getByRole('button', { name: /print receipt/i });
   readonly invoiceTable = () => this.page.getByRole('table').first();
   readonly discardButton = () => this.page.getByRole('button', { name: /discard/i });
-  readonly finalizeBillButton = () => this.page.getByRole('button', { name: /^finalize bill$/i });
+  // A pending bill shows "Finalize bill" both in the action bar and in the payments empty
+  // state. Scope to the first (action bar) so the locator stays unambiguous.
+  readonly finalizeBillButton = () => this.page.getByRole('button', { name: /^finalize bill$/i }).first();
   readonly addItemsToBillButton = () => this.page.getByRole('button', { name: /add items to bill/i });
   readonly finalizeBillModal = () => this.page.getByRole('dialog', { name: /finalize bill/i });
   readonly confirmFinalizeButton = () => this.page.getByRole('button', { name: /^finalize$/i });
@@ -74,7 +76,7 @@ export class InvoicePage {
   }
 
   async getDateAndTime() {
-    const parent = this.dateAndTimeLabel().locator('..');
+    const parent = this.dateBillCreatedLabel().locator('..');
     const value = await parent.locator('[class*="value"]').textContent();
     return value?.trim();
   }

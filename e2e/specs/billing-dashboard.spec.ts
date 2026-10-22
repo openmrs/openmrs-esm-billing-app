@@ -175,11 +175,11 @@ test.describe('Billing Dashboard workflow', () => {
         expect(lineItem.status).toBe('PAID');
       });
 
-      // Also verify backend line items have paymentStatus set to PAID
+      // Also verify backend line items have status set to PAID
       const billResponse = await api.get(`billing/bill/${billUuid}`);
       const billData = await billResponse.json();
-      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
-        expect(lineItem.paymentStatus).toBe('PAID');
+      billData.lineItems.forEach((lineItem: { status: string }) => {
+        expect(lineItem.status).toBe('PAID');
       });
     });
 

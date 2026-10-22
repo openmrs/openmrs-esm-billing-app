@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import classNames from 'classnames';
 import {
+  Button,
   DataTable,
   DataTableSkeleton,
   Dropdown,
@@ -28,6 +29,7 @@ import {
   useConfig,
   useDebounce,
   parseDate,
+  OpenmrsDatePicker,
   type LayoutType,
 } from '@openmrs/esm-framework';
 import { usePaginatedBills } from '../billing.resource';
@@ -45,7 +47,7 @@ interface BillDisplayItem extends Omit<MappedBill, 'id'> {
 interface BillPaymentStatusFilterItem {
   id: BillStatus | '';
   text: string;
-  status: BillStatus | '';
+  status: string;
 }
 
 const mapLineItems = (bill: MappedBill) =>
@@ -72,20 +74,35 @@ const BillsTable: React.FC = () => {
       },
       { id: BillStatus.POSTED, text: t('pendingPaymentBills', 'Pending payment'), status: BillStatus.POSTED },
       { id: BillStatus.PAID, text: t('paidBills', 'Paid bills'), status: BillStatus.PAID },
+      {
+        id: BillStatus.REFUNDED,
+        text: t('refundedBills', 'Refunded bills'),
+        status: `${BillStatus.REFUNDED},${BillStatus.PARTIALLY_REFUNDED}`,
+      },
+      {
+        id: BillStatus.REFUND_REQUESTED,
+        text: t('pendingRefundBills', 'Pending refunds'),
+        status: BillStatus.REFUND_REQUESTED,
+      },
     ],
     [t],
   );
 
-  // Default to 'POSTED' (pending payment) so cashiers see bills awaiting payment on load
+  // Default to 'PENDING' (pending confirmation) so cashiers see bills awaiting confirmation on load
   const [billPaymentStatus, setBillPaymentStatus] = useState<BillPaymentStatusFilterItem>(
-    () => billPaymentStatusFilterItems.find((item) => item.id === BillStatus.POSTED) ?? billPaymentStatusFilterItems[0],
+    () =>
+      billPaymentStatusFilterItems.find((item) => item.id === BillStatus.PENDING) ?? billPaymentStatusFilterItems[0],
   );
   const [searchString, setSearchString] = useState('');
   const debouncedSearchString = useDebounce(searchString, 500);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const { bills, error, currentPage, isLoading, isValidating, totalCount, goTo } = usePaginatedBills(
     pageSize,
     billPaymentStatus.status,
     debouncedSearchString || undefined,
+    startDate,
+    endDate,
   );
 
   const headerData = [
@@ -136,7 +153,8 @@ const BillsTable: React.FC = () => {
   }, [bills]);
 
   // Check if user has applied any filters (not "All bills") or search
-  const hasActiveFiltersOrSearch = searchString.trim() !== '' || billPaymentStatus.id !== '';
+  const hasActiveFiltersOrSearch =
+    searchString.trim() !== '' || billPaymentStatus.id !== '' || startDate !== null || endDate !== null;
 
   const handleSearch = useCallback(
     (e) => {
@@ -154,6 +172,28 @@ const BillsTable: React.FC = () => {
     [goTo],
   );
 
+  const handleStartDateChange = useCallback(
+    (date: Date | null | undefined) => {
+      setStartDate(date ?? null);
+      goTo(1);
+    },
+    [goTo],
+  );
+
+  const handleEndDateChange = useCallback(
+    (date: Date | null | undefined) => {
+      setEndDate(date ?? null);
+      goTo(1);
+    },
+    [goTo],
+  );
+
+  const handleClearDates = useCallback(() => {
+    setStartDate(null);
+    setEndDate(null);
+    goTo(1);
+  }, [goTo]);
+
   return (
     <>
       <div className={styles.filterContainer}>
@@ -170,10 +210,34 @@ const BillsTable: React.FC = () => {
           titleText={t('filterBy', 'Filter by:')}
           type="inline"
         />
+        <div className={styles.datePickerContainer}>
+          <OpenmrsDatePicker
+            id="bill-start-date-filter"
+            labelText={t('from', 'From')}
+            maxDate={endDate}
+            value={startDate}
+            onChange={handleStartDateChange}
+            size={responsiveSize}
+          />
+          <OpenmrsDatePicker
+            id="bill-end-date-filter"
+            labelText={t('to', 'To')}
+            minDate={startDate}
+            value={endDate}
+            onChange={handleEndDateChange}
+            size={responsiveSize}
+            invalidText={t('endDateBeforeStartDate', 'End date must be after the start date')}
+          />
+          {startDate || endDate ? (
+            <Button className={styles.clearDatesButton} kind="ghost" onClick={handleClearDates} size={responsiveSize}>
+              {t('clearDates', 'Clear dates')}
+            </Button>
+          ) : null}
+        </div>
       </div>
 
       {isLoading && !bills?.length ? (
-        <div className={styles.loaderContainer} role="progressbar" aria-label={t('loading', 'Loading')}>
+        <div className={styles.loaderContainer} data-testid="bills-table-skeleton">
           <DataTableSkeleton
             rowCount={pageSize}
             showHeader={false}

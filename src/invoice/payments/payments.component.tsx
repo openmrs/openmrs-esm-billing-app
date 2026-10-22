@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@carbon/react';
+import { Button, Layer, Tile } from '@carbon/react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -8,15 +8,17 @@ import { CardHeader, navigate, showSnackbar, useConfig, useVisit } from '@openmr
 import { InvoiceBreakDown } from './invoice-breakdown/invoice-breakdown.component';
 import PaymentForm from './payment-form/payment-form.component';
 import PaymentHistory from './payment-history/payment-history.component';
-import { processBillPayment } from '../../billing.resource';
+import { useSWRConfig } from 'swr';
+import { processBillPayment, patientPaymentStatusCacheKey } from '../../billing.resource';
 import { updateBillVisitAttribute } from './payment.resource';
 import { convertToCurrency } from '../../helpers';
-import { BillStatus, type MappedBill } from '../../types';
+import { BillStatus, RefundStatus, type MappedBill } from '../../types';
 import styles from './payments.scss';
 
 type PaymentProps = {
   bill: MappedBill;
   mutate: () => void;
+  onFinalizeBill: () => void;
 };
 
 export type Payment = { method: string; amount: number | undefined; referenceCode?: number | string };
@@ -25,8 +27,9 @@ export type PaymentFormValue = {
   payment: Payment;
 };
 
-const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
+const Payments: React.FC<PaymentProps> = ({ bill, mutate, onFinalizeBill }) => {
   const { t } = useTranslation();
+  const { mutate: swrMutate } = useSWRConfig();
   const paymentSchema = z.object({
     method: z.string().refine((value) => !!value, 'Payment method is required'),
     amount: z
@@ -35,7 +38,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
         invalid_type_error: t('amountRequired', 'Amount is required'),
       })
       .positive({ message: t('amountMustBePositive', 'Amount must be greater than 0') })
-      .max(bill?.totalAmount - bill?.tenderedAmount, {
+      .max((bill?.netAmount ?? 0) - (bill?.tenderedAmount ?? 0), {
         message: t('paymentAmountCannotExceedAmountDue', 'Payment amount cannot exceed amount due'),
       }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
@@ -69,7 +72,12 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
     return null;
   }
 
-  const amountDue = (bill.totalAmount ?? 0) - (bill.tenderedAmount ?? 0);
+  const refundTotal = (bill.refunds ?? [])
+    .filter((r) => r.status === RefundStatus.COMPLETED)
+    .reduce((sum, r) => sum + r.refundAmount, 0);
+
+  const amountDue = (bill.netAmount ?? 0) - (bill.tenderedAmount ?? 0);
+  const isPending = bill.status === BillStatus.PENDING;
 
   const handleProcessPayment = async () => {
     if (!formValues?.method || formValues.amount == null) {
@@ -95,6 +103,7 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
       }
       methods.reset(defaultPaymentValues);
       mutate();
+      swrMutate(patientPaymentStatusCacheKey(bill.patientUuid));
     } catch (error) {
       showSnackbar({
         title: t('errorProcessingPayment', 'Error processing payment'),
@@ -112,8 +121,26 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             <span></span>
           </CardHeader>
           <div>
-            <PaymentHistory bill={bill} />
-            <PaymentForm disablePayment={amountDue <= 0 || bill.status === BillStatus.PENDING} />
+            {isPending ? (
+              <div className={styles.pendingEmptyState}>
+                <Layer>
+                  <Tile className={styles.pendingEmptyStateTile}>
+                    <p className={styles.pendingEmptyStateContent}>{t('billNotFinalized', 'Bill not finalized')}</p>
+                    <p className={styles.pendingEmptyStateHelper}>
+                      {t('finalizeBillToRecordPayment', 'Finalize this bill before recording a payment.')}
+                    </p>
+                    <Button className={styles.finalizeButton} kind="primary" size="sm" onClick={onFinalizeBill}>
+                      {t('finalizeBill', 'Finalize bill')}
+                    </Button>
+                  </Tile>
+                </Layer>
+              </div>
+            ) : (
+              <>
+                <PaymentHistory bill={bill} />
+                <PaymentForm disablePayment={amountDue <= 0} />
+              </>
+            )}
           </div>
         </div>
         <div className={styles.divider} />
@@ -126,21 +153,30 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate }) => {
             label={t('totalTendered', 'Total tendered')}
             value={convertToCurrency(bill.tenderedAmount ?? 0, defaultCurrency)}
           />
-          <InvoiceBreakDown label={t('discount', 'Discount')} value={'--'} />
+          <InvoiceBreakDown
+            label={t('discount', 'Discount')}
+            value={`- ${convertToCurrency((bill.totalAmount ?? 0) - (bill.netAmount ?? 0), defaultCurrency)}`}
+          />
+          <InvoiceBreakDown
+            label={t('refunds', 'Refunds')}
+            value={`- ${convertToCurrency(refundTotal, defaultCurrency)}`}
+          />
           <InvoiceBreakDown
             hasBalance={amountDue < 0}
             label={t('amountDue', 'Amount due')}
-            value={convertToCurrency(amountDue < 0 ? -amountDue : amountDue, defaultCurrency)}
+            value={convertToCurrency(amountDue, defaultCurrency)}
           />
           <div className={styles.processPayments}>
             <Button onClick={handleNavigateToBillingDashboard} kind="secondary">
               {t('discard', 'Discard')}
             </Button>
-            <Button
-              onClick={handleProcessPayment}
-              disabled={!formValues?.method || formValues.amount == null || !methods.formState.isValid}>
-              {t('processPayment', 'Process Payment')}
-            </Button>
+            {!isPending && (
+              <Button
+                onClick={handleProcessPayment}
+                disabled={!formValues?.method || formValues.amount == null || !methods.formState.isValid}>
+                {t('processPayment', 'Process Payment')}
+              </Button>
+            )}
           </div>
         </div>
       </div>

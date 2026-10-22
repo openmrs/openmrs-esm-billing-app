@@ -80,11 +80,32 @@ async function getBillableService(api: APIRequestContext, serviceUuid: string): 
 }
 
 export async function deleteBill(api: APIRequestContext, billUuid: string) {
+  // NOTE: bills carrying a BillDiscount cannot be purged today — the backend's
+  // BillDiscountResource throws UnsupportedOperationException on purge, and the
+  // bill_discount FK on cashier_bill_line_item has no ON DELETE CASCADE, so the
+  // bill purge fails with a Hibernate ConstraintViolationException. Re-enable
+  // the discount cleanup below once backend purge support lands.
+  // await purgeBillDiscounts(api, billUuid);
+
   const response = await api.delete(`billing/bill/${billUuid}?purge=true`);
   if (!response.ok()) {
     console.warn(`Failed to delete bill ${billUuid}: ${await response.text()}`);
   }
 }
+
+// async function purgeBillDiscounts(api: APIRequestContext, billUuid: string) {
+//   const response = await api.get(`billing/billDiscount?bill=${billUuid}`);
+//   if (!response.ok()) {
+//     return;
+//   }
+//   const { results = [] } = (await response.json()) as { results?: Array<{ uuid: string }> };
+//   for (const discount of results) {
+//     const purge = await api.delete(`billing/billDiscount/${discount.uuid}?purge=true`);
+//     if (!purge.ok()) {
+//       console.warn(`Failed to purge discount ${discount.uuid}: ${await purge.text()}`);
+//     }
+//   }
+// }
 
 /**
  * Deletes all bills associated with a patient

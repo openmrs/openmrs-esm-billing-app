@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { getDefaultsFromConfigSchema, showModal, useConfig } from '@openmrs/esm-framework';
-import { type MappedBill } from '../types';
+import { BillStatus, RefundStatus, type BillRefund, type MappedBill } from '../types';
 import { configSchema, type BillingConfig } from '../config-schema';
 import InvoiceTable from './invoice-table.component';
 
@@ -12,6 +12,10 @@ const mockShowModal = vi.mocked(showModal);
 
 vi.mock('../helpers', () => ({
   convertToCurrency: vi.fn((price) => `USD ${price}`),
+}));
+
+vi.mock('../discounts/discounts.resource', () => ({
+  useBillDiscounts: () => ({ discounts: [], isLoading: false, error: null, mutate: vi.fn() }),
 }));
 
 describe('InvoiceTable', () => {
@@ -26,7 +30,7 @@ describe('InvoiceTable', () => {
       {
         uuid: '1',
         item: 'Item 1',
-        paymentStatus: 'PAID',
+        status: 'PAID',
         quantity: 1,
         price: 100,
         display: '',
@@ -41,7 +45,7 @@ describe('InvoiceTable', () => {
       {
         uuid: '2',
         item: 'Item 2',
-        paymentStatus: 'PENDING',
+        status: 'PENDING',
         quantity: 2,
         price: 200,
         display: '',
@@ -69,6 +73,7 @@ describe('InvoiceTable', () => {
     billingService: 'billing-service-uuid',
     payments: [],
     totalAmount: 300,
+    netAmount: 300,
     tenderedAmount: 300,
   };
 
@@ -128,7 +133,7 @@ describe('InvoiceTable', () => {
         {
           uuid: '1',
           item: 'Service A',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           quantity: 3,
           price: 100,
           display: '',
@@ -294,7 +299,7 @@ describe('InvoiceTable', () => {
         {
           uuid: '1',
           item: 'Free Service',
-          paymentStatus: 'PAID',
+          status: 'PAID',
           quantity: 1,
           price: 0,
           display: '',
@@ -322,7 +327,7 @@ describe('InvoiceTable', () => {
         {
           uuid: '1',
           item: 'Service',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           quantity: 0,
           price: 100,
           display: '',
@@ -351,7 +356,7 @@ describe('InvoiceTable', () => {
           uuid: '1',
           item: 'Item Name',
           billableService: 'Billable Service Name',
-          paymentStatus: 'PAID',
+          status: 'PAID',
           quantity: 1,
           price: 100,
           display: '',
@@ -366,7 +371,7 @@ describe('InvoiceTable', () => {
           uuid: '2',
           item: 'Item Without Billable',
           billableService: '',
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           quantity: 1,
           price: 200,
           display: '',
@@ -409,5 +414,151 @@ describe('InvoiceTable', () => {
     const searchInput = screen.getByPlaceholderText(/search this table/i);
     expect(searchInput).toBeInTheDocument();
     expect(searchInput).toBeVisible();
+  });
+
+  describe('viewOnly mode', () => {
+    it('hides the search box', () => {
+      render(<InvoiceTable bill={defaultBill} viewOnly />);
+      expect(screen.queryByPlaceholderText(/search this table/i)).not.toBeInTheDocument();
+    });
+
+    it('hides the actions column header', () => {
+      render(<InvoiceTable bill={defaultBill} viewOnly />);
+      // 6 data column headers; no 7th actions header
+      expect(screen.getAllByRole('columnheader')).toHaveLength(6);
+    });
+
+    it('hides per-row action menus', () => {
+      render(<InvoiceTable bill={defaultBill} viewOnly />);
+      expect(screen.queryAllByRole('button', { name: /options/i })).toHaveLength(0);
+    });
+
+    it('hides the filter helper text in the empty state', () => {
+      const emptyBill: MappedBill = { ...defaultBill, lineItems: [] };
+      render(<InvoiceTable bill={emptyBill} viewOnly />);
+      expect(screen.getByText(/no matching items to display/i)).toBeInTheDocument();
+      expect(screen.queryByText(/check the filters above/i)).not.toBeInTheDocument();
+    });
+  });
+
+  describe('line-item refund eligibility', () => {
+    const makeRefund = (overrides: Partial<BillRefund> = {}): BillRefund => ({
+      uuid: 'r-1',
+      billUuid: 'bill-uuid',
+      lineItemUuid: null,
+      refundAmount: 100,
+      reason: 'overcharged',
+      initiator: { uuid: 'u1', display: 'cashier' },
+      approver: null,
+      completer: null,
+      dateApproved: null,
+      dateCompleted: null,
+      dateCreated: '2024-01-01',
+      status: RefundStatus.REQUESTED,
+      voided: false,
+      ...overrides,
+    });
+
+    const paidBill: MappedBill = { ...defaultBill, status: BillStatus.PAID, totalAmount: 300, tenderedAmount: 300 };
+
+    it('shows the refund action for an eligible line item on a PAID bill', async () => {
+      const user = userEvent.setup();
+      render(<InvoiceTable bill={paidBill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.getByTestId('request-refund-button-1')).toBeInTheDocument();
+    });
+
+    it('hides the refund action for a line item that already has an active refund', async () => {
+      const user = userEvent.setup();
+      render(
+        <InvoiceTable bill={{ ...paidBill, refunds: [makeRefund({ lineItemUuid: '1' })] }} onMutate={mockOnMutate} />,
+      );
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+
+    it('hides the refund action for all line items when there is an active bill-level refund', async () => {
+      const user = userEvent.setup();
+      render(
+        <InvoiceTable bill={{ ...paidBill, refunds: [makeRefund({ lineItemUuid: null })] }} onMutate={mockOnMutate} />,
+      );
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+
+    it('shows the refund action for a line item when bill is REFUND_REQUESTED due to a different line item', async () => {
+      const user = userEvent.setup();
+      const bill: MappedBill = {
+        ...paidBill,
+        status: BillStatus.REFUND_REQUESTED,
+        refunds: [makeRefund({ uuid: 'r-1', lineItemUuid: '1' })],
+      };
+      render(<InvoiceTable bill={bill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-2'));
+      expect(screen.getByTestId('request-refund-button-2')).toBeInTheDocument();
+    });
+
+    it('hides the refund action for the line item that triggered REFUND_REQUESTED status', async () => {
+      const user = userEvent.setup();
+      const bill: MappedBill = {
+        ...paidBill,
+        status: BillStatus.REFUND_REQUESTED,
+        refunds: [makeRefund({ uuid: 'r-1', lineItemUuid: '1' })],
+      };
+      render(<InvoiceTable bill={bill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+
+    it('hides all line-item refund actions when there is an active bill-level refund on a REFUND_REQUESTED bill', async () => {
+      const user = userEvent.setup();
+      const bill: MappedBill = {
+        ...paidBill,
+        status: BillStatus.REFUND_REQUESTED,
+        refunds: [makeRefund({ lineItemUuid: null })],
+      };
+      render(<InvoiceTable bill={bill} onMutate={mockOnMutate} />);
+      await user.click(screen.getByTestId('action-menu-1'));
+      expect(screen.queryByTestId('request-refund-button-1')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('per-line-item discount action', () => {
+    it('opens the request-discount modal with lineItem scope', async () => {
+      const user = userEvent.setup();
+      const billPosted: MappedBill = {
+        ...defaultBill,
+        status: 'POSTED',
+        lineItems: [
+          {
+            uuid: 'li1',
+            item: 'Consultation',
+            status: 'PENDING',
+            quantity: 1,
+            price: 1000,
+            display: '',
+            voided: false,
+            voidReason: '',
+            billableService: '',
+            priceName: '',
+            priceUuid: '',
+            lineItemOrder: 0,
+            resourceVersion: '',
+          },
+        ],
+        totalAmount: 1000,
+      };
+      render(<InvoiceTable bill={billPosted} onMutate={mockOnMutate} />);
+
+      await user.click(screen.getByTestId('action-menu-li1'));
+      await user.click(screen.getByText(/request discount/i));
+
+      expect(mockShowModal).toHaveBeenCalledWith(
+        'request-discount-modal',
+        expect.objectContaining({
+          lineItem: expect.objectContaining({ uuid: 'li1', display: 'Consultation' }),
+        }),
+      );
+    });
   });
 });

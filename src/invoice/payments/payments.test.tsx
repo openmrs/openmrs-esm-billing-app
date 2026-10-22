@@ -10,6 +10,7 @@ import {
   type VisitReturnType,
 } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
+import { processBillPayment } from '../../billing.resource';
 import { BillStatus, type MappedBill } from '../../types';
 import { configSchema, type BillingConfig } from '../../config-schema';
 import { usePaymentModes } from './payment.resource';
@@ -108,9 +109,11 @@ describe('Payments', () => {
     dateCreated: '2023-09-01T12:00:00Z',
     lineItems: [],
     billingService: 'Billing Service',
+    netAmount: 0,
   };
 
   const mockMutate = vi.fn();
+  const mockFinalize = vi.fn();
 
   beforeEach(() => {
     mockUseVisit.mockReturnValue({ currentVisit: null } as unknown as VisitReturnType);
@@ -134,26 +137,26 @@ describe('Payments', () => {
   });
 
   it('renders payment form and history', () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
     expect(screen.getByText(/payments/i)).toBeInTheDocument();
     expect(screen.getByText(/total amount:/i)).toBeInTheDocument();
     expect(screen.getByText(/total tendered:/i)).toBeInTheDocument();
   });
 
   it('displays formatted currency amounts', () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
     // Verify that currency formatting is applied (mocked to return '$1000.00')
     const formattedAmounts = screen.getAllByText('$1000.00');
     expect(formattedAmounts.length).toBeGreaterThan(0);
   });
 
   it('disables Process Payment button when form is invalid', () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
     expect(screen.getByText('Process Payment')).toBeDisabled();
   });
 
   it('navigates to billing dashboard when Discard is clicked', async () => {
-    render(<Payments bill={mockBill} mutate={mockMutate} />);
+    render(<Payments bill={mockBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
     await userEvent.click(screen.getByText('Discard'));
     expect(navigate).toHaveBeenCalled();
   });
@@ -165,7 +168,7 @@ describe('Payments', () => {
       tenderedAmount: 0,
     };
 
-    render(<Payments bill={billWithAmountDue} mutate={mockMutate} />);
+    render(<Payments bill={billWithAmountDue} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     // Process Payment button should be disabled when no amount is entered
     expect(screen.getByText('Process Payment')).toBeDisabled();
@@ -178,7 +181,7 @@ describe('Payments', () => {
       tenderedAmount: 0,
     };
 
-    render(<Payments bill={billWithAmountDue} mutate={mockMutate} />);
+    render(<Payments bill={billWithAmountDue} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     expect(screen.getByText('Process Payment')).toBeDisabled();
   });
@@ -190,7 +193,7 @@ describe('Payments', () => {
       tenderedAmount: 200,
     };
 
-    render(<Payments bill={billWithBalance} mutate={mockMutate} />);
+    render(<Payments bill={billWithBalance} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     expect(screen.getByText(/amount due:/i)).toBeInTheDocument();
     // The amount due section should be visible for bills with remaining balance
@@ -205,7 +208,7 @@ describe('Payments', () => {
       tenderedAmount: 150,
     };
 
-    render(<Payments bill={billWithOverpayment} mutate={mockMutate} />);
+    render(<Payments bill={billWithOverpayment} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     // Even with negative amount due (overpayment), the display should show positive value
     expect(screen.getByText(/amount due:/i)).toBeInTheDocument();
@@ -220,7 +223,7 @@ describe('Payments', () => {
       tenderedAmount: 100,
     };
 
-    render(<Payments bill={fullyPaidBill} mutate={mockMutate} />);
+    render(<Payments bill={fullyPaidBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
   });
@@ -233,10 +236,57 @@ describe('Payments', () => {
       tenderedAmount: 0,
     };
 
-    render(<Payments bill={pendingBill} mutate={mockMutate} />);
+    render(<Payments bill={pendingBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     expect(screen.queryByPlaceholderText(/enter amount/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/select payment method/i)).not.toBeInTheDocument();
+  });
+
+  it('should show the finalize empty state with a Finalize bill action when the bill is in PENDING state', () => {
+    const pendingBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.PENDING,
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={pendingBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
+
+    expect(screen.getByText(/bill not finalized/i)).toBeInTheDocument();
+    expect(screen.getByText(/finalize this bill before recording a payment/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /finalize bill/i })).toBeInTheDocument();
+    // The dead-end Process Payment button should not be shown for a pending bill
+    expect(screen.queryByText('Process Payment')).not.toBeInTheDocument();
+  });
+
+  it('should call onFinalizeBill when the Finalize bill button is clicked on a pending bill', async () => {
+    const user = userEvent.setup();
+    const pendingBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.PENDING,
+      totalAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={pendingBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
+
+    await user.click(screen.getByRole('button', { name: /finalize bill/i }));
+
+    expect(mockFinalize).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not show the finalize empty state when bill is in POSTED state', () => {
+    const postedBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 100,
+      netAmount: 100,
+      tenderedAmount: 0,
+    };
+
+    render(<Payments bill={postedBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
+
+    expect(screen.queryByText(/bill not finalized/i)).not.toBeInTheDocument();
   });
 
   it('should show payment form when bill is in POSTED state', () => {
@@ -244,17 +294,18 @@ describe('Payments', () => {
       ...mockBill,
       status: BillStatus.POSTED,
       totalAmount: 100,
+      netAmount: 100,
       tenderedAmount: 0,
     };
 
-    render(<Payments bill={postedBill} mutate={mockMutate} />);
+    render(<Payments bill={postedBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
     expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
   });
 
   it('should return null when bill is not provided', () => {
-    const { container } = render(<Payments bill={null} mutate={mockMutate} />);
+    const { container } = render(<Payments bill={null} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
     expect(container).toBeEmptyDOMElement();
   });
 
@@ -263,14 +314,75 @@ describe('Payments', () => {
       ...mockBill,
       status: BillStatus.POSTED,
       totalAmount: 100,
+      netAmount: 100,
       tenderedAmount: 0,
       lineItems: [],
     };
 
-    render(<Payments bill={billWithAmountDue} mutate={mockMutate} />);
+    render(<Payments bill={billWithAmountDue} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     expect(screen.getByPlaceholderText(/enter amount/i)).toBeInTheDocument();
     expect(screen.getByText(/select payment method/i)).toBeInTheDocument();
+  });
+
+  it('blocks payment greater than (netAmount - tendered) on a discounted bill', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+    mockProcessBillPayment.mockResolvedValue({} as any);
+
+    const billWithDiscount: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 500,
+      netAmount: 400,
+      tenderedAmount: 0,
+      payments: [],
+      lineItems: [],
+    };
+
+    render(<Payments bill={billWithDiscount} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
+
+    const methodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(methodDropdown);
+    await user.click(screen.getByText('Cash'));
+
+    // 450 > netAmount (400). If the schema bound regressed to totalAmount (500) this would pass.
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '450');
+
+    expect(screen.getByText('Process Payment')).toBeDisabled();
+    expect(mockProcessBillPayment).not.toHaveBeenCalled();
+  });
+
+  it('sends a non-null amount in the payment payload when processing a discounted bill', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+    mockProcessBillPayment.mockResolvedValue({} as any);
+
+    const billWithDiscount: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 500,
+      netAmount: 400,
+      tenderedAmount: 0,
+      payments: [],
+      lineItems: [],
+    };
+
+    render(<Payments bill={billWithDiscount} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
+
+    const methodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(methodDropdown);
+    await user.click(screen.getByText('Cash'));
+
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '100');
+
+    await user.click(screen.getByText('Process Payment'));
+
+    expect(mockProcessBillPayment).toHaveBeenCalledTimes(1);
+    const [payload] = mockProcessBillPayment.mock.calls[0];
+    expect(payload.amount).toBeTypeOf('number');
+    expect(payload.amount).not.toBeNaN();
+    expect(payload.amountTendered).toBe(100);
   });
 
   it('should display process payment button', () => {
@@ -281,7 +393,7 @@ describe('Payments', () => {
       lineItems: [],
     };
 
-    render(<Payments bill={billWithAmountDue} mutate={mockMutate} />);
+    render(<Payments bill={billWithAmountDue} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
 
     // Process payment button should be visible
     expect(screen.getByText('Process Payment')).toBeInTheDocument();

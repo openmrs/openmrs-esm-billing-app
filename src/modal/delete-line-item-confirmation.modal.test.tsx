@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { render, screen, waitFor } from '@testing-library/react';
 import { showSnackbar } from '@openmrs/esm-framework';
 import { deleteBillItem } from '../billing.resource';
+import { type LineItem } from '../types';
 import DeleteLineItem from './delete-line-item-confirmation.modal';
 
 const mockDeleteBillItem = vi.mocked(deleteBillItem);
@@ -13,12 +14,12 @@ vi.mock('../billing.resource', () => ({
   deleteBillItem: vi.fn(),
 }));
 
-const mockItem = {
+const mockItem: LineItem = {
   uuid: 'item-uuid',
   quantity: 2,
   price: 100,
   billableService: 'X-Ray Service',
-  paymentStatus: 'UNPAID',
+  status: 'PENDING',
   item: 'Test Service',
   display: 'Test Service',
   voided: false,

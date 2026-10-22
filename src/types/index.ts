@@ -5,9 +5,25 @@ export const BillStatus = {
   POSTED: 'POSTED',
   PAID: 'PAID',
   ADJUSTED: 'ADJUSTED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+  REFUNDED: 'REFUNDED',
+  REFUND_REQUESTED: 'REFUND_REQUESTED',
 } as const;
 
 export type BillStatus = (typeof BillStatus)[keyof typeof BillStatus];
+
+export const BillLineItemStatus = {
+  PENDING: 'PENDING',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
+  ADJUSTED: 'ADJUSTED',
+  EXEMPTED: 'EXEMPTED',
+  REFUND_REQUESTED: 'REFUND_REQUESTED',
+  REFUNDED: 'REFUNDED',
+  PARTIALLY_REFUNDED: 'PARTIALLY_REFUNDED',
+} as const;
+
+export type BillLineItemStatus = (typeof BillLineItemStatus)[keyof typeof BillLineItemStatus];
 
 export interface MappedBill {
   uuid: string;
@@ -25,9 +41,13 @@ export interface MappedBill {
   lineItems: Array<LineItem>;
   billingService: string;
   payments: Array<Payment>;
+  discounts?: Array<BillDiscount>;
+  refunds?: Array<BillRefund>;
   totalAmount?: number;
+  netAmount: number;
   tenderedAmount?: number;
   display?: string;
+  visitUuid?: string;
 }
 
 interface LocationLink {
@@ -65,7 +85,7 @@ interface Provider {
 export interface LineItem {
   uuid?: string;
   item?: string;
-  paymentStatus: string;
+  status: BillLineItemStatus;
   billableService?: string;
   quantity: number;
   price: number;
@@ -157,7 +177,12 @@ export interface PatientInvoice {
   status: string;
   adjustmentReason: string | null;
   id: number;
+  visit?: { uuid: string; display: string };
   resourceVersion: string;
+  total: number;
+  amountAfterDiscount: number;
+  discounts: BillDiscount[];
+  refunds: BillRefund[];
 }
 
 export interface PatientDetails {
@@ -230,6 +255,7 @@ export type CreateBillPayload = {
   payments: Array<PaymentPayload>;
   patient: string;
   status: string;
+  visit?: string;
 };
 
 export type UpdateBillPayload = {
@@ -261,3 +287,92 @@ export type PaymentModePayload = {
   name: string;
   description: string;
 };
+
+export const BillDiscountStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+
+export type BillDiscountStatus = (typeof BillDiscountStatus)[keyof typeof BillDiscountStatus];
+
+export const BillDiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+} as const;
+
+export type BillDiscountType = (typeof BillDiscountType)[keyof typeof BillDiscountType];
+
+export interface UserRef {
+  uuid: string;
+  display: string;
+}
+
+export interface BillDiscount {
+  uuid: string;
+  billUuid: string;
+  lineItemUuid: string | null;
+  discountType: BillDiscountType;
+  discountValue: number;
+  discountAmount: number;
+  justification: string;
+  initiator: UserRef;
+  approver: UserRef | null;
+  dateCreated: string;
+  status: BillDiscountStatus;
+  voided: boolean;
+}
+
+export interface RequestDiscountPayload {
+  bill: string;
+  lineItem?: string;
+  discountType: BillDiscountType;
+  discountValue: number;
+  justification: string;
+}
+
+export interface DecideDiscountPayload {
+  status: Exclude<BillDiscountStatus, 'PENDING'>;
+  approver: string;
+}
+
+export interface PatientPaymentStatus {
+  status: 'PAID' | 'UNPAID' | 'UNKNOWN';
+  reason: string;
+}
+export const RefundStatus = {
+  REQUESTED: 'REQUESTED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  COMPLETED: 'COMPLETED',
+} as const;
+export type RefundStatus = (typeof RefundStatus)[keyof typeof RefundStatus];
+
+export interface BillRefund {
+  uuid: string;
+  billUuid: string;
+  lineItemUuid: string | null;
+  refundAmount: number;
+  reason: string;
+  initiator: UserRef;
+  approver: UserRef | null;
+  completer: UserRef | null;
+  dateApproved: string | null;
+  dateCompleted: string | null;
+  dateCreated: string;
+  status: RefundStatus;
+  voided: boolean;
+}
+
+export interface RequestRefundPayload {
+  bill: string;
+  lineItem?: string;
+  refundAmount: number;
+  reason: string;
+}
+
+export interface DecideRefundPayload {
+  status: Exclude<RefundStatus, 'REQUESTED'>;
+  approver?: string;
+  completer?: string;
+}

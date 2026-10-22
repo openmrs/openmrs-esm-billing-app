@@ -2,12 +2,15 @@ import React from 'react';
 import { describe, expect, type Mock, it, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { launchWorkspace2 } from '@openmrs/esm-framework';
 import BillableServices from './billable-services.component';
 import { useBillableServices } from './billable-service.resource';
 
 vi.mock('./billable-service.resource', () => ({
   useBillableServices: vi.fn(),
 }));
+
+const mockLaunchWorkspace2 = launchWorkspace2 as Mock;
 
 describe('BillableService', () => {
   const mockedUseBillableServices = useBillableServices as Mock;
@@ -134,5 +137,56 @@ describe('BillableService', () => {
 
     expect(screen.getByText('No matching services to display')).toBeInTheDocument();
     expect(screen.getByText('Check the filters above')).toBeInTheDocument();
+  });
+
+  it('passes mutate as onWorkspaceClose when adding a new service so the table refreshes', async () => {
+    const mockMutate = vi.fn();
+    mockedUseBillableServices.mockReturnValue({
+      billableServices: [
+        {
+          uuid: '1',
+          name: 'Service 1',
+          shortName: 'S1',
+          serviceType: { display: 'Type 1' },
+          serviceStatus: 'ACTIVE',
+          servicePrices: [{ name: 'Price 1', price: 100 }],
+        },
+      ],
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: mockMutate,
+    });
+
+    const user = userEvent.setup();
+    render(<BillableServices />);
+
+    await user.click(screen.getByRole('button', { name: /add new service/i }));
+
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith(
+      'billable-service-form',
+      expect.objectContaining({ onWorkspaceClose: mockMutate }),
+    );
+  });
+
+  it('passes mutate as onWorkspaceClose when adding the first service from the empty state', async () => {
+    const mockMutate = vi.fn();
+    mockedUseBillableServices.mockReturnValue({
+      billableServices: [],
+      isLoading: false,
+      isValidating: false,
+      error: null,
+      mutate: mockMutate,
+    });
+
+    const user = userEvent.setup();
+    render(<BillableServices />);
+
+    await user.click(screen.getByRole('button', { name: /record.*billable services/i }));
+
+    expect(mockLaunchWorkspace2).toHaveBeenCalledWith(
+      'billable-service-form',
+      expect.objectContaining({ onWorkspaceClose: mockMutate }),
+    );
   });
 });

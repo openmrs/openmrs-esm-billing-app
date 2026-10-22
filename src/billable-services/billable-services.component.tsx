@@ -40,6 +40,7 @@ interface FilterableTableHeaderProps {
   layout: LayoutType;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isValidating: boolean;
+  launchBillableServiceForm: () => void;
   responsiveSize: 'sm' | 'md' | 'lg';
   t: (key: string, fallback: string) => string;
 }
@@ -78,8 +79,10 @@ const BillableServices = () => {
   ];
 
   const launchBillableServiceForm = useCallback(() => {
-    launchWorkspace2('billable-service-form');
-  }, []);
+    launchWorkspace2('billable-service-form', {
+      onWorkspaceClose: mutate,
+    });
+  }, [mutate]);
 
   const searchResults: BillableService[] = useMemo(() => {
     const flatBillableServices = Array.isArray(billableServices) ? billableServices.flat() : billableServices;
@@ -163,6 +166,7 @@ const BillableServices = () => {
       <FilterableTableHeader
         handleSearch={handleSearch}
         isValidating={isValidating}
+        launchBillableServiceForm={launchBillableServiceForm}
         layout={layout}
         responsiveSize={responsiveSize}
         t={t}
@@ -253,7 +257,14 @@ const BillableServices = () => {
   );
 };
 
-function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveSize, t }: FilterableTableHeaderProps) {
+function FilterableTableHeader({
+  layout,
+  handleSearch,
+  isValidating,
+  launchBillableServiceForm,
+  responsiveSize,
+  t,
+}: FilterableTableHeaderProps) {
   return (
     <>
       <div className={styles.headerContainer}>
@@ -279,9 +290,7 @@ function FilterableTableHeader({ layout, handleSearch, isValidating, responsiveS
           size={responsiveSize}
           kind="primary"
           renderIcon={(props) => <ArrowRight size={16} {...props} />}
-          onClick={() => {
-            launchWorkspace2('billable-service-form', {});
-          }}
+          onClick={launchBillableServiceForm}
           iconDescription={t('addNewBillableService', 'Add new billable service')}>
           {t('addNewService', 'Add new service')}
         </Button>

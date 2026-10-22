@@ -148,11 +148,15 @@ const VisitAttributesForm: React.FC<VisitAttributesFormProps> = ({ setAttributes
             name="payment-details"
             onChange={(selected) => field.onChange(selected)}
             orientation="vertical">
-            <RadioButton labelText={t('paying', 'Paying')} value={categoryConcepts.payingDetails} id="radio-1" />
+            <RadioButton
+              labelText={t('paying', 'Paying')}
+              value={categoryConcepts.payingDetails}
+              id="payment-details-paying"
+            />
             <RadioButton
               labelText={t('nonPaying', 'Non paying')}
               value={categoryConcepts.nonPayingDetails}
-              id="radio-2"
+              id="payment-details-non-paying"
             />
           </RadioButtonGroup>
         )}

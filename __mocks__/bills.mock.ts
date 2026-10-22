@@ -1,5 +1,5 @@
 import { restBaseUrl } from '@openmrs/esm-framework';
-import { BillStatus } from '../src/types';
+import { BillLineItemStatus, BillStatus } from '../src/types';
 
 export const mockPatient = {
   uuid: 'dda9b65f-0037-11ec-85e7-04ed33c79a3e',
@@ -378,13 +378,14 @@ export const mockBill = {
       priceName: '',
       priceUuid: '',
       lineItemOrder: 0,
-      paymentStatus: BillStatus.PENDING,
+      status: BillLineItemStatus.PENDING,
       resourceVersion: '1.8',
     },
   ],
   billingService: 'Hemoglobin',
   payments: [],
   totalAmount: 100,
+  netAmount: 100,
   tenderedAmount: 0,
 };
 

@@ -1,0 +1,40 @@
+@use '@carbon/styles/scss/spacing' as *;
+@use '@carbon/styles/scss/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.review {
+    padding: $spacing-06 $spacing-07 $spacing-07;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-06;
+    background: $ui-02;
+}
+
+.groupHeader {
+    display: flex;
+    align-items: baseline;
+    gap: $spacing-03;
+    margin-bottom: $spacing-04;
+}
+
+.groupTitle {
+    @include type.type-style('label-01');
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--cds-text-helper);
+    margin: 0;
+}
+
+.groupCount {
+    @include type.type-style('code-01');
+    color: var(--cds-text-helper);
+    padding: 2px $spacing-02;
+    background: $ui-01;
+    border: 1px solid $ui-03;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-04;
+}

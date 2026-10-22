@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.openmrs.org/routes.schema.json",
   "backendDependencies": {
-    "billing": ">=2.0.0",
+    "billing": ">=2.5.0-0",
     "webservices.rest": ">=2.24.0"
   },
   "pages": [
@@ -36,6 +36,14 @@
       }
     },
     {
+      "name": "visit-bills-panel",
+      "component": "visitBillsPanel",
+      "slot": "visit-summary-panels",
+      "meta": {
+        "title": "Bills"
+      }
+    },
+    {
       "name": "billing-summary-dashboard-link",
       "component": "billingSummaryDashboardLink",
       "slot": "patient-chart-dashboard-slot",
@@ -45,14 +53,6 @@
         "columnSpan": 1,
         "slot": "patient-chart-billing-dashboard-slot",
         "path": "billing-history"
-      }
-    },
-    {
-      "name": "billable-services-app-menu-item",
-      "component": "billableServicesAppMenuItem",
-      "slot": "app-menu-item-slot",
-      "meta": {
-        "name": "Billable Services"
       }
     },
     {
@@ -72,6 +72,12 @@
       "order": 2
     },
     {
+      "name": "patient-banner-payment-status-tag",
+      "component": "patientPaymentStatusTag",
+      "slot": "patient-banner-tags-slot",
+      "order": 3
+    },
+    {
       "name": "billable-services-left-panel-link",
       "component": "billableServicesLeftPanelLink",
       "slot": "billable-services-left-panel-slot",
@@ -82,6 +88,18 @@
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
       "order": 1
+    },
+    {
+      "name": "discount-requests-left-panel-link",
+      "component": "discountRequestsLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 2
+    },
+    {
+      "name": "refund-requests-left-panel-link",
+      "component": "refundRequestsLeftPanelLink",
+      "slot": "billable-services-left-panel-slot",
+      "order": 3
     }
   ],
   "modals": [
@@ -120,13 +138,22 @@
     {
       "name": "delete-bill-confirmation-modal",
       "component": "deleteBillConfirmationModal"
-    }
+    },
+    { "name": "request-discount-modal", "component": "requestDiscountModal" },
+    { "name": "review-bill-discounts-modal", "component": "reviewBillDiscountsModal" },
+    { "name": "request-refund-modal", "component": "requestRefundModal" },
+    { "name": "review-bill-refunds-modal", "component": "reviewBillRefundsModal" }
   ],
   "workspaces2": [
     {
       "name": "billing-form-workspace",
       "component": "billingFormWorkspace",
       "window": "billing-form-window"
+    },
+    {
+      "name": "patient-chart-billing-form-workspace",
+      "component": "billingFormWorkspace",
+      "window": "patient-chart-billing-form"
     },
     {
       "name": "billable-service-form",
@@ -138,6 +165,10 @@
     {
       "name": "billing-form-window",
       "group": "billingFormWorkspaceGroup"
+    },
+    {
+      "name": "patient-chart-billing-form",
+      "group": "patient-chart"
     },
     {
       "name": "billable-service-form-window",

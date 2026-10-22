@@ -13,7 +13,14 @@ import {
   usePatient,
 } from '@openmrs/esm-framework';
 import { configSchema, type BillingConfig } from '../config-schema';
-import { BillStatus } from '../types';
+import {
+  type BillDiscount,
+  BillDiscountStatus,
+  BillDiscountType,
+  BillStatus,
+  RefundStatus,
+  type MappedBill,
+} from '../types';
 import { useBill } from '../billing.resource';
 import { usePaymentModes } from './payments/payment.resource';
 import Invoice from './invoice.component';
@@ -56,6 +63,14 @@ vi.mock('../billing.resource', () => ({
   }),
 }));
 
+vi.mock('../discounts/discounts-table.component', () => ({
+  default: vi.fn(() => null),
+}));
+
+vi.mock('../refunds/refunds-table.component', () => ({
+  default: vi.fn(() => null),
+}));
+
 vi.mock('react-router-dom', () => ({
   useParams: vi.fn().mockReturnValue({
     patientUuid: 'patientUuid',
@@ -68,11 +83,12 @@ vi.mock('react-to-print', () => ({
 }));
 
 describe('Invoice', () => {
-  const defaultBillData = {
+  const defaultBillData: MappedBill = {
     ...mockBill,
     uuid: 'test-uuid',
     status: BillStatus.PENDING,
     totalAmount: 1000,
+    netAmount: 1000,
     tenderedAmount: 0,
     receiptNumber: 'RCPT-001',
     dateCreated: '2024-01-01',
@@ -82,7 +98,7 @@ describe('Invoice', () => {
         item: 'Test Service',
         quantity: 1,
         price: 1000,
-        paymentStatus: 'PENDING',
+        status: 'PENDING',
         billableService: 'Test Service',
         display: '',
         voided: false,
@@ -125,6 +141,22 @@ describe('Invoice', () => {
 
     const printHandler = vi.fn();
     mockUseReactToPrint.mockReturnValue(printHandler);
+  });
+
+  const makeDiscount = (overrides: Partial<BillDiscount> = {}): BillDiscount => ({
+    uuid: 'discount-1',
+    billUuid: 'test-uuid',
+    lineItemUuid: null,
+    discountType: BillDiscountType.PERCENTAGE,
+    discountValue: 10,
+    discountAmount: 100,
+    justification: 'goodwill',
+    initiator: { uuid: 'u1', display: 'cashier' },
+    approver: null,
+    dateCreated: '2024-01-01',
+    status: BillDiscountStatus.APPROVED,
+    voided: false,
+    ...overrides,
   });
 
   it('should render loading state when bill is loading', () => {
@@ -172,24 +204,12 @@ describe('Invoice', () => {
     expect(screen.getAllByText(/total amount/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/amount tendered/i).length).toBeGreaterThan(0);
     expect(screen.getByRole('heading', { name: /invoice number/i })).toBeInTheDocument();
-    expect(screen.getByText(/date and time/i)).toBeInTheDocument();
+    expect(screen.getByText(/date bill created/i)).toBeInTheDocument();
     expect(screen.getByText(/invoice status/i)).toBeInTheDocument();
     expect(screen.getAllByText('RCPT-001').length).toBeGreaterThan(0);
     expect(screen.getAllByText('PENDING').length).toBeGreaterThan(0);
-  });
-
-  it('should render invoice table with line items', async () => {
-    render(<Invoice />);
-    await waitForLoadingToFinish();
-
     expect(screen.getByText(/line items/i)).toBeInTheDocument();
     expect(screen.getByText('Test Service')).toBeInTheDocument();
-  });
-
-  it('should render payments section', async () => {
-    render(<Invoice />);
-    await waitForLoadingToFinish();
-
     expect(screen.getByText(/payments/i)).toBeInTheDocument();
   });
 
@@ -270,7 +290,7 @@ describe('Invoice', () => {
   });
 
   it('should search and filter line items in the table', async () => {
-    const billWithMultipleItems = {
+    const billWithMultipleItems: MappedBill = {
       ...defaultBillData,
       lineItems: [
         {
@@ -278,7 +298,7 @@ describe('Invoice', () => {
           item: 'Lab Test',
           quantity: 1,
           price: 500,
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           billableService: 'Lab Test',
           display: '',
           voided: false,
@@ -293,7 +313,7 @@ describe('Invoice', () => {
           item: 'X-Ray',
           quantity: 1,
           price: 500,
-          paymentStatus: 'PENDING',
+          status: 'PENDING',
           billableService: 'X-Ray',
           display: '',
           voided: false,
@@ -539,7 +559,9 @@ describe('Invoice', () => {
     render(<Invoice />);
     await waitForLoadingToFinish();
 
-    expect(screen.getByRole('button', { name: /finalize bill/i })).toBeInTheDocument();
+    // A pending bill surfaces "Finalize bill" both in the action bar and in the payments
+    // empty state, so there are two matching buttons.
+    expect(screen.getAllByRole('button', { name: /finalize bill/i })).toHaveLength(2);
   });
 
   it('should not show "Finalize bill" button for POSTED bills', async () => {
@@ -587,12 +609,293 @@ describe('Invoice', () => {
     render(<Invoice />);
     await waitForLoadingToFinish();
 
-    await user.click(screen.getByRole('button', { name: /finalize bill/i }));
+    // Click the action bar's "Finalize bill" button (the payments empty state renders a
+    // second one); both open the same confirmation modal.
+    await user.click(screen.getAllByRole('button', { name: /finalize bill/i })[0]);
 
     expect(mockShowModal).toHaveBeenCalledWith('finalize-bill-confirmation-modal', {
       bill: defaultBillData,
       onMutate: mockMutate,
       closeModal: expect.any(Function),
+    });
+  });
+
+  describe('discount entry points', () => {
+    it('renders the "Request discount" button when bill is eligible', async () => {
+      render(<Invoice />);
+      expect(await screen.findByRole('button', { name: /request discount/i })).toBeInTheDocument();
+    });
+
+    it('opens the request-discount modal on click', async () => {
+      const user = userEvent.setup();
+      render(<Invoice />);
+      await user.click(await screen.findByRole('button', { name: /request discount/i }));
+      expect(mockShowModal).toHaveBeenCalledWith('request-discount-modal', expect.any(Object));
+    });
+
+    it('shows Total amount / Discount / Net amount trio when an approved discount exists', async () => {
+      mockUseBill.mockReturnValue({
+        bill: {
+          ...defaultBillData,
+          totalAmount: 5000,
+          netAmount: 4500,
+          tenderedAmount: 500,
+          discounts: [makeDiscount({ status: BillDiscountStatus.APPROVED, discountAmount: 500 })],
+        },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      expect(await screen.findByRole('heading', { name: /^net amount$/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /^total amount$/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /^discount$/i })).toBeInTheDocument();
+      expect(screen.getAllByText(/^- USD 500$/).length).toBeGreaterThan(0);
+      // Amount due must be netAmount - tendered (4000), not totalAmount - tendered (4500).
+      expect(screen.getAllByText('USD 4000').length).toBeGreaterThan(0);
+    });
+
+    it('hides the Discount / Net amount trio when no approved discount exists, even if totalAmount differs from netAmount', async () => {
+      mockUseBill.mockReturnValue({
+        bill: {
+          ...defaultBillData,
+          totalAmount: 5000,
+          netAmount: 4500,
+          discounts: [makeDiscount({ status: BillDiscountStatus.PENDING })],
+        },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await screen.findByRole('heading', { name: /^total amount$/i });
+      expect(screen.queryByRole('heading', { name: /^net amount$/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('heading', { name: /^discount$/i })).not.toBeInTheDocument();
+    });
+
+    it('passes an onMutate to the modal that revalidates the bill SWR cache', async () => {
+      const mockMutate = vi.fn();
+      mockUseBill.mockReturnValue({
+        bill: defaultBillData,
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: mockMutate,
+      });
+      const user = userEvent.setup();
+      render(<Invoice />);
+      await user.click(await screen.findByRole('button', { name: /request discount/i }));
+      const [, props] = mockShowModal.mock.calls.at(-1)!;
+      (props as { onMutate: () => void }).onMutate();
+      expect(mockMutate).toHaveBeenCalled();
+    });
+  });
+
+  describe('discount eligibility — bill status', () => {
+    it.each([
+      [BillStatus.PAID, 1000],
+      [BillStatus.ADJUSTED, 0],
+    ])('hides the bill-level "Request discount" button for %s bills', (status, tendered) => {
+      mockUseBill.mockReturnValue({
+        bill: { ...defaultBillData, status, tenderedAmount: tendered },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      expect(screen.queryByRole('button', { name: /request discount/i })).not.toBeInTheDocument();
+    });
+
+    it.each([
+      [BillStatus.PAID, 1000],
+      [BillStatus.ADJUSTED, 0],
+    ])('hides the per-line-item "Request discount" action for %s bills', async (status, tendered) => {
+      mockUseBill.mockReturnValue({
+        bill: { ...defaultBillData, status, tenderedAmount: tendered },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      const user = userEvent.setup();
+      render(<Invoice />);
+      await user.click(screen.getByTestId('action-menu-item-1'));
+      expect(screen.queryByTestId('request-discount-button-item-1')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('discount eligibility — line already discounted', () => {
+    it.each([BillDiscountStatus.PENDING, BillDiscountStatus.APPROVED, BillDiscountStatus.REJECTED])(
+      'hides the per-line-item "Request discount" action when an existing %s discount targets the line',
+      async (discountStatus) => {
+        mockUseBill.mockReturnValue({
+          bill: { ...defaultBillData, discounts: [makeDiscount({ lineItemUuid: 'item-1', status: discountStatus })] },
+          isLoading: false,
+          error: null,
+          isValidating: false,
+          mutate: vi.fn(),
+        });
+        const user = userEvent.setup();
+        render(<Invoice />);
+        await user.click(screen.getByTestId('action-menu-item-1'));
+        expect(screen.queryByTestId('request-discount-button-item-1')).not.toBeInTheDocument();
+      },
+    );
+  });
+
+  describe('discount eligibility — cross-blocking between bill-level and line-level', () => {
+    it.each([BillDiscountStatus.PENDING, BillDiscountStatus.APPROVED, BillDiscountStatus.REJECTED])(
+      'disables the bill-level "Request discount" button when a %s line-item discount exists',
+      (discountStatus) => {
+        mockUseBill.mockReturnValue({
+          bill: { ...defaultBillData, discounts: [makeDiscount({ lineItemUuid: 'item-1', status: discountStatus })] },
+          isLoading: false,
+          error: null,
+          isValidating: false,
+          mutate: vi.fn(),
+        });
+        render(<Invoice />);
+        expect(screen.getByRole('button', { name: /request discount/i })).toBeDisabled();
+      },
+    );
+
+    it.each([BillDiscountStatus.PENDING, BillDiscountStatus.APPROVED, BillDiscountStatus.REJECTED])(
+      'hides the per-line-item "Request discount" action when a %s bill-level discount exists',
+      async (discountStatus) => {
+        mockUseBill.mockReturnValue({
+          bill: { ...defaultBillData, discounts: [makeDiscount({ lineItemUuid: null, status: discountStatus })] },
+          isLoading: false,
+          error: null,
+          isValidating: false,
+          mutate: vi.fn(),
+        });
+        const user = userEvent.setup();
+        render(<Invoice />);
+        await user.click(screen.getByTestId('action-menu-item-1'));
+        expect(screen.queryByTestId('request-discount-button-item-1')).not.toBeInTheDocument();
+      },
+    );
+  });
+
+  describe('refund entry points', () => {
+    const paidBill: MappedBill = {
+      ...defaultBillData,
+      status: BillStatus.PAID,
+      totalAmount: 1000,
+      netAmount: 1000,
+      tenderedAmount: 1000,
+    };
+
+    beforeEach(() => {
+      mockUseBill.mockReturnValue({
+        bill: paidBill,
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+    });
+
+    it('shows "Request refund" button for PAID bills with no active refund', async () => {
+      render(<Invoice />);
+      expect(await screen.findByRole('button', { name: /request refund/i })).toBeInTheDocument();
+    });
+
+    it('hides "Request refund" button when bill is in REFUND_REQUESTED status', async () => {
+      mockUseBill.mockReturnValue({
+        bill: { ...paidBill, status: BillStatus.REFUND_REQUESTED },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await waitForLoadingToFinish();
+      expect(screen.queryByRole('button', { name: /request refund/i })).not.toBeInTheDocument();
+    });
+
+    const billWithActiveLineRefund: MappedBill = {
+      ...paidBill,
+      refunds: [
+        {
+          uuid: 'r-active',
+          billUuid: 'test-uuid',
+          lineItemUuid: 'item-1',
+          refundAmount: 200,
+          reason: 'duplicate',
+          initiator: { uuid: 'u1', display: 'cashier' },
+          approver: null,
+          completer: null,
+          dateApproved: null,
+          dateCompleted: null,
+          dateCreated: '2026-06-01T00:00:00.000+0000',
+          status: RefundStatus.REQUESTED,
+          voided: false,
+        },
+      ],
+    };
+
+    it('disables "Request refund" button when an active line-item refund is in progress', async () => {
+      mockUseBill.mockReturnValue({
+        bill: billWithActiveLineRefund,
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await waitForLoadingToFinish();
+      expect(
+        screen.getByRole('button', { name: /a refund is already in progress for one or more line items/i }),
+      ).toBeDisabled();
+    });
+
+    it('shows a tooltip explaining why "Request refund" is disabled when a line-item refund is in progress', async () => {
+      mockUseBill.mockReturnValue({
+        bill: billWithActiveLineRefund,
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      render(<Invoice />);
+      await waitForLoadingToFinish();
+      expect(screen.getByText(/a refund is already in progress for one or more line items/i)).toBeInTheDocument();
+    });
+
+    it('passes remainingRefundable that deducts COMPLETED refunds when opening the request-refund modal', async () => {
+      const completedRefund = {
+        uuid: 'r-done',
+        billUuid: 'test-uuid',
+        lineItemUuid: null,
+        refundAmount: 300,
+        reason: 'overcharged',
+        initiator: { uuid: 'u1', display: 'cashier' },
+        approver: { uuid: 'u2', display: 'admin' },
+        completer: { uuid: 'u3', display: 'cashier2' },
+        dateApproved: '2026-05-21T00:00:00.000+0000',
+        dateCompleted: '2026-05-21T00:00:00.000+0000',
+        dateCreated: '2026-05-21T00:00:00.000+0000',
+        status: RefundStatus.COMPLETED,
+        voided: false,
+      };
+      mockUseBill.mockReturnValue({
+        bill: { ...paidBill, refunds: [completedRefund] },
+        isLoading: false,
+        error: null,
+        isValidating: false,
+        mutate: vi.fn(),
+      });
+      const user = userEvent.setup();
+      render(<Invoice />);
+      await user.click(await screen.findByRole('button', { name: /request refund/i }));
+      expect(mockShowModal).toHaveBeenCalledWith(
+        'request-refund-modal',
+        expect.objectContaining({ remainingRefundable: 700 }),
+      );
     });
   });
 

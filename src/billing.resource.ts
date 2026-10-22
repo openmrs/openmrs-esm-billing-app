@@ -1,4 +1,5 @@
-import useSWR from 'swr';
+import useSWR, { type KeyedMutator } from 'swr';
+import dayjs from 'dayjs';
 import sortBy from 'lodash-es/sortBy';
 import {
   openmrsFetch,
@@ -8,7 +9,7 @@ import {
   useOpenmrsFetchAll,
   useOpenmrsPagination,
 } from '@openmrs/esm-framework';
-import { apiBasePath } from './constants';
+import { apiBasePath, omrsDateFormat } from './constants';
 import {
   type MappedBill,
   type PatientInvoice,
@@ -17,6 +18,7 @@ import {
   type CreateBillPayload,
   type UpdateBillPayload,
   BillStatus,
+  type PatientPaymentStatus,
 } from './types';
 
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
@@ -46,22 +48,28 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     patientName: name,
     identifier: identifier,
     patientUuid: bill?.patient?.uuid,
+    visitUuid: bill?.visit?.uuid,
     cashPointUuid: bill?.cashPoint?.uuid,
     cashPointName: bill?.cashPoint?.name,
     cashPointLocation: bill?.cashPoint?.location?.display,
     status: bill.status as BillStatus,
     lineItems: activeLineItems,
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
-    totalAmount: activeLineItems
-      .map((item) => (item.price ?? 0) * (item.quantity ?? 0))
-      .reduce((prev, curr) => prev + curr, 0),
+    totalAmount: bill.total,
+    netAmount: bill.amountAfterDiscount,
     tenderedAmount: (bill?.payments ?? [])
       .map((item) => item.amountTendered ?? 0)
       .reduce((prev, curr) => prev + curr, 0),
   };
 };
 
-export const usePaginatedBills = (pageSize: number, status?: string, patientName?: string) => {
+export const usePaginatedBills = (
+  pageSize: number,
+  status?: string,
+  patientName?: string,
+  startDate?: Date | null,
+  endDate?: Date | null,
+) => {
   const customRepresentation =
     '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
 
@@ -75,11 +83,21 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
     url += `&patientName=${encodeURIComponent(patientName)}`;
   }
 
+  if (startDate) {
+    url += `&startDate=${encodeURIComponent(dayjs(startDate).startOf('day').format(omrsDateFormat))}`;
+  }
+
+  if (endDate) {
+    url += `&endDate=${encodeURIComponent(dayjs(endDate).endOf('day').format(omrsDateFormat))}`;
+  }
+
+  // The backend rejects an inverted range with a 400, so skip the request (null URL disables fetching)
+  const isRangeValid = !startDate || !endDate || startDate <= endDate;
   const { data, error, isLoading, isValidating, mutate, currentPage, totalCount, goTo } =
-    useOpenmrsPagination<PatientInvoice>(url, pageSize);
+    useOpenmrsPagination<PatientInvoice>(isRangeValid ? url : null, pageSize);
 
   // Backend already sorts by ID descending (newest first), so no need to sort on frontend
-  const mappedResults = data?.map((bill) => mapBillProperties(bill));
+  const mappedResults = data?.map((bill) => mapBillProperties(bill)) ?? [];
 
   return {
     bills: mappedResults,
@@ -93,8 +111,7 @@ export const usePaginatedBills = (pageSize: number, status?: string, patientName
   };
 };
 
-export const useBills = (patientUuid?: string, billStatus?: string) => {
-  // Build URL with status parameter if provided
+export const useBills = (patientUuid?: string, billStatus?: string, visitUuid?: string) => {
   let url = `${apiBasePath}bill?v=full`;
 
   if (patientUuid) {
@@ -103,6 +120,10 @@ export const useBills = (patientUuid?: string, billStatus?: string) => {
 
   if (billStatus) {
     url += `&status=${billStatus}`;
+  }
+
+  if (visitUuid) {
+    url += `&visitUuid=${visitUuid}`;
   }
 
   const { data, error, isLoading, isValidating, mutate } = useOpenmrsFetchAll<PatientInvoice>(url);
@@ -119,23 +140,42 @@ export const useBills = (patientUuid?: string, billStatus?: string) => {
   };
 };
 
-export const useBill = (billUuid: string) => {
+export function useBill(
+  billUuid: string,
+  mapProperties: false,
+): {
+  bill: PatientInvoice | null;
+  error: any;
+  isLoading: boolean;
+  isValidating: boolean;
+  mutate: KeyedMutator<{ data: PatientInvoice }>;
+};
+
+export function useBill(
+  billUuid: string,
+  mapProperties?: true,
+): {
+  bill: MappedBill | null;
+  error: any;
+  isLoading: boolean;
+  isValidating: boolean;
+  mutate: KeyedMutator<{ data: PatientInvoice }>;
+};
+
+export function useBill(billUuid: string, mapProperties = true) {
   const url = `${apiBasePath}bill/${billUuid}`;
   const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientInvoice }>(
     billUuid ? url : null,
     openmrsFetch,
   );
 
-  const formattedBill = data?.data ? mapBillProperties(data?.data) : null;
+  let bill: MappedBill | PatientInvoice | null = null;
+  if (data?.data) {
+    bill = mapProperties ? mapBillProperties(data.data) : data.data;
+  }
 
-  return {
-    bill: formattedBill,
-    error,
-    isLoading,
-    isValidating,
-    mutate,
-  };
-};
+  return { bill, error, isLoading, isValidating, mutate };
+}
 
 export const processBillPayment = (payload: PaymentRequestPayload, billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}/payment`;
@@ -219,4 +259,22 @@ export const deleteBill = (billUuid: string, reason: string) => {
   return openmrsFetch(url, {
     method: 'DELETE',
   });
+};
+
+export const patientPaymentStatusCacheKey = (patientUuid: string) =>
+  `${apiBasePath}patientPaymentStatus/${patientUuid}`;
+
+export const usePatientPaymentStatus = (patientUuid: string) => {
+  const url = patientPaymentStatusCacheKey(patientUuid);
+  const { data, error, isLoading, isValidating, mutate } = useSWR<{ data: PatientPaymentStatus }>(
+    patientUuid ? url : null,
+    openmrsFetch,
+  );
+  return {
+    paymentStatus: data?.data,
+    error,
+    isLoading,
+    isValidating,
+    mutate,
+  };
 };

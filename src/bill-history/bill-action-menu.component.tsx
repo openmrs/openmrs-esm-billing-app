@@ -35,7 +35,7 @@ const BillActionMenu: React.FC<BillActionMenuProps> = ({ bill, patientUuid, onMu
           className={styles.menuItem}
           itemText={t('addItemsToBill', 'Add items to bill')}
           onClick={() =>
-            launchWorkspace2('billing-form-workspace', {
+            launchWorkspace2('patient-chart-billing-form-workspace', {
               patientUuid,
               billUuid: bill.uuid,
               onMutate,

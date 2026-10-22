@@ -196,7 +196,7 @@ test.describe('Billing: Patient Chart workflow', () => {
       await invoicePage.waitForInvoiceToLoad();
 
       const lineItems = await invoicePage.getLineItems();
-      expect(lineItems.length).toBe(1);
+      expect(lineItems).toHaveLength(1);
       expect(lineItems[0].quantity).toBe('2');
 
       const totalAmount = await invoicePage.getTotalAmount();
@@ -240,7 +240,7 @@ test.describe('Billing: Patient Chart workflow', () => {
       const billsResponse = await api.get(`billing/bill?patient=${patientUuid}&v=full`);
       expect(billsResponse.ok()).toBeTruthy();
       const billsData = await billsResponse.json();
-      expect(billsData.results.length).toBe(initialBillCount);
+      expect(billsData.results).toHaveLength(initialBillCount);
     });
   });
 
@@ -469,7 +469,7 @@ test.describe('Billing: Patient Chart workflow', () => {
       billUuid = bill.uuid;
       billsToCleanup.add(billUuid);
 
-      expect(bill.lineItems.length).toBe(1);
+      expect(bill.lineItems).toHaveLength(1);
       const lineItem = bill.lineItems[0];
       expect(lineItem.billableService).toBeTruthy();
       expect(lineItem.quantity).toBe(quantity);
@@ -489,7 +489,7 @@ test.describe('Billing: Patient Chart workflow', () => {
 
     await test.step('Then the invoice should display the line item correctly', async () => {
       const lineItems = await invoicePage.getLineItems();
-      expect(lineItems.length).toBe(1);
+      expect(lineItems).toHaveLength(1);
       expect(lineItems[0].quantity).toBe(quantity.toString());
     });
 
@@ -535,8 +535,8 @@ test.describe('Billing: Patient Chart workflow', () => {
       // Verify backend state
       const billResponse = await api.get(`billing/bill/${billUuid}?v=full`);
       const billData = await billResponse.json();
-      billData.lineItems.forEach((lineItem: { paymentStatus: string }) => {
-        expect(lineItem.paymentStatus).toBe('PAID');
+      billData.lineItems.forEach((lineItem: { status: string }) => {
+        expect(lineItem.status).toBe('PAID');
       });
     });
   });
@@ -696,7 +696,7 @@ test.describe('Billing: Patient Chart workflow', () => {
       billsToCleanup.add(billUuid);
 
       const bill = billsData.results[0];
-      expect(bill.lineItems.length).toBe(1);
+      expect(bill.lineItems).toHaveLength(1);
       expect(bill.lineItems[0].quantity).toBe(quantity);
     });
 
@@ -802,7 +802,9 @@ test.describe('Billing: Patient Chart workflow', () => {
     await test.step('And the payment form should not be visible for a PENDING bill', async () => {
       await expect(paymentPage.paymentMethodCombobox()).toBeHidden();
       await expect(paymentPage.amountInput()).toBeHidden();
-      await expect(paymentPage.processPaymentButton()).toBeDisabled();
+      // The empty state now hides the Process Payment button on pending bills (instead of
+      // showing it disabled), so the dead-end action is gone entirely.
+      await expect(paymentPage.processPaymentButton()).toBeHidden();
     });
 
     await test.step('When I finalize the bill', async () => {

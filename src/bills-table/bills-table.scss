@@ -25,6 +25,11 @@
 }
 
 .filterContainer {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: layout.$spacing-04;
+  justify-content: space-between;
   flex: 1;
 
   :global(.cds--dropdown__wrapper--inline) {
@@ -41,6 +46,16 @@
 
   :global(.cds--list-box) {
     margin-left: layout.$spacing-03;
+  }
+}
+
+.datePickerContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: layout.$spacing-04;
+
+  .clearDatesButton {
+    align-self: end;
   }
 }
 

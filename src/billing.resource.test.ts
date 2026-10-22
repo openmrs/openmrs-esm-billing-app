@@ -1,6 +1,31 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mapBillProperties } from './billing.resource';
+import dayjs from 'dayjs';
+import { renderHook } from '@testing-library/react';
+import { useOpenmrsPagination } from '@openmrs/esm-framework';
+import { mapBillProperties, usePaginatedBills } from './billing.resource';
+import { apiBasePath } from './constants';
+import { calculateTotalAmount } from './helpers/functions';
 import type { LineItem, PatientInvoice, Payment } from './types';
+import type * as EsmFramework from '@openmrs/esm-framework';
+
+vi.mock('@openmrs/esm-framework', async (importOriginal) => {
+  const actual = await importOriginal<typeof EsmFramework>();
+  return {
+    ...actual,
+    useOpenmrsPagination: vi.fn(() => ({
+      data: [],
+      error: undefined,
+      isLoading: false,
+      isValidating: false,
+      mutate: vi.fn(),
+      currentPage: 1,
+      totalCount: 0,
+      goTo: vi.fn(),
+    })),
+  };
+});
+
+const mockUseOpenmrsPagination = vi.mocked(useOpenmrsPagination);
 
 type CashPoint = PatientInvoice['cashPoint'];
 type Provider = PatientInvoice['cashier'];
@@ -10,7 +35,7 @@ const createLineItem = (overrides: Partial<LineItem> = {}): LineItem => ({
   uuid: 'line-item-uuid',
   item: 'Service Item',
   billableService: 'Billable Service',
-  paymentStatus: 'PENDING',
+  status: 'PENDING',
   quantity: 1,
   price: 100,
   priceName: 'Standard',
@@ -67,26 +92,34 @@ const createPayment = (overrides: Partial<Payment> = {}): Payment => ({
   ...overrides,
 });
 
-const createBaseBill = (overrides: Partial<PatientInvoice> = {}): PatientInvoice => ({
-  uuid: 'uuid1',
-  display: '12345 - John Doe',
-  voided: false,
-  voidReason: null,
-  adjustedBy: [],
-  billAdjusted: null,
-  cashPoint: createCashPoint(),
-  cashier: createProvider(),
-  dateCreated: '2024-01-01T00:00:00Z',
-  lineItems: [],
-  patient: createPatient(),
-  payments: [],
-  receiptNumber: 'R123',
-  status: 'PENDING',
-  adjustmentReason: null,
-  id: 1,
-  resourceVersion: '1.0',
-  ...overrides,
-});
+const createBaseBill = (overrides: Partial<PatientInvoice> = {}): PatientInvoice => {
+  const lineItems = overrides.lineItems ?? [];
+  const serverTotal = calculateTotalAmount(lineItems);
+  return {
+    uuid: 'uuid1',
+    display: '12345 - John Doe',
+    voided: false,
+    voidReason: null,
+    adjustedBy: [],
+    billAdjusted: null,
+    cashPoint: createCashPoint(),
+    cashier: createProvider(),
+    dateCreated: '2024-01-01T00:00:00Z',
+    lineItems,
+    patient: createPatient(),
+    payments: [],
+    receiptNumber: 'R123',
+    status: 'PENDING',
+    adjustmentReason: null,
+    id: 1,
+    resourceVersion: '1.0',
+    total: serverTotal,
+    amountAfterDiscount: serverTotal,
+    discounts: [],
+    refunds: [],
+    ...overrides,
+  };
+};
 
 describe('mapBillProperties', () => {
   describe('Amount calculations', () => {
@@ -338,8 +371,8 @@ describe('mapBillProperties', () => {
     it('Handles partial payment correctly', () => {
       const bill = createBaseBill({
         lineItems: [
-          createLineItem({ price: 100, quantity: 1, paymentStatus: 'PAID' }),
-          createLineItem({ price: 50, quantity: 1, paymentStatus: 'PENDING' }),
+          createLineItem({ price: 100, quantity: 1, status: 'PAID' }),
+          createLineItem({ price: 50, quantity: 1, status: 'PENDING' }),
         ],
         payments: [createPayment({ amountTendered: 100 })],
       });
@@ -352,7 +385,7 @@ describe('mapBillProperties', () => {
     it('Handles overpayment (change due scenario)', () => {
       const bill = createBaseBill({
         status: 'PAID',
-        lineItems: [createLineItem({ price: 100, quantity: 1, paymentStatus: 'PAID' })],
+        lineItems: [createLineItem({ price: 100, quantity: 1, status: 'PAID' })],
         payments: [createPayment({ amount: 100, amountTendered: 150 })],
       });
       const result = mapBillProperties(bill);
@@ -364,11 +397,11 @@ describe('mapBillProperties', () => {
     it('Handles complex bill with mixed item states', () => {
       const bill = createBaseBill({
         lineItems: [
-          createLineItem({ paymentStatus: 'PAID', voided: false, price: 100, quantity: 1, item: 'Consultation' }),
-          createLineItem({ paymentStatus: 'PENDING', voided: false, price: 50, quantity: 2, item: 'Lab Test' }),
-          createLineItem({ paymentStatus: 'PAID', voided: true, price: 200, quantity: 1, item: 'Canceled X-Ray' }),
+          createLineItem({ status: 'PAID', voided: false, price: 100, quantity: 1, item: 'Consultation' }),
+          createLineItem({ status: 'PENDING', voided: false, price: 50, quantity: 2, item: 'Lab Test' }),
+          createLineItem({ status: 'PAID', voided: true, price: 200, quantity: 1, item: 'Canceled X-Ray' }),
           createLineItem({
-            paymentStatus: 'PAID',
+            status: 'PAID',
             voided: false,
             price: 25,
             quantity: 3,
@@ -391,8 +424,8 @@ describe('mapBillProperties', () => {
       const bill = createBaseBill({
         status: 'PAID',
         lineItems: [
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
-          createLineItem({ paymentStatus: 'PENDING', voided: true }),
+          createLineItem({ status: 'PENDING', voided: true }),
+          createLineItem({ status: 'PENDING', voided: true }),
         ],
       });
       const result = mapBillProperties(bill);
@@ -404,7 +437,7 @@ describe('mapBillProperties', () => {
 
     it('Handles bill with no payments yet', () => {
       const bill = createBaseBill({
-        lineItems: [createLineItem({ price: 100, quantity: 1, paymentStatus: 'PENDING' })],
+        lineItems: [createLineItem({ price: 100, quantity: 1, status: 'PENDING' })],
         payments: [],
       });
       const result = mapBillProperties(bill);
@@ -417,8 +450,8 @@ describe('mapBillProperties', () => {
       const bill = createBaseBill({
         status: 'PAID',
         lineItems: [
-          createLineItem({ price: 50, quantity: 3, paymentStatus: 'PAID' }), // Originally 1, adjusted to 3
-          createLineItem({ price: 100, quantity: 0, paymentStatus: 'PAID' }), // Adjusted to 0
+          createLineItem({ price: 50, quantity: 3, status: 'PAID' }), // Originally 1, adjusted to 3
+          createLineItem({ price: 100, quantity: 0, status: 'PAID' }), // Adjusted to 0
         ],
         payments: [createPayment({ amountTendered: 150 })],
       });
@@ -457,5 +490,61 @@ describe('mapBillProperties', () => {
       expect(result.billingService).toBe(longServiceName);
       expect(result.billingService.length).toBe(500);
     });
+  });
+});
+
+describe('usePaginatedBills', () => {
+  const customRepresentation =
+    '(id,uuid,dateCreated,status,receiptNumber,patient:(uuid,display),lineItems:(uuid,item,billableService,voided))';
+  const baseUrl = `${apiBasePath}bill?v=custom:${customRepresentation}&pageSize=10`;
+  const startDate = new Date(2026, 0, 15, 10, 30);
+  const endDate = new Date(2026, 0, 20, 10, 30);
+  // Day boundaries are literal; only the UTC offset comes from the machine
+  const expectedStartDateText = encodeURIComponent(`2026-01-15T00:00:00.000${dayjs(startDate).format('ZZ')}`);
+  const expectedEndDateText = encodeURIComponent(`2026-01-20T23:59:59.999${dayjs(endDate).format('ZZ')}`);
+
+  it('requests the unchanged URL when no dates are set', () => {
+    renderHook(() => usePaginatedBills(10));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(baseUrl, 10);
+  });
+
+  it('appends only startDate when only the start date is set', () => {
+    renderHook(() => usePaginatedBills(10, undefined, undefined, startDate, null));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(`${baseUrl}&startDate=${expectedStartDateText}`, 10);
+  });
+
+  it('appends only endDate when only the end date is set', () => {
+    renderHook(() => usePaginatedBills(10, undefined, undefined, null, endDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(`${baseUrl}&endDate=${expectedEndDateText}`, 10);
+  });
+
+  it('appends both startDate and endDate when both are set', () => {
+    renderHook(() => usePaginatedBills(10, undefined, undefined, startDate, endDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(
+      `${baseUrl}&startDate=${expectedStartDateText}&endDate=${expectedEndDateText}`,
+      10,
+    );
+  });
+
+  it('passes a null URL so nothing is fetched when the end date is before the start date', () => {
+    // A null SWR key yields undefined data; the hook should still hand the table an array
+    mockUseOpenmrsPagination.mockReturnValueOnce({ data: undefined } as any);
+    const { result } = renderHook(() => usePaginatedBills(10, undefined, undefined, endDate, startDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(null, 10);
+    expect(result.current.bills).toEqual([]);
+  });
+
+  it('keeps the status and patientName parameters alongside the dates', () => {
+    renderHook(() => usePaginatedBills(10, 'PENDING', 'John', startDate, endDate));
+
+    expect(mockUseOpenmrsPagination).toHaveBeenCalledWith(
+      `${baseUrl}&status=PENDING&patientName=John&startDate=${expectedStartDateText}&endDate=${expectedEndDateText}`,
+      10,
+    );
   });
 });

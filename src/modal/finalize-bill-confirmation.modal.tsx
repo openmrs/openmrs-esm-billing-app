@@ -40,7 +40,6 @@ const FinalizeBillModal: React.FC<FinalizeBillModalParams> = ({ closeModal, bill
         err?.message ||
         t('finalizeFailedTryAgain', 'Unable to finalize bill. Please try again.');
 
-      // eslint-disable-next-line no-console
       console.error('[FinalizeBillModal] Bill finalization failed', err);
 
       showSnackbar({

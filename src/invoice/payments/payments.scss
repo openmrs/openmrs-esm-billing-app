@@ -1,6 +1,7 @@
 @use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
 
 .wrapper {
   display: flex;
@@ -21,6 +22,35 @@
 
 .paymentButtons {
   margin: layout.$layout-01 0;
+}
+
+.pendingEmptyState {
+  align-items: center;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  padding: layout.$spacing-09 !important;
+  text-align: center;
+}
+
+.pendingEmptyStateTile {
+  margin: auto;
+}
+
+.pendingEmptyStateContent {
+  @include type.type-style('heading-compact-02');
+  color: $text-02;
+  margin-bottom: layout.$spacing-03;
+}
+
+.pendingEmptyStateHelper {
+  @include type.type-style('body-compact-01');
+  color: $text-02;
+  margin-bottom: layout.$spacing-05;
+}
+
+.finalizeButton {
+  margin: 0 auto;
 }
 
 .paymentMethodContainer {
