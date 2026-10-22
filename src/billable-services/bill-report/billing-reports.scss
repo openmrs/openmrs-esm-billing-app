@@ -1,0 +1,34 @@
+@use '@carbon/styles/scss/spacing';
+@use '@carbon/styles/scss/colors';
+
+.reportContainer {
+  margin: spacing.$spacing-05;
+}
+
+.filters,
+.toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: spacing.$spacing-05;
+  margin-bottom: spacing.$spacing-05;
+}
+
+.toolbar :global(.cds--search) {
+  max-width: 20rem;
+}
+
+.validating {
+  margin-bottom: spacing.$spacing-03;
+}
+
+.emptyState {
+  padding: spacing.$spacing-10 spacing.$spacing-05;
+  text-align: center;
+  border: 1px solid colors.$gray-20;
+}
+
+.emptyState p {
+  margin-top: spacing.$spacing-03;
+  color: colors.$gray-70;
+}
