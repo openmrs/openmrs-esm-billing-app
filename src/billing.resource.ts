@@ -5,6 +5,7 @@ import {
   openmrsFetch,
   useSession,
   useVisit,
+  restBaseUrl,
   type SessionLocation,
   useOpenmrsFetchAll,
   useOpenmrsPagination,
@@ -19,6 +20,7 @@ import {
   type UpdateBillPayload,
   BillStatus,
   type PatientPaymentStatus,
+  type FacilityDetail,
 } from './types';
 
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
@@ -189,9 +191,28 @@ export const processBillPayment = (payload: PaymentRequestPayload, billUuid: str
   });
 };
 
-export function useDefaultFacility(): { data: SessionLocation | null } {
-  const { sessionLocation } = useSession();
-  return { data: sessionLocation };
+export function useDefaultFacility() {
+  const url = `${restBaseUrl}/kenyaemr/default-facility`;
+  const { authenticated, sessionLocation } = useSession();
+
+  const { data, isLoading } = useSWR<{ data: FacilityDetail }>(authenticated ? url : null, openmrsFetch);
+
+  // Fall back to session location while the kenyaemr endpoint loads or if it fails / returns no data
+  const facility = data?.data ?? sessionLocation;
+
+  return { data: facility, isLoading: isLoading };
+}
+
+export function useFacilityName() {
+  const apiURL = `${restBaseUrl}/systemsetting?q=ugandaemr.healthCenterName&v=full`;
+
+  const { data, error, isLoading } = useSWR<{ data: { results: Array<{ value: string }> } }>(apiURL, openmrsFetch, {});
+
+  return {
+    facility: data?.data?.results?.[0]?.value ?? '',
+    isLoadingFacility: isLoading,
+    isError: error,
+  };
 }
 
 export const usePatientPaymentInfo = (patientUuid: string) => {
