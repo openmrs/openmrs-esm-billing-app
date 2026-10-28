@@ -9,6 +9,7 @@ import CashPointConfiguration from './cash-point/cash-point-configuration.compon
 import PaymentModesConfig from './payment-modes/payment-modes-config.component';
 import DiscountRequests from '../discounts/admin/discount-requests.component';
 import RefundRequests from '../refunds/admin/refund-requests.component';
+import BillingReports from './bill-report/billing-reports.component';
 import styles from './billable-services.scss';
 
 const BillableServiceHome: React.FC = () => {
@@ -27,6 +28,7 @@ const BillableServiceHome: React.FC = () => {
             <Route path="/" element={<BillableServicesDashboard />} />
             <Route path="/cash-point-config" element={<CashPointConfiguration />} />
             <Route path="/payment-modes-config" element={<PaymentModesConfig />} />
+            <Route path="/bill-report" element={<BillingReports />} />
             <Route path="/discount-requests" element={<DiscountRequests />} />
             <Route path="/refund-requests" element={<RefundRequests />} />
           </Routes>
