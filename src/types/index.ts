@@ -242,6 +242,30 @@ export interface BillableService {
   servicePrices: Array<ServicePrice>;
 }
 
+export interface BillableCommodity {
+  uuid: string;
+  display?: string;
+  name?: string;
+  item: string;
+  shortName?: string;
+  price: number;
+  paymentMode?: {
+    uuid: string;
+    name: string;
+    description?: string;
+  };
+  billableService?: BillableService;
+}
+
+export interface StockItem {
+  uuid: string;
+  drugUuid: string;
+  drugName: string;
+  conceptUuid: string;
+  conceptName: string;
+  commonName: string;
+}
+
 export type PaymentRequestPayload = {
   instanceType: string;
   amountTendered: number;

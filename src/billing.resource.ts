@@ -8,6 +8,7 @@ import {
   type SessionLocation,
   useOpenmrsFetchAll,
   useOpenmrsPagination,
+  restBaseUrl,
 } from '@openmrs/esm-framework';
 import { apiBasePath, omrsDateFormat } from './constants';
 import {
@@ -19,6 +20,7 @@ import {
   type UpdateBillPayload,
   BillStatus,
   type PatientPaymentStatus,
+  type StockItem,
 } from './types';
 
 const parsePatientDisplay = (display: string | undefined): { identifier: string; name: string } => {
@@ -233,6 +235,21 @@ export const updateBillItems = (payload: UpdateBillPayload) => {
     },
   });
 };
+
+export function useFetchChargeItems(searchValue: string) {
+  const url = `${restBaseUrl}/stockmanagement/stockitem?v=default&limit=10&q=${encodeURIComponent(searchValue)}`;
+  const { data, isLoading, error, mutate } = useSWR<{ data: { results: StockItem[] } }, Error>(
+    searchValue ? url : null,
+    openmrsFetch,
+  );
+
+  return {
+    searchResults: data?.data?.results ?? [],
+    error,
+    isLoading,
+    retry: mutate,
+  };
+}
 
 export const finalizeBill = (billUuid: string) => {
   const url = `${apiBasePath}bill/${billUuid}`;
