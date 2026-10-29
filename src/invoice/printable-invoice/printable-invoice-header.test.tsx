@@ -39,7 +39,10 @@ describe('PrintableInvoiceHeader', () => {
       country: 'Kenya',
       defaultCurrency: 'KES',
     } as unknown as BillingConfig);
-    mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
+    mockUseDefaultFacility.mockReturnValue({
+      data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] },
+      isLoading: false,
+    });
   });
 
   it('should render PrintableInvoiceHeader component', () => {
