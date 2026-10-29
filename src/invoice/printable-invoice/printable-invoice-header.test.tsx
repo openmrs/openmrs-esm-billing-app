@@ -98,7 +98,7 @@ describe('PrintableInvoiceHeader', () => {
       },
     };
     render(<PrintableInvoiceHeader {...propsWithDifferentDate} defaultFacility={defaultFacility} bill={bill} />);
-    expect(screen.getByText(new RegExp(formattedBirthDate, 'i'))).toBeInTheDocument();
+    expect(screen.getByText(`: ${formattedBirthDate}`)).toBeInTheDocument();
   });
 
   it('should not render birthDate and gender when not provided', () => {
