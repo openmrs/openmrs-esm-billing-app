@@ -1,7 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import isEmpty from 'lodash/isEmpty';
-import { formatDate, interpolateUrl, parseDate, type SessionLocation, useConfig } from '@openmrs/esm-framework';
+import {
+  formatDate,
+  formatPartialDate,
+  interpolateUrl,
+  parseDate,
+  type SessionLocation,
+  useConfig,
+} from '@openmrs/esm-framework';
 import type { BillingConfig } from '../../config-schema';
 import type { MappedBill, PatientDetails } from '../../types';
 import styles from './printable-invoice-header.scss';
@@ -31,7 +38,7 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
     [t('name', 'Name')]: patientDetails?.name,
     ...(patientDetails.gender && { [t('gender', 'Gender')]: patientDetails.gender }),
     ...(patientDetails.birthDate && {
-      [t('birthDate', 'Date of birth')]: formatDate(parseDate(patientDetails.birthDate), { time: false }),
+      [t('birthDate', 'Date of birth')]: formatPartialDate(patientDetails.birthDate, { time: false }),
     }),
     ...(patientDetails.address && { [t('address', 'Address')]: patientDetails.address }),
   };
