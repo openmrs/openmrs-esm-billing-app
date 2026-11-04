@@ -1,4 +1,4 @@
-import { FinancialAssets, Settings, TagGroup, Wallet } from '@carbon/react/icons';
+import { FinancialAssets, ReportData, Settings, TagGroup, Wallet } from '@carbon/react/icons';
 import { createDashboard, defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
@@ -94,6 +94,17 @@ export const billableServicesLeftPanelLink = getSyncLifecycle(
     title: 'billableServices',
     path: '',
     icon: Wallet,
+  }),
+  options,
+);
+
+// t('billReports', 'Billing reports')
+export const billingReportsLeftPanelLink = getSyncLifecycle(
+  createBillableServicesLeftPanelLink({
+    name: 'bill-reports',
+    title: 'billReports',
+    path: 'bill-report',
+    icon: ReportData,
   }),
   options,
 );
