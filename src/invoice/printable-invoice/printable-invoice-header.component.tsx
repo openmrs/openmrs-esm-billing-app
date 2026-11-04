@@ -10,17 +10,26 @@ interface PrintableInvoiceHeaderProps {
   patientDetails: PatientDetails;
   defaultFacility: SessionLocation | null;
   bill: MappedBill;
+  invoiceReferences?: Array<Pick<MappedBill, 'receiptNumber' | 'dateCreated'>>;
 }
 
-const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patientDetails, defaultFacility, bill }) => {
+const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({
+  patientDetails,
+  defaultFacility,
+  bill,
+  invoiceReferences,
+}) => {
   const { t } = useTranslation();
   const { logo, country, defaultCurrency } = useConfig<BillingConfig>();
+  const formatInvoiceDate = (dateCreated: MappedBill['dateCreated']) =>
+    dateCreated ? formatDate(parseDate(dateCreated), { mode: 'wide', noToday: true, time: false }) : '--';
+  const hasInvoiceReferences = !!invoiceReferences?.length;
 
   const invoiceDetails = {
-    [t('invoiceNo', 'Invoice #')]: bill?.receiptNumber,
-    [t('invoiceDate', 'Invoice date')]: bill?.dateCreated
-      ? formatDate(parseDate(bill.dateCreated), { mode: 'wide', noToday: true, time: false })
-      : '--',
+    ...(!hasInvoiceReferences && {
+      [t('invoiceNo', 'Invoice #')]: bill?.receiptNumber,
+      [t('invoiceDate', 'Invoice date')]: formatInvoiceDate(bill?.dateCreated),
+    }),
     [t('totalAmount', 'Total amount')]: `${defaultCurrency} ${bill?.totalAmount}`,
     [t('totalPaid', 'Total paid')]: `${defaultCurrency} ${bill?.tenderedAmount}`,
     [t('amountBalance', 'Amount balance')]: `${defaultCurrency} ${bill?.netAmount - bill?.tenderedAmount}`,
@@ -83,6 +92,15 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
 
           <div>
             <h2 className={styles.sectionHeading}>{t('invoiceSummary', 'Invoice summary')}</h2>
+            {invoiceReferences?.map((invoice, index) => (
+              <p className={styles.itemLabel} key={`${invoice.receiptNumber}-${index}`}>
+                <strong>{t('invoiceNo', 'Invoice #')}</strong>
+                <span>: {invoice.receiptNumber || '--'}</span>
+                <span> — </span>
+                <strong>{t('invoiceDate', 'Invoice date')}</strong>
+                <span>: {formatInvoiceDate(invoice.dateCreated)}</span>
+              </p>
+            ))}
             {Object.entries(invoiceDetails).map(([key, val]) => (
               <p className={styles.itemLabel} key={key}>
                 <strong>{key}</strong>
