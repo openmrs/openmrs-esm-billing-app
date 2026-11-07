@@ -38,7 +38,10 @@ const PrintableInvoiceHeader: React.FC<PrintableInvoiceHeaderProps> = ({ patient
     [t('name', 'Name')]: patientDetails?.name,
     ...(patientDetails.gender && { [t('gender', 'Gender')]: patientDetails.gender }),
     ...(patientDetails.birthDate && {
-      [t('birthDate', 'Date of birth')]: formatPartialDate(patientDetails.birthDate, { time: false }),
+      [t('birthDate', 'Date of birth')]: formatPartialDate(patientDetails.birthDate, {
+        time: false,
+        noToday: true,
+      }),
     }),
     ...(patientDetails.address && { [t('address', 'Address')]: patientDetails.address }),
   };

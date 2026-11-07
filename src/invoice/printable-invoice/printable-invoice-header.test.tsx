@@ -101,6 +101,28 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText(`: ${formattedBirthDate}`)).toBeInTheDocument();
   });
 
+  it('should print a newborn date of birth as a calendar date', () => {
+    const today = new Date();
+    const birthDate = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, '0'),
+      String(today.getDate()).padStart(2, '0'),
+    ].join('-');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedBirthDate = `${String(today.getDate()).padStart(2, '0')}-${months[today.getMonth()]}-${today.getFullYear()}`;
+
+    render(
+      <PrintableInvoiceHeader
+        patientDetails={{ ...testProps.patientDetails, birthDate }}
+        defaultFacility={defaultFacility}
+        bill={bill}
+      />,
+    );
+
+    expect(screen.getByText(`: ${formattedBirthDate}`)).toBeInTheDocument();
+    expect(screen.queryByText(/Today/i)).not.toBeInTheDocument();
+  });
+
   it('should not render birthDate and gender when not provided', () => {
     const propsWithoutBirthDateAndGender = {
       patientDetails: {
