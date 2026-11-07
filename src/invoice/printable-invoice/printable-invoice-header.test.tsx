@@ -85,16 +85,42 @@ describe('PrintableInvoiceHeader', () => {
     expect(screen.getByText('Test Facility Logo')).toBeInTheDocument();
   });
 
-  it('should format birthDate correctly', () => {
+  it.each([
+    { birthDate: '1995-12-25', formattedBirthDate: '25-Dec-1995' },
+    { birthDate: '1993', formattedBirthDate: '1993' },
+    { birthDate: '2024-03', formattedBirthDate: 'Mar 2024' },
+  ])('should format birthDate $birthDate without inventing missing precision', ({ birthDate, formattedBirthDate }) => {
     const propsWithDifferentDate = {
       patientDetails: {
         ...testProps.patientDetails,
-        birthDate: '1995-12-25',
+        birthDate,
         gender: 'Female',
       },
     };
     render(<PrintableInvoiceHeader {...propsWithDifferentDate} defaultFacility={defaultFacility} bill={bill} />);
-    expect(screen.getByText(/25-Dec-1995/i)).toBeInTheDocument();
+    expect(screen.getByText(`: ${formattedBirthDate}`)).toBeInTheDocument();
+  });
+
+  it('should print a newborn date of birth as a calendar date', () => {
+    const today = new Date();
+    const birthDate = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, '0'),
+      String(today.getDate()).padStart(2, '0'),
+    ].join('-');
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const formattedBirthDate = `${String(today.getDate()).padStart(2, '0')}-${months[today.getMonth()]}-${today.getFullYear()}`;
+
+    render(
+      <PrintableInvoiceHeader
+        patientDetails={{ ...testProps.patientDetails, birthDate }}
+        defaultFacility={defaultFacility}
+        bill={bill}
+      />,
+    );
+
+    expect(screen.getByText(`: ${formattedBirthDate}`)).toBeInTheDocument();
+    expect(screen.queryByText(/Today/i)).not.toBeInTheDocument();
   });
 
   it('should not render birthDate and gender when not provided', () => {
