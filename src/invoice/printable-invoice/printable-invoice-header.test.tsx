@@ -1,5 +1,5 @@
 import React from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { screen, render } from '@testing-library/react';
 import { useConfig } from '@openmrs/esm-framework';
 import { type BillingConfig } from '../../config-schema';
@@ -40,6 +40,10 @@ describe('PrintableInvoiceHeader', () => {
       defaultCurrency: 'KES',
     } as unknown as BillingConfig);
     mockUseDefaultFacility.mockReturnValue({ data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] } });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it('should render PrintableInvoiceHeader component', () => {
@@ -115,7 +119,6 @@ describe('PrintableInvoiceHeader', () => {
 
     expect(screen.getByText(': 15-Mar-2026')).toBeInTheDocument();
     expect(screen.queryByText(/Today/i)).not.toBeInTheDocument();
-    vi.useRealTimers();
   });
 
   it('should not render birthDate and gender when not provided', () => {
