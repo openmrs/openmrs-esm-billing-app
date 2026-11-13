@@ -88,18 +88,6 @@
       "component": "billingSettingsLeftPanelMenu",
       "slot": "billable-services-left-panel-slot",
       "order": 1
-    },
-    {
-      "name": "discount-requests-left-panel-link",
-      "component": "discountRequestsLeftPanelLink",
-      "slot": "billable-services-left-panel-slot",
-      "order": 2
-    },
-    {
-      "name": "refund-requests-left-panel-link",
-      "component": "refundRequestsLeftPanelLink",
-      "slot": "billable-services-left-panel-slot",
-      "order": 3
     }
   ],
   "modals": [
