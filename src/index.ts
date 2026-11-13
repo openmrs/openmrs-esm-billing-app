@@ -87,6 +87,11 @@ export const billableServiceFormWorkspace = getAsyncLifecycle(
   options,
 );
 
+export const billableCommodityFormWorkspace = getAsyncLifecycle(
+  () => import('./billable-commodities/billable-commodity-form.workspace'),
+  options,
+);
+
 // t('billableServices', 'Billable services')
 export const billableServicesLeftPanelLink = getSyncLifecycle(
   createBillableServicesLeftPanelLink({
