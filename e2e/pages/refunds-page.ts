@@ -28,7 +28,8 @@ export class RefundRequestsAdminPage {
   readonly searchInput = () => this.page.getByTestId('refundRequestsSearchBar');
 
   async goto() {
-    await this.page.goto('billable-services/refund-requests');
+    await this.page.goto('home/billing');
+    await this.page.getByRole('tab', { name: 'Refunds' }).click();
   }
 
   async waitForLoaded() {
