@@ -1,0 +1,9 @@
+@use '@carbon/layout';
+
+.container {
+  margin: layout.$spacing-05;
+}
+
+.content {
+  margin-top: layout.$spacing-05;
+}
