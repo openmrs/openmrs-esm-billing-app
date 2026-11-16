@@ -63,7 +63,7 @@
     "@carbon/react": "^1.83.0",
     "@openmrs/eslint-config": "^2.0.0",
     "@openmrs/esm-framework": "next",
-    "@playwright/test": "^1.53.2",
+    "@playwright/test": "^1.65.1",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.3.0",
     "@testing-library/react": "14.3.1",
