@@ -100,6 +100,17 @@ describe('BillingDashboard', () => {
     expect(screen.queryByText('Discount requests table')).not.toBeInTheDocument();
   });
 
+  it('keeps the bills table search when the user switches tabs', async () => {
+    const user = userEvent.setup();
+
+    renderBillingDashboard();
+    await user.type(screen.getByRole('searchbox'), 'John');
+    await user.click(screen.getByRole('tab', { name: 'Refunds' }));
+    await user.click(screen.getByRole('tab', { name: 'Bills' }));
+
+    expect(screen.getByRole('searchbox')).toHaveValue('John');
+  });
+
   it('opens the discounts list when the refunds tab is hidden', async () => {
     const user = userEvent.setup();
     grantPrivileges(['View Bill Discounts']);

@@ -43,14 +43,12 @@ export function BillingDashboard() {
           <PrivilegedTab privilege={VIEW_BILL_REFUNDS_PRIVILEGE}>{t('refunds', 'Refunds')}</PrivilegedTab>
           <PrivilegedTab privilege={VIEW_BILL_DISCOUNTS_PRIVILEGE}>{t('discounts', 'Discounts')}</PrivilegedTab>
         </TabList>
-        {/* Render only the selected tab so hidden tabs do not fetch their data */}
+        {/* Render the refund and discount lists only when their tab is selected so hidden tabs do not fetch their data */}
         <TabPanels>
           <TabPanel>
-            {selectedIndex === 0 && (
-              <section className={styles.billsTableContainer}>
-                <BillsTable />
-              </section>
-            )}
+            <section className={styles.billsTableContainer}>
+              <BillsTable />
+            </section>
           </TabPanel>
           <TabPanel>
             {selectedIndex === 1 && (
