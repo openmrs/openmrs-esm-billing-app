@@ -1,10 +1,8 @@
-import { FinancialAssets, Settings, TagGroup, Wallet } from '@carbon/react/icons';
+import { Settings, Wallet } from '@carbon/react/icons';
 import { createDashboard, defineConfigSchema, getAsyncLifecycle, getSyncLifecycle } from '@openmrs/esm-framework';
 import { createLeftPanelLink } from './left-panel-link.component';
 import { createBillableServicesLeftPanelLink } from './billable-services/billable-services-left-panel-link.component';
 import { createBillableServicesLeftPanelMenu } from './billable-services/billable-services-left-panel-menu.component';
-import { createDiscountRequestsLeftPanelLink } from './discounts/admin/discount-requests-left-panel-link.component';
-import { createRefundRequestsLeftPanelLink } from './refunds/admin/refund-requests-left-panel-link.component';
 import BillableServicesCardLink from './billable-services-admin-card-link.component';
 import VisitAttributeTags from './invoice/payments/visit-tags/visit-attribute.component';
 import PaymentStatusTag from './payment-status-tag/payment-status-tag.component';
@@ -144,31 +142,9 @@ export const reviewBillDiscountsModal = getAsyncLifecycle(
   options,
 );
 
-// t('discountRequests', 'Discount requests')
-export const discountRequestsLeftPanelLink = getSyncLifecycle(
-  createDiscountRequestsLeftPanelLink({
-    name: 'discount-requests',
-    title: 'discountRequests',
-    path: 'discount-requests',
-    icon: TagGroup,
-  }),
-  options,
-);
-
 export const requestRefundModal = getAsyncLifecycle(() => import('./refunds/request-refund.modal'), options);
 
 export const reviewBillRefundsModal = getAsyncLifecycle(
   () => import('./refunds/admin/review-bill-refunds/review-bill-refunds.modal'),
-  options,
-);
-
-// t('refundRequests', 'Refund requests')
-export const refundRequestsLeftPanelLink = getSyncLifecycle(
-  createRefundRequestsLeftPanelLink({
-    name: 'refund-requests',
-    title: 'refundRequests',
-    path: 'refund-requests',
-    icon: FinancialAssets,
-  }),
   options,
 );

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import {
   Button,
@@ -56,7 +56,11 @@ const mapLineItems = (bill: MappedBill) =>
     .filter(Boolean)
     .join(' & ');
 
-const BillsTable: React.FC = () => {
+interface BillsTableProps {
+  isSelected?: boolean;
+}
+
+const BillsTable: React.FC<BillsTableProps> = ({ isSelected = true }) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
   const { pageSize: defaultPageSize } = useConfig<BillingConfig>();
@@ -97,13 +101,23 @@ const BillsTable: React.FC = () => {
   const debouncedSearchString = useDebounce(searchString, 500);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const { bills, error, currentPage, isLoading, isValidating, totalCount, goTo } = usePaginatedBills(
+  const { bills, error, currentPage, isLoading, isValidating, mutate, totalCount, goTo } = usePaginatedBills(
     pageSize,
     billPaymentStatus.status,
     debouncedSearchString || undefined,
     startDate,
     endDate,
   );
+
+  // The table stays mounted while other tabs are open, so refetch when it is selected again.
+  // Actions on those tabs, such as approving a refund, can change a bill's status.
+  const wasSelected = useRef(isSelected);
+  useEffect(() => {
+    if (isSelected && !wasSelected.current) {
+      mutate();
+    }
+    wasSelected.current = isSelected;
+  }, [isSelected, mutate]);
 
   const headerData = [
     {

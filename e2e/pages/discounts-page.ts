@@ -30,7 +30,8 @@ export class DiscountRequestsAdminPage {
   readonly searchInput = () => this.page.getByTestId('discountRequestsSearchBar');
 
   async goto() {
-    await this.page.goto('billable-services/discount-requests');
+    await this.page.goto('home/billing');
+    await this.page.getByRole('tab', { name: 'Discounts' }).click();
   }
 
   async waitForLoaded() {

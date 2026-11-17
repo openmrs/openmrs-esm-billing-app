@@ -3,7 +3,6 @@
 @use '@openmrs/esm-styleguide/src/vars' as *;
 
 .container {
-  height: calc(100vh - layout.$spacing-09);
   margin: layout.$spacing-05;
 }
 
