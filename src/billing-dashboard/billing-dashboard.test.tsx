@@ -5,13 +5,15 @@ import userEvent from '@testing-library/user-event';
 import { UserHasAccess } from '@openmrs/esm-framework';
 import { BillingDashboard } from './billing-dashboard.component';
 
+const mockMutate = vi.hoisted(() => vi.fn());
+
 vi.mock('../billing.resource', () => ({
   usePaginatedBills: vi.fn(() => ({
     bills: [],
     error: null,
     isLoading: false,
     isValidating: false,
-    mutate: vi.fn(),
+    mutate: mockMutate,
     currentPage: 1,
     totalCount: 0,
     goTo: vi.fn(),
@@ -48,6 +50,7 @@ function grantPrivileges(privileges: Array<string>) {
 
 describe('BillingDashboard', () => {
   beforeEach(() => {
+    mockMutate.mockClear();
     grantPrivileges(['View Bill Refunds', 'View Bill Discounts']);
   });
 
@@ -109,6 +112,19 @@ describe('BillingDashboard', () => {
     await user.click(screen.getByRole('tab', { name: 'Bills' }));
 
     expect(screen.getByRole('searchbox')).toHaveValue('John');
+  });
+
+  it('refetches the bills list when the user returns to the bills tab', async () => {
+    const user = userEvent.setup();
+
+    renderBillingDashboard();
+
+    expect(mockMutate).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole('tab', { name: 'Refunds' }));
+    await user.click(screen.getByRole('tab', { name: 'Bills' }));
+
+    expect(mockMutate).toHaveBeenCalledTimes(1);
   });
 
   it('opens the discounts list when the refunds tab is hidden', async () => {

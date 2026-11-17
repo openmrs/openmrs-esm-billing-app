@@ -47,7 +47,7 @@ export function BillingDashboard() {
         <TabPanels>
           <TabPanel>
             <section className={styles.billsTableContainer}>
-              <BillsTable />
+              <BillsTable isSelected={selectedIndex === 0} />
             </section>
           </TabPanel>
           <TabPanel>
