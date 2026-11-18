@@ -145,7 +145,7 @@ const AddCashPointModal: React.FC<AddCashPointModalProps> = ({ closeModal, onCas
                   label={t('selectLocation', 'Select Location')}
                   titleText={t('cashPointLocation', 'Cash Point Location')}
                   items={locations}
-                  selectedItem={locations.find((loc) => loc.id === field.value)}
+                  selectedItem={locations.find((loc) => loc.id === field.value) ?? null}
                   onChange={({ selectedItem }) => field.onChange(selectedItem?.id)}
                   invalid={!!errors.location}
                   invalidText={errors.location?.message}
