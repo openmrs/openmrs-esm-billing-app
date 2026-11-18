@@ -385,6 +385,76 @@ describe('Payments', () => {
     expect(payload.amountTendered).toBe(100);
   });
 
+  it('shows a validation message when the amount exceeds the amount due', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+
+    render(
+      <Payments
+        bill={{
+          ...mockBill,
+          status: BillStatus.POSTED,
+          totalAmount: 500,
+          netAmount: 500,
+          tenderedAmount: 200,
+          payments: [],
+        }}
+        mutate={mockMutate}
+        onFinalizeBill={mockFinalize}
+      />,
+    );
+
+    await user.click(await screen.findByRole('combobox', { name: /payment method/i }));
+    await user.click(screen.getByText('Cash'));
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '301');
+
+    expect(await screen.findByText('Payment amount cannot exceed amount due')).toBeInTheDocument();
+    expect(screen.getByText('Process Payment')).toBeDisabled();
+
+    await user.clear(screen.getByPlaceholderText(/enter amount/i));
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '300');
+
+    expect(screen.queryByText('Payment amount cannot exceed amount due')).not.toBeInTheDocument();
+    expect(screen.getByText('Process Payment')).toBeEnabled();
+    expect(mockProcessBillPayment).not.toHaveBeenCalled();
+  });
+
+  it('submits the selected payment method and amount, then resets the form', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+    mockProcessBillPayment.mockResolvedValue({} as any);
+
+    render(
+      <Payments
+        bill={{
+          ...mockBill,
+          status: BillStatus.POSTED,
+          totalAmount: 500,
+          netAmount: 500,
+          tenderedAmount: 0,
+          payments: [],
+        }}
+        mutate={mockMutate}
+        onFinalizeBill={mockFinalize}
+      />,
+    );
+
+    await user.click(await screen.findByRole('combobox', { name: /payment method/i }));
+    await user.click(screen.getByText('Credit Card'));
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '250');
+    await user.type(screen.getByPlaceholderText(/enter reference number/i), 'TXN-42');
+    await user.click(screen.getByText('Process Payment'));
+
+    expect(mockProcessBillPayment).toHaveBeenCalledWith(
+      { instanceType: '2', amountTendered: 250, amount: 500 },
+      'bill-uuid',
+    );
+    expect(mockMutate).toHaveBeenCalled();
+    expect(screen.getByPlaceholderText(/enter amount/i)).toHaveValue(null);
+    expect(screen.getByPlaceholderText(/enter reference number/i)).toHaveValue('');
+    expect(screen.getByText('Process Payment')).toBeDisabled();
+  });
+
   it('should display process payment button', () => {
     const billWithAmountDue: MappedBill = {
       ...mockBill,
