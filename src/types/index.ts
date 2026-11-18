@@ -195,6 +195,7 @@ export interface PatientDetails {
 export interface FacilityDetail {
   uuid: string;
   display: string;
+  links: LocationLink[];
 }
 
 export type ConceptSearchResult = {

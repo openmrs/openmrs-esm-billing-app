@@ -14,6 +14,7 @@ describe('PrintableFooter', () => {
   it('should render PrintableFooter component', () => {
     mockUseDefaultFacility.mockReturnValue({
       data: { display: 'MTRH', uuid: 'mtrh-uuid', links: [] },
+      isLoading: false,
     });
     render(<PrintableFooter />);
     const footer = screen.getByText('MTRH');
