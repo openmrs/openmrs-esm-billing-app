@@ -7,6 +7,7 @@ import {
   useConfig,
   navigate,
   getDefaultsFromConfigSchema,
+  type FetchResponse,
   type VisitReturnType,
 } from '@openmrs/esm-framework';
 import { useBillableServices } from '../../billable-services/billable-service.resource';
@@ -422,7 +423,7 @@ describe('Payments', () => {
   it('submits the selected payment method and amount, then resets the form', async () => {
     const user = userEvent.setup();
     const mockProcessBillPayment = vi.mocked(processBillPayment);
-    mockProcessBillPayment.mockResolvedValue({} as any);
+    mockProcessBillPayment.mockResolvedValue({} as FetchResponse);
 
     render(
       <Payments
