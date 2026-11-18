@@ -76,6 +76,22 @@ describe('AddCashPointModal', () => {
     expect(mockShowSnackbar).toHaveBeenCalledWith(expect.objectContaining({ kind: 'success' }));
   });
 
+  it('keeps the location dropdown controlled when a location is selected and the form resets', async () => {
+    const user = userEvent.setup();
+    const consoleError = vi.spyOn(console, 'error');
+    render(<AddCashPointModal closeModal={closeModal} onCashPointAdded={onCashPointAdded} />);
+
+    await user.type(screen.getByLabelText('Cash Point Name'), 'Pharmacy Cash Point');
+    await user.type(screen.getByLabelText('Cash Point UUID'), validUuid);
+    await user.click(screen.getByRole('combobox', { name: /cash point location/i }));
+    await user.click(await screen.findByText('Pharmacy'));
+    await user.click(screen.getByRole('button', { name: /save/i }));
+    await waitFor(() => expect(closeModal).toHaveBeenCalledTimes(1));
+
+    expect(consoleError).not.toHaveBeenCalledWith(expect.stringContaining('downshift'));
+    consoleError.mockRestore();
+  });
+
   it('keeps the modal open and shows an error when saving fails', async () => {
     const user = userEvent.setup();
     mockOpenmrsFetch.mockImplementation((url: string) => {
