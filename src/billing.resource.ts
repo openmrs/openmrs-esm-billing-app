@@ -41,6 +41,7 @@ const parsePatientDisplay = (display: string | undefined): { identifier: string;
 
 export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
   const activeLineItems = bill?.lineItems?.filter((item) => !item.voided) ?? [];
+  const activePayments = bill?.payments?.filter((payment) => !payment.voided) ?? [];
   const { identifier, name } = parsePatientDisplay(bill?.patient?.display);
 
   return {
@@ -57,9 +58,8 @@ export const mapBillProperties = (bill: PatientInvoice): MappedBill => {
     billingService: activeLineItems.map((lineItem) => lineItem?.item || lineItem?.billableService || '--').join('  '),
     totalAmount: bill.total,
     netAmount: bill.amountAfterDiscount,
-    tenderedAmount: (bill?.payments ?? [])
-      .map((item) => item.amountTendered ?? 0)
-      .reduce((prev, curr) => prev + curr, 0),
+    payments: activePayments,
+    tenderedAmount: activePayments.map((item) => item.amountTendered ?? 0).reduce((prev, curr) => prev + curr, 0),
   };
 };
 
