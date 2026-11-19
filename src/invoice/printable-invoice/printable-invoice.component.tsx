@@ -23,9 +23,16 @@ type PrintableInvoiceProps = {
   patient: fhir.Patient;
   componentRef: React.RefObject<HTMLDivElement>;
   defaultFacility: SessionLocation;
+  invoiceReferences?: Array<Pick<MappedBill, 'receiptNumber' | 'dateCreated'>>;
 };
 
-const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, componentRef, defaultFacility }) => {
+const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({
+  bill,
+  patient,
+  componentRef,
+  defaultFacility,
+  invoiceReferences,
+}) => {
   const { t } = useTranslation();
   const layout = useLayoutType();
   const { defaultCurrency } = useConfig<BillingConfig>();
@@ -98,7 +105,12 @@ const PrintableInvoice: React.FC<PrintableInvoiceProps> = ({ bill, patient, comp
 
   return (
     <div className={styles.container} ref={componentRef}>
-      <PrintableInvoiceHeader patientDetails={patientDetails} defaultFacility={defaultFacility} bill={bill} />
+      <PrintableInvoiceHeader
+        patientDetails={patientDetails}
+        defaultFacility={defaultFacility}
+        bill={bill}
+        invoiceReferences={invoiceReferences}
+      />
 
       <div className={styles.itemsContainer}>
         <div className={styles.tableContainer}>
