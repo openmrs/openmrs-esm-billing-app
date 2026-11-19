@@ -151,6 +151,28 @@ describe('mapBillProperties', () => {
       expect(result.tenderedAmount).toBe(300);
     });
 
+    it('Excludes voided payments from tenderedAmount and payments', () => {
+      const activePayment = createPayment({ uuid: 'active-payment', amountTendered: 100 });
+      const bill = createBaseBill({
+        payments: [activePayment, createPayment({ uuid: 'voided-payment', amountTendered: 150, voided: true })],
+      });
+      const result = mapBillProperties(bill);
+      expect(result.tenderedAmount).toBe(100);
+      expect(result.payments).toEqual([activePayment]);
+    });
+
+    it('Returns zero tenderedAmount when all payments are voided', () => {
+      const bill = createBaseBill({
+        payments: [
+          createPayment({ amountTendered: 100, voided: true }),
+          createPayment({ amountTendered: 150, voided: true }),
+        ],
+      });
+      const result = mapBillProperties(bill);
+      expect(result.tenderedAmount).toBe(0);
+      expect(result.payments).toEqual([]);
+    });
+
     it('Handles null/undefined prices and quantities gracefully', () => {
       const bill = createBaseBill({
         lineItems: [
