@@ -1,6 +1,12 @@
 @use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.tabList {
+  padding: 0;
+  background-color: $ui-background;
+}
 
 .container {
   height: calc(100vh - layout.$spacing-09);

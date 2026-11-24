@@ -38,7 +38,7 @@ export function BillingDashboard() {
        * <MetricsCards />
        **/}
       <Tabs selectedIndex={selectedIndex} onChange={({ selectedIndex }) => setSelectedIndex(selectedIndex)}>
-        <TabList aria-label={t('billingTabs', 'Billing tabs')} contained>
+        <TabList aria-label={t('billingTabs', 'Billing tabs')} className={styles.tabList} contained>
           <Tab>{t('bills', 'Bills')}</Tab>
           <PrivilegedTab privilege={VIEW_BILL_REFUNDS_PRIVILEGE}>{t('refunds', 'Refunds')}</PrivilegedTab>
           <PrivilegedTab privilege={VIEW_BILL_DISCOUNTS_PRIVILEGE}>{t('discounts', 'Discounts')}</PrivilegedTab>
