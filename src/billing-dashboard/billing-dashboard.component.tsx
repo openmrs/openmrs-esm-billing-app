@@ -20,7 +20,9 @@ interface PrivilegedTabProps {
 // This wrapper forwards the ref to the Tab inside UserHasAccess.
 const PrivilegedTab = forwardRef<HTMLButtonElement, PrivilegedTabProps>(({ privilege, children }, ref) => (
   <UserHasAccess privilege={privilege}>
-    <Tab ref={ref}>{children}</Tab>
+    <Tab ref={ref} className={styles.tab}>
+      {children}
+    </Tab>
   </UserHasAccess>
 ));
 
@@ -38,8 +40,8 @@ export function BillingDashboard() {
        * <MetricsCards />
        **/}
       <Tabs selectedIndex={selectedIndex} onChange={({ selectedIndex }) => setSelectedIndex(selectedIndex)}>
-        <TabList aria-label={t('billingTabs', 'Billing tabs')} contained>
-          <Tab>{t('bills', 'Bills')}</Tab>
+        <TabList aria-label={t('billingTabs', 'Billing tabs')} className={styles.tabList} contained>
+          <Tab className={styles.tab}>{t('bills', 'Bills')}</Tab>
           <PrivilegedTab privilege={VIEW_BILL_REFUNDS_PRIVILEGE}>{t('refunds', 'Refunds')}</PrivilegedTab>
           <PrivilegedTab privilege={VIEW_BILL_DISCOUNTS_PRIVILEGE}>{t('discounts', 'Discounts')}</PrivilegedTab>
         </TabList>

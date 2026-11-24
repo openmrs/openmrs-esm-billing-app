@@ -1,6 +1,23 @@
 @use '@carbon/colors';
 @use '@carbon/layout';
 @use '@carbon/type';
+@use '@openmrs/esm-styleguide/src/vars' as *;
+
+.tabList {
+  padding: 0;
+  background-color: $ui-background;
+}
+
+.tab {
+  &:active,
+  &:focus {
+    outline: 2px solid var(--brand-03) !important;
+  }
+
+  &[aria-selected='true'] {
+    box-shadow: inset 0 2px 0 0 var(--brand-03) !important;
+  }
+}
 
 .container {
   height: calc(100vh - layout.$spacing-09);
