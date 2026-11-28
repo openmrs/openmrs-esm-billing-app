@@ -243,7 +243,8 @@ const BillableServiceFormWorkspace: React.FC<Workspace2DefinitionProps<BillableS
           price: normalizePrice(payment.price),
         };
       }),
-      serviceStatus: 'ENABLED',
+      // Editing must not re-enable a service that was disabled
+      serviceStatus: serviceToEdit?.serviceStatus ?? 'ENABLED',
       concept: data.concept?.uuid,
     };
 
