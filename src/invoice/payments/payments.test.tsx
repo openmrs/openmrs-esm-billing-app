@@ -353,6 +353,35 @@ describe('Payments', () => {
     expect(mockProcessBillPayment).not.toHaveBeenCalled();
   });
 
+  it('accepts a payment of exactly the amount due when the subtraction is not exact in floating point', async () => {
+    const user = userEvent.setup();
+    const mockProcessBillPayment = vi.mocked(processBillPayment);
+    mockProcessBillPayment.mockResolvedValue({} as any);
+
+    const partlyPaidBill: MappedBill = {
+      ...mockBill,
+      status: BillStatus.POSTED,
+      totalAmount: 10.2,
+      netAmount: 10.2,
+      tenderedAmount: 10.1,
+      payments: [],
+      lineItems: [],
+    };
+
+    render(<Payments bill={partlyPaidBill} mutate={mockMutate} onFinalizeBill={mockFinalize} />);
+
+    const methodDropdown = await screen.findByRole('combobox', { name: /payment method/i });
+    await user.click(methodDropdown);
+    await user.click(screen.getByText('Cash'));
+
+    // 10.2 - 10.1 is 0.09999999999999964, so 0.1 must still count as the amount due
+    await user.type(screen.getByPlaceholderText(/enter amount/i), '0.1');
+    await user.click(screen.getByText('Process Payment'));
+
+    expect(mockProcessBillPayment).toHaveBeenCalledTimes(1);
+    expect(mockProcessBillPayment.mock.calls[0][0].amountTendered).toBe(0.1);
+  });
+
   it('sends a non-null amount in the payment payload when processing a discounted bill', async () => {
     const user = userEvent.setup();
     const mockProcessBillPayment = vi.mocked(processBillPayment);

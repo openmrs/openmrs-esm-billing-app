@@ -38,7 +38,8 @@ const Payments: React.FC<PaymentProps> = ({ bill, mutate, onFinalizeBill }) => {
         invalid_type_error: t('amountRequired', 'Amount is required'),
       })
       .positive({ message: t('amountMustBePositive', 'Amount must be greater than 0') })
-      .max((bill?.netAmount ?? 0) - (bill?.tenderedAmount ?? 0), {
+      // Rounded because floating point subtraction leaves noise: 10.20 - 10.10 is 0.09999999999999964
+      .max(Math.round(((bill?.netAmount ?? 0) - (bill?.tenderedAmount ?? 0)) * 1e6) / 1e6, {
         message: t('paymentAmountCannotExceedAmountDue', 'Payment amount cannot exceed amount due'),
       }),
     referenceCode: z.union([z.number(), z.string()]).optional(),
