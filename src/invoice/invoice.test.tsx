@@ -59,7 +59,9 @@ vi.mock('../billing.resource', () => ({
     data: {
       uuid: '54065383-b4d4-42d2-af4d-d250a1fd2590',
       display: 'MTRH',
+      links: [],
     },
+    isLoading: false,
   }),
 }));
 

@@ -1,16 +1,19 @@
 import React, { useMemo } from 'react';
 import { BrowserRouter, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ConfigurableLink } from '@openmrs/esm-framework';
+import { ConfigurableLink, useConfig, UserHasAccess } from '@openmrs/esm-framework';
+import { type BillingConfig } from './config-schema';
 
 export interface LinkConfig {
   name: string;
   title: string;
+  privilege?: string;
 }
 
 export function LinkExtension({ config }: { config: LinkConfig }) {
   const { t } = useTranslation();
   const { name, title } = config;
+  const { billingLink } = useConfig<BillingConfig>();
   const location = useLocation();
   const spaBasePath = window.getOpenmrsSpaBase() + 'home';
 
@@ -19,13 +22,20 @@ export function LinkExtension({ config }: { config: LinkConfig }) {
     return pathSegments.includes(name);
   }, [location.pathname, name]);
 
-  return (
+  const link = (
     <ConfigurableLink
       to={spaBasePath + '/' + name}
       className={`cds--side-nav__link ${isActive && 'active-left-nav-link'}`}>
       {t(title)}
     </ConfigurableLink>
   );
+
+  const privilege = config.privilege ?? billingLink?.privilege;
+  if (privilege) {
+    return <UserHasAccess privilege={privilege}>{link}</UserHasAccess>;
+  }
+
+  return link;
 }
 
 export const createLeftPanelLink = (config: LinkConfig) => () => (
