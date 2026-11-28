@@ -572,6 +572,26 @@ describe('BillableServiceFormWorkspace', () => {
       expect(mockCreateBillableService).not.toHaveBeenCalled();
     });
 
+    it('keeps a disabled service disabled when it is edited', async () => {
+      const user = userEvent.setup();
+      renderBillableServicesForm({
+        workspaceProps: { serviceToEdit: { ...mockServiceToEdit, serviceStatus: 'DISABLED' } },
+      });
+
+      const shortNameInput = screen.getByDisplayValue('XRay');
+      await user.clear(shortNameInput);
+      await user.type(shortNameInput, 'X-RAY');
+
+      mockUpdateBillableService.mockResolvedValue({} as FetchResponse<any>);
+
+      await submitForm();
+
+      expect(mockUpdateBillableService).toHaveBeenCalledWith(
+        'existing-service-uuid',
+        expect.objectContaining({ shortName: 'X-RAY', serviceStatus: 'DISABLED' }),
+      );
+    });
+
     it('should trim whitespace from short name when updating service', async () => {
       const user = userEvent.setup();
       const mockCloseWorkspace = vi.fn();
